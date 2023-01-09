@@ -34,7 +34,7 @@ namespace FLVER_Editor
         private const int mtDeleteCbIndex = 10;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string version = "1.73";
-        public static string[] arguments;
+        public static List<string> arguments;
         private static FLVER flver;
         private static BND4 flverBnd;
         private static BND4 matBinBnd;
@@ -626,10 +626,10 @@ namespace FLVER_Editor
         private bool OpenFLVERFile()
         {
             isSettingDefaultInfo = true;
-            if (arguments.Length > 0)
+            if (arguments.Count > 0)
             {
                 flverFilePath = arguments[0].ToLower();
-                arguments = new string[] { };
+                arguments = new List<string>();
             }
             else
             {
@@ -2063,6 +2063,17 @@ namespace FLVER_Editor
 
                 public Vector2 Unk14 { get; set; }
             }
+        }
+
+        private void TabWindowDragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.All;
+        }
+
+        private void TabWindowDragDrop(object sender, DragEventArgs e)
+        {
+            arguments.Add(((string[])e.Data.GetData(DataFormats.FileDrop))[0]);
+            OpenFLVERFile();
         }
     }
 }

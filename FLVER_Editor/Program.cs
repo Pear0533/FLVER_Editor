@@ -40,7 +40,7 @@ namespace FLVER_Editor
         private static void Main(string[] args)
         {
             Application.EnableVisualStyles();
-            MainWindow.arguments = args;
+            MainWindow.arguments = args.ToList();
             window = new MainWindow();
             window.Text = windowTitle;
             window.ShowDialog();

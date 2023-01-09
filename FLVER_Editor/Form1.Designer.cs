@@ -1684,6 +1684,7 @@
             // 
             // tabWindow
             // 
+            this.tabWindow.AllowDrop = true;
             this.tabWindow.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -1695,6 +1696,8 @@
             this.tabWindow.SelectedIndex = 0;
             this.tabWindow.Size = new System.Drawing.Size(1117, 517);
             this.tabWindow.TabIndex = 1;
+            this.tabWindow.DragDrop += new System.Windows.Forms.DragEventHandler(this.TabWindowDragDrop);
+            this.tabWindow.DragEnter += new System.Windows.Forms.DragEventHandler(this.TabWindowDragEnter);
             // 
             // copyrightStr
             // 
