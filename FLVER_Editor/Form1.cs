@@ -33,7 +33,7 @@ namespace FLVER_Editor
         private const int mtApplyPresetCbIndex = 9;
         private const int mtDeleteCbIndex = 10;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
-        private const string version = "1.73";
+        private const string version = "1.75";
         public static List<string> arguments;
         private static FLVER flver;
         private static BND4 flverBnd;
@@ -707,7 +707,9 @@ namespace FLVER_Editor
                     UpdateMesh();
                     break;
                 case mtAddPresetCbIndex when !materialPresets.ContainsKey(flver.Materials[e.RowIndex].Name):
-                    materialPresets.Add(flver.Materials[e.RowIndex].Name, flver.Materials[e.RowIndex]);
+                    string presetName = ShowInputDialog("Enter a preset name:", "Add Preset");
+                    if (presetName == "") break;
+                    materialPresets.Add(presetName, flver.Materials[e.RowIndex]);
                     UpdateMaterialPresets();
                     break;
                 case mtDeletePresetCbIndex when materialPresets.ContainsKey(flver.Materials[e.RowIndex].Name):
@@ -861,7 +863,15 @@ namespace FLVER_Editor
                         Forward = flver.Dummies[e.RowIndex].Forward,
                         ReferenceID = flver.Dummies[e.RowIndex].ReferenceID,
                         AttachBoneIndex = flver.Dummies[e.RowIndex].AttachBoneIndex,
-                        DummyBoneIndex = flver.Dummies[e.RowIndex].DummyBoneIndex
+                        DummyBoneIndex = flver.Dummies[e.RowIndex].DummyBoneIndex,
+                        Upward = flver.Dummies[e.RowIndex].Upward,
+                        Unk0C = flver.Dummies[e.RowIndex].Unk0C,
+                        Unk0D = flver.Dummies[e.RowIndex].Unk0D,
+                        Unk0E = flver.Dummies[e.RowIndex].Unk0E,
+                        Flag1 = flver.Dummies[e.RowIndex].Flag1,
+                        Flag2 = flver.Dummies[e.RowIndex].Flag2,
+                        Unk30 = flver.Dummies[e.RowIndex].Unk30,
+                        Unk34 = flver.Dummies[e.RowIndex].Unk34
                     };
                     flver.Dummies.Add(duplicatedDummy);
                     DeselectAllSelectedThings();
@@ -970,6 +980,20 @@ namespace FLVER_Editor
                     RotateThing(thing, offset, totals, nbi);
                     break;
             }
+        }
+
+        public static float CalculateMeshScalar()
+        {
+            float scalar = 0;
+            foreach (FLVER.Mesh mesh in flver.Meshes)
+            {
+                FLVER.Vertex maxVertex = mesh.Vertices[0];
+                List<FLVER.Vertex> maxVertices = mesh.Vertices.Where(v =>
+                    v.Positions[0].X > maxVertex.Positions[0].X && v.Positions[0].Y > maxVertex.Positions[0].Y && v.Positions[0].Z > maxVertex.Positions[0].Z).ToList();
+                foreach (FLVER.Vertex v in maxVertices) maxVertex = v;
+                scalar += maxVertex.Positions[0].X / (flver.Meshes.Count + 100);
+            }
+            return scalar;
         }
 
         private static float[] CalculateMeshTotals()
@@ -1267,6 +1291,31 @@ namespace FLVER_Editor
         public static DialogResult ShowQuestionDialog(string str)
         {
             return MessageBox.Show(str, @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        }
+
+        public static string ShowInputDialog(string text, string caption)
+        {
+            var prompt = new Form
+            {
+                Width = 240,
+                Height = 125,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                Text = caption,
+                StartPosition = FormStartPosition.CenterScreen,
+                MaximizeBox = false
+            };
+            var textLabel = new Label { Left = 8, Top = 8, Width = 200, Text = text };
+            var textBox = new TextBox { Left = 10, Top = 28, Width = 200 };
+            var cancelButton = new Button { Text = @"Cancel", Left = 9, Width = 100, Top = 55, DialogResult = DialogResult.Cancel };
+            cancelButton.Click += (sender, e) => { prompt.Close(); };
+            var confirmation = new Button { Text = @"OK", Left = 112, Width = 100, Top = 55, DialogResult = DialogResult.OK };
+            confirmation.Click += (sender, e) => { prompt.Close(); };
+            prompt.Controls.Add(textBox);
+            prompt.Controls.Add(cancelButton);
+            prompt.Controls.Add(confirmation);
+            prompt.Controls.Add(textLabel);
+            prompt.AcceptButton = confirmation;
+            return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
         }
 
         private void MeshTableCellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -1938,6 +1987,17 @@ namespace FLVER_Editor
             }
         }
 
+        private void TabWindowDragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.All;
+        }
+
+        private void TabWindowDragDrop(object sender, DragEventArgs e)
+        {
+            arguments.Add(((string[])e.Data.GetData(DataFormats.FileDrop))[0]);
+            OpenFLVERFile();
+        }
+
         public class MATBIN
         {
             public enum ParamType : uint
@@ -2065,15 +2125,14 @@ namespace FLVER_Editor
             }
         }
 
-        private void TabWindowDragEnter(object sender, DragEventArgs e)
+        private void MaterialPresetsSelector_MouseDown(object sender, MouseEventArgs e)
         {
-            e.Effect = DragDropEffects.All;
-        }
-
-        private void TabWindowDragDrop(object sender, DragEventArgs e)
-        {
-            arguments.Add(((string[])e.Data.GetData(DataFormats.FileDrop))[0]);
-            OpenFLVERFile();
+            if (e.Button != MouseButtons.Right) return;
+            DialogResult result = ShowQuestionDialog("Are you sure you want to delete this preset?");
+            if (result != DialogResult.Yes) return;
+            var presetSelector = (ComboBox)sender;
+            materialPresets.Remove(presetSelector.SelectedItem);
+            UpdateMaterialPresets();
         }
     }
 }

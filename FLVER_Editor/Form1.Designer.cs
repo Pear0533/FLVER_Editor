@@ -1512,6 +1512,7 @@
             this.materialPresetsSelector.Name = "materialPresetsSelector";
             this.materialPresetsSelector.Size = new System.Drawing.Size(185, 21);
             this.materialPresetsSelector.TabIndex = 2;
+            this.materialPresetsSelector.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MaterialPresetsSelector_MouseDown);
             // 
             // applyMatBinTexturesButton
             // 
