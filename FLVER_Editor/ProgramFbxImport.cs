@@ -139,6 +139,7 @@ namespace FLVER_Editor
                         mat.TextureNormal.FilePath != null ? Path.GetFileNameWithoutExtension(mat.TextureNormal.FilePath) + ".tif" : "");
                     flver.Materials.Add(newMaterial);
                 }
+                float scalar = MainWindow.CalculateMeshScalar();
                 foreach (Mesh m in md.Meshes)
                 {
                     var mn = new FLVER.Mesh
@@ -232,7 +233,7 @@ namespace FLVER_Editor
                             if (m.HasNormals && m.Normals.Count > i)
                                 tangent = new Vector3D(crossPorduct(getMyV3D(m.Normals[i]).normalize().toXnaV3(), normal.toXnaV3())).normalize();
                         }
-                        FLVER.Vertex v = generateVertex(new Vector3(vit.X, vit.Y, vit.Z), uv1.toNumV3(), uv2.toNumV3(), normal.toNumV3(),
+                        FLVER.Vertex v = generateVertex(new Vector3(vit.X * scalar, vit.Y * scalar, vit.Z * scalar), uv1.toNumV3(), uv2.toNumV3(), normal.toNumV3(),
                             tangent.toNumV3(), 1);
                         if (m.HasBones)
                         {

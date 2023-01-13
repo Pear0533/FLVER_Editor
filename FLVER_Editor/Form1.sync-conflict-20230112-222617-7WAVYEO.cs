@@ -33,7 +33,7 @@ namespace FLVER_Editor
         private const int mtApplyPresetCbIndex = 9;
         private const int mtDeleteCbIndex = 10;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
-        private const string version = "1.75";
+        private const string version = "1.74";
         public static List<string> arguments;
         private static FLVER flver;
         private static BND4 flverBnd;
@@ -745,24 +745,12 @@ namespace FLVER_Editor
             ToggleCheckboxesInDataTable(materialsTable, mtDeleteCbIndex);
         }
 
-        private static void InjectTextureIntoTPF(string textureFilePath)
-        {
-            BinderFile tpfFile = flverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
-            if (tpfFile == null) return;
-            TPF tpf = TPF.Read(tpfFile.Bytes);
-            // NOTE: ACCOUNT FOR TEXTURE FORMAT
-            var texture = new TPF.Texture(Path.GetFileNameWithoutExtension(textureFilePath), 0x00, 0x00, 0, File.ReadAllBytes(textureFilePath));
-            tpf.Textures.Add(texture);
-            flverBnd.Files[flverBnd.Files.IndexOf(tpfFile)].Bytes = tpf.Write();
-        }
-
         private void TexturesTableButtonClicked(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex != 2) return;
             var dialog = new OpenFileDialog { Filter = imageFilesFilter };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             flver.Materials[selectedMaterialIndex].Textures[e.RowIndex].Path = $"{Path.GetFileNameWithoutExtension(dialog.FileName)}.tif";
-            InjectTextureIntoTPF(dialog.FileName);
             UpdateTexturesTable();
             UpdateMesh();
             viewer.RefreshTextures();
@@ -1005,6 +993,7 @@ namespace FLVER_Editor
                 foreach (FLVER.Vertex v in maxVertices) maxVertex = v;
                 scalar += maxVertex.Positions[0].X / (flver.Meshes.Count + 100);
             }
+            if (scalar == 0) scalar = 1;
             return scalar;
         }
 
@@ -2008,16 +1997,6 @@ namespace FLVER_Editor
         {
             arguments.Add(((string[])e.Data.GetData(DataFormats.FileDrop))[0]);
             OpenFLVERFile();
-        }
-
-        private void MaterialPresetsSelector_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Right) return;
-            DialogResult result = ShowQuestionDialog("Are you sure you want to delete this preset?");
-            if (result != DialogResult.Yes) return;
-            var presetSelector = (ComboBox)sender;
-            materialPresets.Remove(presetSelector.SelectedItem);
-            UpdateMaterialPresets();
         }
 
         public class MATBIN
