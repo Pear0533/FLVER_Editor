@@ -25,6 +25,9 @@
             this.browseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.materialsToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.dummiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.materialsToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.dummiesToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.mergeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.materialsToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.dummiesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -257,6 +260,7 @@
             // 
             this.presetsFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.browseToolStripMenuItem,
+            this.exportToolStripMenuItem1,
             this.mergeToolStripMenuItem1});
             this.presetsFileToolStripMenuItem.Name = "presetsFileToolStripMenuItem";
             this.presetsFileToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
@@ -268,8 +272,8 @@
             this.materialsToolStripMenuItem2,
             this.dummiesToolStripMenuItem});
             this.browseToolStripMenuItem.Name = "browseToolStripMenuItem";
-            this.browseToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-            this.browseToolStripMenuItem.Text = "Browse";
+            this.browseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.browseToolStripMenuItem.Text = "Import";
             // 
             // materialsToolStripMenuItem2
             // 
@@ -285,13 +289,36 @@
             this.dummiesToolStripMenuItem.Text = "Dummies";
             this.dummiesToolStripMenuItem.Click += new System.EventHandler(this.BrowseDummyPresetsFileButtonClicked);
             // 
+            // exportToolStripMenuItem1
+            // 
+            this.exportToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.materialsToolStripMenuItem4,
+            this.dummiesToolStripMenuItem2});
+            this.exportToolStripMenuItem1.Name = "exportToolStripMenuItem1";
+            this.exportToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem1.Text = "Export";
+            // 
+            // materialsToolStripMenuItem4
+            // 
+            this.materialsToolStripMenuItem4.Name = "materialsToolStripMenuItem4";
+            this.materialsToolStripMenuItem4.Size = new System.Drawing.Size(180, 22);
+            this.materialsToolStripMenuItem4.Text = "Materials";
+            this.materialsToolStripMenuItem4.Click += new System.EventHandler(this.ExportMaterialPresetsFileButtonClick);
+            // 
+            // dummiesToolStripMenuItem2
+            // 
+            this.dummiesToolStripMenuItem2.Name = "dummiesToolStripMenuItem2";
+            this.dummiesToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.dummiesToolStripMenuItem2.Text = "Dummies";
+            this.dummiesToolStripMenuItem2.Click += new System.EventHandler(this.ExportDummiesPresetFileButtonClick);
+            // 
             // mergeToolStripMenuItem1
             // 
             this.mergeToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.materialsToolStripMenuItem3,
             this.dummiesToolStripMenuItem1});
             this.mergeToolStripMenuItem1.Name = "mergeToolStripMenuItem1";
-            this.mergeToolStripMenuItem1.Size = new System.Drawing.Size(112, 22);
+            this.mergeToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.mergeToolStripMenuItem1.Text = "Merge";
             // 
             // materialsToolStripMenuItem3
@@ -1923,5 +1950,8 @@
         private System.Windows.Forms.ToolStripMenuItem toggleAutoSaveToolStripMenuItem;
         private System.Windows.Forms.Timer autoSaveTimer;
         private System.Windows.Forms.ToolStripTextBox autoSaveIntervalSelector;
+        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem materialsToolStripMenuItem4;
+        private System.Windows.Forms.ToolStripMenuItem dummiesToolStripMenuItem2;
     }
 }

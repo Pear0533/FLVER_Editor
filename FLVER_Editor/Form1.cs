@@ -36,6 +36,7 @@ namespace FLVER_Editor
         private const int mtApplyPresetCbIndex = 9;
         private const int mtDeleteCbIndex = 10;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
+        private const string jsonFileFilter = @"JSON File (*.json)|*.json";
         private const string version = "1.75";
         public static List<string> arguments;
         private static FLVER flver;
@@ -1712,7 +1713,7 @@ namespace FLVER_Editor
 
         private void LoadJSON(int type)
         {
-            var dialog = new OpenFileDialog { Filter = @"JSON File (*.json)|*.json" };
+            var dialog = new OpenFileDialog { Filter = jsonFileFilter };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             try
             {
@@ -1740,7 +1741,7 @@ namespace FLVER_Editor
 
         private static void ExportJSON(dynamic list)
         {
-            var dialog = new SaveFileDialog { Filter = @"JSON File (*.json)|*.json" };
+            var dialog = new SaveFileDialog { Filter = jsonFileFilter };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             try
             {
@@ -1775,7 +1776,7 @@ namespace FLVER_Editor
 
         private void BrowsePresetsFile(string configPath, bool materialPresetsFile)
         {
-            var dialog = new OpenFileDialog { Filter = @"JSON File (*.json)|*.json", Multiselect = false };
+            var dialog = new OpenFileDialog { Filter = jsonFileFilter, Multiselect = false };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             File.WriteAllText(configPath, dialog.FileName);
             if (materialPresetsFile) LoadMaterialPresets();
@@ -1809,7 +1810,7 @@ namespace FLVER_Editor
 
         private void MergePresets(bool materialPresetsFile)
         {
-            var dialog = new OpenFileDialog { Filter = @"JSON File (*.json)|*.json", Multiselect = false };
+            var dialog = new OpenFileDialog { Filter = jsonFileFilter, Multiselect = false };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             var newPresets = new JavaScriptSerializer().Deserialize<Dictionary<object, object>>(File.ReadAllText(dialog.FileName));
             Dictionary<object, object> presets = materialPresetsFile ? materialPresets : dummyPresets;
@@ -2051,6 +2052,23 @@ namespace FLVER_Editor
             if (e.Button != MouseButtons.Right) return;
             PromptDeletePreset(sender, ref dummyPresets);
             UpdateDummyPresets();
+        }
+
+        private static void ExportPresetsFile(ref Dictionary<object, object> presets)
+        {
+            var dialog = new SaveFileDialog { Filter = jsonFileFilter };
+            if (dialog.ShowDialog() != DialogResult.OK) return;
+            File.WriteAllText(dialog.FileName, JsonConvert.SerializeObject(presets, Formatting.Indented));
+        }
+
+        private void ExportMaterialPresetsFileButtonClick(object sender, EventArgs e)
+        {
+            ExportPresetsFile(ref materialPresets);
+        }
+
+        private void ExportDummiesPresetFileButtonClick(object sender, EventArgs e)
+        {
+            ExportPresetsFile(ref dummyPresets);
         }
 
         private enum TextureFormats
