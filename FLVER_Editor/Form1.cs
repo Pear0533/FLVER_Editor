@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using Assimp;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SoulsFormats;
 using Color = System.Drawing.Color;
@@ -1719,10 +1720,10 @@ namespace FLVER_Editor
                 switch (type)
                 {
                     case 0:
-                        flver.Bones = new JavaScriptSerializer().Deserialize<List<FLVER.Bone>>(jsonText);
+                        flver.Bones = JsonConvert.DeserializeObject<List<FLVER.Bone>>(jsonText);
                         break;
                     case 1:
-                        flver.Materials = new JavaScriptSerializer().Deserialize<List<FLVER.Material>>(jsonText);
+                        flver.Materials = JsonConvert.DeserializeObject<List<FLVER.Material>>(jsonText);
                         break;
                 }
                 DeselectAllSelectedThings();
@@ -1743,7 +1744,7 @@ namespace FLVER_Editor
             if (dialog.ShowDialog() != DialogResult.OK) return;
             try
             {
-                File.WriteAllText(dialog.FileName, new JavaScriptSerializer().Serialize(list));
+                File.WriteAllText(dialog.FileName, JsonConvert.SerializeObject(list, Formatting.Indented));
                 ShowInformationDialog("Successfully exported JSON!");
             }
             catch
