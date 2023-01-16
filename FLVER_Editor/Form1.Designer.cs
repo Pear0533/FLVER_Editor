@@ -736,6 +736,7 @@
             this.dummyPresetsSelector.Name = "dummyPresetsSelector";
             this.dummyPresetsSelector.Size = new System.Drawing.Size(121, 21);
             this.dummyPresetsSelector.TabIndex = 15;
+            this.dummyPresetsSelector.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DummyPresetsSelector_MouseDown);
             // 
             // meshModifiersContainer
             // 

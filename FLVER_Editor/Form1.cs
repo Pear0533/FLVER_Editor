@@ -688,6 +688,18 @@ namespace FLVER_Editor
             LoadMaterialPresets();
         }
 
+        private void UpdateDummyPresets()
+        {
+            File.WriteAllText(dummyPresetsFilePath, new JavaScriptSerializer().Serialize(dummyPresets));
+            LoadDummyPresets();
+        }
+
+        private static string PromptForPresetName()
+        {
+            string presetName = ShowInputDialog("Enter a preset name:", "Add Preset");
+            return presetName == "" ? "" : presetName;
+        }
+
         private void MaterialsTableButtonClicked(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
@@ -709,7 +721,7 @@ namespace FLVER_Editor
                     UpdateMesh();
                     break;
                 case mtAddPresetCbIndex when !materialPresets.ContainsKey(flver.Materials[e.RowIndex].Name):
-                    string presetName = ShowInputDialog("Enter a preset name:", "Add Preset");
+                    string presetName = PromptForPresetName();
                     if (presetName == "") break;
                     materialPresets.Add(presetName, flver.Materials[e.RowIndex]);
                     UpdateMaterialPresets();
@@ -1513,9 +1525,9 @@ namespace FLVER_Editor
 
         private void AddAllDummiesToPresetsButtonClicked(object sender, MouseEventArgs e)
         {
-            var key = flver.Dummies.Count.ToString();
-            if (dummyPresets.ContainsKey(key)) return;
-            dummyPresets.Add(key, new JavaScriptSerializer().Deserialize<object>(new JavaScriptSerializer().Serialize(flver.Dummies)));
+            string presetName = PromptForPresetName();
+            if (presetName == "" || dummyPresets.ContainsKey(presetName)) return;
+            dummyPresets.Add(presetName, new JavaScriptSerializer().Deserialize<object>(new JavaScriptSerializer().Serialize(flver.Dummies)));
             File.WriteAllText(dummyPresetsFilePath, new JavaScriptSerializer().Serialize(dummyPresets));
             LoadDummyPresets();
         }
@@ -2019,14 +2031,25 @@ namespace FLVER_Editor
             OpenFLVERFile();
         }
 
+        private static void PromptDeletePreset(object sender, ref Dictionary<object, object> presets)
+        {
+            DialogResult result = ShowQuestionDialog("Are you sure you want to delete this preset?");
+            if (result != DialogResult.Yes) return;
+            presets.Remove(((ComboBox)sender).SelectedItem);
+        }
+
         private void MaterialPresetsSelector_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right) return;
-            DialogResult result = ShowQuestionDialog("Are you sure you want to delete this preset?");
-            if (result != DialogResult.Yes) return;
-            var presetSelector = (ComboBox)sender;
-            materialPresets.Remove(presetSelector.SelectedItem);
+            PromptDeletePreset(sender, ref materialPresets);
             UpdateMaterialPresets();
+        }
+
+        private void DummyPresetsSelector_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right) return;
+            PromptDeletePreset(sender, ref dummyPresets);
+            UpdateDummyPresets();
         }
 
         private enum TextureFormats
