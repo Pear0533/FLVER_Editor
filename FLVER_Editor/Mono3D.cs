@@ -215,25 +215,28 @@ namespace FLVER_Editor
             base.Initialize();
         }
 
+        private void ReadTPFTextureEntries(TPF tpf)
+        {
+            foreach (TPF.Texture t in tpf.Textures)
+            {
+                try
+                {
+                    textureMap.Add(t.Name, getTextureFromBitmap(readDdsStreamToBitmap(new MemoryStream(t.Bytes)), GraphicsDevice));
+                }
+                catch { }
+            }
+        }
+
         public void RefreshTextures()
         {
             if (!MainWindow.textureRefreshEnabled) return;
             string tpfFile = Program.filePath.Substring(0, Program.filePath.Length - 5) + "tpf";
-            try
+            if (Program.tpf != null) ReadTPFTextureEntries(Program.tpf);
+            else if (File.Exists(tpfFile))
             {
-                if (Program.tpf != null)
-                {
-                    foreach (TPF.Texture t in Program.tpf.Textures)
-                        textureMap.Add(t.Name, getTextureFromBitmap(readDdsStreamToBitmap(new MemoryStream(t.Bytes)), GraphicsDevice));
-                }
-                else if (File.Exists(tpfFile))
-                {
-                    TPF tpf = TPF.Read(tpfFile);
-                    foreach (TPF.Texture t in tpf.Textures)
-                        textureMap.Add(t.Name, getTextureFromBitmap(readDdsStreamToBitmap(new MemoryStream(t.Bytes)), GraphicsDevice));
-                }
+                Program.tpf = TPF.Read(tpfFile);
+                ReadTPFTextureEntries(Program.tpf);
             }
-            catch { }
         }
 
         /// <summary>

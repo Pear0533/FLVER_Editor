@@ -749,10 +749,10 @@ namespace FLVER_Editor
 
         private static void InjectTextureIntoTPF(string textureFilePath)
         {
-            if (Program.tpf == null) return;
-            BinderFile flverBndTpfEntry = flverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
-            byte[] ddsBytes = File.ReadAllBytes(textureFilePath);
-            var dds = new DDS(ddsBytes);
+            BinderFile tpfFile = flverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
+            if (tpfFile == null) return;
+            TPF tpf = TPF.Read(tpfFile.Bytes);
+            var dds = new DDS(File.ReadAllBytes(textureFilePath));
             byte formatByte = 107;
             try
             {
@@ -760,9 +760,9 @@ namespace FLVER_Editor
             }
             catch { }
             var texture = new TPF.Texture(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, 0, File.ReadAllBytes(textureFilePath));
-            Program.tpf.Textures.Add(texture);
-            if (flverBndTpfEntry != null) flverBnd.Files[flverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Program.tpf.Write();
-            else Program.tpf.Write(flverFilePath.Replace(".flver", ".tpf"));
+            tpf.Textures.Add(texture);
+            flverBnd.Files[flverBnd.Files.IndexOf(tpfFile)].Bytes = tpf.Write();
+            Program.tpf = tpf;
         }
 
         private void TexturesTableButtonClicked(object sender, DataGridViewCellEventArgs e)
