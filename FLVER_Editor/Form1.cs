@@ -58,8 +58,8 @@ namespace FLVER_Editor
         private static Dictionary<object, object> dummyPresets;
         public static RotationOrder rotOrder = RotationOrder.YZX;
         public static readonly string rootFolderPath = Path.GetDirectoryName(Application.ExecutablePath);
-        private static string materialPresetsFilePath = $"{rootFolderPath}/mpresets.json";
-        private static string dummyPresetsFilePath = $"{rootFolderPath}/dpresets.json";
+        private static readonly string materialPresetsFilePath = $"{rootFolderPath}/mpresets.json";
+        private static readonly string dummyPresetsFilePath = $"{rootFolderPath}/dpresets.json";
         private static readonly string mPresetsConfigFilePath = $"{rootFolderPath}/mpresetsconfig.txt";
         private static readonly string dPresetsConfigFilePath = $"{rootFolderPath}/dpresetsconfig.txt";
         private static readonly string matBinBndConfigPath = $"{rootFolderPath}/matbinbndconfig.txt";
@@ -458,16 +458,8 @@ namespace FLVER_Editor
             return hasRead;
         }
 
-        private static void CheckForPresetsConfig(string configPath, ref string presetsPath)
-        {
-            if (!File.Exists(configPath)) return;
-            string filePath = File.ReadAllText(configPath);
-            if (filePath != "") presetsPath = filePath;
-        }
-
         private void LoadMaterialPresets()
         {
-            CheckForPresetsConfig(mPresetsConfigFilePath, ref materialPresetsFilePath);
             bool hasRead = LoadPresets(materialPresetsSelector, ref materialPresets, materialPresetsFilePath);
             materialPresetsSelector.Enabled = applyPresetToAllMaterialsButton.Enabled
                 = materialsTable.Columns[mtApplyPresetCbIndex].Visible =
@@ -476,7 +468,6 @@ namespace FLVER_Editor
 
         private void LoadDummyPresets()
         {
-            CheckForPresetsConfig(dPresetsConfigFilePath, ref dummyPresetsFilePath);
             dummyPresetsSelector.Enabled = dummiesTableOKButton.Enabled =
                 addAllDummiesToPresetsButton.Enabled = LoadPresets(dummyPresetsSelector, ref dummyPresets, dummyPresetsFilePath);
         }
@@ -1774,11 +1765,11 @@ namespace FLVER_Editor
             ExportJSON(flver.Materials);
         }
 
-        private void BrowsePresetsFile(string configPath, bool materialPresetsFile)
+        private void BrowsePresetsFile(bool materialPresetsFile)
         {
             var dialog = new OpenFileDialog { Filter = jsonFileFilter, Multiselect = false };
             if (dialog.ShowDialog() != DialogResult.OK) return;
-            File.WriteAllText(configPath, dialog.FileName);
+            File.WriteAllText(materialPresetsFile ? materialPresetsFilePath : dummyPresetsFilePath, File.ReadAllText(dialog.FileName));
             if (materialPresetsFile) LoadMaterialPresets();
             else LoadDummyPresets();
             ShowInformationDialog("Successfully loaded presets file!");
@@ -1786,12 +1777,12 @@ namespace FLVER_Editor
 
         private void BrowseMaterialPresetsFileButtonClicked(object sender, EventArgs e)
         {
-            BrowsePresetsFile(mPresetsConfigFilePath, true);
+            BrowsePresetsFile(true);
         }
 
         private void BrowseDummyPresetsFileButtonClicked(object sender, EventArgs e)
         {
-            BrowsePresetsFile(dPresetsConfigFilePath, false);
+            BrowsePresetsFile(false);
         }
 
         private void ToggleTextureRefreshButtonClicked(object sender, EventArgs e)
@@ -2033,24 +2024,27 @@ namespace FLVER_Editor
             OpenFLVERFile();
         }
 
-        private static void PromptDeletePreset(object sender, ref Dictionary<object, object> presets)
+        private static bool PromptDeletePreset(object sender, ref Dictionary<object, object> presets)
         {
+            var box = (ComboBox)sender;
+            if (box.SelectedItem == null) return false;
             DialogResult result = ShowQuestionDialog("Are you sure you want to delete this preset?");
-            if (result != DialogResult.Yes) return;
-            presets.Remove(((ComboBox)sender).SelectedItem);
+            if (result != DialogResult.Yes) return false;
+            presets.Remove(box.SelectedItem);
+            return true;
         }
 
         private void MaterialPresetsSelector_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right) return;
-            PromptDeletePreset(sender, ref materialPresets);
+            if (!PromptDeletePreset(sender, ref materialPresets)) return;
             UpdateMaterialPresets();
         }
 
         private void DummyPresetsSelector_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right) return;
-            PromptDeletePreset(sender, ref dummyPresets);
+            if (!PromptDeletePreset(sender, ref dummyPresets)) return;
             UpdateDummyPresets();
         }
 
@@ -2059,6 +2053,7 @@ namespace FLVER_Editor
             var dialog = new SaveFileDialog { Filter = jsonFileFilter };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             File.WriteAllText(dialog.FileName, JsonConvert.SerializeObject(presets, Formatting.Indented));
+            ShowInformationDialog("Successfully exported presets file!");
         }
 
         private void ExportMaterialPresetsFileButtonClick(object sender, EventArgs e)
