@@ -1010,7 +1010,7 @@ namespace FLVER_Editor
 
         public static float CalculateMeshScalar()
         {
-            float scalar = 0;
+            float scalar = flver.Meshes.Count > 0 ? 0 : 1;
             foreach (FLVER.Mesh mesh in flver.Meshes)
             {
                 FLVER.Vertex maxVertex = mesh.Vertices[0];
