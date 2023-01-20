@@ -73,11 +73,6 @@ namespace FLVER_Editor
         public static bool textureRefreshEnabled = true;
         private static int selectedMaterialIndex = -1;
         private static float prevNumVal;
-        public static bool isSnapped;
-        public static bool isSnappedRight = false;
-        public static bool isSnappedBottom = false;
-        public static bool isSnappedLeft = false;
-        public static bool isSnappedTop = false;
 
         public MainWindow()
         {
@@ -90,7 +85,6 @@ namespace FLVER_Editor
             SetAutoSaveEnabled();
             EnableDarkTheme();
             tabWindow.SelectedTab = meshTabPage;
-            Mono3D.mainForm = this;
             if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
         }
 
@@ -1647,7 +1641,7 @@ namespace FLVER_Editor
         private void MainWindowClosing(object sender, CancelEventArgs e)
         {
             DialogResult result = MessageBox.Show(@"Do you want to save changes to the FLVER before quitting?", @"Warning", MessageBoxButtons.YesNoCancel,
-                MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1, (MessageBoxOptions)0x40000);
+                MessageBoxIcon.Exclamation);
             if (result != DialogResult.Yes)
             {
                 if (result == DialogResult.Cancel) e.Cancel = true;
@@ -2070,17 +2064,6 @@ namespace FLVER_Editor
         private void ExportDummiesPresetFileButtonClick(object sender, EventArgs e)
         {
             ExportPresetsFile(ref dummyPresets);
-        }
-
-        private void MainWindow_LocationChanged(object sender, EventArgs e)
-        {
-            if (Mono3D.f == null || !isSnapped) return;
-            if (isSnappedRight)
-            {
-                Mono3D.f.Invoke(new MethodInvoker(delegate { Mono3D.f.Left = Right; }));
-                Mono3D.f.Invoke(new MethodInvoker(delegate { Mono3D.f.Top = Top; }));
-            }
-            else if (isSnappedBottom) Mono3D.f.Invoke(new MethodInvoker(delegate { Mono3D.f.Top = Bottom; }));
         }
 
         private enum TextureFormats

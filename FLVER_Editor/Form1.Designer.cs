@@ -272,7 +272,7 @@
             this.materialsToolStripMenuItem2,
             this.dummiesToolStripMenuItem});
             this.browseToolStripMenuItem.Name = "browseToolStripMenuItem";
-            this.browseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.browseToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.browseToolStripMenuItem.Text = "Import";
             // 
             // materialsToolStripMenuItem2
@@ -295,20 +295,20 @@
             this.materialsToolStripMenuItem4,
             this.dummiesToolStripMenuItem2});
             this.exportToolStripMenuItem1.Name = "exportToolStripMenuItem1";
-            this.exportToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem1.Size = new System.Drawing.Size(110, 22);
             this.exportToolStripMenuItem1.Text = "Export";
             // 
             // materialsToolStripMenuItem4
             // 
             this.materialsToolStripMenuItem4.Name = "materialsToolStripMenuItem4";
-            this.materialsToolStripMenuItem4.Size = new System.Drawing.Size(180, 22);
+            this.materialsToolStripMenuItem4.Size = new System.Drawing.Size(125, 22);
             this.materialsToolStripMenuItem4.Text = "Materials";
             this.materialsToolStripMenuItem4.Click += new System.EventHandler(this.ExportMaterialPresetsFileButtonClick);
             // 
             // dummiesToolStripMenuItem2
             // 
             this.dummiesToolStripMenuItem2.Name = "dummiesToolStripMenuItem2";
-            this.dummiesToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.dummiesToolStripMenuItem2.Size = new System.Drawing.Size(125, 22);
             this.dummiesToolStripMenuItem2.Text = "Dummies";
             this.dummiesToolStripMenuItem2.Click += new System.EventHandler(this.ExportDummiesPresetFileButtonClick);
             // 
@@ -318,7 +318,7 @@
             this.materialsToolStripMenuItem3,
             this.dummiesToolStripMenuItem1});
             this.mergeToolStripMenuItem1.Name = "mergeToolStripMenuItem1";
-            this.mergeToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.mergeToolStripMenuItem1.Size = new System.Drawing.Size(110, 22);
             this.mergeToolStripMenuItem1.Text = "Merge";
             // 
             // materialsToolStripMenuItem3
@@ -409,6 +409,7 @@
             // 
             // autoSaveIntervalSelector
             // 
+            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -457,6 +458,7 @@
             // 
             // multiSelectMenuTextbox
             // 
+            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -1773,6 +1775,7 @@
             this.TransparencyKey = System.Drawing.Color.Maroon;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindowClosing);
             this.Load += new System.EventHandler(this.MainWindowLoad);
+            this.LocationChanged += new System.EventHandler(this.MainWindow_LocationChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainWindowKeyDown);
             this.ribbon.ResumeLayout(false);
             this.ribbon.PerformLayout();

@@ -38,12 +38,16 @@ namespace FLVER_Editor
     internal class Mono3D : Game
     {
         private static GCHandle handle;
+        public static Form f;
+        public static Form mainForm;
+        private static readonly int snapDist = 15;
+        private static int mainFormLeft;
+        private static int mainFormRight;
 
         private readonly float centerX = 0;
         private readonly float centerY = 0;
         private readonly float centerZ = 0;
         private readonly ContextMenuStrip cm = new ContextMenuStrip();
-        private readonly Form f;
         private readonly GraphicsDeviceManager graphics;
         private readonly Dictionary<string, Texture2D> textureMap = new Dictionary<string, Texture2D>();
         private Rectangle bgRenderArea;
@@ -98,6 +102,58 @@ namespace FLVER_Editor
             f.ContextMenuStrip = cm;
             f.MouseDown += pictureBox1_MouseDown;
             f.MouseUp += pictureBox1_MouseUp;
+            f.LocationChanged += (s, e) =>
+            {
+                SetSnapDistance();
+                if (ShouldSnapRight()) SnapRight();
+                else if (ShouldSnapBottom()) SnapBottom();
+                else Unsnap();
+            };
+        }
+
+        private static void SnapBottom()
+        {
+            f.Left = mainForm.Left;
+            f.Width = mainForm.Width;
+            f.Top = mainForm.Bottom;
+            MainWindow.isSnappedTop = false;
+            MainWindow.isSnappedRight = false;
+            MainWindow.isSnappedBottom = true;
+            MainWindow.isSnappedLeft = false;
+            MainWindow.isSnapped = true;
+        }
+
+        private static bool ShouldSnapRight()
+        {
+            return Math.Abs(mainFormRight - f.Left) < snapDist && Math.Abs(mainForm.Top - f.Top) < snapDist;
+        }
+
+        private static void SnapRight()
+        {
+            f.Height = mainForm.Height;
+            f.Left = mainFormRight;
+            f.Top = mainForm.Top;
+            MainWindow.isSnappedTop = false;
+            MainWindow.isSnappedRight = true;
+            MainWindow.isSnappedBottom = false;
+            MainWindow.isSnappedLeft = false;
+            MainWindow.isSnapped = true;
+        }
+
+        private static bool ShouldSnapBottom()
+        {
+            return Math.Abs(mainForm.Bottom - f.Top) < snapDist;
+        }
+
+        private static void Unsnap()
+        {
+            MainWindow.isSnapped = false;
+        }
+
+        private static void SetSnapDistance()
+        {
+            mainFormLeft = mainForm.Left - 10;
+            mainFormRight = mainForm.Right - 10;
         }
 
         private void deleteVertexBelow()
