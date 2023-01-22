@@ -2028,7 +2028,7 @@ namespace FLVER_Editor
             }
             else
             {
-                arguments.Add(((string[])e.Data.GetData(DataFormats.FileDrop))[0]);
+                arguments.Add(filePath);
                 OpenFLVERFile();
             }
         }
