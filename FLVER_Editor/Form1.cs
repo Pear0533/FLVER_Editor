@@ -1014,20 +1014,6 @@ namespace FLVER_Editor
             }
         }
 
-        public static float CalculateMeshScalar()
-        {
-            float scalar = flver.Meshes.Count > 0 ? 0 : 1;
-            foreach (FLVER.Mesh mesh in flver.Meshes)
-            {
-                FLVER.Vertex maxVertex = mesh.Vertices[0];
-                List<FLVER.Vertex> maxVertices = mesh.Vertices.Where(v =>
-                    v.Positions[0].X > maxVertex.Positions[0].X && v.Positions[0].Y > maxVertex.Positions[0].Y && v.Positions[0].Z > maxVertex.Positions[0].Z).ToList();
-                foreach (FLVER.Vertex v in maxVertices) maxVertex = v;
-                scalar += maxVertex.Positions[0].X / (flver.Meshes.Count + 100);
-            }
-            return scalar;
-        }
-
         private static float[] CalculateMeshTotals()
         {
             float vertexCount = 0, xSum = 0, ySum = 0, zSum = 0;
@@ -1572,9 +1558,21 @@ namespace FLVER_Editor
             ExportFLVERAsDAE();
         }
 
-        private void ImportFLVERFile()
+        private string PromptImportModel()
         {
-            if (!Program.ImportFBX()) return;
+            var dialog = new OpenFileDialog { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
+            return dialog.ShowDialog() != DialogResult.OK ? "" : dialog.FileName;
+        }
+
+        private void ImportFLVERFile(bool prompt, string filePath)
+        {
+            if (prompt)
+            {
+                var dialog = new OpenFileDialog { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+                if (!Program.ImportFBX(dialog.FileName)) return;
+            }
+            else if (!Program.ImportFBX(filePath)) return;
             flver = Program.flver;
             DeselectAllSelectedThings();
             UpdateUI();
@@ -1584,7 +1582,7 @@ namespace FLVER_Editor
 
         private void ImportToolStripMenuItemClicked(object sender, EventArgs e)
         {
-            ImportFLVERFile();
+            ImportFLVERFile(true, "");
         }
 
         private void MergeFLVERFile()
@@ -2007,7 +2005,7 @@ namespace FLVER_Editor
                     break;
                 case true when e.KeyCode == Keys.I:
                     e.SuppressKeyPress = true;
-                    ImportFLVERFile();
+                    ImportFLVERFile(true, "");
                     break;
                 case true when e.KeyCode == Keys.M:
                     e.SuppressKeyPress = true;
@@ -2023,8 +2021,16 @@ namespace FLVER_Editor
 
         private void TabWindowDragDrop(object sender, DragEventArgs e)
         {
-            arguments.Add(((string[])e.Data.GetData(DataFormats.FileDrop))[0]);
-            OpenFLVERFile();
+            string filePath = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
+            if (filePath.EndsWith(".dae") || filePath.EndsWith(".obj") || filePath.EndsWith(".fbx"))
+            {
+                ImportFLVERFile(false, filePath);
+            }
+            else
+            {
+                arguments.Add(((string[])e.Data.GetData(DataFormats.FileDrop))[0]);
+                OpenFLVERFile();
+            }
         }
 
         private static bool PromptDeletePreset(object sender, ref Dictionary<object, object> presets)
