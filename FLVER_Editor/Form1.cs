@@ -37,7 +37,7 @@ namespace FLVER_Editor
         private const int mtDeleteCbIndex = 10;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string jsonFileFilter = @"JSON File (*.json)|*.json";
-        private const string version = "1.76";
+        private const string version = "1.79";
         public static List<string> arguments;
         private static FLVER flver;
         private static BND4 flverBnd;
@@ -1291,18 +1291,15 @@ namespace FLVER_Editor
             if (isSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex)) return;
             try
             {
-                var textureTableValue = texturesTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
-                if (textureTableValue != null)
+                string textureTableValue = texturesTable[e.ColumnIndex, e.RowIndex].Value?.ToString() ?? "";
+                switch (e.ColumnIndex)
                 {
-                    switch (e.ColumnIndex)
-                    {
-                        case 0:
-                            flver.Materials[selectedMaterialIndex].Textures[e.RowIndex].Type = textureTableValue;
-                            break;
-                        case 1:
-                            flver.Materials[selectedMaterialIndex].Textures[e.RowIndex].Path = textureTableValue;
-                            break;
-                    }
+                    case 0:
+                        flver.Materials[selectedMaterialIndex].Textures[e.RowIndex].Type = textureTableValue;
+                        break;
+                    case 1:
+                        flver.Materials[selectedMaterialIndex].Textures[e.RowIndex].Path = textureTableValue;
+                        break;
                 }
             }
             catch { }
@@ -2075,12 +2072,16 @@ namespace FLVER_Editor
         private void MainWindow_LocationChanged(object sender, EventArgs e)
         {
             if (Mono3D.f == null || !isSnapped) return;
-            if (isSnappedRight)
+            try
             {
-                Mono3D.f.Invoke(new MethodInvoker(delegate { Mono3D.f.Left = Right; }));
-                Mono3D.f.Invoke(new MethodInvoker(delegate { Mono3D.f.Top = Top; }));
+                if (isSnappedRight)
+                {
+                    Mono3D.f.Invoke(new MethodInvoker(delegate { Mono3D.f.Left = Right; }));
+                    Mono3D.f.Invoke(new MethodInvoker(delegate { Mono3D.f.Top = Top; }));
+                }
+                else if (isSnappedBottom) Mono3D.f.Invoke(new MethodInvoker(delegate { Mono3D.f.Top = Bottom; }));
             }
-            else if (isSnappedBottom) Mono3D.f.Invoke(new MethodInvoker(delegate { Mono3D.f.Top = Bottom; }));
+            catch { }
         }
 
         private enum TextureFormats
