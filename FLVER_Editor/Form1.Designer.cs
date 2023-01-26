@@ -147,6 +147,9 @@
             this.copyrightStr = new System.Windows.Forms.Label();
             this.versionStr = new System.Windows.Forms.Label();
             this.autoSaveTimer = new System.Windows.Forms.Timer(this.components);
+            this.searchBox = new System.Windows.Forms.TextBox();
+            this.searchBoxLabel = new System.Windows.Forms.Label();
+            this.meshTabTableSelector = new System.Windows.Forms.ComboBox();
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -195,6 +198,7 @@
             this.ribbon.Size = new System.Drawing.Size(1115, 24);
             this.ribbon.TabIndex = 0;
             this.ribbon.Text = "menuStrip1";
+            this.ribbon.Click += new System.EventHandler(this.DefocusSearchBox);
             // 
             // fileToolStripMenuItem
             // 
@@ -409,7 +413,6 @@
             // 
             // autoSaveIntervalSelector
             // 
-            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -458,7 +461,6 @@
             // 
             // multiSelectMenuTextbox
             // 
-            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -1727,6 +1729,8 @@
             this.tabWindow.SelectedIndex = 0;
             this.tabWindow.Size = new System.Drawing.Size(1117, 517);
             this.tabWindow.TabIndex = 1;
+            this.tabWindow.SelectedIndexChanged += new System.EventHandler(this.TabWindow_SelectedIndexChanged);
+            this.tabWindow.Click += new System.EventHandler(this.DefocusSearchBox);
             this.tabWindow.DragDrop += new System.Windows.Forms.DragEventHandler(this.TabWindowDragDrop);
             this.tabWindow.DragEnter += new System.Windows.Forms.DragEventHandler(this.TabWindowDragEnter);
             // 
@@ -1757,13 +1761,45 @@
             this.autoSaveTimer.Interval = 60000;
             this.autoSaveTimer.Tick += new System.EventHandler(this.AutoSaveTimerTick);
             // 
+            // searchBox
+            // 
+            this.searchBox.Location = new System.Drawing.Point(167, 3);
+            this.searchBox.Name = "searchBox";
+            this.searchBox.Size = new System.Drawing.Size(221, 20);
+            this.searchBox.TabIndex = 1;
+            this.searchBox.TextChanged += new System.EventHandler(this.SearchBox_TextChanged);
+            // 
+            // searchBoxLabel
+            // 
+            this.searchBoxLabel.AutoSize = true;
+            this.searchBoxLabel.Location = new System.Drawing.Point(122, 6);
+            this.searchBoxLabel.Name = "searchBoxLabel";
+            this.searchBoxLabel.Size = new System.Drawing.Size(44, 13);
+            this.searchBoxLabel.TabIndex = 1;
+            this.searchBoxLabel.Text = "Search:";
+            this.searchBoxLabel.Click += new System.EventHandler(this.DefocusSearchBox);
+            // 
+            // meshTabTableSelector
+            // 
+            this.meshTabTableSelector.FormattingEnabled = true;
+            this.meshTabTableSelector.Items.AddRange(new object[] {
+            "Mesh",
+            "Dummies"});
+            this.meshTabTableSelector.Location = new System.Drawing.Point(393, 3);
+            this.meshTabTableSelector.Name = "meshTabTableSelector";
+            this.meshTabTableSelector.Size = new System.Drawing.Size(100, 21);
+            this.meshTabTableSelector.TabIndex = 3;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1115, 540);
+            this.Controls.Add(this.meshTabTableSelector);
             this.Controls.Add(this.copyrightStr);
             this.Controls.Add(this.versionStr);
+            this.Controls.Add(this.searchBox);
+            this.Controls.Add(this.searchBoxLabel);
             this.Controls.Add(this.tabWindow);
             this.Controls.Add(this.ribbon);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1775,6 +1811,7 @@
             this.TransparencyKey = System.Drawing.Color.Maroon;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindowClosing);
             this.Load += new System.EventHandler(this.MainWindowLoad);
+            this.Shown += new System.EventHandler(this.DefocusSearchBox);
             this.LocationChanged += new System.EventHandler(this.MainWindow_LocationChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainWindowKeyDown);
             this.ribbon.ResumeLayout(false);
@@ -1956,5 +1993,8 @@
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem materialsToolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem dummiesToolStripMenuItem2;
+        private System.Windows.Forms.TextBox searchBox;
+        private System.Windows.Forms.Label searchBoxLabel;
+        private System.Windows.Forms.ComboBox meshTabTableSelector;
     }
 }

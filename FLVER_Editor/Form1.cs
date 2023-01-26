@@ -37,7 +37,7 @@ namespace FLVER_Editor
         private const int mtDeleteCbIndex = 10;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string jsonFileFilter = @"JSON File (*.json)|*.json";
-        private const string version = "1.79";
+        private const string version = "1.81";
         public static List<string> arguments;
         private static FLVER flver;
         private static BND4 flverBnd;
@@ -90,6 +90,7 @@ namespace FLVER_Editor
             SetAutoSaveEnabled();
             EnableDarkTheme();
             tabWindow.SelectedTab = meshTabPage;
+            meshTabTableSelector.SelectedIndex = 0;
             Mono3D.mainForm = this;
             if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
         }
@@ -2088,6 +2089,41 @@ namespace FLVER_Editor
                 else if (isSnappedBottom) Mono3D.f.Invoke(new MethodInvoker(delegate { Mono3D.f.Top = Bottom; }));
             }
             catch { }
+        }
+
+        private void FilterDataTableBySearch(DataGridView table)
+        {
+            foreach (DataGridViewRow row in table.Rows)
+                row.Visible = row.Cells[1].Value.ToString().Contains(searchBox.Text);
+        }
+
+        private void SearchBox_TextChanged(object sender, EventArgs e)
+        {
+            switch (tabWindow.SelectedIndex)
+            {
+                case 0:
+                    FilterDataTableBySearch(bonesTable);
+                    break;
+                case 1:
+                    FilterDataTableBySearch(materialsTable);
+                    break;
+                case 2 when meshTabTableSelector.SelectedIndex == 0:
+                    FilterDataTableBySearch(meshTable);
+                    break;
+                case 2 when meshTabTableSelector.SelectedIndex == 1:
+                    FilterDataTableBySearch(dummiesTable);
+                    break;
+            }
+        }
+
+        private void DefocusSearchBox(object sender, EventArgs e)
+        {
+            ribbon.Focus();
+        }
+
+        private void TabWindow_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            meshTabTableSelector.Visible = tabWindow.SelectedIndex == 2;
         }
 
         private enum TextureFormats
