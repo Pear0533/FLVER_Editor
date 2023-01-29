@@ -1082,7 +1082,7 @@ namespace FLVER_Editor
             catch { }
         }
 
-        private void SelectAllThings(DataGridView table, int columnIndex)
+        private void ModifyAllThings(DataGridView table, int columnIndex)
         {
             bool allChecked = AreCheckboxesInDataTableAllChecked(table, columnIndex);
             foreach (DataGridViewRow row in table.Rows)
@@ -1090,7 +1090,10 @@ namespace FLVER_Editor
                 if ((bool)row.Cells[columnIndex].Value && !allChecked) continue;
                 switch (columnIndex)
                 {
-                    case 4:
+                    case 4 when table == meshTable:
+                        hiddenMeshIndices = UpdateIndicesList(meshTable, hiddenMeshIndices, columnIndex, row.Index, ref meshIsHidden);
+                        break;
+                    case 4 when table == dummiesTable:
                         selectedDummyIndices = UpdateIndicesList(dummiesTable, selectedDummyIndices, columnIndex, row.Index, ref dummyIsSelected);
                         break;
                     case 3:
@@ -1100,7 +1103,10 @@ namespace FLVER_Editor
             }
             switch (columnIndex)
             {
-                case 4:
+                case 4 when table == meshTable:
+                    UpdateMesh();
+                    break;
+                case 4 when table == dummiesTable:
                     UpdateSelectedDummies();
                     break;
                 case 3:
@@ -1114,12 +1120,12 @@ namespace FLVER_Editor
 
         private void SelectAllMeshesButtonClicked(object sender, MouseEventArgs e)
         {
-            SelectAllThings(meshTable, 3);
+            ModifyAllThings(meshTable, 3);
         }
 
         private void SelectAllDummiesButtonClicked(object sender, MouseEventArgs e)
         {
-            SelectAllThings(dummiesTable, 4);
+            ModifyAllThings(dummiesTable, 4);
         }
 
         private void DeleteSelectedButtonClicked(object sender, MouseEventArgs e)
@@ -2220,6 +2226,11 @@ namespace FLVER_Editor
 
                 public Vector2 Unk14 { get; set; }
             }
+        }
+
+        private void HideAllMeshesButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            ModifyAllThings(meshTable, 4);
         }
     }
 }

@@ -162,6 +162,11 @@
     <Content Include="dummyInfo.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="icons\select_all_mesh_icon.png" />
+    <None Include="icons\select_all_dummies_icon.png" />
+    <None Include="icons\solve_all_bbs_icon.png" />
+    <None Include="icons\solve_all_bbs_max_size_icon.png" />
+    <None Include="icons\hide_all_mesh_icon.png" />
     <Content Include="icon_lSi_icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

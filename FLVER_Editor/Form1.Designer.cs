@@ -46,6 +46,7 @@
             this.multiSelectMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.multiSelectMenuTextbox = new System.Windows.Forms.ToolStripTextBox();
             this.meshTabPage = new System.Windows.Forms.TabPage();
+            this.hideAllMeshesButton = new System.Windows.Forms.Button();
             this.setAllBBsMaxSizeButton = new System.Windows.Forms.Button();
             this.solveAllBBsButton = new System.Windows.Forms.Button();
             this.selectAllDummiesButton = new System.Windows.Forms.Button();
@@ -53,6 +54,11 @@
             this.meshPagePanelsContainer = new System.Windows.Forms.SplitContainer();
             this.meshPageTablesContainer = new System.Windows.Forms.SplitContainer();
             this.meshTable = new System.Windows.Forms.DataGridView();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Column21 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.label4 = new System.Windows.Forms.Label();
             this.addDummyButton = new System.Windows.Forms.Button();
             this.addAllDummiesToPresetsButton = new System.Windows.Forms.Button();
@@ -143,11 +149,11 @@
             this.copyrightStr = new System.Windows.Forms.Label();
             this.versionStr = new System.Windows.Forms.Label();
             this.autoSaveTimer = new System.Windows.Forms.Timer(this.components);
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Column21 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.selectAllMeshButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.selectAllDummiesButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.solveAllBBsButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.setAllBBsMaxSizeButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.hideAllMeshesButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -463,6 +469,7 @@
             // 
             // meshTabPage
             // 
+            this.meshTabPage.Controls.Add(this.hideAllMeshesButton);
             this.meshTabPage.Controls.Add(this.setAllBBsMaxSizeButton);
             this.meshTabPage.Controls.Add(this.solveAllBBsButton);
             this.meshTabPage.Controls.Add(this.selectAllDummiesButton);
@@ -475,43 +482,73 @@
             this.meshTabPage.Text = "Mesh";
             this.meshTabPage.UseVisualStyleBackColor = true;
             // 
+            // hideAllMeshesButton
+            // 
+            this.hideAllMeshesButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.hide_all_mesh_icon;
+            this.hideAllMeshesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.hideAllMeshesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.DeepSkyBlue;
+            this.hideAllMeshesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.hideAllMeshesButton.Location = new System.Drawing.Point(53, 3);
+            this.hideAllMeshesButton.Name = "hideAllMeshesButton";
+            this.hideAllMeshesButton.Size = new System.Drawing.Size(37, 37);
+            this.hideAllMeshesButton.TabIndex = 16;
+            this.hideAllMeshesButtonTooltip.SetToolTip(this.hideAllMeshesButton, "Hide All Mesh");
+            this.hideAllMeshesButton.UseVisualStyleBackColor = true;
+            this.hideAllMeshesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.HideAllMeshesButton_MouseClick);
+            // 
             // setAllBBsMaxSizeButton
             // 
-            this.setAllBBsMaxSizeButton.Location = new System.Drawing.Point(323, 5);
+            this.setAllBBsMaxSizeButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.solve_all_bbs_max_size_icon;
+            this.setAllBBsMaxSizeButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.setAllBBsMaxSizeButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.DeepSkyBlue;
+            this.setAllBBsMaxSizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.setAllBBsMaxSizeButton.Location = new System.Drawing.Point(182, 3);
             this.setAllBBsMaxSizeButton.Name = "setAllBBsMaxSizeButton";
-            this.setAllBBsMaxSizeButton.Size = new System.Drawing.Size(125, 21);
-            this.setAllBBsMaxSizeButton.TabIndex = 12;
-            this.setAllBBsMaxSizeButton.Text = "Set All BBs Max Size";
+            this.setAllBBsMaxSizeButton.Size = new System.Drawing.Size(37, 37);
+            this.setAllBBsMaxSizeButton.TabIndex = 15;
+            this.setAllBBsMaxSizeButtonTooltip.SetToolTip(this.setAllBBsMaxSizeButton, "Set All Bounding Boxes Max Size");
             this.setAllBBsMaxSizeButton.UseVisualStyleBackColor = true;
             this.setAllBBsMaxSizeButton.Click += new System.EventHandler(this.SetAllBBsMaxSizeButtonClicked);
             // 
             // solveAllBBsButton
             // 
-            this.solveAllBBsButton.Location = new System.Drawing.Point(227, 5);
+            this.solveAllBBsButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.solve_all_bbs_icon;
+            this.solveAllBBsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.solveAllBBsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.DeepSkyBlue;
+            this.solveAllBBsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.solveAllBBsButton.Location = new System.Drawing.Point(139, 3);
             this.solveAllBBsButton.Name = "solveAllBBsButton";
-            this.solveAllBBsButton.Size = new System.Drawing.Size(92, 21);
-            this.solveAllBBsButton.TabIndex = 10;
-            this.solveAllBBsButton.Text = "Solve All BBs";
+            this.solveAllBBsButton.Size = new System.Drawing.Size(37, 37);
+            this.solveAllBBsButton.TabIndex = 14;
+            this.solveAllBBsButtonTooltip.SetToolTip(this.solveAllBBsButton, "Solve All Bounding Boxes");
             this.solveAllBBsButton.UseVisualStyleBackColor = true;
             this.solveAllBBsButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SolveAllBBsButtonClicked);
             // 
             // selectAllDummiesButton
             // 
-            this.selectAllDummiesButton.Location = new System.Drawing.Point(108, 5);
+            this.selectAllDummiesButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.select_all_dummies_icon;
+            this.selectAllDummiesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.selectAllDummiesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.DeepSkyBlue;
+            this.selectAllDummiesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.selectAllDummiesButton.Location = new System.Drawing.Point(96, 3);
             this.selectAllDummiesButton.Name = "selectAllDummiesButton";
-            this.selectAllDummiesButton.Size = new System.Drawing.Size(115, 21);
-            this.selectAllDummiesButton.TabIndex = 11;
-            this.selectAllDummiesButton.Text = "Select All Dummies";
+            this.selectAllDummiesButton.Size = new System.Drawing.Size(37, 37);
+            this.selectAllDummiesButton.TabIndex = 13;
+            this.selectAllDummiesButtonTooltip.SetToolTip(this.selectAllDummiesButton, "Select All Dummies");
             this.selectAllDummiesButton.UseVisualStyleBackColor = true;
             this.selectAllDummiesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllDummiesButtonClicked);
             // 
             // selectAllMeshesButton
             // 
-            this.selectAllMeshesButton.Location = new System.Drawing.Point(8, 5);
+            this.selectAllMeshesButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.select_all_mesh_icon;
+            this.selectAllMeshesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.selectAllMeshesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.DeepSkyBlue;
+            this.selectAllMeshesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.selectAllMeshesButton.Location = new System.Drawing.Point(10, 3);
             this.selectAllMeshesButton.Name = "selectAllMeshesButton";
-            this.selectAllMeshesButton.Size = new System.Drawing.Size(96, 21);
+            this.selectAllMeshesButton.Size = new System.Drawing.Size(37, 37);
             this.selectAllMeshesButton.TabIndex = 9;
-            this.selectAllMeshesButton.Text = "Select All Mesh";
+            this.selectAllMeshButtonTooltip.SetToolTip(this.selectAllMeshesButton, "Select All Mesh");
             this.selectAllMeshesButton.UseVisualStyleBackColor = true;
             this.selectAllMeshesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllMeshesButtonClicked);
             // 
@@ -539,7 +576,7 @@
             this.meshPageTablesContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.meshPageTablesContainer.Location = new System.Drawing.Point(3, 3);
+            this.meshPageTablesContainer.Location = new System.Drawing.Point(3, 17);
             this.meshPageTablesContainer.Name = "meshPageTablesContainer";
             this.meshPageTablesContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -556,8 +593,8 @@
             this.meshPageTablesContainer.Panel2.Controls.Add(this.dummiesTableOKButton);
             this.meshPageTablesContainer.Panel2.Controls.Add(this.label5);
             this.meshPageTablesContainer.Panel2.Controls.Add(this.dummyPresetsSelector);
-            this.meshPageTablesContainer.Size = new System.Drawing.Size(539, 451);
-            this.meshPageTablesContainer.SplitterDistance = 212;
+            this.meshPageTablesContainer.Size = new System.Drawing.Size(539, 444);
+            this.meshPageTablesContainer.SplitterDistance = 208;
             this.meshPageTablesContainer.TabIndex = 12;
             // 
             // meshTable
@@ -583,10 +620,49 @@
             this.meshTable.RowHeadersWidth = 62;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.meshTable.Size = new System.Drawing.Size(533, 191);
+            this.meshTable.Size = new System.Drawing.Size(533, 187);
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTableSelectCheckboxClicked);
             this.meshTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTableCellValueChanged);
+            // 
+            // Column1
+            // 
+            this.Column1.Frozen = true;
+            this.Column1.HeaderText = "Index";
+            this.Column1.MinimumWidth = 8;
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Width = 58;
+            // 
+            // Column2
+            // 
+            this.Column2.Frozen = true;
+            this.Column2.HeaderText = "Mesh Name";
+            this.Column2.MinimumWidth = 8;
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Width = 89;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "BW Index";
+            this.Column3.MinimumWidth = 8;
+            this.Column3.Name = "Column3";
+            this.Column3.Width = 79;
+            // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "Select";
+            this.Column4.MinimumWidth = 8;
+            this.Column4.Name = "Column4";
+            this.Column4.Width = 43;
+            // 
+            // Column21
+            // 
+            this.Column21.HeaderText = "Hide";
+            this.Column21.Name = "Column21";
+            this.Column21.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column21.Width = 35;
             // 
             // label4
             // 
@@ -649,7 +725,7 @@
             this.dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            this.dummiesTable.Size = new System.Drawing.Size(533, 211);
+            this.dummiesTable.Size = new System.Drawing.Size(533, 195);
             this.dummiesTable.TabIndex = 12;
             this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTableSelectCheckboxClicked);
             this.dummiesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTableCellValueChanged);
@@ -1725,45 +1801,6 @@
             this.autoSaveTimer.Interval = 60000;
             this.autoSaveTimer.Tick += new System.EventHandler(this.AutoSaveTimerTick);
             // 
-            // Column1
-            // 
-            this.Column1.Frozen = true;
-            this.Column1.HeaderText = "Index";
-            this.Column1.MinimumWidth = 8;
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.Width = 58;
-            // 
-            // Column2
-            // 
-            this.Column2.Frozen = true;
-            this.Column2.HeaderText = "Mesh Name";
-            this.Column2.MinimumWidth = 8;
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 89;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "BW Index";
-            this.Column3.MinimumWidth = 8;
-            this.Column3.Name = "Column3";
-            this.Column3.Width = 79;
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = "Select";
-            this.Column4.MinimumWidth = 8;
-            this.Column4.Name = "Column4";
-            this.Column4.Width = 43;
-            // 
-            // Column21
-            // 
-            this.Column21.HeaderText = "Hide";
-            this.Column21.Name = "Column21";
-            this.Column21.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column21.Width = 35;
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1880,7 +1917,6 @@
         private System.Windows.Forms.DataGridView dummiesTable;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button selectAllDummiesButton;
         private System.Windows.Forms.ComboBox dummyPresetsSelector;
         private System.Windows.Forms.Button dummiesTableOKButton;
         private System.Windows.Forms.Button addAllDummiesToPresetsButton;
@@ -1915,7 +1951,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column11;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column12;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column13;
-        private System.Windows.Forms.Button solveAllBBsButton;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column15;
@@ -1931,7 +1966,6 @@
         private System.Windows.Forms.ToolStripMenuItem dummiesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem materialsToolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem dummiesToolStripMenuItem1;
-        private System.Windows.Forms.Button setAllBBsMaxSizeButton;
         private System.Windows.Forms.Button applyMatBinTexturesButton;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
@@ -1964,5 +1998,14 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column4;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column21;
+        private System.Windows.Forms.Button selectAllDummiesButton;
+        private System.Windows.Forms.Button solveAllBBsButton;
+        private System.Windows.Forms.Button setAllBBsMaxSizeButton;
+        private System.Windows.Forms.ToolTip selectAllMeshButtonTooltip;
+        private System.Windows.Forms.ToolTip selectAllDummiesButtonTooltip;
+        private System.Windows.Forms.ToolTip solveAllBBsButtonTooltip;
+        private System.Windows.Forms.ToolTip setAllBBsMaxSizeButtonTooltip;
+        private System.Windows.Forms.Button hideAllMeshesButton;
+        private System.Windows.Forms.ToolTip hideAllMeshesButtonTooltip;
     }
 }
