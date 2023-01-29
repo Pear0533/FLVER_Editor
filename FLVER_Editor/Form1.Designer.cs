@@ -53,10 +53,6 @@
             this.meshPagePanelsContainer = new System.Windows.Forms.SplitContainer();
             this.meshPageTablesContainer = new System.Windows.Forms.SplitContainer();
             this.meshTable = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.label4 = new System.Windows.Forms.Label();
             this.addDummyButton = new System.Windows.Forms.Button();
             this.addAllDummiesToPresetsButton = new System.Windows.Forms.Button();
@@ -147,9 +143,11 @@
             this.copyrightStr = new System.Windows.Forms.Label();
             this.versionStr = new System.Windows.Forms.Label();
             this.autoSaveTimer = new System.Windows.Forms.Timer(this.components);
-            this.searchBox = new System.Windows.Forms.TextBox();
-            this.searchBoxLabel = new System.Windows.Forms.Label();
-            this.meshTabTableSelector = new System.Windows.Forms.ComboBox();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Column21 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -198,7 +196,6 @@
             this.ribbon.Size = new System.Drawing.Size(1115, 24);
             this.ribbon.TabIndex = 0;
             this.ribbon.Text = "menuStrip1";
-            this.ribbon.Click += new System.EventHandler(this.DefocusSearchBox);
             // 
             // fileToolStripMenuItem
             // 
@@ -578,7 +575,8 @@
             this.Column1,
             this.Column2,
             this.Column3,
-            this.Column4});
+            this.Column4,
+            this.Column21});
             this.meshTable.Location = new System.Drawing.Point(3, 18);
             this.meshTable.Name = "meshTable";
             this.meshTable.RowHeadersVisible = false;
@@ -589,38 +587,6 @@
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTableSelectCheckboxClicked);
             this.meshTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTableCellValueChanged);
-            // 
-            // Column1
-            // 
-            this.Column1.Frozen = true;
-            this.Column1.HeaderText = "Index";
-            this.Column1.MinimumWidth = 8;
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.Width = 58;
-            // 
-            // Column2
-            // 
-            this.Column2.Frozen = true;
-            this.Column2.HeaderText = "Mesh Name";
-            this.Column2.MinimumWidth = 8;
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 89;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "BW Index";
-            this.Column3.MinimumWidth = 8;
-            this.Column3.Name = "Column3";
-            this.Column3.Width = 79;
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = "Select";
-            this.Column4.MinimumWidth = 8;
-            this.Column4.Name = "Column4";
-            this.Column4.Width = 43;
             // 
             // label4
             // 
@@ -1729,8 +1695,6 @@
             this.tabWindow.SelectedIndex = 0;
             this.tabWindow.Size = new System.Drawing.Size(1117, 517);
             this.tabWindow.TabIndex = 1;
-            this.tabWindow.SelectedIndexChanged += new System.EventHandler(this.TabWindow_SelectedIndexChanged);
-            this.tabWindow.Click += new System.EventHandler(this.DefocusSearchBox);
             this.tabWindow.DragDrop += new System.Windows.Forms.DragEventHandler(this.TabWindowDragDrop);
             this.tabWindow.DragEnter += new System.Windows.Forms.DragEventHandler(this.TabWindowDragEnter);
             // 
@@ -1761,45 +1725,52 @@
             this.autoSaveTimer.Interval = 60000;
             this.autoSaveTimer.Tick += new System.EventHandler(this.AutoSaveTimerTick);
             // 
-            // searchBox
+            // Column1
             // 
-            this.searchBox.Location = new System.Drawing.Point(167, 3);
-            this.searchBox.Name = "searchBox";
-            this.searchBox.Size = new System.Drawing.Size(221, 20);
-            this.searchBox.TabIndex = 1;
-            this.searchBox.TextChanged += new System.EventHandler(this.SearchBox_TextChanged);
+            this.Column1.Frozen = true;
+            this.Column1.HeaderText = "Index";
+            this.Column1.MinimumWidth = 8;
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Width = 58;
             // 
-            // searchBoxLabel
+            // Column2
             // 
-            this.searchBoxLabel.AutoSize = true;
-            this.searchBoxLabel.Location = new System.Drawing.Point(122, 6);
-            this.searchBoxLabel.Name = "searchBoxLabel";
-            this.searchBoxLabel.Size = new System.Drawing.Size(44, 13);
-            this.searchBoxLabel.TabIndex = 1;
-            this.searchBoxLabel.Text = "Search:";
-            this.searchBoxLabel.Click += new System.EventHandler(this.DefocusSearchBox);
+            this.Column2.Frozen = true;
+            this.Column2.HeaderText = "Mesh Name";
+            this.Column2.MinimumWidth = 8;
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Width = 89;
             // 
-            // meshTabTableSelector
+            // Column3
             // 
-            this.meshTabTableSelector.FormattingEnabled = true;
-            this.meshTabTableSelector.Items.AddRange(new object[] {
-            "Mesh",
-            "Dummies"});
-            this.meshTabTableSelector.Location = new System.Drawing.Point(393, 3);
-            this.meshTabTableSelector.Name = "meshTabTableSelector";
-            this.meshTabTableSelector.Size = new System.Drawing.Size(100, 21);
-            this.meshTabTableSelector.TabIndex = 3;
+            this.Column3.HeaderText = "BW Index";
+            this.Column3.MinimumWidth = 8;
+            this.Column3.Name = "Column3";
+            this.Column3.Width = 79;
+            // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "Select";
+            this.Column4.MinimumWidth = 8;
+            this.Column4.Name = "Column4";
+            this.Column4.Width = 43;
+            // 
+            // Column21
+            // 
+            this.Column21.HeaderText = "Hide";
+            this.Column21.Name = "Column21";
+            this.Column21.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column21.Width = 35;
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1115, 540);
-            this.Controls.Add(this.meshTabTableSelector);
             this.Controls.Add(this.copyrightStr);
             this.Controls.Add(this.versionStr);
-            this.Controls.Add(this.searchBox);
-            this.Controls.Add(this.searchBoxLabel);
             this.Controls.Add(this.tabWindow);
             this.Controls.Add(this.ribbon);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1811,7 +1782,6 @@
             this.TransparencyKey = System.Drawing.Color.Maroon;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindowClosing);
             this.Load += new System.EventHandler(this.MainWindowLoad);
-            this.Shown += new System.EventHandler(this.DefocusSearchBox);
             this.LocationChanged += new System.EventHandler(this.MainWindow_LocationChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainWindowKeyDown);
             this.ribbon.ResumeLayout(false);
@@ -1919,10 +1889,6 @@
         private System.Windows.Forms.Button addDummyButton;
         private System.Windows.Forms.CheckBox uniformScaleCheckbox;
         private System.Windows.Forms.Button centerToWorldButton;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Column4;
         private System.Windows.Forms.CheckBox deleteFacesetsCheckbox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ToolStripMenuItem loadJSONToolStripMenuItem;
@@ -1993,8 +1959,10 @@
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem materialsToolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem dummiesToolStripMenuItem2;
-        private System.Windows.Forms.TextBox searchBox;
-        private System.Windows.Forms.Label searchBoxLabel;
-        private System.Windows.Forms.ComboBox meshTabTableSelector;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Column4;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Column21;
     }
 }

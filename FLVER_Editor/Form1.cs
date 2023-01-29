@@ -50,8 +50,9 @@ namespace FLVER_Editor
         private static Mono3D viewer;
         private static Color tabWindowBackColor = DefaultBackColor;
         private static Color tabWindowForeColor = DefaultForeColor;
-        private static readonly List<int> selectedMeshIndices = new List<int>();
-        private static readonly List<int> selectedDummyIndices = new List<int>();
+        private static List<int> selectedMeshIndices = new List<int>();
+        private static List<int> selectedDummyIndices = new List<int>();
+        private static List<int> hiddenMeshIndices = new List<int>();
         private static readonly List<int> selectedMaterialMeshIndices = new List<int>();
         private static readonly List<Vector3D> bonePositionList = new List<Vector3D>();
         private static Dictionary<object, object> materialPresets;
@@ -69,6 +70,7 @@ namespace FLVER_Editor
         private static readonly string autoSaveEnabledConfigPath = $"{rootFolderPath}/autosaveenabledconfig.txt";
         private static bool meshIsSelected;
         private static bool dummyIsSelected;
+        private static bool meshIsHidden;
         private static bool isSettingDefaultInfo = true;
         public static bool textureRefreshEnabled = true;
         private static int selectedMaterialIndex = -1;
@@ -90,7 +92,6 @@ namespace FLVER_Editor
             SetAutoSaveEnabled();
             EnableDarkTheme();
             tabWindow.SelectedTab = meshTabPage;
-            meshTabTableSelector.SelectedIndex = 0;
             Mono3D.mainForm = this;
             if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
         }
@@ -247,10 +248,9 @@ namespace FLVER_Editor
             {
                 if (flver.Meshes[i] == null) continue;
                 bool renderBackFaces = flver.Meshes[i].FaceSets.Count > 0 && !flver.Meshes[i].FaceSets[0].CullBackfaces;
-                foreach (FLVER.Vertex[] vertexArr in flver
-                             .Meshes[i]
-                             .GetFaces())
+                foreach (FLVER.Vertex[] vertexArr in flver.Meshes[i].GetFaces())
                 {
+                    if (hiddenMeshIndices.IndexOf(i) != -1) continue;
                     Microsoft.Xna.Framework.Color colorLine = Microsoft.Xna.Framework.Color.Black;
                     if (meshIsSelected && selectedMeshIndices.IndexOf(i) != -1)
                     {
@@ -538,7 +538,8 @@ namespace FLVER_Editor
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i },
                     new DataGridViewTextBoxCell { Value = flver.Materials[mesh.MaterialIndex].Name },
                     new DataGridViewTextBoxCell { Value = flver.Meshes[i].Vertices[0].BoneIndices?[0] });
-                row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
+                for (var j = 0; j < 2; ++j)
+                    row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
                 meshTable.Rows.Add(row);
             }
             for (var i = 0; i < flver.Dummies.Count; ++i)
@@ -802,36 +803,21 @@ namespace FLVER_Editor
                     mirrorYCheckbox.Enabled = mirrorZCheckbox.Enabled = selectedMeshIndices.Count != 0;
         }
 
-        private void UpdateSelectedMeshIndices(int columnIndex, int rowIndex)
+        private static List<int> UpdateIndicesList(DataGridView dataTable, List<int> indices, int columnIndex, int rowIndex, ref bool selectedFlag)
         {
-            if (columnIndex != 3 || rowIndex < 0) return;
-            if ((bool)meshTable[columnIndex, rowIndex].Value)
+            if (rowIndex < 0) return indices;
+            if ((bool)dataTable[columnIndex, rowIndex].Value)
             {
-                if (selectedMeshIndices.IndexOf(rowIndex) == -1) selectedMeshIndices.Add(rowIndex);
-                else selectedMeshIndices.RemoveAt(selectedMeshIndices.IndexOf(rowIndex));
+                if (indices.IndexOf(rowIndex) == -1) indices.Add(rowIndex);
+                else indices.RemoveAt(indices.IndexOf(rowIndex));
             }
             else
             {
-                if (selectedMeshIndices.Count < 1) meshIsSelected = true;
-                if (selectedMeshIndices.IndexOf(rowIndex) == -1) selectedMeshIndices.Add(rowIndex);
-                else selectedMeshIndices.RemoveAt(selectedMeshIndices.IndexOf(rowIndex));
+                if (indices.Count < 1) selectedFlag = true;
+                if (indices.IndexOf(rowIndex) == -1) indices.Add(rowIndex);
+                else indices.RemoveAt(indices.IndexOf(rowIndex));
             }
-        }
-
-        private void UpdateSelectedDummyIndices(int columnIndex, int rowIndex)
-        {
-            if (columnIndex != 4 || rowIndex < 0) return;
-            if ((bool)dummiesTable[columnIndex, rowIndex].Value)
-            {
-                if (selectedDummyIndices.IndexOf(rowIndex) == -1) selectedDummyIndices.Add(rowIndex);
-                else selectedDummyIndices.RemoveAt(selectedDummyIndices.IndexOf(rowIndex));
-            }
-            else
-            {
-                if (selectedDummyIndices.Count < 1) dummyIsSelected = true;
-                if (selectedDummyIndices.IndexOf(rowIndex) == -1) selectedDummyIndices.Add(rowIndex);
-                else selectedDummyIndices.RemoveAt(selectedDummyIndices.IndexOf(rowIndex));
-            }
+            return indices;
         }
 
         private void UpdateSelectedDummies()
@@ -876,8 +862,17 @@ namespace FLVER_Editor
 
         private void MeshTableSelectCheckboxClicked(object sender, DataGridViewCellEventArgs e)
         {
-            UpdateSelectedMeshIndices(e.ColumnIndex, e.RowIndex);
-            UpdateSelectedMeshes();
+            switch (e.ColumnIndex)
+            {
+                case 3:
+                    selectedMeshIndices = UpdateIndicesList(meshTable, selectedMeshIndices, e.ColumnIndex, e.RowIndex, ref meshIsSelected);
+                    UpdateSelectedMeshes();
+                    break;
+                case 4:
+                    hiddenMeshIndices = UpdateIndicesList(meshTable, hiddenMeshIndices, e.ColumnIndex, e.RowIndex, ref meshIsHidden);
+                    UpdateMesh();
+                    break;
+            }
         }
 
         private void DummiesTableSelectCheckboxClicked(object sender, DataGridViewCellEventArgs e)
@@ -886,7 +881,7 @@ namespace FLVER_Editor
             switch (e.ColumnIndex)
             {
                 case 4:
-                    UpdateSelectedDummyIndices(e.ColumnIndex, e.RowIndex);
+                    selectedDummyIndices = UpdateIndicesList(dummiesTable, selectedDummyIndices, e.ColumnIndex, e.RowIndex, ref dummyIsSelected);
                     UpdateSelectedDummies();
                     break;
                 case 5:
@@ -1096,10 +1091,10 @@ namespace FLVER_Editor
                 switch (columnIndex)
                 {
                     case 4:
-                        UpdateSelectedDummyIndices(columnIndex, row.Index);
+                        selectedDummyIndices = UpdateIndicesList(dummiesTable, selectedDummyIndices, columnIndex, row.Index, ref dummyIsSelected);
                         break;
                     case 3:
-                        UpdateSelectedMeshIndices(columnIndex, row.Index);
+                        selectedMeshIndices = UpdateIndicesList(meshTable, selectedMeshIndices, columnIndex, row.Index, ref meshIsSelected);
                         break;
                 }
             }
@@ -2089,41 +2084,6 @@ namespace FLVER_Editor
                 else if (isSnappedBottom) Mono3D.f.Invoke(new MethodInvoker(delegate { Mono3D.f.Top = Bottom; }));
             }
             catch { }
-        }
-
-        private void FilterDataTableBySearch(DataGridView table)
-        {
-            foreach (DataGridViewRow row in table.Rows)
-                row.Visible = row.Cells[1].Value.ToString().Contains(searchBox.Text);
-        }
-
-        private void SearchBox_TextChanged(object sender, EventArgs e)
-        {
-            switch (tabWindow.SelectedIndex)
-            {
-                case 0:
-                    FilterDataTableBySearch(bonesTable);
-                    break;
-                case 1:
-                    FilterDataTableBySearch(materialsTable);
-                    break;
-                case 2 when meshTabTableSelector.SelectedIndex == 0:
-                    FilterDataTableBySearch(meshTable);
-                    break;
-                case 2 when meshTabTableSelector.SelectedIndex == 1:
-                    FilterDataTableBySearch(dummiesTable);
-                    break;
-            }
-        }
-
-        private void DefocusSearchBox(object sender, EventArgs e)
-        {
-            ribbon.Focus();
-        }
-
-        private void TabWindow_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            meshTabTableSelector.Visible = tabWindow.SelectedIndex == 2;
         }
 
         private enum TextureFormats
