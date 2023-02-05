@@ -37,7 +37,7 @@ namespace FLVER_Editor
         private const int mtDeleteCbIndex = 10;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string jsonFileFilter = @"JSON File (*.json)|*.json";
-        private const string version = "1.81";
+        private const string version = "1.82";
         public static List<string> arguments;
         private static FLVER flver;
         private static BND4 flverBnd;
@@ -215,7 +215,7 @@ namespace FLVER_Editor
                 }
                 if (ShowQuestionDialog("A new version of FLVER Editor is available, would you like to update?") != DialogResult.Yes) return;
                 var zipPath = $"{rootFolderPath}/MySFformat.zip";
-                client.DownloadFile("https://flvereditor2.000webhostapp.com/update/MySFformat.zip", zipPath);
+                client.DownloadFile("https://flvereditor3.000webhostapp.com/update/MySFformat.zip", zipPath);
                 ZipFile.ExtractToDirectory(zipPath, $"{rootFolderPath}/update/");
                 if (File.Exists($"{rootFolderPath}/MySFformat.zip")) File.Delete($"{rootFolderPath}/MySFformat.zip");
                 File.Move($"{rootFolderPath}/MySFformat.exe", $"{rootFolderPath}/MySFformat.bak");
@@ -425,8 +425,10 @@ namespace FLVER_Editor
             ResetModifierNumBoxValues();
             meshIsSelected = false;
             dummyIsSelected = false;
+            meshIsHidden = false;
             selectedMeshIndices.Clear();
             selectedDummyIndices.Clear();
+            hiddenMeshIndices.Clear();
             meshModifiersContainer.Enabled = false;
             isSettingDefaultInfo = false;
         }
