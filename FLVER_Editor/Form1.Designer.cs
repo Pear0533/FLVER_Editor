@@ -1797,7 +1797,7 @@
             this.copyrightStr.Name = "copyrightStr";
             this.copyrightStr.Size = new System.Drawing.Size(160, 13);
             this.copyrightStr.TabIndex = 1;
-            this.copyrightStr.Text = "© Pear, 2022 All rights reserved.";
+            this.copyrightStr.Text = "© Pear, 2023 All rights reserved.";
             // 
             // versionStr
             // 
