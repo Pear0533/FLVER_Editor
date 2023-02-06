@@ -64,6 +64,7 @@
             this.Column4 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Column21 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.label4 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.addDummyButton = new System.Windows.Forms.Button();
             this.addAllDummiesToPresetsButton = new System.Windows.Forms.Button();
             this.dummiesTable = new System.Windows.Forms.DataGridView();
@@ -119,6 +120,7 @@
             this.materialsTableOKButton = new System.Windows.Forms.Button();
             this.label14 = new System.Windows.Forms.Label();
             this.materialsPagePanelsContainer = new System.Windows.Forms.SplitContainer();
+            this.label9 = new System.Windows.Forms.Label();
             this.materialsTable = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -133,6 +135,7 @@
             this.Column8 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.applyPresetToAllMaterialsButton = new System.Windows.Forms.Button();
             this.materialPresetsSelector = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.applyMatBinTexturesButton = new System.Windows.Forms.Button();
             this.texturesTable = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -158,6 +161,7 @@
             this.solveAllBBsButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.setAllBBsMaxSizeButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.hideAllMeshesButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.uniformScaleTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -472,14 +476,14 @@
             // patreonToolStripMenuItem
             // 
             this.patreonToolStripMenuItem.Name = "patreonToolStripMenuItem";
-            this.patreonToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.patreonToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.patreonToolStripMenuItem.Text = "Patreon";
             this.patreonToolStripMenuItem.Click += new System.EventHandler(this.PatreonToolStripMenuItem_Click);
             // 
             // payPalToolStripMenuItem
             // 
             this.payPalToolStripMenuItem.Name = "payPalToolStripMenuItem";
-            this.payPalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.payPalToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.payPalToolStripMenuItem.Text = "PayPal";
             this.payPalToolStripMenuItem.Click += new System.EventHandler(this.PayPalToolStripMenuItem_Click);
             // 
@@ -502,7 +506,7 @@
             this.meshTabPage.Controls.Add(this.meshPagePanelsContainer);
             this.meshTabPage.Location = new System.Drawing.Point(4, 22);
             this.meshTabPage.Name = "meshTabPage";
-            this.meshTabPage.Size = new System.Drawing.Size(1088, 462);
+            this.meshTabPage.Size = new System.Drawing.Size(1087, 462);
             this.meshTabPage.TabIndex = 2;
             this.meshTabPage.Text = "Mesh";
             this.meshTabPage.UseVisualStyleBackColor = true;
@@ -628,6 +632,7 @@
             // 
             // meshPageTablesContainer.Panel2
             // 
+            this.meshPageTablesContainer.Panel2.Controls.Add(this.label13);
             this.meshPageTablesContainer.Panel2.Controls.Add(this.addDummyButton);
             this.meshPageTablesContainer.Panel2.Controls.Add(this.addAllDummiesToPresetsButton);
             this.meshPageTablesContainer.Panel2.Controls.Add(this.dummiesTable);
@@ -714,11 +719,22 @@
             this.label4.TabIndex = 13;
             this.label4.Text = "Mesh:";
             // 
+            // label13
+            // 
+            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(191, 5);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(45, 13);
+            this.label13.TabIndex = 19;
+            this.label13.Text = "Presets:";
+            // 
             // addDummyButton
             // 
             this.addDummyButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.addDummyButton.Location = new System.Drawing.Point(138, 0);
+            this.addDummyButton.Location = new System.Drawing.Point(94, 0);
             this.addDummyButton.MaximumSize = new System.Drawing.Size(95, 21);
             this.addDummyButton.MinimumSize = new System.Drawing.Size(95, 21);
             this.addDummyButton.Name = "addDummyButton";
@@ -1059,6 +1075,7 @@
             this.uniformScaleCheckbox.TabIndex = 42;
             this.uniformScaleCheckbox.Text = "U";
             this.uniformScaleCheckbox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.uniformScaleTooltip.SetToolTip(this.uniformScaleCheckbox, "Uniform Scale");
             this.uniformScaleCheckbox.UseVisualStyleBackColor = true;
             // 
             // reverseFacesetsCheckbox
@@ -1436,16 +1453,16 @@
             this.materialsTabPage.Location = new System.Drawing.Point(4, 22);
             this.materialsTabPage.Name = "materialsTabPage";
             this.materialsTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.materialsTabPage.Size = new System.Drawing.Size(1088, 462);
+            this.materialsTabPage.Size = new System.Drawing.Size(1087, 462);
             this.materialsTabPage.TabIndex = 1;
             this.materialsTabPage.Text = "Materials";
             this.materialsTabPage.UseVisualStyleBackColor = true;
             // 
             // deleteAllMaterialsButton
             // 
-            this.deleteAllMaterialsButton.Location = new System.Drawing.Point(283, 22);
+            this.deleteAllMaterialsButton.Location = new System.Drawing.Point(283, 21);
             this.deleteAllMaterialsButton.Name = "deleteAllMaterialsButton";
-            this.deleteAllMaterialsButton.Size = new System.Drawing.Size(84, 21);
+            this.deleteAllMaterialsButton.Size = new System.Drawing.Size(84, 23);
             this.deleteAllMaterialsButton.TabIndex = 8;
             this.deleteAllMaterialsButton.Text = "Delete All";
             this.deleteAllMaterialsButton.UseVisualStyleBackColor = true;
@@ -1453,9 +1470,9 @@
             // 
             // materialsTableOKButton
             // 
-            this.materialsTableOKButton.Location = new System.Drawing.Point(370, 22);
+            this.materialsTableOKButton.Location = new System.Drawing.Point(370, 21);
             this.materialsTableOKButton.Name = "materialsTableOKButton";
-            this.materialsTableOKButton.Size = new System.Drawing.Size(45, 21);
+            this.materialsTableOKButton.Size = new System.Drawing.Size(45, 23);
             this.materialsTableOKButton.TabIndex = 7;
             this.materialsTableOKButton.Text = "OK";
             this.materialsTableOKButton.UseVisualStyleBackColor = true;
@@ -1480,18 +1497,29 @@
             // 
             // materialsPagePanelsContainer.Panel1
             // 
+            this.materialsPagePanelsContainer.Panel1.Controls.Add(this.label9);
             this.materialsPagePanelsContainer.Panel1.Controls.Add(this.materialsTable);
             this.materialsPagePanelsContainer.Panel1.Controls.Add(this.applyPresetToAllMaterialsButton);
             this.materialsPagePanelsContainer.Panel1.Controls.Add(this.materialPresetsSelector);
             // 
             // materialsPagePanelsContainer.Panel2
             // 
+            this.materialsPagePanelsContainer.Panel2.Controls.Add(this.label10);
             this.materialsPagePanelsContainer.Panel2.Controls.Add(this.applyMatBinTexturesButton);
             this.materialsPagePanelsContainer.Panel2.Controls.Add(this.texturesTable);
             this.materialsPagePanelsContainer.Size = new System.Drawing.Size(1103, 485);
             this.materialsPagePanelsContainer.SplitterDistance = 549;
             this.materialsPagePanelsContainer.TabIndex = 6;
             this.materialsPagePanelsContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.MaterialsPagePanelsContainerSplitterMoved);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(2, 43);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(52, 13);
+            this.label9.TabIndex = 7;
+            this.label9.Text = "Materials:";
             // 
             // materialsTable
             // 
@@ -1516,13 +1544,13 @@
             this.Column19,
             this.Column7,
             this.Column8});
-            this.materialsTable.Location = new System.Drawing.Point(4, 44);
+            this.materialsTable.Location = new System.Drawing.Point(4, 59);
             this.materialsTable.Name = "materialsTable";
             this.materialsTable.RowHeadersVisible = false;
             this.materialsTable.RowHeadersWidth = 62;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
-            this.materialsTable.Size = new System.Drawing.Size(542, 438);
+            this.materialsTable.Size = new System.Drawing.Size(542, 397);
             this.materialsTable.TabIndex = 6;
             this.materialsTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableButtonClicked);
             this.materialsTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableCellValueChanged);
@@ -1572,6 +1600,7 @@
             this.Column6.Name = "Column6";
             this.Column6.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Column6.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.Column6.Text = "";
             this.Column6.Width = 50;
             // 
             // Column20
@@ -1611,9 +1640,9 @@
             // 
             // applyPresetToAllMaterialsButton
             // 
-            this.applyPresetToAllMaterialsButton.Location = new System.Drawing.Point(193, 19);
+            this.applyPresetToAllMaterialsButton.Location = new System.Drawing.Point(193, 18);
             this.applyPresetToAllMaterialsButton.Name = "applyPresetToAllMaterialsButton";
-            this.applyPresetToAllMaterialsButton.Size = new System.Drawing.Size(84, 21);
+            this.applyPresetToAllMaterialsButton.Size = new System.Drawing.Size(84, 23);
             this.applyPresetToAllMaterialsButton.TabIndex = 4;
             this.applyPresetToAllMaterialsButton.Text = "Apply To All";
             this.applyPresetToAllMaterialsButton.UseVisualStyleBackColor = true;
@@ -1629,15 +1658,24 @@
             this.materialPresetsSelector.TabIndex = 2;
             this.materialPresetsSelector.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MaterialPresetsSelector_MouseDown);
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(-2, 43);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(51, 13);
+            this.label10.TabIndex = 11;
+            this.label10.Text = "Textures:";
+            // 
             // applyMatBinTexturesButton
             // 
             this.applyMatBinTexturesButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.applyMatBinTexturesButton.Location = new System.Drawing.Point(1, 19);
-            this.applyMatBinTexturesButton.MaximumSize = new System.Drawing.Size(135, 21);
-            this.applyMatBinTexturesButton.MinimumSize = new System.Drawing.Size(135, 21);
+            this.applyMatBinTexturesButton.Location = new System.Drawing.Point(1, 17);
+            this.applyMatBinTexturesButton.MaximumSize = new System.Drawing.Size(135, 233);
+            this.applyMatBinTexturesButton.MinimumSize = new System.Drawing.Size(135, 23);
             this.applyMatBinTexturesButton.Name = "applyMatBinTexturesButton";
-            this.applyMatBinTexturesButton.Size = new System.Drawing.Size(135, 21);
+            this.applyMatBinTexturesButton.Size = new System.Drawing.Size(135, 23);
             this.applyMatBinTexturesButton.TabIndex = 10;
             this.applyMatBinTexturesButton.Text = "Apply MATBIN Textures";
             this.applyMatBinTexturesButton.UseVisualStyleBackColor = true;
@@ -1658,13 +1696,13 @@
             this.dataGridViewTextBoxColumn5,
             this.dataGridViewTextBoxColumn6,
             this.dataGridViewButtonColumn1});
-            this.texturesTable.Location = new System.Drawing.Point(0, 44);
+            this.texturesTable.Location = new System.Drawing.Point(0, 59);
             this.texturesTable.Name = "texturesTable";
             this.texturesTable.RowHeadersVisible = false;
             this.texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            this.texturesTable.Size = new System.Drawing.Size(547, 438);
+            this.texturesTable.Size = new System.Drawing.Size(528, 397);
             this.texturesTable.TabIndex = 7;
             this.texturesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableButtonClicked);
             this.texturesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableCellValueChanged);
@@ -1895,7 +1933,9 @@
             this.materialsTabPage.ResumeLayout(false);
             this.materialsTabPage.PerformLayout();
             this.materialsPagePanelsContainer.Panel1.ResumeLayout(false);
+            this.materialsPagePanelsContainer.Panel1.PerformLayout();
             this.materialsPagePanelsContainer.Panel2.ResumeLayout(false);
+            this.materialsPagePanelsContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.materialsPagePanelsContainer)).EndInit();
             this.materialsPagePanelsContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.materialsTable)).EndInit();
@@ -2012,17 +2052,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
         private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column14;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
-        private System.Windows.Forms.DataGridViewButtonColumn Column6;
-        private System.Windows.Forms.DataGridViewButtonColumn Column20;
-        private System.Windows.Forms.DataGridViewButtonColumn Column16;
-        private System.Windows.Forms.DataGridViewButtonColumn Column19;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Column7;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Column8;
         private System.Windows.Forms.ToolStripMenuItem dummyThicknessToolStripMenuItem;
         private System.Windows.Forms.ToolStripComboBox dummyThicknessSelector;
         private System.Windows.Forms.CheckBox mirrorZCheckbox;
@@ -2053,5 +2082,20 @@
         private System.Windows.Forms.ToolStripMenuItem supportPearToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem patreonToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem payPalToolStripMenuItem;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column14;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private System.Windows.Forms.DataGridViewButtonColumn Column6;
+        private System.Windows.Forms.DataGridViewButtonColumn Column20;
+        private System.Windows.Forms.DataGridViewButtonColumn Column16;
+        private System.Windows.Forms.DataGridViewButtonColumn Column19;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Column7;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Column8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.ToolTip uniformScaleTooltip;
     }
 }

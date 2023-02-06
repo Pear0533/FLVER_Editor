@@ -529,7 +529,7 @@ namespace FLVER_Editor
                     new DataGridViewTextBoxCell { Value = material.Flags },
                     new DataGridViewTextBoxCell { Value = material.MTD }, new DataGridViewTextBoxCell { Value = material.Unk18 });
                 for (var j = 0; j < 4; ++j)
-                    row.Cells.Add(new DataGridViewButtonCell { Value = "" });
+                    row.Cells.Add(new DataGridViewButtonCell { Value = materialsTable.Columns[j + 5].HeaderText });
                 for (var j = 0; j < 2; ++j)
                     row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
                 materialsTable.Rows.Add(row);
@@ -555,7 +555,7 @@ namespace FLVER_Editor
                     new DataGridViewTextBoxCell { Value = dummy.AttachBoneIndex },
                     new DataGridViewTextBoxCell { Value = dummy.DummyBoneIndex });
                 row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
-                row.Cells.Add(new DataGridViewButtonCell { Value = "" });
+                row.Cells.Add(new DataGridViewButtonCell { Value = dummiesTable.Columns[5].HeaderText });
                 dummiesTable.Rows.Add(row);
             }
             isSettingDefaultInfo = false;
@@ -682,7 +682,7 @@ namespace FLVER_Editor
                 var row = new DataGridViewRow();
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = material.Textures[i].Type },
                     new DataGridViewTextBoxCell { Value = material.Textures[i].Path });
-                row.Cells.Add(new DataGridViewButtonCell { Value = "" });
+                row.Cells.Add(new DataGridViewButtonCell { Value = texturesTable.Columns[2].HeaderText });
                 texturesTable.Rows.Add(row);
             }
         }
