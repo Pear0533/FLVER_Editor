@@ -68,8 +68,8 @@ namespace FLVER_Editor
         private static readonly string dummyThicknessConfigPath = $"{rootFolderPath}/dummythicknessconfig.txt";
         private static readonly string autoSaveIntervalConfigPath = $"{rootFolderPath}/autosaveintervalconfig.txt";
         private static readonly string autoSaveEnabledConfigPath = $"{rootFolderPath}/autosaveenabledconfig.txt";
-        private static readonly string patreonSupportUri = "https://www.patreon.com/theonlypear";
-        private static readonly string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
+        private const string patreonSupportUri = "https://www.patreon.com/theonlypear";
+        private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
         private static bool meshIsSelected;
         private static bool dummyIsSelected;
         private static bool meshIsHidden;
@@ -540,8 +540,8 @@ namespace FLVER_Editor
                 if (mesh.MaterialIndex < 0) mesh.MaterialIndex = 0;
                 var row = new DataGridViewRow();
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i },
-                    new DataGridViewTextBoxCell { Value = flver.Materials[mesh.MaterialIndex].Name },
-                    new DataGridViewTextBoxCell { Value = flver.Meshes[i].Vertices[0].BoneIndices?[0] });
+                    new DataGridViewTextBoxCell { Value = flver.Materials[mesh.MaterialIndex].Name });
+                row.Cells.Add(new DataGridViewButtonCell { Value = "Assign" });
                 for (var j = 0; j < 2; ++j)
                     row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
                 meshTable.Rows.Add(row);
@@ -864,10 +864,85 @@ namespace FLVER_Editor
             UpdateMesh();
         }
 
+        private int ShowPickABoneDialog()
+        {
+            var bonePickForm = new Form();
+            bonePickForm.Text = @"Pick a Bone";
+            bonePickForm.Icon = Icon;
+            bonePickForm.Width = 500;
+            bonePickForm.Height = 500;
+            bonePickForm.MinimumSize = new Size(300, 300);
+            bonePickForm.StartPosition = FormStartPosition.CenterScreen;
+            bonePickForm.MaximizeBox = false;
+            var boneSelectionBox = new TreeView();
+            boneSelectionBox.Width = 450;
+            boneSelectionBox.Height = 420;
+            boneSelectionBox.Location = new Point(boneSelectionBox.Location.X + 15, boneSelectionBox.Location.Y + 5);
+            boneSelectionBox.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
+            var cancelButton = new Button
+            {
+                Text = @"Cancel",
+                Size = new Size(65, 25),
+                Location = new Point(boneSelectionBox.Width - 105,
+                    boneSelectionBox.Bottom + 5),
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Right
+            };
+            var okButton = new Button
+            {
+                Text = @"OK",
+                Size = new Size(50, 25),
+                Location = new Point(boneSelectionBox.Width - 35,
+                    boneSelectionBox.Bottom + 5),
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Right,
+                DialogResult = DialogResult.OK
+            };
+
+            void CloseDialogHandler(object s, EventArgs e)
+            {
+                bonePickForm.Close();
+            }
+
+            cancelButton.Click += CloseDialogHandler;
+            okButton.Click += CloseDialogHandler;
+            bonePickForm.AcceptButton = okButton;
+            bonePickForm.Controls.Add(boneSelectionBox);
+            bonePickForm.Controls.Add(cancelButton);
+            bonePickForm.Controls.Add(okButton);
+            foreach (FLVER.Bone bone in flver.Bones)
+                boneSelectionBox.Nodes.Add(new TreeNode(bone.Name));
+            return bonePickForm.ShowDialog() == DialogResult.OK ? boneSelectionBox.SelectedNode.Index : -1;
+        }
+
+        private void AssignMeshUniformWeight(int meshIndex)
+        {
+            int boneIndex = ShowPickABoneDialog();
+            if (boneIndex == -1) return;
+            string uniformWeightValueStr = ShowInputDialog("Enter a uniform weight value:", "UWeight");
+            if (uniformWeightValueStr == "") return;
+            float.TryParse(uniformWeightValueStr, out float uniformWeight);
+            if (uniformWeight == 0)
+            {
+                ShowInformationDialog("The specified uniform weight value is invalid.");
+                return;
+            }
+            List<FLVER.Vertex> matchingBoneVerts = flver.Meshes[meshIndex].Vertices.Where(v => v.BoneIndices.Contains(boneIndex)).ToList();
+            if (!matchingBoneVerts.Any())
+            {
+                ShowInformationDialog("Found no mesh vertices weighted to the specified bone.");
+                return;
+            }
+            foreach (FLVER.Vertex v in matchingBoneVerts)
+                v.BoneWeights[v.BoneIndices.ToList().IndexOf(boneIndex)] = uniformWeight;
+            ShowInformationDialog("Successfully applied uniform weight value to the bone's matching mesh vertices!");
+        }
+
         private void MeshTableSelectCheckboxClicked(object sender, DataGridViewCellEventArgs e)
         {
             switch (e.ColumnIndex)
             {
+                case 2:
+                    AssignMeshUniformWeight(e.RowIndex);
+                    break;
                 case 3:
                     selectedMeshIndices = UpdateIndicesList(meshTable, selectedMeshIndices, e.ColumnIndex, e.RowIndex, ref meshIsSelected);
                     UpdateSelectedMeshes();
@@ -2096,6 +2171,21 @@ namespace FLVER_Editor
             catch { }
         }
 
+        private void HideAllMeshesButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            ModifyAllThings(meshTable, 4);
+        }
+
+        private void PatreonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start(patreonSupportUri);
+        }
+
+        private void PayPalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start(paypalSupportUri);
+        }
+
         private enum TextureFormats
         {
             DXT1 = 0,
@@ -2230,21 +2320,6 @@ namespace FLVER_Editor
 
                 public Vector2 Unk14 { get; set; }
             }
-        }
-
-        private void HideAllMeshesButton_MouseClick(object sender, MouseEventArgs e)
-        {
-            ModifyAllThings(meshTable, 4);
-        }
-
-        private void PatreonToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Process.Start(patreonSupportUri);
-        }
-
-        private void PayPalToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Process.Start(paypalSupportUri);
         }
     }
 }
