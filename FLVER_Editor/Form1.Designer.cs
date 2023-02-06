@@ -1696,7 +1696,7 @@
             this.bonesTabPage.Location = new System.Drawing.Point(4, 22);
             this.bonesTabPage.Name = "bonesTabPage";
             this.bonesTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.bonesTabPage.Size = new System.Drawing.Size(1088, 462);
+            this.bonesTabPage.Size = new System.Drawing.Size(1087, 462);
             this.bonesTabPage.TabIndex = 0;
             this.bonesTabPage.Text = "Bones";
             this.bonesTabPage.UseVisualStyleBackColor = true;
@@ -1728,7 +1728,7 @@
             this.bonesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
-            this.bonesTable.Size = new System.Drawing.Size(1082, 456);
+            this.bonesTable.Size = new System.Drawing.Size(1081, 456);
             this.bonesTable.TabIndex = 0;
             this.bonesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.BonesTableCellValueChanged);
             // 
@@ -1807,10 +1807,10 @@
             this.tabWindow.Controls.Add(this.bonesTabPage);
             this.tabWindow.Controls.Add(this.materialsTabPage);
             this.tabWindow.Controls.Add(this.meshTabPage);
-            this.tabWindow.Location = new System.Drawing.Point(-1, 24);
+            this.tabWindow.Location = new System.Drawing.Point(0, 24);
             this.tabWindow.Name = "tabWindow";
             this.tabWindow.SelectedIndex = 0;
-            this.tabWindow.Size = new System.Drawing.Size(1096, 488);
+            this.tabWindow.Size = new System.Drawing.Size(1095, 488);
             this.tabWindow.TabIndex = 1;
             this.tabWindow.DragDrop += new System.Windows.Forms.DragEventHandler(this.TabWindowDragDrop);
             this.tabWindow.DragEnter += new System.Windows.Forms.DragEventHandler(this.TabWindowDragEnter);
