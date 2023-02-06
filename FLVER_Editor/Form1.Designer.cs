@@ -43,6 +43,9 @@
             this.autoSaveIntervalSelector = new System.Windows.Forms.ToolStripTextBox();
             this.dummyThicknessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dummyThicknessSelector = new System.Windows.Forms.ToolStripComboBox();
+            this.supportPearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.patreonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.payPalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.multiSelectMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.multiSelectMenuTextbox = new System.Windows.Forms.ToolStripTextBox();
             this.meshTabPage = new System.Windows.Forms.TabPage();
@@ -197,7 +200,8 @@
             this.ribbon.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.ribbon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.preferencesToolStripMenuItem});
+            this.preferencesToolStripMenuItem,
+            this.supportPearToolStripMenuItem});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
             this.ribbon.Name = "ribbon";
             this.ribbon.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
@@ -455,6 +459,29 @@
             this.dummyThicknessSelector.Name = "dummyThicknessSelector";
             this.dummyThicknessSelector.Size = new System.Drawing.Size(121, 23);
             this.dummyThicknessSelector.SelectedIndexChanged += new System.EventHandler(this.DummyThicknessSelectorSelectedIndexChanged);
+            // 
+            // supportPearToolStripMenuItem
+            // 
+            this.supportPearToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.patreonToolStripMenuItem,
+            this.payPalToolStripMenuItem});
+            this.supportPearToolStripMenuItem.Name = "supportPearToolStripMenuItem";
+            this.supportPearToolStripMenuItem.Size = new System.Drawing.Size(87, 22);
+            this.supportPearToolStripMenuItem.Text = "Support Pear";
+            // 
+            // patreonToolStripMenuItem
+            // 
+            this.patreonToolStripMenuItem.Name = "patreonToolStripMenuItem";
+            this.patreonToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.patreonToolStripMenuItem.Text = "Patreon";
+            this.patreonToolStripMenuItem.Click += new System.EventHandler(this.PatreonToolStripMenuItem_Click);
+            // 
+            // payPalToolStripMenuItem
+            // 
+            this.payPalToolStripMenuItem.Name = "payPalToolStripMenuItem";
+            this.payPalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.payPalToolStripMenuItem.Text = "PayPal";
+            this.payPalToolStripMenuItem.Click += new System.EventHandler(this.PayPalToolStripMenuItem_Click);
             // 
             // multiSelectMenu
             // 
@@ -2023,5 +2050,8 @@
         private System.Windows.Forms.Button hideAllMeshesButton;
         private System.Windows.Forms.ToolTip hideAllMeshesButtonTooltip;
         private System.Windows.Forms.GroupBox functionsGroupBox;
+        private System.Windows.Forms.ToolStripMenuItem supportPearToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem patreonToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem payPalToolStripMenuItem;
     }
 }

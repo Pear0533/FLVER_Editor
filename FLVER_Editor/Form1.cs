@@ -68,6 +68,8 @@ namespace FLVER_Editor
         private static readonly string dummyThicknessConfigPath = $"{rootFolderPath}/dummythicknessconfig.txt";
         private static readonly string autoSaveIntervalConfigPath = $"{rootFolderPath}/autosaveintervalconfig.txt";
         private static readonly string autoSaveEnabledConfigPath = $"{rootFolderPath}/autosaveenabledconfig.txt";
+        private static readonly string patreonSupportUri = "https://www.patreon.com/theonlypear";
+        private static readonly string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
         private static bool meshIsSelected;
         private static bool dummyIsSelected;
         private static bool meshIsHidden;
@@ -2233,6 +2235,16 @@ namespace FLVER_Editor
         private void HideAllMeshesButton_MouseClick(object sender, MouseEventArgs e)
         {
             ModifyAllThings(meshTable, 4);
+        }
+
+        private void PatreonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start(patreonSupportUri);
+        }
+
+        private void PayPalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start(paypalSupportUri);
         }
     }
 }
