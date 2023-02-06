@@ -1861,12 +1861,12 @@
             // 
             // Column3
             // 
-            this.Column3.HeaderText = "Uniform Weight";
+            this.Column3.HeaderText = "Simple Skin";
             this.Column3.MinimumWidth = 8;
             this.Column3.Name = "Column3";
             this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.Column3.Width = 97;
+            this.Column3.Width = 87;
             // 
             // Column4
             // 

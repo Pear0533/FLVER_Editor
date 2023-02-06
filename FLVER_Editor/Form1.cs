@@ -541,7 +541,7 @@ namespace FLVER_Editor
                 var row = new DataGridViewRow();
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i },
                     new DataGridViewTextBoxCell { Value = flver.Materials[mesh.MaterialIndex].Name });
-                row.Cells.Add(new DataGridViewButtonCell { Value = "Assign" });
+                row.Cells.Add(new DataGridViewButtonCell { Value = "Apply" });
                 for (var j = 0; j < 2; ++j)
                     row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
                 meshTable.Rows.Add(row);
@@ -913,27 +913,22 @@ namespace FLVER_Editor
             return bonePickForm.ShowDialog() == DialogResult.OK ? boneSelectionBox.SelectedNode.Index : -1;
         }
 
-        private void AssignMeshUniformWeight(int meshIndex)
+        private void ApplyMeshSimpleSkin(int meshIndex)
         {
             int boneIndex = ShowPickABoneDialog();
             if (boneIndex == -1) return;
-            string uniformWeightValueStr = ShowInputDialog("Enter a uniform weight value:", "UWeight");
-            if (uniformWeightValueStr == "") return;
-            float.TryParse(uniformWeightValueStr, out float uniformWeight);
-            if (uniformWeight == 0)
+            List<FLVER.Vertex> unweightedVerts = flver.Meshes[meshIndex].Vertices.Where(v => !v.BoneIndices.Contains(boneIndex) && v.BoneWeights.All(i => i == 0)).ToList();
+            if (!unweightedVerts.Any())
             {
-                ShowInformationDialog("The specified uniform weight value is invalid.");
+                ShowInformationDialog("Found no unweighted vertices to apply default weights to.");
                 return;
             }
-            List<FLVER.Vertex> matchingBoneVerts = flver.Meshes[meshIndex].Vertices.Where(v => v.BoneIndices.Contains(boneIndex)).ToList();
-            if (!matchingBoneVerts.Any())
+            foreach (FLVER.Vertex v in unweightedVerts)
             {
-                ShowInformationDialog("Found no mesh vertices weighted to the specified bone.");
-                return;
+                v.BoneIndices[0] = boneIndex;
+                v.BoneWeights = new float[] { 1, 0, 0, 0 };
             }
-            foreach (FLVER.Vertex v in matchingBoneVerts)
-                v.BoneWeights[v.BoneIndices.ToList().IndexOf(boneIndex)] = uniformWeight;
-            ShowInformationDialog("Successfully applied uniform weight value to the bone's matching mesh vertices!");
+            ShowInformationDialog("Successfully applied mesh simple skin!");
         }
 
         private void MeshTableSelectCheckboxClicked(object sender, DataGridViewCellEventArgs e)
@@ -941,7 +936,7 @@ namespace FLVER_Editor
             switch (e.ColumnIndex)
             {
                 case 2:
-                    AssignMeshUniformWeight(e.RowIndex);
+                    ApplyMeshSimpleSkin(e.RowIndex);
                     break;
                 case 3:
                     selectedMeshIndices = UpdateIndicesList(meshTable, selectedMeshIndices, e.ColumnIndex, e.RowIndex, ref meshIsSelected);
