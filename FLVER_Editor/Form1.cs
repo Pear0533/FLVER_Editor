@@ -38,6 +38,8 @@ namespace FLVER_Editor
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string jsonFileFilter = @"JSON File (*.json)|*.json";
         private const string version = "1.82";
+        private const string patreonSupportUri = "https://www.patreon.com/theonlypear";
+        private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
         public static List<string> arguments;
         private static FLVER flver;
         private static BND4 flverBnd;
@@ -68,8 +70,6 @@ namespace FLVER_Editor
         private static readonly string dummyThicknessConfigPath = $"{rootFolderPath}/dummythicknessconfig.txt";
         private static readonly string autoSaveIntervalConfigPath = $"{rootFolderPath}/autosaveintervalconfig.txt";
         private static readonly string autoSaveEnabledConfigPath = $"{rootFolderPath}/autosaveenabledconfig.txt";
-        private const string patreonSupportUri = "https://www.patreon.com/theonlypear";
-        private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
         private static bool meshIsSelected;
         private static bool dummyIsSelected;
         private static bool meshIsHidden;
@@ -561,9 +561,12 @@ namespace FLVER_Editor
             isSettingDefaultInfo = false;
         }
 
-        private static void BackupFLVERFile(string filePath)
+        private static void BackupFLVERFile()
         {
-            string backupFilePath = filePath.Replace(".flver", ".flver.bak").Replace(".dcx", ".dcx.bak");
+            string backupFilePath = flverFilePath;
+            if (backupFilePath.Contains(".flver")) backupFilePath = backupFilePath.Replace(".flver", ".flver.bak");
+            else if (backupFilePath.Contains(".flv")) backupFilePath = backupFilePath.Replace(".flv", ".flv.bak");
+            else backupFilePath = backupFilePath.Replace(".dcx", ".dcx.bak");
             if (!File.Exists(backupFilePath)) File.Copy(flverFilePath, backupFilePath);
         }
 
@@ -577,7 +580,7 @@ namespace FLVER_Editor
             var dialog = new OpenFileDialog
             {
                 Filter =
-                    @"FLVER File (*.flver, *.flver.bak)|*.flver;*.flver.bak|BND File (*.dcx, *.dcx.bak)|*.dcx;*.dcx.bak|Model Container (*.flver, *.flver.bak, *.dcx, *.dcx.bak)|*.flver;*.flver.bak;*.dcx;*.dcx.bak",
+                    @"FLVER File (*.flv, *.flv.bak, *.flver, *.flver.bak)|*.flv;*.flv.bak;*.flver;*.flver.bak|BND File (*.dcx, *.dcx.bak)|*.dcx;*.dcx.bak|Model Container (*.flv, *.flv.bak, *.flver, *.flver.bak, *.dcx, *.dcx.bak)|*.flv;*.flv.bak;*.flver;*.flver.bak;*.dcx;*.dcx.bak",
                 FilterIndex = 3, Multiselect = false
             };
             return dialog.ShowDialog() != DialogResult.OK ? "" : dialog.FileName.ToLower();
@@ -585,7 +588,7 @@ namespace FLVER_Editor
 
         private static bool IsFLVERPath(string filePath)
         {
-            return filePath.EndsWith(".flver") || filePath.EndsWith(".flver.bak");
+            return filePath.Contains(".flv") || filePath.Contains(".flver");
         }
 
         private static FLVER ReadFLVERFromDCXPath(string filePath, bool setMainFlverArchiveType, bool setBinderIndex, bool wantsTpf)
@@ -603,7 +606,7 @@ namespace FLVER_Editor
             var binderIndex = 0;
             foreach (BinderFile file in flverBnd.Files)
             {
-                if (file.Name.EndsWith(".flver"))
+                if (IsFLVERPath(file.Name))
                 {
                     flverFiles.Add(file);
                     if (currFlverFileBinderIndex == -1 && setBinderIndex) currFlverFileBinderIndex = binderIndex;
@@ -779,7 +782,11 @@ namespace FLVER_Editor
             var texture = new TPF.Texture(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, 0, File.ReadAllBytes(textureFilePath));
             Program.tpf.Textures.Add(texture);
             if (flverBndTpfEntry != null) flverBnd.Files[flverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Program.tpf.Write();
-            else Program.tpf.Write(flverFilePath.Replace(".flver", ".tpf"));
+            else
+            {
+                if (flverFilePath.Contains(".flver")) Program.tpf.Write(flverFilePath.Replace("_1", "").Replace(".flver", ".tpf"));
+                else if (flverFilePath.Contains(".flv")) Program.tpf.Write(flverFilePath.Replace("_1", "").Replace(".flv", ".tpf"));
+            }
         }
 
         private void TexturesTableButtonClicked(object sender, DataGridViewCellEventArgs e)
@@ -1239,14 +1246,14 @@ namespace FLVER_Editor
 
         private static void SaveFLVERFile(string filePath)
         {
-            if (filePath.EndsWith(".flver") || filePath.EndsWith(".flver.bak"))
+            if (IsFLVERPath(filePath))
             {
-                BackupFLVERFile(filePath);
+                BackupFLVERFile();
                 flver.Write(filePath);
             }
             else if (filePath.EndsWith(".dcx"))
             {
-                BackupFLVERFile(filePath);
+                BackupFLVERFile();
                 flver.Write(filePath);
                 flverBnd.Files[currFlverFileBinderIndex].Bytes = File.ReadAllBytes(filePath);
                 flverBnd.Write(filePath, flverArchiveType);
@@ -1257,7 +1264,7 @@ namespace FLVER_Editor
         {
             string bndFilter = flverFilePath.EndsWith(".dcx") ? "|BND File (*.dcx)|*.dcx" : "";
             var dialog = new SaveFileDialog
-                { Filter = $@"FLVER File (*.flver)|*.flver{bndFilter}", FileName = Path.GetFileNameWithoutExtension(flverFilePath.Replace(".dcx", "")) };
+                { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(flverFilePath.Replace(".dcx", "")) };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             SaveFLVERFile(dialog.FileName);
         }

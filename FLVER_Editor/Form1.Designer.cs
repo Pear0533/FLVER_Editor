@@ -58,6 +58,11 @@
             this.meshPagePanelsContainer = new System.Windows.Forms.SplitContainer();
             this.meshPageTablesContainer = new System.Windows.Forms.SplitContainer();
             this.meshTable = new System.Windows.Forms.DataGridView();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Column21 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.label4 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.addDummyButton = new System.Windows.Forms.Button();
@@ -157,11 +162,6 @@
             this.setAllBBsMaxSizeButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.hideAllMeshesButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.uniformScaleTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.Column21 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -670,6 +670,47 @@
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTableSelectCheckboxClicked);
             this.meshTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTableCellValueChanged);
+            // 
+            // Column1
+            // 
+            this.Column1.Frozen = true;
+            this.Column1.HeaderText = "Index";
+            this.Column1.MinimumWidth = 8;
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Width = 58;
+            // 
+            // Column2
+            // 
+            this.Column2.Frozen = true;
+            this.Column2.HeaderText = "Mesh Name";
+            this.Column2.MinimumWidth = 8;
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Width = 89;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "Simple Skin";
+            this.Column3.MinimumWidth = 8;
+            this.Column3.Name = "Column3";
+            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.Column3.Width = 87;
+            // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "Select";
+            this.Column4.MinimumWidth = 8;
+            this.Column4.Name = "Column4";
+            this.Column4.Width = 43;
+            // 
+            // Column21
+            // 
+            this.Column21.HeaderText = "Hide";
+            this.Column21.Name = "Column21";
+            this.Column21.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column21.Width = 35;
             // 
             // label4
             // 
@@ -1556,13 +1597,13 @@
             // 
             // Column6
             // 
-            this.Column6.HeaderText = "Edit";
+            this.Column6.HeaderText = "Edit Textures";
             this.Column6.MinimumWidth = 8;
             this.Column6.Name = "Column6";
             this.Column6.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Column6.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             this.Column6.Text = "";
-            this.Column6.Width = 50;
+            this.Column6.Width = 87;
             // 
             // Column20
             // 
@@ -1841,47 +1882,6 @@
             this.autoSaveTimer.Interval = 60000;
             this.autoSaveTimer.Tick += new System.EventHandler(this.AutoSaveTimerTick);
             // 
-            // Column1
-            // 
-            this.Column1.Frozen = true;
-            this.Column1.HeaderText = "Index";
-            this.Column1.MinimumWidth = 8;
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.Width = 58;
-            // 
-            // Column2
-            // 
-            this.Column2.Frozen = true;
-            this.Column2.HeaderText = "Mesh Name";
-            this.Column2.MinimumWidth = 8;
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 89;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "Simple Skin";
-            this.Column3.MinimumWidth = 8;
-            this.Column3.Name = "Column3";
-            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.Column3.Width = 87;
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = "Select";
-            this.Column4.MinimumWidth = 8;
-            this.Column4.Name = "Column4";
-            this.Column4.Width = 43;
-            // 
-            // Column21
-            // 
-            this.Column21.HeaderText = "Hide";
-            this.Column21.Name = "Column21";
-            this.Column21.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column21.Width = 35;
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2079,6 +2079,15 @@
         private System.Windows.Forms.ToolStripMenuItem supportPearToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem patreonToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem payPalToolStripMenuItem;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.ToolTip uniformScaleTooltip;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewButtonColumn Column3;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Column4;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Column21;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column14;
@@ -2090,14 +2099,5 @@
         private System.Windows.Forms.DataGridViewButtonColumn Column19;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column7;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column8;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.ToolTip uniformScaleTooltip;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewButtonColumn Column3;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Column4;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Column21;
     }
 }
