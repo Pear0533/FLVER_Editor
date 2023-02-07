@@ -42,6 +42,7 @@ namespace FLVER_Editor
         private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
         public static List<string> arguments;
         private static FLVER flver;
+        private static byte[] currFlverBytes;
         private static BND4 flverBnd;
         private static BND4 matBinBnd;
         private static string flverFilePath;
@@ -658,6 +659,7 @@ namespace FLVER_Editor
                 flver = ReadFLVERFromDCXPath(flverFilePath, true, true, true);
                 Program.flver = flver;
             }
+            currFlverBytes = flver.Write();
             saveToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
             matBinBndPath = null;
             UpdateUI();
@@ -1724,13 +1726,19 @@ namespace FLVER_Editor
 
         private void MainWindowClosing(object sender, CancelEventArgs e)
         {
+            byte[] newFlverBytes = flver.Write();
+            if (newFlverBytes.SequenceEqual(currFlverBytes)) return;
             DialogResult result = MessageBox.Show(@"Do you want to save changes to the FLVER before quitting?", @"Warning", MessageBoxButtons.YesNoCancel,
                 MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1, (MessageBoxOptions)0x40000);
-            if (result != DialogResult.Yes)
+            switch (result)
             {
-                if (result == DialogResult.Cancel) e.Cancel = true;
+                case DialogResult.Yes:
+                    SaveFLVERFile(flverFilePath);
+                    break;
+                case DialogResult.Cancel:
+                    e.Cancel = true;
+                    break;
             }
-            else SaveFLVERFile(flverFilePath);
         }
 
         private void AddDummyButtonClicked(object sender, MouseEventArgs e)
