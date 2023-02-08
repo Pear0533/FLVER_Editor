@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
-using System.Web.Script.Serialization;
 using Assimp;
 using SoulsFormats;
 
@@ -16,7 +15,6 @@ namespace FLVER_Editor
             try
             {
                 var importer = new AssimpContext();
-                string fileName = modelFilePath;
                 string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 string conversionTableStr = File.ReadAllText(assemblyPath + "\\boneConversion.ini");
                 string[] conversionTableStrLines = conversionTableStr.Split(
@@ -35,7 +33,7 @@ namespace FLVER_Editor
                     conversionTable.Add(target, conversionTableStrLines[i2 + 1]);
                     i2++;
                 }
-                Scene md = importer.ImportFile(fileName, PostProcessSteps.CalculateTangentSpace);
+                Scene md = importer.ImportFile(modelFilePath, PostProcessSteps.CalculateTangentSpace);
                 boneParentList = new Dictionary<string, string>();
                 printNodeStruct(md.RootNode);
                 int layoutCount = flver.BufferLayouts.Count;
@@ -54,85 +52,9 @@ namespace FLVER_Editor
                 int materialCount = flver.Materials.Count;
                 foreach (Material mat in md.Materials)
                 {
-                    var newMaterial = new JavaScriptSerializer().Deserialize<FLVER.Material>(new JavaScriptSerializer().Serialize(flver.Materials[flver.Materials.Count - 1]));
+                    FLVER.Material newMaterial = GetBaseMaterial(mat.TextureDiffuse.FilePath, mat.TextureSpecular.FilePath, mat.TextureNormal.FilePath);
                     newMaterial.Name = mat.Name;
-                    newMaterial.MTD = "C[AMSN]_e.mtd";
-                    newMaterial.Flags = 390;
-                    newMaterial.GXBytes = new byte[]
-                    {
-                        71,
-                        88,
-                        48,
-                        48,
-                        102,
-                        0,
-                        0,
-                        0,
-                        52,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        255,
-                        255,
-                        255,
-                        255,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        0,
-                        255,
-                        255,
-                        255,
-                        127,
-                        100,
-                        0,
-                        0,
-                        0,
-                        12,
-                        0,
-                        0,
-                        0
-                    };
                     newMaterial.Unk18 = flver.Materials[flver.Materials.Count - 1].Unk18 + 1;
-                    newMaterial.Textures.Clear();
-                    SetMaterialPath(newMaterial, "C_AMSN__snp_Texture2D_2_AlbedoMap_0",
-                        mat.TextureDiffuse.FilePath != null ? Path.GetFileNameWithoutExtension(mat.TextureDiffuse.FilePath) + ".tif" : "");
-                    SetMaterialPath(newMaterial, "C_AMSN__snp_Texture2D_0_MetallicMap_0",
-                        mat.TextureSpecular.FilePath != null ? Path.GetFileNameWithoutExtension(mat.TextureSpecular.FilePath) + ".tif" : "");
-                    SetMaterialPath(newMaterial, "C_AMSN__snp_Texture2D_7_NormalMap_4",
-                        mat.TextureNormal.FilePath != null ? Path.GetFileNameWithoutExtension(mat.TextureNormal.FilePath) + ".tif" : "");
                     flver.Materials.Add(newMaterial);
                 }
                 foreach (Mesh m in md.Meshes)

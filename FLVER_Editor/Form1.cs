@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -461,6 +462,7 @@ namespace FLVER_Editor
             try
             {
                 dict = new JavaScriptSerializer().Deserialize<Dictionary<object, object>>(File.ReadAllText(filePath));
+                if (dict == materialPresets) dict.Add("Base Material", Program.GetBaseMaterial());
                 selector.Items.AddRange(dict.Keys.ToArray());
             }
             catch
@@ -473,9 +475,7 @@ namespace FLVER_Editor
         private void LoadMaterialPresets()
         {
             bool hasRead = LoadPresets(materialPresetsSelector, ref materialPresets, materialPresetsFilePath);
-            materialPresetsSelector.Enabled = applyPresetToAllMaterialsButton.Enabled
-                = materialsTable.Columns[mtApplyPresetCbIndex].Visible =
-                    materialsTable.Columns[mtAddPresetCbIndex].Visible = materialsTable.Columns[mtDeletePresetCbIndex].Visible = hasRead;
+            materialsTable.Columns[mtAddPresetCbIndex].Visible = materialsTable.Columns[mtDeletePresetCbIndex].Visible = hasRead;
         }
 
         private void LoadDummyPresets()
@@ -733,8 +733,11 @@ namespace FLVER_Editor
                 case mtAddPresetCbIndex when !materialPresets.ContainsKey(flver.Materials[e.RowIndex].Name):
                     string presetName = PromptForPresetName();
                     if (presetName == "") break;
-                    materialPresets.Add(presetName, flver.Materials[e.RowIndex]);
-                    UpdateMaterialPresets();
+                    if (!materialPresets.ContainsKey(presetName))
+                    {
+                        materialPresets.Add(presetName, flver.Materials[e.RowIndex]);
+                        UpdateMaterialPresets();
+                    }
                     break;
                 case mtDeletePresetCbIndex when materialPresets.ContainsKey(flver.Materials[e.RowIndex].Name):
                     materialPresets.Remove(flver.Materials[e.RowIndex].Name);
@@ -839,11 +842,12 @@ namespace FLVER_Editor
             if (dummyIsSelected)
             {
                 isSettingDefaultInfo = true;
-                ResetModifierNumBoxValues();
                 bool hasIndices = selectedDummyIndices.Count != 0;
+                ResetModifierNumBoxValues();
                 meshModifiersContainer.Enabled = hasIndices;
                 if (hasIndices)
                 {
+                    UpdateModifierNumBoxValues();
                     EnableDisableExtraModifierOptions();
                     scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = 100;
                     rotXNumBox.Value = rotYNumBox.Value = rotZNumBox.Value = 0;
@@ -853,17 +857,49 @@ namespace FLVER_Editor
             UpdateMesh();
         }
 
+        private void UpdateModifierNumBoxValues()
+        {
+            float allObjectsXPos = 0, allObjectsYPos = 0, allObjectsZPos = 0;
+            if (selectedMeshIndices.Count > 0)
+            {
+                foreach (FLVER.Mesh m in selectedMeshIndices.Select(i => flver.Meshes[i]))
+                {
+                    FLVER.Vertex maxVertex = m.Vertices[0];
+                    List<FLVER.Vertex> maxVertices = m.Vertices.Where(v =>
+                        v.Positions[0].X > maxVertex.Positions[0].X && v.Positions[0].Y > maxVertex.Positions[0].Y && v.Positions[0].Z > maxVertex.Positions[0].Z).ToList();
+                    foreach (FLVER.Vertex v in maxVertices) maxVertex = v;
+                    allObjectsXPos += maxVertex.Positions[0].X;
+                    allObjectsYPos += maxVertex.Positions[0].Y;
+                    allObjectsZPos += maxVertex.Positions[0].Z;
+                }
+            }
+            if (selectedDummyIndices.Count > 0)
+            {
+                FLVER.Dummy maxDummy = flver.Dummies[0];
+                List<FLVER.Dummy> maxDummies = flver.Dummies
+                    .Where(d => d.Position.X > maxDummy.Position.X && d.Position.Y > maxDummy.Position.Y && d.Position.Z > maxDummy.Position.Z).ToList();
+                foreach (FLVER.Dummy d in maxDummies) maxDummy = d;
+                allObjectsXPos += maxDummy.Position.X;
+                allObjectsYPos += maxDummy.Position.Y;
+                allObjectsZPos += maxDummy.Position.Z;
+            }
+            transXNumBox.Text = allObjectsXPos.ToString(CultureInfo.InvariantCulture);
+            transYNumBox.Text = allObjectsYPos.ToString(CultureInfo.InvariantCulture);
+            transZNumBox.Text = allObjectsZPos.ToString(CultureInfo.InvariantCulture);
+        }
+
         private void UpdateSelectedMeshes()
         {
             if (isSettingDefaultInfo) return;
             if (meshIsSelected)
             {
                 isSettingDefaultInfo = true;
-                ResetModifierNumBoxValues();
                 bool hasIndices = selectedMeshIndices.Count != 0;
+                ResetModifierNumBoxValues();
                 meshModifiersContainer.Enabled = hasIndices;
                 if (hasIndices)
                 {
+                    UpdateModifierNumBoxValues();
                     EnableDisableExtraModifierOptions();
                     scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = 100;
                     rotXNumBox.Value = rotYNumBox.Value = rotZNumBox.Value = 0;
@@ -1234,7 +1270,6 @@ namespace FLVER_Editor
                 selectedDummyIndices.RemoveAt(selectedDummyIndices.IndexOf(i));
                 flver.Dummies.RemoveAt(i);
             }
-            ResetModifierNumBoxValues();
             meshModifiersContainer.Enabled = meshIsSelected = dummyIsSelected = false;
             DeselectAllSelectedThings();
             UpdateUI();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
@@ -63,6 +64,87 @@ namespace FLVER_Editor
             }
             var newTexture = new FLVER.Texture { Type = typeName, Path = newPath, ScaleX = 1, ScaleY = 1, Unk10 = 1, Unk11 = true };
             material.Textures.Add(newTexture);
+        }
+
+        public static FLVER.Material GetBaseMaterial(string albedoPath = null, string metallicPath = null, string normalPath = null)
+        {
+            var baseMaterial = new FLVER.Material("", "C[AMSN]_e.mtd", 390)
+            {
+                GXBytes = new byte[]
+                {
+                    71,
+                    88,
+                    48,
+                    48,
+                    102,
+                    0,
+                    0,
+                    0,
+                    52,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    255,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    127,
+                    100,
+                    0,
+                    0,
+                    0,
+                    12,
+                    0,
+                    0,
+                    0
+                }
+            };
+            SetMaterialPath(baseMaterial, "C_AMSN__snp_Texture2D_2_AlbedoMap_0",
+                albedoPath != null ? Path.GetFileNameWithoutExtension(albedoPath) + ".tif" : "");
+            SetMaterialPath(baseMaterial, "C_AMSN__snp_Texture2D_0_MetallicMap_0",
+                metallicPath != null ? Path.GetFileNameWithoutExtension(metallicPath) + ".tif" : "");
+            SetMaterialPath(baseMaterial, "C_AMSN__snp_Texture2D_7_NormalMap_4",
+                normalPath != null ? Path.GetFileNameWithoutExtension(normalPath) + ".tif" : "");
+            return baseMaterial;
         }
     }
 }
