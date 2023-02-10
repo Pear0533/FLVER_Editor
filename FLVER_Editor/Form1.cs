@@ -65,14 +65,10 @@ namespace FLVER_Editor
         public static readonly string rootFolderPath = Path.GetDirectoryName(Application.ExecutablePath);
         private static readonly string materialPresetsFilePath = $"{rootFolderPath}/mpresets.json";
         private static readonly string dummyPresetsFilePath = $"{rootFolderPath}/dpresets.json";
-        private static readonly string mPresetsConfigFilePath = $"{rootFolderPath}/mpresetsconfig.txt";
-        private static readonly string dPresetsConfigFilePath = $"{rootFolderPath}/dpresetsconfig.txt";
-        private static readonly string matBinBndConfigPath = $"{rootFolderPath}/matbinbndconfig.txt";
-        private static readonly string matTableViewConfigPath = $"{rootFolderPath}/mattableviewconfig.txt";
-        private static readonly string dummyThicknessConfigPath = $"{rootFolderPath}/dummythicknessconfig.txt";
-        private static readonly string autoSaveIntervalConfigPath = $"{rootFolderPath}/autosaveintervalconfig.txt";
-        private static readonly string autoSaveEnabledConfigPath = $"{rootFolderPath}/autosaveenabledconfig.txt";
-        private static readonly string dummyIdsVisibilityConfigPath = $"{rootFolderPath}/dummyidsvisiconfig.txt";
+        private static readonly string userConfigJsonPath = $"{rootFolderPath}/userconfig.json";
+        private static JObject userConfigJson = new JObject();
+        private static int currMaterialsTableSplitDistance;
+        private static string currAutoSaveInterval;
         private static bool meshIsSelected;
         private static bool dummyIsSelected;
         private static bool meshIsHidden;
@@ -92,6 +88,7 @@ namespace FLVER_Editor
             InitializeComponent();
             CheckForUpdates();
             GloballyDisableDataTableColumnSorting();
+            ReadUserConfig();
             SetMaterialsTableView();
             SetDummyThickness();
             SetAutoSaveInterval();
@@ -103,23 +100,29 @@ namespace FLVER_Editor
             if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
         }
 
+        private static void ReadUserConfig()
+        {
+            if (File.Exists(userConfigJsonPath)) userConfigJson = JObject.Parse(File.ReadAllText(userConfigJsonPath));
+        }
+
+        private static void WriteUserConfig()
+        {
+            File.WriteAllText(userConfigJsonPath, JsonConvert.SerializeObject(userConfigJson, Formatting.Indented));
+        }
+
         private void SetAutoSaveEnabled()
         {
-            try
-            {
-                autoSaveTimer.Enabled = !bool.Parse(File.ReadAllText(autoSaveEnabledConfigPath));
-                ToggleAutoSaveState(false, false);
-            }
-            catch { }
+            var autoSaveEnabledStr = userConfigJson["IsAutoSaveEnabled"]?.ToString();
+            if (autoSaveEnabledStr == null) return;
+            autoSaveTimer.Enabled = !bool.Parse(autoSaveEnabledStr);
+            ToggleAutoSaveState(false, false);
         }
 
         private static void SetDummyIDsVisibility()
         {
-            try
-            {
-                areDummyIdsVisible = bool.Parse(File.ReadAllText(dummyIdsVisibilityConfigPath));
-            }
-            catch { }
+            var dummyIdsVisibilityStr = userConfigJson["AreDummyIDsVisible"]?.ToString();
+            if (dummyIdsVisibilityStr == null) return;
+            areDummyIdsVisible = bool.Parse(dummyIdsVisibilityStr);
         }
 
         private void ToggleAutoSaveState(bool showInfo, bool writeToConfig)
@@ -136,14 +139,16 @@ namespace FLVER_Editor
                 autoSaveTimer.Enabled = true;
                 autoSaveTimer.Start();
             }
-            if (writeToConfig) File.WriteAllText(autoSaveEnabledConfigPath, autoSaveTimer.Enabled.ToString().ToLower());
+            userConfigJson["IsAutoSaveEnabled"] = autoSaveTimer.Enabled;
+            if (writeToConfig) userConfigJson["IsAutoSaveEnabled"] = autoSaveTimer.Enabled;
+            WriteUserConfig();
         }
 
         private void SetAutoSaveInterval()
         {
             try
             {
-                CheckAutoSaveInterval(File.ReadAllText(autoSaveIntervalConfigPath));
+                CheckAutoSaveInterval(userConfigJson["AutoSaveInterval"]?.ToString());
             }
             catch { }
             autoSaveIntervalSelector.Text = (autoSaveTimer.Interval / 60000).ToString();
@@ -151,22 +156,20 @@ namespace FLVER_Editor
 
         private void SetDummyThickness()
         {
-            try
+            var dummyThicknessStr = userConfigJson["DummyThickness"]?.ToString();
+            if (dummyThicknessStr != null)
             {
-                dummyThickness = int.Parse(File.ReadAllText(dummyThicknessConfigPath));
+                dummyThickness = int.Parse(dummyThicknessStr);
                 if (dummyThickness > dummyThicknessSelector.Items.Count) dummyThickness = 5;
             }
-            catch { }
             dummyThicknessSelector.SelectedIndex = dummyThickness - 1;
         }
 
         private void SetMaterialsTableView()
         {
-            try
-            {
-                materialsPagePanelsContainer.SplitterDistance = int.Parse(File.ReadAllText(matTableViewConfigPath));
-            }
-            catch { }
+            var materialsTableViewSplitDistanceStr = userConfigJson["MaterialsTableViewSplitDistance"]?.ToString();
+            if (materialsTableViewSplitDistanceStr == null) return;
+            materialsPagePanelsContainer.SplitterDistance = int.Parse(materialsTableViewSplitDistanceStr);
         }
 
         private void ChangeTheme(Control control, Color backColor, Color foreColor)
@@ -2007,7 +2010,8 @@ namespace FLVER_Editor
             {
                 try
                 {
-                    matBinBndPath = File.ReadAllText(matBinBndConfigPath);
+                    var matBinBndPathStr = userConfigJson["MatBinBndPath"]?.ToString();
+                    matBinBndPath = matBinBndPathStr ?? throw new Exception();
                     File.ReadAllBytes(matBinBndPath);
                 }
                 catch
@@ -2017,7 +2021,7 @@ namespace FLVER_Editor
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
                         matBinBndPath = dialog.FileName;
-                        File.WriteAllText(matBinBndConfigPath, matBinBndPath);
+                        userConfigJson["MatBinBndPath"] = matBinBndPath;
                     }
                     else
                     {
@@ -2048,13 +2052,16 @@ namespace FLVER_Editor
         {
             if (isSettingDefaultInfo) return;
             dummyThickness = int.Parse(dummyThicknessSelector.Items[dummyThicknessSelector.SelectedIndex].ToString());
-            File.WriteAllText(dummyThicknessConfigPath, dummyThickness.ToString());
+            userConfigJson["DummyThickness"] = dummyThickness;
+            WriteUserConfig();
             UpdateMesh();
         }
 
         private void MaterialsPagePanelsContainerSplitterMoved(object sender, SplitterEventArgs e)
         {
-            File.WriteAllText(matTableViewConfigPath, e.SplitX.ToString());
+            currMaterialsTableSplitDistance = int.Parse(e.SplitX.ToString());
+            userConfigJson["MaterialsTableViewSplitDistance"] = currMaterialsTableSplitDistance;
+            WriteUserConfig();
         }
 
         private static void MirrorMesh(int nbi)
@@ -2099,7 +2106,9 @@ namespace FLVER_Editor
                 int newInterval = int.Parse(intervalStr);
                 if (newInterval == 0 || newInterval > 60) return false;
                 autoSaveTimer.Interval = newInterval * 60000;
-                File.WriteAllText(autoSaveIntervalConfigPath, intervalStr);
+                currAutoSaveInterval = intervalStr;
+                userConfigJson["AutoSaveInterval"] = currAutoSaveInterval;
+                WriteUserConfig();
             }
             catch
             {
@@ -2246,7 +2255,8 @@ namespace FLVER_Editor
         private void ToggleDummyIDsVisibilityToolStripMenuItem_Click(object sender, EventArgs e)
         {
             areDummyIdsVisible = !areDummyIdsVisible;
-            File.WriteAllText(dummyIdsVisibilityConfigPath, areDummyIdsVisible.ToString().ToLower());
+            userConfigJson["AreDummyIDsVisible"] = areDummyIdsVisible;
+            WriteUserConfig();
             ShowInformationDialog("The visibility state for Dummy IDs has now been changed!");
         }
 
