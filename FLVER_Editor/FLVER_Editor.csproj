@@ -134,6 +134,9 @@
     <None Include="boxobj.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Segoe UI.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="dpresets.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -43,6 +43,7 @@
             this.autoSaveIntervalSelector = new System.Windows.Forms.ToolStripTextBox();
             this.dummyThicknessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dummyThicknessSelector = new System.Windows.Forms.ToolStripComboBox();
+            this.toggleDummyIDsVisibilityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.supportPearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.patreonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.payPalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -403,7 +404,8 @@
             this.preferencesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toggleTextureRefreshToolStripMenuItem,
             this.toggleAutoSaveToolStripMenuItem,
-            this.dummyThicknessToolStripMenuItem});
+            this.dummyThicknessToolStripMenuItem,
+            this.toggleDummyIDsVisibilityToolStripMenuItem});
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
             this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(80, 22);
             this.preferencesToolStripMenuItem.Text = "Preferences";
@@ -411,7 +413,7 @@
             // toggleTextureRefreshToolStripMenuItem
             // 
             this.toggleTextureRefreshToolStripMenuItem.Name = "toggleTextureRefreshToolStripMenuItem";
-            this.toggleTextureRefreshToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.toggleTextureRefreshToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.toggleTextureRefreshToolStripMenuItem.Text = "Toggle Texture Refresh";
             this.toggleTextureRefreshToolStripMenuItem.Click += new System.EventHandler(this.ToggleTextureRefreshButtonClicked);
             // 
@@ -420,7 +422,7 @@
             this.toggleAutoSaveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.autoSaveIntervalSelector});
             this.toggleAutoSaveToolStripMenuItem.Name = "toggleAutoSaveToolStripMenuItem";
-            this.toggleAutoSaveToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.toggleAutoSaveToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.toggleAutoSaveToolStripMenuItem.Text = "Toggle AutoSave (Minutes)";
             this.toggleAutoSaveToolStripMenuItem.Click += new System.EventHandler(this.ToggleAutoSaveToolStripMenuItemClick);
             // 
@@ -436,7 +438,7 @@
             this.dummyThicknessToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.dummyThicknessSelector});
             this.dummyThicknessToolStripMenuItem.Name = "dummyThicknessToolStripMenuItem";
-            this.dummyThicknessToolStripMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.dummyThicknessToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
             this.dummyThicknessToolStripMenuItem.Text = "Dummy Thickness";
             // 
             // dummyThicknessSelector
@@ -463,6 +465,13 @@
             this.dummyThicknessSelector.Name = "dummyThicknessSelector";
             this.dummyThicknessSelector.Size = new System.Drawing.Size(121, 23);
             this.dummyThicknessSelector.SelectedIndexChanged += new System.EventHandler(this.DummyThicknessSelectorSelectedIndexChanged);
+            // 
+            // toggleDummyIDsVisibilityToolStripMenuItem
+            // 
+            this.toggleDummyIDsVisibilityToolStripMenuItem.Name = "toggleDummyIDsVisibilityToolStripMenuItem";
+            this.toggleDummyIDsVisibilityToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.toggleDummyIDsVisibilityToolStripMenuItem.Text = "Toggle Dummy IDs Visibility";
+            this.toggleDummyIDsVisibilityToolStripMenuItem.Click += new System.EventHandler(this.ToggleDummyIDsVisibilityToolStripMenuItem_Click);
             // 
             // supportPearToolStripMenuItem
             // 
@@ -2099,5 +2108,6 @@
         private System.Windows.Forms.DataGridViewButtonColumn Column19;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column7;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column8;
+        private System.Windows.Forms.ToolStripMenuItem toggleDummyIDsVisibilityToolStripMenuItem;
     }
 }

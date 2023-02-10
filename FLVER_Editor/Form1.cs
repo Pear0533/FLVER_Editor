@@ -42,7 +42,7 @@ namespace FLVER_Editor
         private const string patreonSupportUri = "https://www.patreon.com/theonlypear";
         private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
         public static List<string> arguments;
-        private static FLVER flver;
+        public static FLVER flver;
         private static byte[] currFlverBytes;
         private static BND4 flverBnd;
         private static BND4 matBinBnd;
@@ -72,6 +72,7 @@ namespace FLVER_Editor
         private static readonly string dummyThicknessConfigPath = $"{rootFolderPath}/dummythicknessconfig.txt";
         private static readonly string autoSaveIntervalConfigPath = $"{rootFolderPath}/autosaveintervalconfig.txt";
         private static readonly string autoSaveEnabledConfigPath = $"{rootFolderPath}/autosaveenabledconfig.txt";
+        private static readonly string dummyIdsVisibilityConfigPath = $"{rootFolderPath}/dummyidsvisiconfig.txt";
         private static bool meshIsSelected;
         private static bool dummyIsSelected;
         private static bool meshIsHidden;
@@ -84,6 +85,7 @@ namespace FLVER_Editor
         public static bool isSnappedBottom = false;
         public static bool isSnappedLeft = false;
         public static bool isSnappedTop = false;
+        public static bool areDummyIdsVisible = true;
 
         public MainWindow()
         {
@@ -94,6 +96,7 @@ namespace FLVER_Editor
             SetDummyThickness();
             SetAutoSaveInterval();
             SetAutoSaveEnabled();
+            SetDummyIDsVisibility();
             EnableDarkTheme();
             tabWindow.SelectedTab = meshTabPage;
             Mono3D.mainForm = this;
@@ -106,6 +109,15 @@ namespace FLVER_Editor
             {
                 autoSaveTimer.Enabled = !bool.Parse(File.ReadAllText(autoSaveEnabledConfigPath));
                 ToggleAutoSaveState(false, false);
+            }
+            catch { }
+        }
+
+        private static void SetDummyIDsVisibility()
+        {
+            try
+            {
+                areDummyIdsVisible = bool.Parse(File.ReadAllText(dummyIdsVisibilityConfigPath));
             }
             catch { }
         }
@@ -2229,6 +2241,13 @@ namespace FLVER_Editor
         private void PayPalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Process.Start(paypalSupportUri);
+        }
+
+        private void ToggleDummyIDsVisibilityToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            areDummyIdsVisible = !areDummyIdsVisible;
+            File.WriteAllText(dummyIdsVisibilityConfigPath, areDummyIdsVisible.ToString().ToLower());
+            ShowInformationDialog("The visibility state for Dummy IDs has now been changed!");
         }
 
         private enum TextureFormats

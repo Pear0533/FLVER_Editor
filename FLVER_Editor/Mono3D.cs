@@ -72,10 +72,11 @@ namespace FLVER_Editor
         private KeyboardState prevState;
         public RenderMode renderMode = RenderMode.Both;
         private bool rightClickSilence;
-        private SpriteBatch spriteBatch;
+        public SpriteBatch spriteBatch;
         private FLVER.Vertex targetV;
         private VertexInfo targetVinfo;
         private Texture2D testTexture;
+        public SpriteFont viewerFont;
 
         //  public VertexPositionColorTexture[] triTextureVertices = new VertexPositionColorTexture[0];
         public VertexTexMap[] vertexTexMapList = new VertexTexMap[0];
@@ -318,6 +319,7 @@ namespace FLVER_Editor
             var bgFileStream = new FileStream($"{MainWindow.rootFolderPath}\\bg.png", FileMode.Open);
             bgTexture = Texture2D.FromStream(GraphicsDevice, bgFileStream);
             bgFileStream.Close();
+            viewerFont = Content.Load<SpriteFont>("Segoe UI");
             //  testTexture = getTextureFromBitmap(readDdsFileToBitmap("EliteKnight.dds"),this.GraphicsDevice);
             /*  string path = @"data\img\27.png";
 
@@ -964,6 +966,13 @@ namespace FLVER_Editor
             base.Draw(gameTime);
         }
 
+        private static Vector2 GetProjectPoint(Vector3 vec, Matrix viewMatrix, Matrix projMatrix, float Width, float Height)
+        {
+            Matrix mat = Matrix.Identity * viewMatrix * projMatrix;
+            Vector4 v4 = Vector4.Transform(vec, mat);
+            return new Vector2((int)((v4.X / v4.W + 1) * (Width / 2)), (int)((1 - v4.Y / v4.W) * (Height / 2)));
+        }
+
         private void DrawGround()
         {
             // The assignment of effect.View and effect.Projection
@@ -976,16 +985,16 @@ namespace FLVER_Editor
             depthBufferState.DepthBufferEnable = true;
             depthBufferState.DepthBufferFunction = CompareFunction.LessEqual;
             GraphicsDevice.DepthStencilState = depthBufferState;
-            effect.View = Matrix.CreateLookAt(
-                cameraPosition, cameraLookAtVector, cameraUpVector);
+            var viewMatrix = Matrix.CreateLookAt(cameraPosition, cameraLookAtVector, cameraUpVector);
+            effect.View = viewMatrix;
             effect.VertexColorEnabled = true;
             float aspectRatio =
                 graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
             float fieldOfView = MathHelper.PiOver4;
             var nearClipPlane = 0.1f;
             float farClipPlane = 200;
-            effect.Projection = Matrix.CreatePerspectiveFieldOfView(
-                fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
+            var projection = Matrix.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
+            effect.Projection = projection;
             /* foreach (var pass in effect.CurrentTechnique.Passes)
              {
                  pass.Apply();
@@ -1017,6 +1026,13 @@ namespace FLVER_Editor
             {
                 pass.Apply();
                 graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines, 0, 3);
+            }
+            if (!MainWindow.areDummyIdsVisible) return;
+            foreach (FLVER.Dummy d in MainWindow.flver.Dummies)
+            {
+                var xnaDummyVector = new Vector3(d.Position.X, d.Position.Z, d.Position.Y);
+                Vector2 dummyPointScreenLoc = GetProjectPoint(xnaDummyVector, viewMatrix, projection, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+                spriteBatch.DrawString(viewerFont, d.ReferenceID.ToString(), dummyPointScreenLoc, Color.Yellow, 0, new Vector2(0, 0), 1f, SpriteEffects.None, 1);
             }
         }
 
