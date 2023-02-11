@@ -66,6 +66,7 @@ namespace FLVER_Editor
         private static readonly string materialPresetsFilePath = $"{rootFolderPath}/mpresets.json";
         private static readonly string dummyPresetsFilePath = $"{rootFolderPath}/dpresets.json";
         private static readonly string userConfigJsonPath = $"{rootFolderPath}/userconfig.json";
+        private const string baseMaterialDictKey = "Base Material";
         private static JObject userConfigJson = new JObject();
         private static int currMaterialsTableSplitDistance;
         private static string currAutoSaveInterval;
@@ -477,7 +478,7 @@ namespace FLVER_Editor
             try
             {
                 dict = new JavaScriptSerializer().Deserialize<Dictionary<object, object>>(File.ReadAllText(filePath));
-                if (dict == materialPresets) dict.Add("Base Material", Program.GetBaseMaterial());
+                if (dict == materialPresets && !dict.ContainsKey(baseMaterialDictKey)) dict.Add(baseMaterialDictKey, Program.GetBaseMaterial());
                 selector.Items.AddRange(dict.Keys.ToArray());
             }
             catch
@@ -891,8 +892,7 @@ namespace FLVER_Editor
             if (selectedDummyIndices.Count > 0)
             {
                 FLVER.Dummy maxDummy = flver.Dummies[0];
-                List<FLVER.Dummy> maxDummies = flver.Dummies
-                    .Where(d => d.Position.X > maxDummy.Position.X && d.Position.Y > maxDummy.Position.Y && d.Position.Z > maxDummy.Position.Z).ToList();
+                List<FLVER.Dummy> maxDummies = flver.Dummies.Where(d => d.Position.X > maxDummy.Position.X && d.Position.Y > maxDummy.Position.Y && d.Position.Z > maxDummy.Position.Z).ToList();
                 foreach (FLVER.Dummy d in maxDummies) maxDummy = d;
                 allObjectsXPos += maxDummy.Position.X;
                 allObjectsYPos += maxDummy.Position.Y;
