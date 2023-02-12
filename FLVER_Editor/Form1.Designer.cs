@@ -163,6 +163,9 @@
             this.setAllBBsMaxSizeButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.hideAllMeshesButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.uniformScaleTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.searchBox = new System.Windows.Forms.TextBox();
+            this.searchBoxStr = new System.Windows.Forms.Label();
+            this.meshTabDataTableSelector = new System.Windows.Forms.ComboBox();
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -213,6 +216,7 @@
             this.ribbon.Size = new System.Drawing.Size(1094, 24);
             this.ribbon.TabIndex = 0;
             this.ribbon.Text = "menuStrip1";
+            this.ribbon.Click += new System.EventHandler(this.DefocusSearchBox);
             // 
             // fileToolStripMenuItem
             // 
@@ -428,6 +432,7 @@
             // 
             // autoSaveIntervalSelector
             // 
+            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -506,6 +511,7 @@
             // 
             // multiSelectMenuTextbox
             // 
+            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -1861,6 +1867,8 @@
             this.tabWindow.SelectedIndex = 0;
             this.tabWindow.Size = new System.Drawing.Size(1095, 488);
             this.tabWindow.TabIndex = 1;
+            this.tabWindow.SelectedIndexChanged += new System.EventHandler(this.TabWindow_SelectedIndexChanged);
+            this.tabWindow.Click += new System.EventHandler(this.DefocusSearchBox);
             this.tabWindow.DragDrop += new System.Windows.Forms.DragEventHandler(this.TabWindowDragDrop);
             this.tabWindow.DragEnter += new System.Windows.Forms.DragEventHandler(this.TabWindowDragEnter);
             // 
@@ -1891,13 +1899,46 @@
             this.autoSaveTimer.Interval = 60000;
             this.autoSaveTimer.Tick += new System.EventHandler(this.AutoSaveTimerTick);
             // 
+            // searchBox
+            // 
+            this.searchBox.Location = new System.Drawing.Point(193, 26);
+            this.searchBox.Name = "searchBox";
+            this.searchBox.Size = new System.Drawing.Size(226, 20);
+            this.searchBox.TabIndex = 3;
+            this.searchBox.TextChanged += new System.EventHandler(this.SearchBox_TextChanged);
+            // 
+            // searchBoxStr
+            // 
+            this.searchBoxStr.AutoSize = true;
+            this.searchBoxStr.Location = new System.Drawing.Point(146, 29);
+            this.searchBoxStr.Name = "searchBoxStr";
+            this.searchBoxStr.Size = new System.Drawing.Size(44, 13);
+            this.searchBoxStr.TabIndex = 1;
+            this.searchBoxStr.Text = "Search:";
+            // 
+            // meshTabDataTableSelector
+            // 
+            this.meshTabDataTableSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.meshTabDataTableSelector.FormattingEnabled = true;
+            this.meshTabDataTableSelector.Items.AddRange(new object[] {
+            "Mesh",
+            "Dummies"});
+            this.meshTabDataTableSelector.Location = new System.Drawing.Point(424, 25);
+            this.meshTabDataTableSelector.Name = "meshTabDataTableSelector";
+            this.meshTabDataTableSelector.Size = new System.Drawing.Size(124, 21);
+            this.meshTabDataTableSelector.TabIndex = 1;
+            this.meshTabDataTableSelector.SelectedIndexChanged += new System.EventHandler(this.MeshTabDataTableSelector_SelectedIndexChanged);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1094, 511);
+            this.Controls.Add(this.searchBox);
             this.Controls.Add(this.copyrightStr);
             this.Controls.Add(this.versionStr);
+            this.Controls.Add(this.searchBoxStr);
+            this.Controls.Add(this.meshTabDataTableSelector);
             this.Controls.Add(this.tabWindow);
             this.Controls.Add(this.ribbon);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -2109,5 +2150,8 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column7;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column8;
         private System.Windows.Forms.ToolStripMenuItem toggleDummyIDsVisibilityToolStripMenuItem;
+        private System.Windows.Forms.TextBox searchBox;
+        private System.Windows.Forms.Label searchBoxStr;
+        private System.Windows.Forms.ComboBox meshTabDataTableSelector;
     }
 }

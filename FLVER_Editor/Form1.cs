@@ -105,6 +105,7 @@ namespace FLVER_Editor
             SetDummyIDsVisibility();
             EnableDarkTheme();
             tabWindow.SelectedTab = meshTabPage;
+            meshTabDataTableSelector.SelectedIndex = 0;
             Mono3D.mainForm = this;
             if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
         }
@@ -2266,6 +2267,71 @@ namespace FLVER_Editor
             userConfigJson["AreDummyIDsVisible"] = areDummyIdsVisible;
             WriteUserConfig();
             ShowInformationDialog("The visibility state for Dummy IDs has now been changed!");
+        }
+
+        private void DefocusSearchBox(object sender, EventArgs e)
+        {
+            copyrightStr.Focus();
+        }
+
+        private void FilterDataTable(DataGridView dataTable)
+        {
+            string[] tokens = searchBox.Text.Split(' ');
+            foreach (string token in tokens)
+            {
+                foreach (DataGridViewRow row in dataTable.Rows)
+                    row.Visible = row.Cells[1].Value.ToString().ToLower().Contains(token.ToLower());
+            }
+        }
+
+        private void UpdateSearchResults()
+        {
+            switch (tabWindow.SelectedIndex)
+            {
+                case 0:
+                    FilterDataTable(bonesTable);
+                    break;
+                case 1:
+                    FilterDataTable(materialsTable);
+                    break;
+                case 2 when meshTabDataTableSelector.SelectedIndex == 0:
+                    FilterDataTable(meshTable);
+                    break;
+                case 2 when meshTabDataTableSelector.SelectedIndex == 1:
+                    FilterDataTable(dummiesTable);
+                    break;
+            }
+        }
+
+        private void SearchBox_TextChanged(object sender, EventArgs e)
+        {
+            UpdateSearchResults();
+        }
+
+        private void ClearSearchResults()
+        {
+            searchBox.Text = "";
+            UpdateSearchResults();
+        }
+
+        private void MeshTabDataTableSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (isSettingDefaultInfo) return;
+            isSettingDefaultInfo = true;
+            int prevSelectorIndex = meshTabDataTableSelector.SelectedIndex;
+            meshTabDataTableSelector.SelectedIndex = 0;
+            ClearSearchResults();
+            meshTabDataTableSelector.SelectedIndex = 1;
+            ClearSearchResults();
+            meshTabDataTableSelector.SelectedIndex = prevSelectorIndex;
+            isSettingDefaultInfo = false;
+        }
+
+        private void TabWindow_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            meshTabDataTableSelector.Visible = tabWindow.SelectedIndex == 2;
+            copyrightStr.Focus();
+            ClearSearchResults();
         }
 
         private enum TextureFormats
