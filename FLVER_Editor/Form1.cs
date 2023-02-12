@@ -41,6 +41,10 @@ namespace FLVER_Editor
         private const string version = "1.82";
         private const string patreonSupportUri = "https://www.patreon.com/theonlypear";
         private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
+        private const string updateVersionUri = "https://pastebin.com/raw/9f04Uf1i";
+        private const string updatePromptMessage = "A new version of FLVER Editor is available, would you like to update?";
+        private const string updateZipUri = "https://flvereditor3.000webhostapp.com/update/MySFformat.zip";
+        private const string baseMaterialDictKey = "Base Material";
         public static List<string> arguments;
         public static FLVER flver;
         private static byte[] currFlverBytes;
@@ -66,7 +70,11 @@ namespace FLVER_Editor
         private static readonly string materialPresetsFilePath = $"{rootFolderPath}/mpresets.json";
         private static readonly string dummyPresetsFilePath = $"{rootFolderPath}/dpresets.json";
         private static readonly string userConfigJsonPath = $"{rootFolderPath}/userconfig.json";
-        private const string baseMaterialDictKey = "Base Material";
+        private static readonly string backupExecPath = $"{rootFolderPath}/MySFformat.bak";
+        private static readonly string zipPath = $"{rootFolderPath}/MySFformat.zip";
+        private static readonly string updateFolderPath = $"{rootFolderPath}/update/";
+        private static readonly string execPath = $"{rootFolderPath}/MySFformat.exe";
+        private static readonly string updateExecPath = $"{updateFolderPath}/MySFformat.exe";
         private static JObject userConfigJson = new JObject();
         private static int currMaterialsTableSplitDistance;
         private static string currAutoSaveInterval;
@@ -228,19 +236,18 @@ namespace FLVER_Editor
             try
             {
                 var client = new WebClient();
-                if (client.DownloadString("https://pastebin.com/raw/9f04Uf1i").Contains(version))
+                if (client.DownloadString(updateVersionUri).Contains(version))
                 {
-                    if (File.Exists($"{rootFolderPath}/MySFformat.bak")) File.Delete($"{rootFolderPath}/MySFformat.bak");
+                    if (File.Exists(backupExecPath)) File.Delete(backupExecPath);
                     return;
                 }
-                if (ShowQuestionDialog("A new version of FLVER Editor is available, would you like to update?") != DialogResult.Yes) return;
-                var zipPath = $"{rootFolderPath}/MySFformat.zip";
-                client.DownloadFile("https://flvereditor3.000webhostapp.com/update/MySFformat.zip", zipPath);
-                ZipFile.ExtractToDirectory(zipPath, $"{rootFolderPath}/update/");
-                if (File.Exists($"{rootFolderPath}/MySFformat.zip")) File.Delete($"{rootFolderPath}/MySFformat.zip");
-                File.Move($"{rootFolderPath}/MySFformat.exe", $"{rootFolderPath}/MySFformat.bak");
-                File.Copy($"{rootFolderPath}/update/MySFformat.exe", $"{rootFolderPath}/MySFformat.exe", true);
-                if (Directory.Exists($"{rootFolderPath}/update/")) Directory.Delete($"{rootFolderPath}/update/", true);
+                if (ShowQuestionDialog(updatePromptMessage) != DialogResult.Yes) return;
+                client.DownloadFile(updateZipUri, zipPath);
+                ZipFile.ExtractToDirectory(zipPath, updateFolderPath);
+                if (File.Exists(zipPath)) File.Delete(zipPath);
+                File.Move(execPath, backupExecPath);
+                File.Copy(updateExecPath, execPath, true);
+                if (Directory.Exists(updateFolderPath)) Directory.Delete(updateFolderPath, true);
                 Process.Start(Application.ExecutablePath, arguments[0]);
                 Environment.Exit(Environment.ExitCode);
             }
@@ -892,7 +899,8 @@ namespace FLVER_Editor
             if (selectedDummyIndices.Count > 0)
             {
                 FLVER.Dummy maxDummy = flver.Dummies[0];
-                List<FLVER.Dummy> maxDummies = flver.Dummies.Where(d => d.Position.X > maxDummy.Position.X && d.Position.Y > maxDummy.Position.Y && d.Position.Z > maxDummy.Position.Z).ToList();
+                List<FLVER.Dummy> maxDummies = flver.Dummies
+                    .Where(d => d.Position.X > maxDummy.Position.X && d.Position.Y > maxDummy.Position.Y && d.Position.Z > maxDummy.Position.Z).ToList();
                 foreach (FLVER.Dummy d in maxDummies) maxDummy = d;
                 allObjectsXPos += maxDummy.Position.X;
                 allObjectsYPos += maxDummy.Position.Y;
