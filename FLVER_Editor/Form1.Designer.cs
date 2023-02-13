@@ -1478,8 +1478,8 @@
             this.materialsPagePanelsContainer.Panel2.Controls.Add(this.label10);
             this.materialsPagePanelsContainer.Panel2.Controls.Add(this.applyMatBinTexturesButton);
             this.materialsPagePanelsContainer.Panel2.Controls.Add(this.texturesTable);
-            this.materialsPagePanelsContainer.Size = new System.Drawing.Size(1103, 485);
-            this.materialsPagePanelsContainer.SplitterDistance = 549;
+            this.materialsPagePanelsContainer.Size = new System.Drawing.Size(1021, 456);
+            this.materialsPagePanelsContainer.SplitterDistance = 475;
             this.materialsPagePanelsContainer.TabIndex = 6;
             this.materialsPagePanelsContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.MaterialsPagePanelsContainerSplitterMoved);
             // 
@@ -1520,7 +1520,7 @@
             this.materialsTable.RowHeadersWidth = 62;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
-            this.materialsTable.Size = new System.Drawing.Size(542, 397);
+            this.materialsTable.Size = new System.Drawing.Size(468, 394);
             this.materialsTable.TabIndex = 6;
             this.materialsTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableButtonClicked);
             this.materialsTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableCellValueChanged);
@@ -1626,7 +1626,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(-2, 43);
+            this.label10.Location = new System.Drawing.Point(0, 43);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(51, 13);
             this.label10.TabIndex = 11;
@@ -1636,7 +1636,7 @@
             // 
             this.applyMatBinTexturesButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.applyMatBinTexturesButton.Location = new System.Drawing.Point(1, 17);
+            this.applyMatBinTexturesButton.Location = new System.Drawing.Point(3, 17);
             this.applyMatBinTexturesButton.MaximumSize = new System.Drawing.Size(135, 233);
             this.applyMatBinTexturesButton.MinimumSize = new System.Drawing.Size(135, 23);
             this.applyMatBinTexturesButton.Name = "applyMatBinTexturesButton";
@@ -1661,13 +1661,13 @@
             this.dataGridViewTextBoxColumn5,
             this.dataGridViewTextBoxColumn6,
             this.dataGridViewButtonColumn1});
-            this.texturesTable.Location = new System.Drawing.Point(0, 59);
+            this.texturesTable.Location = new System.Drawing.Point(3, 59);
             this.texturesTable.Name = "texturesTable";
             this.texturesTable.RowHeadersVisible = false;
             this.texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            this.texturesTable.Size = new System.Drawing.Size(528, 397);
+            this.texturesTable.Size = new System.Drawing.Size(536, 394);
             this.texturesTable.TabIndex = 7;
             this.texturesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableButtonClicked);
             this.texturesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableCellValueChanged);
@@ -1898,6 +1898,7 @@
             this.TransparencyKey = System.Drawing.Color.Maroon;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindowClosing);
             this.Load += new System.EventHandler(this.MainWindowLoad);
+            this.Shown += new System.EventHandler(this.DefocusSearchBox);
             this.LocationChanged += new System.EventHandler(this.MainWindow_LocationChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainWindowKeyDown);
             this.ribbon.ResumeLayout(false);
