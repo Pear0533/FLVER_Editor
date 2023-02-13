@@ -188,15 +188,6 @@ namespace FLVER_Editor
             tabWindow.Refresh();
             foreach (Control subControl in control.Controls)
             {
-                if (subControl == xLeftRightLabel
-                    || subControl == xHorizontalLabel
-                    || subControl == xSwivelLabel
-                    || subControl == yUpDownLabel
-                    || subControl == yVerticalLabel
-                    || subControl == yRollLabel
-                    || subControl == zInOutLabel
-                    || subControl == zThicknessLabel
-                    || subControl == zCartwheelLabel) continue;
                 switch (subControl)
                 {
                     case DataGridView table:
@@ -220,6 +211,15 @@ namespace FLVER_Editor
                         break;
                 }
                 subControl.BackColor = backColor;
+                if (subControl == transXNumBox
+                    || subControl == transYNumBox
+                    || subControl == transZNumBox
+                    || subControl == scaleXNumBox
+                    || subControl == scaleYNumBox
+                    || subControl == scaleZNumBox
+                    || subControl == rotXNumBox
+                    || subControl == rotYNumBox
+                    || subControl == rotZNumBox) continue;
                 subControl.ForeColor = foreColor;
                 ChangeTheme(subControl, backColor, foreColor);
             }
@@ -816,7 +816,7 @@ namespace FLVER_Editor
 
         private void TexturesTableButtonClicked(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex != 2) return;
+            if (e.RowIndex < 0 || e.ColumnIndex != 2) return;
             var dialog = new OpenFileDialog { Filter = imageFilesFilter };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             flver.Materials[selectedMaterialIndex].Textures[e.RowIndex].Path = $"{Path.GetFileNameWithoutExtension(dialog.FileName)}.tif";
@@ -998,6 +998,7 @@ namespace FLVER_Editor
 
         private void MeshTableSelectCheckboxClicked(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex < 0) return;
             switch (e.ColumnIndex)
             {
                 case 2:
@@ -1793,14 +1794,6 @@ namespace FLVER_Editor
                 case DialogResult.Cancel:
                     e.Cancel = true;
                     break;
-                case DialogResult.None:
-                case DialogResult.OK:
-                case DialogResult.Abort:
-                case DialogResult.Retry:
-                case DialogResult.Ignore:
-                case DialogResult.No:
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 

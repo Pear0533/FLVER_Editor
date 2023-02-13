@@ -83,15 +83,6 @@
             this.mirrorYCheckbox = new System.Windows.Forms.CheckBox();
             this.mirrorXCheckbox = new System.Windows.Forms.CheckBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.zCartwheelLabel = new System.Windows.Forms.Label();
-            this.yRollLabel = new System.Windows.Forms.Label();
-            this.xSwivelLabel = new System.Windows.Forms.Label();
-            this.zThicknessLabel = new System.Windows.Forms.Label();
-            this.yVerticalLabel = new System.Windows.Forms.Label();
-            this.xHorizontalLabel = new System.Windows.Forms.Label();
-            this.zInOutLabel = new System.Windows.Forms.Label();
-            this.yUpDownLabel = new System.Windows.Forms.Label();
-            this.xLeftRightLabel = new System.Windows.Forms.Label();
             this.deleteFacesetsCheckbox = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.centerToWorldButton = new System.Windows.Forms.Button();
@@ -166,6 +157,15 @@
             this.searchBoxStr = new System.Windows.Forms.Label();
             this.meshTabDataTableSelector = new System.Windows.Forms.ComboBox();
             this.presetsBoxTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.xLeftRightTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.xHorizontalTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.xSwivelTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.yUpDownTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.yVerticalTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.yRollTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.zInOutTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.zThicknessTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.zCartwheelTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -213,7 +213,7 @@
             this.ribbon.Location = new System.Drawing.Point(0, 0);
             this.ribbon.Name = "ribbon";
             this.ribbon.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.ribbon.Size = new System.Drawing.Size(1094, 24);
+            this.ribbon.Size = new System.Drawing.Size(1034, 24);
             this.ribbon.TabIndex = 0;
             this.ribbon.Text = "menuStrip1";
             this.ribbon.Click += new System.EventHandler(this.DefocusSearchBox);
@@ -521,7 +521,7 @@
             this.meshTabPage.Controls.Add(this.meshPagePanelsContainer);
             this.meshTabPage.Location = new System.Drawing.Point(4, 22);
             this.meshTabPage.Name = "meshTabPage";
-            this.meshTabPage.Size = new System.Drawing.Size(1087, 462);
+            this.meshTabPage.Size = new System.Drawing.Size(1027, 462);
             this.meshTabPage.TabIndex = 2;
             this.meshTabPage.Text = "Mesh";
             this.meshTabPage.UseVisualStyleBackColor = true;
@@ -537,7 +537,7 @@
             this.functionsGroupBox.Controls.Add(this.solveAllBBsButton);
             this.functionsGroupBox.Location = new System.Drawing.Point(9, 5);
             this.functionsGroupBox.Name = "functionsGroupBox";
-            this.functionsGroupBox.Size = new System.Drawing.Size(1068, 63);
+            this.functionsGroupBox.Size = new System.Drawing.Size(1008, 63);
             this.functionsGroupBox.TabIndex = 17;
             this.functionsGroupBox.TabStop = false;
             this.functionsGroupBox.Text = "Functions";
@@ -627,8 +627,8 @@
             // meshPagePanelsContainer.Panel2
             // 
             this.meshPagePanelsContainer.Panel2.Controls.Add(this.meshModifiersContainer);
-            this.meshPagePanelsContainer.Size = new System.Drawing.Size(1074, 389);
-            this.meshPagePanelsContainer.SplitterDistance = 534;
+            this.meshPagePanelsContainer.Size = new System.Drawing.Size(1014, 389);
+            this.meshPagePanelsContainer.SplitterDistance = 504;
             this.meshPagePanelsContainer.TabIndex = 0;
             // 
             // meshPageTablesContainer
@@ -654,7 +654,7 @@
             this.meshPageTablesContainer.Panel2.Controls.Add(this.dummiesTableOKButton);
             this.meshPageTablesContainer.Panel2.Controls.Add(this.label5);
             this.meshPageTablesContainer.Panel2.Controls.Add(this.dummyPresetsSelector);
-            this.meshPageTablesContainer.Size = new System.Drawing.Size(528, 383);
+            this.meshPageTablesContainer.Size = new System.Drawing.Size(498, 383);
             this.meshPageTablesContainer.SplitterDistance = 184;
             this.meshPageTablesContainer.TabIndex = 12;
             // 
@@ -681,7 +681,7 @@
             this.meshTable.RowHeadersWidth = 62;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.meshTable.Size = new System.Drawing.Size(522, 163);
+            this.meshTable.Size = new System.Drawing.Size(492, 163);
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTableSelectCheckboxClicked);
             this.meshTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTableCellValueChanged);
@@ -741,7 +741,7 @@
             this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(191, 5);
+            this.label13.Location = new System.Drawing.Point(161, 5);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(45, 13);
             this.label13.TabIndex = 19;
@@ -751,7 +751,7 @@
             // 
             this.addDummyButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.addDummyButton.Location = new System.Drawing.Point(94, 0);
+            this.addDummyButton.Location = new System.Drawing.Point(64, 0);
             this.addDummyButton.MaximumSize = new System.Drawing.Size(95, 21);
             this.addDummyButton.MinimumSize = new System.Drawing.Size(95, 21);
             this.addDummyButton.Name = "addDummyButton";
@@ -765,7 +765,7 @@
             // 
             this.addAllDummiesToPresetsButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.addAllDummiesToPresetsButton.Location = new System.Drawing.Point(415, 0);
+            this.addAllDummiesToPresetsButton.Location = new System.Drawing.Point(385, 0);
             this.addAllDummiesToPresetsButton.MaximumSize = new System.Drawing.Size(110, 21);
             this.addAllDummiesToPresetsButton.MinimumSize = new System.Drawing.Size(110, 21);
             this.addAllDummiesToPresetsButton.Name = "addAllDummiesToPresetsButton";
@@ -799,7 +799,7 @@
             this.dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            this.dummiesTable.Size = new System.Drawing.Size(522, 171);
+            this.dummiesTable.Size = new System.Drawing.Size(492, 171);
             this.dummiesTable.TabIndex = 12;
             this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTableSelectCheckboxClicked);
             this.dummiesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTableCellValueChanged);
@@ -852,7 +852,7 @@
             // 
             this.dummiesTableOKButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dummiesTableOKButton.Location = new System.Drawing.Point(366, 0);
+            this.dummiesTableOKButton.Location = new System.Drawing.Point(335, 0);
             this.dummiesTableOKButton.MaximumSize = new System.Drawing.Size(45, 21);
             this.dummiesTableOKButton.MinimumSize = new System.Drawing.Size(45, 21);
             this.dummiesTableOKButton.Name = "dummiesTableOKButton";
@@ -879,7 +879,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dummyPresetsSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.dummyPresetsSelector.FormattingEnabled = true;
-            this.dummyPresetsSelector.Location = new System.Drawing.Point(239, 0);
+            this.dummyPresetsSelector.Location = new System.Drawing.Point(209, 0);
             this.dummyPresetsSelector.Name = "dummyPresetsSelector";
             this.dummyPresetsSelector.Size = new System.Drawing.Size(121, 21);
             this.dummyPresetsSelector.TabIndex = 15;
@@ -892,15 +892,6 @@
             this.meshModifiersContainer.Controls.Add(this.mirrorYCheckbox);
             this.meshModifiersContainer.Controls.Add(this.mirrorXCheckbox);
             this.meshModifiersContainer.Controls.Add(this.label7);
-            this.meshModifiersContainer.Controls.Add(this.zCartwheelLabel);
-            this.meshModifiersContainer.Controls.Add(this.yRollLabel);
-            this.meshModifiersContainer.Controls.Add(this.xSwivelLabel);
-            this.meshModifiersContainer.Controls.Add(this.zThicknessLabel);
-            this.meshModifiersContainer.Controls.Add(this.yVerticalLabel);
-            this.meshModifiersContainer.Controls.Add(this.xHorizontalLabel);
-            this.meshModifiersContainer.Controls.Add(this.zInOutLabel);
-            this.meshModifiersContainer.Controls.Add(this.yUpDownLabel);
-            this.meshModifiersContainer.Controls.Add(this.xLeftRightLabel);
             this.meshModifiersContainer.Controls.Add(this.deleteFacesetsCheckbox);
             this.meshModifiersContainer.Controls.Add(this.label6);
             this.meshModifiersContainer.Controls.Add(this.centerToWorldButton);
@@ -919,7 +910,7 @@
             this.meshModifiersContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.meshModifiersContainer.Location = new System.Drawing.Point(0, 0);
             this.meshModifiersContainer.Name = "meshModifiersContainer";
-            this.meshModifiersContainer.Size = new System.Drawing.Size(536, 389);
+            this.meshModifiersContainer.Size = new System.Drawing.Size(506, 389);
             this.meshModifiersContainer.TabIndex = 12;
             this.meshModifiersContainer.TabStop = false;
             this.meshModifiersContainer.Text = "Modifiers";
@@ -965,96 +956,6 @@
             this.label7.Size = new System.Drawing.Size(36, 13);
             this.label7.TabIndex = 57;
             this.label7.Text = "Mirror:";
-            // 
-            // zCartwheelLabel
-            // 
-            this.zCartwheelLabel.AutoSize = true;
-            this.zCartwheelLabel.ForeColor = System.Drawing.Color.Blue;
-            this.zCartwheelLabel.Location = new System.Drawing.Point(430, 85);
-            this.zCartwheelLabel.Name = "zCartwheelLabel";
-            this.zCartwheelLabel.Size = new System.Drawing.Size(70, 13);
-            this.zCartwheelLabel.TabIndex = 56;
-            this.zCartwheelLabel.Text = "Z [Cartwheel]";
-            // 
-            // yRollLabel
-            // 
-            this.yRollLabel.AutoSize = true;
-            this.yRollLabel.ForeColor = System.Drawing.Color.DarkGoldenrod;
-            this.yRollLabel.Location = new System.Drawing.Point(384, 85);
-            this.yRollLabel.Name = "yRollLabel";
-            this.yRollLabel.Size = new System.Drawing.Size(41, 13);
-            this.yRollLabel.TabIndex = 55;
-            this.yRollLabel.Text = "Y [Roll]";
-            // 
-            // xSwivelLabel
-            // 
-            this.xSwivelLabel.AutoSize = true;
-            this.xSwivelLabel.ForeColor = System.Drawing.Color.Red;
-            this.xSwivelLabel.Location = new System.Drawing.Point(310, 85);
-            this.xSwivelLabel.Name = "xSwivelLabel";
-            this.xSwivelLabel.Size = new System.Drawing.Size(69, 13);
-            this.xSwivelLabel.TabIndex = 54;
-            this.xSwivelLabel.Text = "=> X [Swivel]";
-            // 
-            // zThicknessLabel
-            // 
-            this.zThicknessLabel.AutoSize = true;
-            this.zThicknessLabel.ForeColor = System.Drawing.Color.Blue;
-            this.zThicknessLabel.Location = new System.Drawing.Point(462, 55);
-            this.zThicknessLabel.Name = "zThicknessLabel";
-            this.zThicknessLabel.Size = new System.Drawing.Size(72, 13);
-            this.zThicknessLabel.TabIndex = 53;
-            this.zThicknessLabel.Text = "Z [Thickness]";
-            // 
-            // yVerticalLabel
-            // 
-            this.yVerticalLabel.AutoSize = true;
-            this.yVerticalLabel.ForeColor = System.Drawing.Color.DarkGoldenrod;
-            this.yVerticalLabel.Location = new System.Drawing.Point(399, 55);
-            this.yVerticalLabel.Name = "yVerticalLabel";
-            this.yVerticalLabel.Size = new System.Drawing.Size(58, 13);
-            this.yVerticalLabel.TabIndex = 52;
-            this.yVerticalLabel.Text = "Y [Vertical]";
-            // 
-            // xHorizontalLabel
-            // 
-            this.xHorizontalLabel.AutoSize = true;
-            this.xHorizontalLabel.ForeColor = System.Drawing.Color.Red;
-            this.xHorizontalLabel.Location = new System.Drawing.Point(309, 55);
-            this.xHorizontalLabel.Name = "xHorizontalLabel";
-            this.xHorizontalLabel.Size = new System.Drawing.Size(85, 13);
-            this.xHorizontalLabel.TabIndex = 51;
-            this.xHorizontalLabel.Text = "=> X [Horizontal]";
-            // 
-            // zInOutLabel
-            // 
-            this.zInOutLabel.AutoSize = true;
-            this.zInOutLabel.ForeColor = System.Drawing.Color.Blue;
-            this.zInOutLabel.Location = new System.Drawing.Point(473, 26);
-            this.zInOutLabel.Name = "zInOutLabel";
-            this.zInOutLabel.Size = new System.Drawing.Size(54, 13);
-            this.zInOutLabel.TabIndex = 50;
-            this.zInOutLabel.Text = "Z [In/Out]";
-            // 
-            // yUpDownLabel
-            // 
-            this.yUpDownLabel.AutoSize = true;
-            this.yUpDownLabel.ForeColor = System.Drawing.Color.DarkGoldenrod;
-            this.yUpDownLabel.Location = new System.Drawing.Point(399, 26);
-            this.yUpDownLabel.Name = "yUpDownLabel";
-            this.yUpDownLabel.Size = new System.Drawing.Size(70, 13);
-            this.yUpDownLabel.TabIndex = 49;
-            this.yUpDownLabel.Text = "Y [Up/Down]";
-            // 
-            // xLeftRightLabel
-            // 
-            this.xLeftRightLabel.AutoSize = true;
-            this.xLeftRightLabel.ForeColor = System.Drawing.Color.Red;
-            this.xLeftRightLabel.Location = new System.Drawing.Point(309, 26);
-            this.xLeftRightLabel.Name = "xLeftRightLabel";
-            this.xLeftRightLabel.Size = new System.Drawing.Size(86, 13);
-            this.xLeftRightLabel.TabIndex = 46;
-            this.xLeftRightLabel.Text = "=> X [Left/Right]";
             // 
             // deleteFacesetsCheckbox
             // 
@@ -1158,6 +1059,7 @@
             // 
             this.rotZNumBox.DecimalPlaces = 3;
             this.rotZNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rotZNumBox.ForeColor = System.Drawing.Color.CornflowerBlue;
             this.rotZNumBox.Increment = new decimal(new int[] {
             5,
             0,
@@ -1177,6 +1079,7 @@
             this.rotZNumBox.Name = "rotZNumBox";
             this.rotZNumBox.Size = new System.Drawing.Size(73, 24);
             this.rotZNumBox.TabIndex = 13;
+            this.zCartwheelTooltip.SetToolTip(this.rotZNumBox, "Z (Cartwheel)");
             this.rotZNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.rotZNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.rotZNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1185,6 +1088,7 @@
             // 
             this.scaleZNumBox.DecimalPlaces = 3;
             this.scaleZNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.scaleZNumBox.ForeColor = System.Drawing.Color.CornflowerBlue;
             this.scaleZNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1204,6 +1108,7 @@
             this.scaleZNumBox.Name = "scaleZNumBox";
             this.scaleZNumBox.Size = new System.Drawing.Size(73, 24);
             this.scaleZNumBox.TabIndex = 13;
+            this.zThicknessTooltip.SetToolTip(this.scaleZNumBox, "Z (Thickness)");
             this.scaleZNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.scaleZNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.scaleZNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1212,6 +1117,7 @@
             // 
             this.rotYNumBox.DecimalPlaces = 3;
             this.rotYNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rotYNumBox.ForeColor = System.Drawing.Color.DarkGoldenrod;
             this.rotYNumBox.Increment = new decimal(new int[] {
             5,
             0,
@@ -1231,6 +1137,7 @@
             this.rotYNumBox.Name = "rotYNumBox";
             this.rotYNumBox.Size = new System.Drawing.Size(73, 24);
             this.rotYNumBox.TabIndex = 12;
+            this.yRollTooltip.SetToolTip(this.rotYNumBox, "Y (Roll)");
             this.rotYNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.rotYNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.rotYNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1239,6 +1146,7 @@
             // 
             this.transZNumBox.DecimalPlaces = 3;
             this.transZNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.transZNumBox.ForeColor = System.Drawing.Color.CornflowerBlue;
             this.transZNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1258,6 +1166,7 @@
             this.transZNumBox.Name = "transZNumBox";
             this.transZNumBox.Size = new System.Drawing.Size(73, 24);
             this.transZNumBox.TabIndex = 13;
+            this.zInOutTooltip.SetToolTip(this.transZNumBox, "Z (In/Out)");
             this.transZNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.transZNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.transZNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1266,6 +1175,7 @@
             // 
             this.rotXNumBox.DecimalPlaces = 3;
             this.rotXNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rotXNumBox.ForeColor = System.Drawing.Color.Red;
             this.rotXNumBox.Increment = new decimal(new int[] {
             5,
             0,
@@ -1285,6 +1195,7 @@
             this.rotXNumBox.Name = "rotXNumBox";
             this.rotXNumBox.Size = new System.Drawing.Size(73, 24);
             this.rotXNumBox.TabIndex = 11;
+            this.xSwivelTooltip.SetToolTip(this.rotXNumBox, "X (Swivel)");
             this.rotXNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.rotXNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.rotXNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1293,6 +1204,7 @@
             // 
             this.scaleYNumBox.DecimalPlaces = 3;
             this.scaleYNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.scaleYNumBox.ForeColor = System.Drawing.Color.DarkGoldenrod;
             this.scaleYNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1312,6 +1224,7 @@
             this.scaleYNumBox.Name = "scaleYNumBox";
             this.scaleYNumBox.Size = new System.Drawing.Size(73, 24);
             this.scaleYNumBox.TabIndex = 12;
+            this.yVerticalTooltip.SetToolTip(this.scaleYNumBox, "Y (Vertical)");
             this.scaleYNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.scaleYNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.scaleYNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1320,6 +1233,7 @@
             // 
             this.scaleXNumBox.DecimalPlaces = 3;
             this.scaleXNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.scaleXNumBox.ForeColor = System.Drawing.Color.Red;
             this.scaleXNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1339,6 +1253,7 @@
             this.scaleXNumBox.Name = "scaleXNumBox";
             this.scaleXNumBox.Size = new System.Drawing.Size(73, 24);
             this.scaleXNumBox.TabIndex = 11;
+            this.xHorizontalTooltip.SetToolTip(this.scaleXNumBox, "X (Horizontal)");
             this.scaleXNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.scaleXNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.scaleXNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1347,6 +1262,7 @@
             // 
             this.transXNumBox.DecimalPlaces = 3;
             this.transXNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.transXNumBox.ForeColor = System.Drawing.Color.Red;
             this.transXNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1366,6 +1282,7 @@
             this.transXNumBox.Name = "transXNumBox";
             this.transXNumBox.Size = new System.Drawing.Size(73, 24);
             this.transXNumBox.TabIndex = 11;
+            this.xLeftRightTooltip.SetToolTip(this.transXNumBox, "X (Left/Right)");
             this.transXNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.transXNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.transXNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1374,6 +1291,7 @@
             // 
             this.transYNumBox.DecimalPlaces = 3;
             this.transYNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.transYNumBox.ForeColor = System.Drawing.Color.DarkGoldenrod;
             this.transYNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1393,6 +1311,7 @@
             this.transYNumBox.Name = "transYNumBox";
             this.transYNumBox.Size = new System.Drawing.Size(73, 24);
             this.transYNumBox.TabIndex = 12;
+            this.yUpDownTooltip.SetToolTip(this.transYNumBox, "Y (Up/Down)");
             this.transYNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.transYNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.transYNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1471,7 +1390,7 @@
             this.materialsTabPage.Location = new System.Drawing.Point(4, 22);
             this.materialsTabPage.Name = "materialsTabPage";
             this.materialsTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.materialsTabPage.Size = new System.Drawing.Size(1087, 462);
+            this.materialsTabPage.Size = new System.Drawing.Size(1027, 462);
             this.materialsTabPage.TabIndex = 1;
             this.materialsTabPage.Text = "Materials";
             this.materialsTabPage.UseVisualStyleBackColor = true;
@@ -1746,7 +1665,7 @@
             this.bonesTabPage.Location = new System.Drawing.Point(4, 22);
             this.bonesTabPage.Name = "bonesTabPage";
             this.bonesTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.bonesTabPage.Size = new System.Drawing.Size(1087, 462);
+            this.bonesTabPage.Size = new System.Drawing.Size(1027, 462);
             this.bonesTabPage.TabIndex = 0;
             this.bonesTabPage.Text = "Bones";
             this.bonesTabPage.UseVisualStyleBackColor = true;
@@ -1778,7 +1697,7 @@
             this.bonesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
-            this.bonesTable.Size = new System.Drawing.Size(1081, 456);
+            this.bonesTable.Size = new System.Drawing.Size(1021, 456);
             this.bonesTable.TabIndex = 0;
             this.bonesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.BonesTableCellValueChanged);
             // 
@@ -1860,7 +1779,7 @@
             this.tabWindow.Location = new System.Drawing.Point(0, 24);
             this.tabWindow.Name = "tabWindow";
             this.tabWindow.SelectedIndex = 0;
-            this.tabWindow.Size = new System.Drawing.Size(1095, 488);
+            this.tabWindow.Size = new System.Drawing.Size(1035, 488);
             this.tabWindow.TabIndex = 1;
             this.tabWindow.SelectedIndexChanged += new System.EventHandler(this.TabWindow_SelectedIndexChanged);
             this.tabWindow.Click += new System.EventHandler(this.DefocusSearchBox);
@@ -1872,7 +1791,7 @@
             this.copyrightStr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.copyrightStr.AutoSize = true;
             this.copyrightStr.ForeColor = System.Drawing.Color.DarkGray;
-            this.copyrightStr.Location = new System.Drawing.Point(920, 30);
+            this.copyrightStr.Location = new System.Drawing.Point(860, 30);
             this.copyrightStr.Name = "copyrightStr";
             this.copyrightStr.Size = new System.Drawing.Size(160, 13);
             this.copyrightStr.TabIndex = 1;
@@ -1883,7 +1802,7 @@
             this.versionStr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.versionStr.AutoSize = true;
             this.versionStr.ForeColor = System.Drawing.Color.DarkGray;
-            this.versionStr.Location = new System.Drawing.Point(843, 30);
+            this.versionStr.Location = new System.Drawing.Point(783, 30);
             this.versionStr.Name = "versionStr";
             this.versionStr.Size = new System.Drawing.Size(45, 13);
             this.versionStr.TabIndex = 2;
@@ -1928,7 +1847,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1094, 511);
+            this.ClientSize = new System.Drawing.Size(1034, 511);
             this.Controls.Add(this.searchBox);
             this.Controls.Add(this.copyrightStr);
             this.Controls.Add(this.versionStr);
@@ -1939,7 +1858,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.ribbon;
-            this.MinimumSize = new System.Drawing.Size(960, 450);
+            this.MinimumSize = new System.Drawing.Size(1050, 450);
             this.Name = "MainWindow";
             this.Text = "FLVER Editor";
             this.TransparencyKey = System.Drawing.Color.Maroon;
@@ -2062,15 +1981,6 @@
         private System.Windows.Forms.ToolStripMenuItem exportJSONToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bonesToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem materialsToolStripMenuItem1;
-        private System.Windows.Forms.Label xLeftRightLabel;
-        private System.Windows.Forms.Label zThicknessLabel;
-        private System.Windows.Forms.Label yVerticalLabel;
-        private System.Windows.Forms.Label xHorizontalLabel;
-        private System.Windows.Forms.Label zInOutLabel;
-        private System.Windows.Forms.Label yUpDownLabel;
-        private System.Windows.Forms.Label zCartwheelLabel;
-        private System.Windows.Forms.Label yRollLabel;
-        private System.Windows.Forms.Label xSwivelLabel;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
@@ -2148,5 +2058,14 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column7;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column8;
         private System.Windows.Forms.ToolTip presetsBoxTooltip;
+        private System.Windows.Forms.ToolTip zCartwheelTooltip;
+        private System.Windows.Forms.ToolTip zThicknessTooltip;
+        private System.Windows.Forms.ToolTip yRollTooltip;
+        private System.Windows.Forms.ToolTip zInOutTooltip;
+        private System.Windows.Forms.ToolTip xSwivelTooltip;
+        private System.Windows.Forms.ToolTip yVerticalTooltip;
+        private System.Windows.Forms.ToolTip xHorizontalTooltip;
+        private System.Windows.Forms.ToolTip xLeftRightTooltip;
+        private System.Windows.Forms.ToolTip yUpDownTooltip;
     }
 }
