@@ -287,8 +287,9 @@ namespace FLVER_Editor
         public void RefreshTextures()
         {
             if (!MainWindow.textureRefreshEnabled) return;
-            string rawFilePath = Program.filePath.Substring(0, Program.filePath.Length - 6);
-            if (rawFilePath.EndsWith("_1")) rawFilePath = rawFilePath.Replace("_1", "");
+            string rawFilePath = Program.filePath;
+            rawFilePath = rawFilePath.Replace("_1.", ".");
+            rawFilePath = rawFilePath.Substring(0, rawFilePath.Length - 6);
             var tpfFile = $"{rawFilePath}.tpf";
             if (Program.tpf != null) ReadTPFTextureEntries(Program.tpf);
             else if (File.Exists(tpfFile))

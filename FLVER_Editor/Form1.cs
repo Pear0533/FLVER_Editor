@@ -800,8 +800,8 @@ namespace FLVER_Editor
             if (flverBndTpfEntry != null) flverBnd.Files[flverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Program.tpf.Write();
             else
             {
-                if (flverFilePath.Contains(".flver")) Program.tpf.Write(flverFilePath.Replace("_1", "").Replace(".flver", ".tpf"));
-                else if (flverFilePath.Contains(".flv")) Program.tpf.Write(flverFilePath.Replace("_1", "").Replace(".flv", ".tpf"));
+                if (flverFilePath.Contains(".flver")) Program.tpf.Write(flverFilePath.Replace("_1.", ".").Replace(".flver", ".tpf"));
+                else if (flverFilePath.Contains(".flv")) Program.tpf.Write(flverFilePath.Replace("_1.", ".").Replace(".flv", ".tpf"));
             }
         }
 
