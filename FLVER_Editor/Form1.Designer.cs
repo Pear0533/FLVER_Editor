@@ -131,7 +131,6 @@
             this.Column6 = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Column20 = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Column16 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.Column19 = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Column7 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.Column8 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.applyPresetToAllMaterialsButton = new System.Windows.Forms.Button();
@@ -166,6 +165,7 @@
             this.searchBox = new System.Windows.Forms.TextBox();
             this.searchBoxStr = new System.Windows.Forms.Label();
             this.meshTabDataTableSelector = new System.Windows.Forms.ComboBox();
+            this.presetsBoxTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -883,6 +883,7 @@
             this.dummyPresetsSelector.Name = "dummyPresetsSelector";
             this.dummyPresetsSelector.Size = new System.Drawing.Size(121, 21);
             this.dummyPresetsSelector.TabIndex = 15;
+            this.presetsBoxTooltip.SetToolTip(this.dummyPresetsSelector, "Right-click the selector with a preset loaded to delete it");
             this.dummyPresetsSelector.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DummyPresetsSelector_MouseDown);
             // 
             // meshModifiersContainer
@@ -1558,7 +1559,6 @@
             this.Column6,
             this.Column20,
             this.Column16,
-            this.Column19,
             this.Column7,
             this.Column8});
             this.materialsTable.Location = new System.Drawing.Point(4, 59);
@@ -1633,12 +1633,6 @@
             this.Column16.Name = "Column16";
             this.Column16.Width = 59;
             // 
-            // Column19
-            // 
-            this.Column19.HeaderText = "Delete Preset";
-            this.Column19.Name = "Column19";
-            this.Column19.Width = 69;
-            // 
             // Column7
             // 
             this.Column7.HeaderText = "Apply Preset";
@@ -1673,6 +1667,7 @@
             this.materialPresetsSelector.Name = "materialPresetsSelector";
             this.materialPresetsSelector.Size = new System.Drawing.Size(185, 21);
             this.materialPresetsSelector.TabIndex = 2;
+            this.presetsBoxTooltip.SetToolTip(this.materialPresetsSelector, "Right-click the selector with a preset loaded to delete it");
             this.materialPresetsSelector.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MaterialPresetsSelector_MouseDown);
             // 
             // label10
@@ -1901,7 +1896,7 @@
             // 
             // searchBox
             // 
-            this.searchBox.Location = new System.Drawing.Point(193, 26);
+            this.searchBox.Location = new System.Drawing.Point(193, 25);
             this.searchBox.Name = "searchBox";
             this.searchBox.Size = new System.Drawing.Size(226, 20);
             this.searchBox.TabIndex = 3;
@@ -1910,7 +1905,7 @@
             // searchBoxStr
             // 
             this.searchBoxStr.AutoSize = true;
-            this.searchBoxStr.Location = new System.Drawing.Point(146, 29);
+            this.searchBoxStr.Location = new System.Drawing.Point(146, 28);
             this.searchBoxStr.Name = "searchBoxStr";
             this.searchBoxStr.Size = new System.Drawing.Size(44, 13);
             this.searchBoxStr.TabIndex = 1;
@@ -1923,7 +1918,7 @@
             this.meshTabDataTableSelector.Items.AddRange(new object[] {
             "Mesh",
             "Dummies"});
-            this.meshTabDataTableSelector.Location = new System.Drawing.Point(424, 25);
+            this.meshTabDataTableSelector.Location = new System.Drawing.Point(424, 24);
             this.meshTabDataTableSelector.Name = "meshTabDataTableSelector";
             this.meshTabDataTableSelector.Size = new System.Drawing.Size(124, 21);
             this.meshTabDataTableSelector.TabIndex = 1;
@@ -2138,6 +2133,10 @@
         private System.Windows.Forms.DataGridViewButtonColumn Column3;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column4;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column21;
+        private System.Windows.Forms.ToolStripMenuItem toggleDummyIDsVisibilityToolStripMenuItem;
+        private System.Windows.Forms.TextBox searchBox;
+        private System.Windows.Forms.Label searchBoxStr;
+        private System.Windows.Forms.ComboBox meshTabDataTableSelector;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column14;
@@ -2146,12 +2145,8 @@
         private System.Windows.Forms.DataGridViewButtonColumn Column6;
         private System.Windows.Forms.DataGridViewButtonColumn Column20;
         private System.Windows.Forms.DataGridViewButtonColumn Column16;
-        private System.Windows.Forms.DataGridViewButtonColumn Column19;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column7;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column8;
-        private System.Windows.Forms.ToolStripMenuItem toggleDummyIDsVisibilityToolStripMenuItem;
-        private System.Windows.Forms.TextBox searchBox;
-        private System.Windows.Forms.Label searchBoxStr;
-        private System.Windows.Forms.ComboBox meshTabDataTableSelector;
+        private System.Windows.Forms.ToolTip presetsBoxTooltip;
     }
 }

@@ -33,9 +33,8 @@ namespace FLVER_Editor
         private const int mtEditButtonIndex = 5;
         private const int mtViewerHighlightButtonIndex = 6;
         private const int mtAddPresetCbIndex = 7;
-        private const int mtDeletePresetCbIndex = 8;
-        private const int mtApplyPresetCbIndex = 9;
-        private const int mtDeleteCbIndex = 10;
+        private const int mtApplyPresetCbIndex = 8;
+        private const int mtDeleteCbIndex = 9;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string jsonFileFilter = @"JSON File (*.json)|*.json";
         private const string version = "1.82";
@@ -500,7 +499,7 @@ namespace FLVER_Editor
         private void LoadMaterialPresets()
         {
             bool hasRead = LoadPresets(materialPresetsSelector, ref materialPresets, materialPresetsFilePath);
-            materialsTable.Columns[mtAddPresetCbIndex].Visible = materialsTable.Columns[mtDeletePresetCbIndex].Visible = hasRead;
+            materialsTable.Columns[mtAddPresetCbIndex].Visible = hasRead;
         }
 
         private void LoadDummyPresets()
@@ -554,7 +553,7 @@ namespace FLVER_Editor
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i }, new DataGridViewTextBoxCell { Value = material.Name },
                     new DataGridViewTextBoxCell { Value = material.Flags },
                     new DataGridViewTextBoxCell { Value = material.MTD }, new DataGridViewTextBoxCell { Value = material.Unk18 });
-                for (var j = 0; j < 4; ++j)
+                for (var j = 0; j < 3; ++j)
                     row.Cells.Add(new DataGridViewButtonCell { Value = materialsTable.Columns[j + 5].HeaderText });
                 for (var j = 0; j < 2; ++j)
                     row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
@@ -763,10 +762,6 @@ namespace FLVER_Editor
                         materialPresets.Add(presetName, flver.Materials[e.RowIndex]);
                         UpdateMaterialPresets();
                     }
-                    break;
-                case mtDeletePresetCbIndex when materialPresets.ContainsKey(flver.Materials[e.RowIndex].Name):
-                    materialPresets.Remove(flver.Materials[e.RowIndex].Name);
-                    UpdateMaterialPresets();
                     break;
             }
         }
@@ -1798,6 +1793,14 @@ namespace FLVER_Editor
                 case DialogResult.Cancel:
                     e.Cancel = true;
                     break;
+                case DialogResult.None:
+                case DialogResult.OK:
+                case DialogResult.Abort:
+                case DialogResult.Retry:
+                case DialogResult.Ignore:
+                case DialogResult.No:
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
