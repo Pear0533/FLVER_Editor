@@ -1138,7 +1138,7 @@ namespace FLVER_Editor
                 case 3:
                 case 4:
                 case 5:
-                    ScaleThing(thing, offset, totals, nbi, uniformScaleCheckbox.Checked, false);
+                    ScaleThing(thing, offset * 5, totals, nbi, uniformScaleCheckbox.Checked, false);
                     if (uniformScaleCheckbox.Checked && selectedMeshIndices.Count != 0) scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = newValue;
                     break;
                 case 6:
