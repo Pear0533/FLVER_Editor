@@ -211,15 +211,6 @@ namespace FLVER_Editor
                         break;
                 }
                 subControl.BackColor = backColor;
-                if (subControl == transXNumBox
-                    || subControl == transYNumBox
-                    || subControl == transZNumBox
-                    || subControl == scaleXNumBox
-                    || subControl == scaleYNumBox
-                    || subControl == scaleZNumBox
-                    || subControl == rotXNumBox
-                    || subControl == rotYNumBox
-                    || subControl == rotZNumBox) continue;
                 subControl.ForeColor = foreColor;
                 ChangeTheme(subControl, backColor, foreColor);
             }

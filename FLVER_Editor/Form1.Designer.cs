@@ -79,6 +79,9 @@
             this.label5 = new System.Windows.Forms.Label();
             this.dummyPresetsSelector = new System.Windows.Forms.ComboBox();
             this.meshModifiersContainer = new System.Windows.Forms.GroupBox();
+            this.zAxisLabel = new System.Windows.Forms.Label();
+            this.yAxisLabel = new System.Windows.Forms.Label();
+            this.xAxisLabel = new System.Windows.Forms.Label();
             this.mirrorZCheckbox = new System.Windows.Forms.CheckBox();
             this.mirrorYCheckbox = new System.Windows.Forms.CheckBox();
             this.mirrorXCheckbox = new System.Windows.Forms.CheckBox();
@@ -432,7 +435,6 @@
             // 
             // autoSaveIntervalSelector
             // 
-            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -511,7 +513,6 @@
             // 
             // multiSelectMenuTextbox
             // 
-            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -888,6 +889,9 @@
             // 
             // meshModifiersContainer
             // 
+            this.meshModifiersContainer.Controls.Add(this.zAxisLabel);
+            this.meshModifiersContainer.Controls.Add(this.yAxisLabel);
+            this.meshModifiersContainer.Controls.Add(this.xAxisLabel);
             this.meshModifiersContainer.Controls.Add(this.mirrorZCheckbox);
             this.meshModifiersContainer.Controls.Add(this.mirrorYCheckbox);
             this.meshModifiersContainer.Controls.Add(this.mirrorXCheckbox);
@@ -915,10 +919,40 @@
             this.meshModifiersContainer.TabStop = false;
             this.meshModifiersContainer.Text = "Modifiers";
             // 
+            // zAxisLabel
+            // 
+            this.zAxisLabel.AutoSize = true;
+            this.zAxisLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.zAxisLabel.Location = new System.Drawing.Point(258, 17);
+            this.zAxisLabel.Name = "zAxisLabel";
+            this.zAxisLabel.Size = new System.Drawing.Size(14, 13);
+            this.zAxisLabel.TabIndex = 63;
+            this.zAxisLabel.Text = "Z";
+            // 
+            // yAxisLabel
+            // 
+            this.yAxisLabel.AutoSize = true;
+            this.yAxisLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.yAxisLabel.Location = new System.Drawing.Point(178, 17);
+            this.yAxisLabel.Name = "yAxisLabel";
+            this.yAxisLabel.Size = new System.Drawing.Size(14, 13);
+            this.yAxisLabel.TabIndex = 62;
+            this.yAxisLabel.Text = "Y";
+            // 
+            // xAxisLabel
+            // 
+            this.xAxisLabel.AutoSize = true;
+            this.xAxisLabel.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.xAxisLabel.Location = new System.Drawing.Point(98, 17);
+            this.xAxisLabel.Name = "xAxisLabel";
+            this.xAxisLabel.Size = new System.Drawing.Size(14, 13);
+            this.xAxisLabel.TabIndex = 61;
+            this.xAxisLabel.Text = "X";
+            // 
             // mirrorZCheckbox
             // 
             this.mirrorZCheckbox.AutoSize = true;
-            this.mirrorZCheckbox.Location = new System.Drawing.Point(116, 112);
+            this.mirrorZCheckbox.Location = new System.Drawing.Point(116, 126);
             this.mirrorZCheckbox.Name = "mirrorZCheckbox";
             this.mirrorZCheckbox.Size = new System.Drawing.Size(33, 17);
             this.mirrorZCheckbox.TabIndex = 60;
@@ -929,7 +963,7 @@
             // mirrorYCheckbox
             // 
             this.mirrorYCheckbox.AutoSize = true;
-            this.mirrorYCheckbox.Location = new System.Drawing.Point(83, 112);
+            this.mirrorYCheckbox.Location = new System.Drawing.Point(83, 126);
             this.mirrorYCheckbox.Name = "mirrorYCheckbox";
             this.mirrorYCheckbox.Size = new System.Drawing.Size(33, 17);
             this.mirrorYCheckbox.TabIndex = 59;
@@ -940,7 +974,7 @@
             // mirrorXCheckbox
             // 
             this.mirrorXCheckbox.AutoSize = true;
-            this.mirrorXCheckbox.Location = new System.Drawing.Point(50, 112);
+            this.mirrorXCheckbox.Location = new System.Drawing.Point(50, 126);
             this.mirrorXCheckbox.Name = "mirrorXCheckbox";
             this.mirrorXCheckbox.Size = new System.Drawing.Size(33, 17);
             this.mirrorXCheckbox.TabIndex = 58;
@@ -951,7 +985,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 112);
+            this.label7.Location = new System.Drawing.Point(6, 126);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(36, 13);
             this.label7.TabIndex = 57;
@@ -960,7 +994,7 @@
             // deleteFacesetsCheckbox
             // 
             this.deleteFacesetsCheckbox.AutoSize = true;
-            this.deleteFacesetsCheckbox.Location = new System.Drawing.Point(9, 212);
+            this.deleteFacesetsCheckbox.Location = new System.Drawing.Point(9, 226);
             this.deleteFacesetsCheckbox.Name = "deleteFacesetsCheckbox";
             this.deleteFacesetsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.deleteFacesetsCheckbox.TabIndex = 45;
@@ -969,7 +1003,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(25, 212);
+            this.label6.Location = new System.Drawing.Point(25, 226);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(108, 13);
             this.label6.TabIndex = 44;
@@ -977,7 +1011,7 @@
             // 
             // centerToWorldButton
             // 
-            this.centerToWorldButton.Location = new System.Drawing.Point(8, 232);
+            this.centerToWorldButton.Location = new System.Drawing.Point(8, 246);
             this.centerToWorldButton.Name = "centerToWorldButton";
             this.centerToWorldButton.Size = new System.Drawing.Size(104, 22);
             this.centerToWorldButton.TabIndex = 43;
@@ -988,7 +1022,7 @@
             // uniformScaleCheckbox
             // 
             this.uniformScaleCheckbox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.uniformScaleCheckbox.Location = new System.Drawing.Point(49, 50);
+            this.uniformScaleCheckbox.Location = new System.Drawing.Point(49, 64);
             this.uniformScaleCheckbox.Name = "uniformScaleCheckbox";
             this.uniformScaleCheckbox.Size = new System.Drawing.Size(19, 24);
             this.uniformScaleCheckbox.TabIndex = 42;
@@ -1000,7 +1034,7 @@
             // reverseFacesetsCheckbox
             // 
             this.reverseFacesetsCheckbox.AutoSize = true;
-            this.reverseFacesetsCheckbox.Location = new System.Drawing.Point(9, 137);
+            this.reverseFacesetsCheckbox.Location = new System.Drawing.Point(9, 151);
             this.reverseFacesetsCheckbox.Name = "reverseFacesetsCheckbox";
             this.reverseFacesetsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.reverseFacesetsCheckbox.TabIndex = 39;
@@ -1010,7 +1044,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(25, 137);
+            this.label8.Location = new System.Drawing.Point(25, 151);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(93, 13);
             this.label8.TabIndex = 38;
@@ -1018,7 +1052,7 @@
             // 
             // deleteSelectedButton
             // 
-            this.deleteSelectedButton.Location = new System.Drawing.Point(115, 232);
+            this.deleteSelectedButton.Location = new System.Drawing.Point(115, 246);
             this.deleteSelectedButton.Name = "deleteSelectedButton";
             this.deleteSelectedButton.Size = new System.Drawing.Size(104, 22);
             this.deleteSelectedButton.TabIndex = 10;
@@ -1042,7 +1076,7 @@
             this.meshModifiersNumBoxesContainer.Controls.Add(this.scaleXNumBox, 0, 1);
             this.meshModifiersNumBoxesContainer.Controls.Add(this.transXNumBox, 0, 0);
             this.meshModifiersNumBoxesContainer.Controls.Add(this.transYNumBox, 1, 0);
-            this.meshModifiersNumBoxesContainer.Location = new System.Drawing.Point(70, 17);
+            this.meshModifiersNumBoxesContainer.Location = new System.Drawing.Point(70, 31);
             this.meshModifiersNumBoxesContainer.Name = "meshModifiersNumBoxesContainer";
             this.meshModifiersNumBoxesContainer.RowCount = 3;
             this.meshModifiersNumBoxesContainer.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -1059,7 +1093,7 @@
             // 
             this.rotZNumBox.DecimalPlaces = 3;
             this.rotZNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rotZNumBox.ForeColor = System.Drawing.Color.CornflowerBlue;
+            this.rotZNumBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.rotZNumBox.Increment = new decimal(new int[] {
             5,
             0,
@@ -1088,7 +1122,7 @@
             // 
             this.scaleZNumBox.DecimalPlaces = 3;
             this.scaleZNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.scaleZNumBox.ForeColor = System.Drawing.Color.CornflowerBlue;
+            this.scaleZNumBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.scaleZNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1117,7 +1151,7 @@
             // 
             this.rotYNumBox.DecimalPlaces = 3;
             this.rotYNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rotYNumBox.ForeColor = System.Drawing.Color.DarkGoldenrod;
+            this.rotYNumBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.rotYNumBox.Increment = new decimal(new int[] {
             5,
             0,
@@ -1146,7 +1180,7 @@
             // 
             this.transZNumBox.DecimalPlaces = 3;
             this.transZNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.transZNumBox.ForeColor = System.Drawing.Color.CornflowerBlue;
+            this.transZNumBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.transZNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1175,7 +1209,7 @@
             // 
             this.rotXNumBox.DecimalPlaces = 3;
             this.rotXNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rotXNumBox.ForeColor = System.Drawing.Color.Red;
+            this.rotXNumBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.rotXNumBox.Increment = new decimal(new int[] {
             5,
             0,
@@ -1204,7 +1238,7 @@
             // 
             this.scaleYNumBox.DecimalPlaces = 3;
             this.scaleYNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.scaleYNumBox.ForeColor = System.Drawing.Color.DarkGoldenrod;
+            this.scaleYNumBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.scaleYNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1233,7 +1267,7 @@
             // 
             this.scaleXNumBox.DecimalPlaces = 3;
             this.scaleXNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.scaleXNumBox.ForeColor = System.Drawing.Color.Red;
+            this.scaleXNumBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.scaleXNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1262,7 +1296,7 @@
             // 
             this.transXNumBox.DecimalPlaces = 3;
             this.transXNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.transXNumBox.ForeColor = System.Drawing.Color.Red;
+            this.transXNumBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.transXNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1291,7 +1325,7 @@
             // 
             this.transYNumBox.DecimalPlaces = 3;
             this.transYNumBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.transYNumBox.ForeColor = System.Drawing.Color.DarkGoldenrod;
+            this.transYNumBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.transYNumBox.Increment = new decimal(new int[] {
             1,
             0,
@@ -1319,7 +1353,7 @@
             // toggleBackfacesCheckbox
             // 
             this.toggleBackfacesCheckbox.AutoSize = true;
-            this.toggleBackfacesCheckbox.Location = new System.Drawing.Point(9, 187);
+            this.toggleBackfacesCheckbox.Location = new System.Drawing.Point(9, 201);
             this.toggleBackfacesCheckbox.Name = "toggleBackfacesCheckbox";
             this.toggleBackfacesCheckbox.Size = new System.Drawing.Size(15, 14);
             this.toggleBackfacesCheckbox.TabIndex = 29;
@@ -1329,7 +1363,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(25, 187);
+            this.label11.Location = new System.Drawing.Point(25, 201);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(123, 13);
             this.label11.TabIndex = 28;
@@ -1338,7 +1372,7 @@
             // reverseNormalsCheckbox
             // 
             this.reverseNormalsCheckbox.AutoSize = true;
-            this.reverseNormalsCheckbox.Location = new System.Drawing.Point(9, 162);
+            this.reverseNormalsCheckbox.Location = new System.Drawing.Point(9, 176);
             this.reverseNormalsCheckbox.Name = "reverseNormalsCheckbox";
             this.reverseNormalsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.reverseNormalsCheckbox.TabIndex = 27;
@@ -1348,7 +1382,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(25, 162);
+            this.label12.Location = new System.Drawing.Point(25, 176);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(88, 13);
             this.label12.TabIndex = 26;
@@ -1357,7 +1391,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 84);
+            this.label3.Location = new System.Drawing.Point(6, 98);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(50, 13);
             this.label3.TabIndex = 15;
@@ -1366,7 +1400,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 54);
+            this.label1.Location = new System.Drawing.Point(6, 68);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(37, 13);
             this.label1.TabIndex = 12;
@@ -1375,7 +1409,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 24);
+            this.label2.Location = new System.Drawing.Point(6, 38);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(62, 13);
             this.label2.TabIndex = 5;
@@ -2067,5 +2101,8 @@
         private System.Windows.Forms.ToolTip xHorizontalTooltip;
         private System.Windows.Forms.ToolTip xLeftRightTooltip;
         private System.Windows.Forms.ToolTip yUpDownTooltip;
+        private System.Windows.Forms.Label xAxisLabel;
+        private System.Windows.Forms.Label zAxisLabel;
+        private System.Windows.Forms.Label yAxisLabel;
     }
 }

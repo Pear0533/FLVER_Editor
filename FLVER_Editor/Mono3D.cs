@@ -973,6 +973,14 @@ namespace FLVER_Editor
             return new Vector2((int)((v4.X / v4.W + 1) * (Width / 2)), (int)((1 - v4.Y / v4.W) * (Height / 2)));
         }
 
+        private void DrawScreenText<T>(string text, T position, Matrix viewMatrix, Matrix projection)
+        {
+            Vector3 posVector = typeof(T) == typeof(System.Numerics.Vector3) ? new Vector3(((System.Numerics.Vector3)(object)position).X,
+                ((System.Numerics.Vector3)(object)position).Z, ((System.Numerics.Vector3)(object)position).Y) : (Vector3)(object)position;
+            Vector2 screenLoc = GetProjectPoint(posVector, viewMatrix, projection, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+            spriteBatch.DrawString(viewerFont, text, screenLoc, Color.Yellow, 0, new Vector2(0, 0), 1f, SpriteEffects.None, 1);
+        }
+
         private void DrawGround()
         {
             // The assignment of effect.View and effect.Projection
@@ -1027,13 +1035,12 @@ namespace FLVER_Editor
                 pass.Apply();
                 graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines, 0, 3);
             }
+            DrawScreenText("X", lines[0].Position, viewMatrix, projection);
+            DrawScreenText("Z", lines[2].Position, viewMatrix, projection);
+            DrawScreenText("Y", lines[5].Position, viewMatrix, projection);
             if (!MainWindow.areDummyIdsVisible) return;
             foreach (FLVER.Dummy d in MainWindow.flver.Dummies)
-            {
-                var xnaDummyVector = new Vector3(d.Position.X, d.Position.Z, d.Position.Y);
-                Vector2 dummyPointScreenLoc = GetProjectPoint(xnaDummyVector, viewMatrix, projection, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
-                spriteBatch.DrawString(viewerFont, d.ReferenceID.ToString(), dummyPointScreenLoc, Color.Yellow, 0, new Vector2(0, 0), 1f, SpriteEffects.None, 1);
-            }
+                DrawScreenText(d.ReferenceID.ToString(), d.Position, viewMatrix, projection);
         }
 
         public static Ray GetMouseRay(Vector2 mousePosition, Viewport viewport, BasicEffect camera)
