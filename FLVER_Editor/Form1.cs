@@ -359,7 +359,7 @@ namespace FLVER_Editor
                 if (texList.Count <= 0) continue;
                 var vertexTexMap = new VertexTexMap
                 {
-                    textureName = texList[0].Path,
+                    textureName = Path.GetFileNameWithoutExtension(texList[0].Path),
                     faceSetTextures = faceSetPosColorTexList.ToArray()
                 };
                 faceSetPosColorTexList.Clear();
