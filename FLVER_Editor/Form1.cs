@@ -365,10 +365,11 @@ namespace FLVER_Editor
                     Program.vertices.Add(flver.Meshes[i].Vertices[j]);
                     Program.verticesInfo.Add(new VertexInfo { meshIndex = i, vertexIndex = (uint)j });
                 }
+                List<FLVER.Texture> texList = flver.Materials[flver.Meshes[i].MaterialIndex].Textures;
+                if (texList.Count <= 0) continue;
                 var vertexTexMap = new VertexTexMap
                 {
-                    textureName
-                        = Path.GetFileNameWithoutExtension(flver.Materials[flver.Meshes[i].MaterialIndex].Textures[0].Path),
+                    textureName = texList[0].Path,
                     faceSetTextures = faceSetPosColorTexList.ToArray()
                 };
                 faceSetPosColorTexList.Clear();
