@@ -662,6 +662,8 @@ namespace FLVER_Editor
                 if (flverFilePath == "") return false;
             }
             if (Program.window != null) UpdateWindowTitle();
+            Mono3D.textureMap = new Dictionary<string, Texture2D>();
+            Program.tpf = null;
             Program.filePath = flverFilePath;
             if (IsFLVERPath(flverFilePath))
             {

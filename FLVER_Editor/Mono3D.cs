@@ -49,7 +49,7 @@ namespace FLVER_Editor
         private readonly float centerZ = 0;
         private readonly ContextMenuStrip cm = new ContextMenuStrip();
         private readonly GraphicsDeviceManager graphics;
-        private readonly Dictionary<string, Texture2D> textureMap = new Dictionary<string, Texture2D>();
+        public static Dictionary<string, Texture2D> textureMap = new Dictionary<string, Texture2D>();
         private Rectangle bgRenderArea;
         private Texture2D bgTexture;
 
