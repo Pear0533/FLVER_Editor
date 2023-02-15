@@ -110,6 +110,13 @@ namespace FLVER_Editor
                 else if (ShouldSnapBottom()) SnapBottom();
                 else Unsnap();
             };
+            f.Shown += (s, e) =>
+            {
+                f.Width = 600;
+                f.Top = mainForm.Top;
+                f.Left = mainForm.Right;
+                SnapRight();
+            };
         }
 
         private static void SnapBottom()

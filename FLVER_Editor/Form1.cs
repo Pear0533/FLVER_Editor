@@ -93,6 +93,7 @@ namespace FLVER_Editor
         public MainWindow()
         {
             InitializeComponent();
+            SetDefaultScreenPosition();
             CheckForUpdates();
             GloballyDisableDataTableColumnSorting();
             ReadUserConfig();
@@ -106,6 +107,13 @@ namespace FLVER_Editor
             meshTabDataTableSelector.SelectedIndex = 0;
             Mono3D.mainForm = this;
             if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
+        }
+
+        private void SetDefaultScreenPosition()
+        {
+            CenterToScreen();
+            Left = 0;
+            TopMost = true;
         }
 
         private static void ReadUserConfig()
@@ -1967,6 +1975,7 @@ namespace FLVER_Editor
             UpdateWindowTitle();
             tabWindow.DrawMode = TabDrawMode.OwnerDrawFixed;
             tabWindow.DrawItem += TabWindowDrawItem;
+            TopMost = false;
         }
 
         private void ApplyMATBINTexturesButtonClicked(object sender, EventArgs e)
