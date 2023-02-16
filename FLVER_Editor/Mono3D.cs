@@ -110,19 +110,38 @@ namespace FLVER_Editor
                 else if (ShouldSnapBottom()) SnapBottom();
                 else Unsnap();
             };
+            bool isStartupSnapPosRight = MainWindow.userConfigJson["ViewerSnapPosition"]?.ToString() == "Right";
             f.Load += (s, e) =>
             {
-                var viewerWindowHeightStr = MainWindow.userConfigJson?["ViewerWindowHeight"]?.ToString();
-                f.Height = viewerWindowHeightStr != null ? int.Parse(viewerWindowHeightStr) : 400;
+                if (isStartupSnapPosRight)
+                {
+                    var viewerWindowWidthStr = MainWindow.userConfigJson?["ViewerWindowWidth"]?.ToString();
+                    f.Width = viewerWindowWidthStr != null ? int.Parse(viewerWindowWidthStr) : 300;
+                }
+                else
+                {
+                    var viewerWindowHeightStr = MainWindow.userConfigJson?["ViewerWindowHeight"]?.ToString();
+                    f.Height = viewerWindowHeightStr != null ? int.Parse(viewerWindowHeightStr) : 400;
+                }
             };
             f.Shown += (s, e) =>
             {
-                f.Width = mainForm.Width;
-                f.Top = mainForm.Bottom;
-                SnapBottom();
+                if (isStartupSnapPosRight)
+                {
+                    f.Height = mainForm.Height;
+                    f.Left = mainForm.Right;
+                    SnapRight();
+                }
+                else
+                {
+                    f.Width = mainForm.Width;
+                    f.Top = mainForm.Bottom;
+                    SnapBottom();
+                }
             };
             f.SizeChanged += (s, e) =>
             {
+                MainWindow.userConfigJson["ViewerWindowWidth"] = f.Width;
                 MainWindow.userConfigJson["ViewerWindowHeight"] = f.Height;
                 MainWindow.WriteUserConfig();
             };
@@ -138,6 +157,7 @@ namespace FLVER_Editor
             MainWindow.isSnappedBottom = true;
             MainWindow.isSnappedLeft = false;
             MainWindow.isSnapped = true;
+            MainWindow.userConfigJson["ViewerSnapPosition"] = "Bottom";
         }
 
         private static bool ShouldSnapRight()
@@ -155,6 +175,7 @@ namespace FLVER_Editor
             MainWindow.isSnappedBottom = false;
             MainWindow.isSnappedLeft = false;
             MainWindow.isSnapped = true;
+            MainWindow.userConfigJson["ViewerSnapPosition"] = "Right";
         }
 
         private static bool ShouldSnapBottom()
