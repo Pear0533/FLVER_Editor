@@ -113,7 +113,8 @@ namespace FLVER_Editor
         private void SetDefaultScreenPosition()
         {
             CenterToScreen();
-            Top = 0;
+            if (userConfigJson["ViewerSnapPosition"]?.ToString() == "Right") Left = 0;
+            else Top = 0;
             TopMost = true;
         }
 
