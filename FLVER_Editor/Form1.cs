@@ -36,7 +36,7 @@ namespace FLVER_Editor
         private const int mtDeleteCbIndex = 9;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string jsonFileFilter = @"JSON File (*.json)|*.json";
-        private const string version = "1.83";
+        private const string version = "1.82";
         private const string patreonSupportUri = "https://www.patreon.com/theonlypear";
         private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
         private const string updateVersionUri = "https://pastebin.com/raw/9f04Uf1i";
@@ -73,7 +73,7 @@ namespace FLVER_Editor
         private static readonly string updateFolderPath = $"{rootFolderPath}/update/";
         private static readonly string execPath = $"{rootFolderPath}/MySFformat.exe";
         private static readonly string updateExecPath = $"{updateFolderPath}/MySFformat.exe";
-        private static JObject userConfigJson = new JObject();
+        public static JObject userConfigJson = new JObject();
         private static int currMaterialsTableSplitDistance;
         private static string currAutoSaveInterval;
         private static bool meshIsSelected;
@@ -93,10 +93,11 @@ namespace FLVER_Editor
         public MainWindow()
         {
             InitializeComponent();
+            ReadUserConfig();
+            SetEditorWindowSize();
             SetDefaultScreenPosition();
             CheckForUpdates();
             GloballyDisableDataTableColumnSorting();
-            ReadUserConfig();
             SetMaterialsTableView();
             SetDummyThickness();
             SetAutoSaveInterval();
@@ -112,16 +113,16 @@ namespace FLVER_Editor
         private void SetDefaultScreenPosition()
         {
             CenterToScreen();
-            Left = 0;
+            Top = 0;
             TopMost = true;
         }
 
-        private static void ReadUserConfig()
+        public static void ReadUserConfig()
         {
             if (File.Exists(userConfigJsonPath)) userConfigJson = JObject.Parse(File.ReadAllText(userConfigJsonPath));
         }
 
-        private static void WriteUserConfig()
+        public static void WriteUserConfig()
         {
             File.WriteAllText(userConfigJsonPath, JsonConvert.SerializeObject(userConfigJson, Formatting.Indented));
         }
@@ -179,6 +180,14 @@ namespace FLVER_Editor
                 if (dummyThickness > dummyThicknessSelector.Items.Count) dummyThickness = 5;
             }
             dummyThicknessSelector.SelectedIndex = dummyThickness - 1;
+        }
+
+        private void SetEditorWindowSize()
+        {
+            var editorWindowWidthStr = userConfigJson["EditorWindowWidth"]?.ToString();
+            var editorWindowHeightStr = userConfigJson["EditorWindowHeight"]?.ToString();
+            if (editorWindowWidthStr == null || editorWindowHeightStr == null) return;
+            Size = new Size(int.Parse(editorWindowWidthStr), int.Parse(editorWindowHeightStr));
         }
 
         private void SetMaterialsTableView()
@@ -2298,6 +2307,13 @@ namespace FLVER_Editor
             meshTabDataTableSelector.Visible = tabWindow.SelectedIndex == 2;
             copyrightStr.Focus();
             ClearSearchResults();
+        }
+
+        private void MainWindow_SizeChanged(object sender, EventArgs e)
+        {
+            userConfigJson["EditorWindowWidth"] = Size.Width;
+            userConfigJson["EditorWindowHeight"] = Size.Height;
+            WriteUserConfig();
         }
 
         private enum TextureFormats

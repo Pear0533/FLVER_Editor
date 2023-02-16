@@ -110,12 +110,21 @@ namespace FLVER_Editor
                 else if (ShouldSnapBottom()) SnapBottom();
                 else Unsnap();
             };
+            f.Load += (s, e) =>
+            {
+                var viewerWindowHeightStr = MainWindow.userConfigJson?["ViewerWindowHeight"]?.ToString();
+                f.Height = viewerWindowHeightStr != null ? int.Parse(viewerWindowHeightStr) : 400;
+            };
             f.Shown += (s, e) =>
             {
-                f.Width = 600;
-                f.Top = mainForm.Top;
-                f.Left = mainForm.Right;
-                SnapRight();
+                f.Width = mainForm.Width;
+                f.Top = mainForm.Bottom;
+                SnapBottom();
+            };
+            f.SizeChanged += (s, e) =>
+            {
+                MainWindow.userConfigJson["ViewerWindowHeight"] = f.Height;
+                MainWindow.WriteUserConfig();
             };
         }
 

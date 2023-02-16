@@ -18,6 +18,10 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mergeToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.presetsFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.browseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.materialsToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -166,10 +170,6 @@
             this.zInOutTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.zThicknessTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.zCartwheelTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.importToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.mergeToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -259,6 +259,37 @@
             this.saveAsToolStripMenuItem.Text = "Save As (Ctrl+Shift+S)";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.SaveAsButtonClicked);
             // 
+            // modelToolStripMenuItem
+            // 
+            this.modelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.importToolStripMenuItem1,
+            this.exportToolStripMenuItem2,
+            this.mergeToolStripMenuItem2});
+            this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
+            this.modelToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.modelToolStripMenuItem.Text = "Model";
+            // 
+            // importToolStripMenuItem1
+            // 
+            this.importToolStripMenuItem1.Name = "importToolStripMenuItem1";
+            this.importToolStripMenuItem1.Size = new System.Drawing.Size(110, 22);
+            this.importToolStripMenuItem1.Text = "Import";
+            this.importToolStripMenuItem1.Click += new System.EventHandler(this.ImportToolStripMenuItemClicked);
+            // 
+            // exportToolStripMenuItem2
+            // 
+            this.exportToolStripMenuItem2.Name = "exportToolStripMenuItem2";
+            this.exportToolStripMenuItem2.Size = new System.Drawing.Size(110, 22);
+            this.exportToolStripMenuItem2.Text = "Export";
+            this.exportToolStripMenuItem2.Click += new System.EventHandler(this.ExportToolStripMenuItemClicked);
+            // 
+            // mergeToolStripMenuItem2
+            // 
+            this.mergeToolStripMenuItem2.Name = "mergeToolStripMenuItem2";
+            this.mergeToolStripMenuItem2.Size = new System.Drawing.Size(110, 22);
+            this.mergeToolStripMenuItem2.Text = "Merge";
+            this.mergeToolStripMenuItem2.Click += new System.EventHandler(this.MergeToolStripMenuItemClicked);
+            // 
             // presetsFileToolStripMenuItem
             // 
             this.presetsFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -275,7 +306,7 @@
             this.materialsToolStripMenuItem2,
             this.dummiesToolStripMenuItem});
             this.browseToolStripMenuItem.Name = "browseToolStripMenuItem";
-            this.browseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.browseToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.browseToolStripMenuItem.Text = "Import";
             // 
             // materialsToolStripMenuItem2
@@ -298,7 +329,7 @@
             this.materialsToolStripMenuItem4,
             this.dummiesToolStripMenuItem2});
             this.exportToolStripMenuItem1.Name = "exportToolStripMenuItem1";
-            this.exportToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem1.Size = new System.Drawing.Size(110, 22);
             this.exportToolStripMenuItem1.Text = "Export";
             // 
             // materialsToolStripMenuItem4
@@ -321,7 +352,7 @@
             this.materialsToolStripMenuItem3,
             this.dummiesToolStripMenuItem1});
             this.mergeToolStripMenuItem1.Name = "mergeToolStripMenuItem1";
-            this.mergeToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.mergeToolStripMenuItem1.Size = new System.Drawing.Size(110, 22);
             this.mergeToolStripMenuItem1.Text = "Merge";
             // 
             // materialsToolStripMenuItem3
@@ -373,14 +404,14 @@
             // bonesToolStripMenuItem1
             // 
             this.bonesToolStripMenuItem1.Name = "bonesToolStripMenuItem1";
-            this.bonesToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.bonesToolStripMenuItem1.Size = new System.Drawing.Size(122, 22);
             this.bonesToolStripMenuItem1.Text = "Bones";
             this.bonesToolStripMenuItem1.Click += new System.EventHandler(this.ExportBonesJSONButtonClicked);
             // 
             // materialsToolStripMenuItem1
             // 
             this.materialsToolStripMenuItem1.Name = "materialsToolStripMenuItem1";
-            this.materialsToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.materialsToolStripMenuItem1.Size = new System.Drawing.Size(122, 22);
             this.materialsToolStripMenuItem1.Text = "Materials";
             this.materialsToolStripMenuItem1.Click += new System.EventHandler(this.ExportMaterialsJSONButtonClicked);
             // 
@@ -1855,37 +1886,6 @@
             this.meshTabDataTableSelector.TabIndex = 1;
             this.meshTabDataTableSelector.SelectedIndexChanged += new System.EventHandler(this.MeshTabDataTableSelector_SelectedIndexChanged);
             // 
-            // modelToolStripMenuItem
-            // 
-            this.modelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.importToolStripMenuItem1,
-            this.exportToolStripMenuItem2,
-            this.mergeToolStripMenuItem2});
-            this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
-            this.modelToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.modelToolStripMenuItem.Text = "Model";
-            // 
-            // exportToolStripMenuItem2
-            // 
-            this.exportToolStripMenuItem2.Name = "exportToolStripMenuItem2";
-            this.exportToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
-            this.exportToolStripMenuItem2.Text = "Export";
-            this.exportToolStripMenuItem2.Click += new System.EventHandler(this.ExportToolStripMenuItemClicked);
-            // 
-            // importToolStripMenuItem1
-            // 
-            this.importToolStripMenuItem1.Name = "importToolStripMenuItem1";
-            this.importToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
-            this.importToolStripMenuItem1.Text = "Import";
-            this.importToolStripMenuItem1.Click += new System.EventHandler(this.ImportToolStripMenuItemClicked);
-            // 
-            // mergeToolStripMenuItem2
-            // 
-            this.mergeToolStripMenuItem2.Name = "mergeToolStripMenuItem2";
-            this.mergeToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
-            this.mergeToolStripMenuItem2.Text = "Merge";
-            this.mergeToolStripMenuItem2.Click += new System.EventHandler(this.MergeToolStripMenuItemClicked);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1909,6 +1909,7 @@
             this.Load += new System.EventHandler(this.MainWindowLoad);
             this.Shown += new System.EventHandler(this.DefocusSearchBox);
             this.LocationChanged += new System.EventHandler(this.MainWindow_LocationChanged);
+            this.SizeChanged += new System.EventHandler(this.MainWindow_SizeChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainWindowKeyDown);
             this.ribbon.ResumeLayout(false);
             this.ribbon.PerformLayout();
