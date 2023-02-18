@@ -4,9 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Net;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -36,12 +34,9 @@ namespace FLVER_Editor
         private const int mtDeleteCbIndex = 9;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string jsonFileFilter = @"JSON File (*.json)|*.json";
-        private const string version = "1.82";
+        private const string version = "1.83";
         private const string patreonSupportUri = "https://www.patreon.com/theonlypear";
         private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
-        private const string updateVersionUri = "https://pastebin.com/raw/9f04Uf1i";
-        private const string updatePromptMessage = "A new version of FLVER Editor is available, would you like to update?";
-        private const string updateZipUri = "https://flvereditor3.000webhostapp.com/update/MySFformat.zip";
         private const string baseMaterialDictKey = "Base Material";
         public static List<string> arguments;
         public static FLVER flver;
@@ -68,11 +63,6 @@ namespace FLVER_Editor
         private static readonly string materialPresetsFilePath = $"{rootFolderPath}/mpresets.json";
         private static readonly string dummyPresetsFilePath = $"{rootFolderPath}/dpresets.json";
         private static readonly string userConfigJsonPath = $"{rootFolderPath}/userconfig.json";
-        private static readonly string backupExecPath = $"{rootFolderPath}/MySFformat.bak";
-        private static readonly string zipPath = $"{rootFolderPath}/MySFformat.zip";
-        private static readonly string updateFolderPath = $"{rootFolderPath}/update/";
-        private static readonly string execPath = $"{rootFolderPath}/MySFformat.exe";
-        private static readonly string updateExecPath = $"{updateFolderPath}/MySFformat.exe";
         public static JObject userConfigJson = new JObject();
         private static int currMaterialsTableSplitDistance;
         private static string currAutoSaveInterval;
@@ -96,7 +86,6 @@ namespace FLVER_Editor
             ReadUserConfig();
             SetEditorWindowSize();
             SetDefaultScreenPosition();
-            CheckForUpdates();
             GloballyDisableDataTableColumnSorting();
             SetMaterialsTableView();
             SetDummyThickness();
@@ -236,30 +225,6 @@ namespace FLVER_Editor
         private void EnableDarkTheme()
         {
             ChangeTheme(this, ColorTranslator.FromHtml("#323232"), ColorTranslator.FromHtml("#d9d9d9"));
-        }
-
-        private void CheckForUpdates()
-        {
-            versionStr.Text += $@" {version}";
-            try
-            {
-                var client = new WebClient();
-                if (client.DownloadString(updateVersionUri).Contains(version))
-                {
-                    if (File.Exists(backupExecPath)) File.Delete(backupExecPath);
-                    return;
-                }
-                if (ShowQuestionDialog(updatePromptMessage) != DialogResult.Yes) return;
-                client.DownloadFile(updateZipUri, zipPath);
-                ZipFile.ExtractToDirectory(zipPath, updateFolderPath);
-                if (File.Exists(zipPath)) File.Delete(zipPath);
-                File.Move(execPath, backupExecPath);
-                File.Copy(updateExecPath, execPath, true);
-                if (Directory.Exists(updateFolderPath)) Directory.Delete(updateFolderPath, true);
-                Process.Start(Application.ExecutablePath, arguments[0]);
-                Environment.Exit(Environment.ExitCode);
-            }
-            catch { }
         }
 
         private static Vector3 ConvertSysNumToXnaVector3(System.Numerics.Vector3 v) { return new Vector3(v.X, v.Y, v.Z); }
