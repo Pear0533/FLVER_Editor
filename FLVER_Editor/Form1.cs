@@ -83,6 +83,7 @@ namespace FLVER_Editor
         public MainWindow()
         {
             InitializeComponent();
+            SetVersionString();
             ReadUserConfig();
             SetEditorWindowSize();
             SetDefaultScreenPosition();
@@ -97,6 +98,11 @@ namespace FLVER_Editor
             meshTabDataTableSelector.SelectedIndex = 0;
             Mono3D.mainForm = this;
             if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
+        }
+
+        private void SetVersionString()
+        {
+            versionStr.Text += $@" {version}";
         }
 
         private void SetDefaultScreenPosition()
