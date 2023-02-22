@@ -7,12 +7,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.ribbon = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,6 +52,8 @@
             this.multiSelectMenuTextbox = new System.Windows.Forms.ToolStripTextBox();
             this.meshTabPage = new System.Windows.Forms.TabPage();
             this.functionsGroupBox = new System.Windows.Forms.GroupBox();
+            this.displayFemaleBodyButton = new System.Windows.Forms.Button();
+            this.displayMaleBodyButton = new System.Windows.Forms.Button();
             this.setAllBBsMaxSizeButton = new System.Windows.Forms.Button();
             this.hideAllMeshesButton = new System.Windows.Forms.Button();
             this.selectAllMeshesButton = new System.Windows.Forms.Button();
@@ -170,6 +172,8 @@
             this.zInOutTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.zThicknessTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.zCartwheelTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.displayMaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.displayFemaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -540,6 +544,8 @@
             // 
             this.functionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.functionsGroupBox.Controls.Add(this.displayFemaleBodyButton);
+            this.functionsGroupBox.Controls.Add(this.displayMaleBodyButton);
             this.functionsGroupBox.Controls.Add(this.setAllBBsMaxSizeButton);
             this.functionsGroupBox.Controls.Add(this.hideAllMeshesButton);
             this.functionsGroupBox.Controls.Add(this.selectAllMeshesButton);
@@ -551,6 +557,34 @@
             this.functionsGroupBox.TabIndex = 17;
             this.functionsGroupBox.TabStop = false;
             this.functionsGroupBox.Text = "Functions";
+            // 
+            // displayFemaleBodyButton
+            // 
+            this.displayFemaleBodyButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("displayFemaleBodyButton.BackgroundImage")));
+            this.displayFemaleBodyButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.displayFemaleBodyButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.displayFemaleBodyButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.displayFemaleBodyButton.Location = new System.Drawing.Point(267, 16);
+            this.displayFemaleBodyButton.Name = "displayFemaleBodyButton";
+            this.displayFemaleBodyButton.Size = new System.Drawing.Size(40, 40);
+            this.displayFemaleBodyButton.TabIndex = 18;
+            this.displayFemaleBodyTooltip.SetToolTip(this.displayFemaleBodyButton, "Display Female Body");
+            this.displayFemaleBodyButton.UseVisualStyleBackColor = true;
+            this.displayFemaleBodyButton.Click += new System.EventHandler(this.DisplayFemaleBodyButton_Click);
+            // 
+            // displayMaleBodyButton
+            // 
+            this.displayMaleBodyButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.display_male_body_icon;
+            this.displayMaleBodyButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.displayMaleBodyButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.displayMaleBodyButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.displayMaleBodyButton.Location = new System.Drawing.Point(223, 16);
+            this.displayMaleBodyButton.Name = "displayMaleBodyButton";
+            this.displayMaleBodyButton.Size = new System.Drawing.Size(40, 40);
+            this.displayMaleBodyButton.TabIndex = 17;
+            this.displayMaleBodyTooltip.SetToolTip(this.displayMaleBodyButton, "Display Male Body");
+            this.displayMaleBodyButton.UseVisualStyleBackColor = true;
+            this.displayMaleBodyButton.Click += new System.EventHandler(this.DisplayMaleBodyButton_Click);
             // 
             // setAllBBsMaxSizeButton
             // 
@@ -2116,5 +2150,9 @@
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem mergeToolStripMenuItem2;
+        private System.Windows.Forms.Button displayMaleBodyButton;
+        private System.Windows.Forms.Button displayFemaleBodyButton;
+        private System.Windows.Forms.ToolTip displayMaleBodyTooltip;
+        private System.Windows.Forms.ToolTip displayFemaleBodyTooltip;
     }
 }

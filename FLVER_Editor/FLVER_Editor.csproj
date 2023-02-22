@@ -140,6 +140,12 @@
     <None Include="dpresets.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="femalebody.obj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="malebody.obj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="mpresets.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -179,6 +185,9 @@
     <Content Include="oo2core_6_win64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\display_male_body_icon.png" />
+    <None Include="Resources\display_female_body_icon.png" />
+    <None Include="Resources\display_female_body_icon1.png" />
     <Content Include="singleColor.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

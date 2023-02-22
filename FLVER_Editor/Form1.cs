@@ -40,6 +40,8 @@ namespace FLVER_Editor
         private const string baseMaterialDictKey = "Base Material";
         public static List<string> arguments;
         public static FLVER flver;
+        public static FLVER maleBodyFlver = new FLVER();
+        public static FLVER femaleBodyFlver = new FLVER();
         private static byte[] currFlverBytes;
         private static BND4 flverBnd;
         private static BND4 matBinBnd;
@@ -79,6 +81,8 @@ namespace FLVER_Editor
         public static bool isSnappedLeft = false;
         public static bool isSnappedTop = false;
         public static bool areDummyIdsVisible = true;
+        private static bool dispMaleBody;
+        private static bool dispFemaleBody;
 
         public MainWindow()
         {
@@ -94,10 +98,17 @@ namespace FLVER_Editor
             SetAutoSaveEnabled();
             SetDummyIDsVisibility();
             EnableDarkTheme();
+            ImportBodyModels();
             tabWindow.SelectedTab = meshTabPage;
             meshTabDataTableSelector.SelectedIndex = 0;
             Mono3D.mainForm = this;
             if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
+        }
+
+        private static void ImportBodyModels()
+        {
+            Program.ImportFBX($"{rootFolderPath}\\malebody.obj", true);
+            Program.ImportFBX($"{rootFolderPath}\\femalebody.obj", false, true);
         }
 
         private void SetVersionString()
@@ -246,6 +257,8 @@ namespace FLVER_Editor
 
         public static void UpdateMesh()
         {
+            if (dispMaleBody) flver.Meshes.Add(maleBodyFlver.Meshes[0]);
+            else if (dispFemaleBody) flver.Meshes.Add(femaleBodyFlver.Meshes[0]);
             var vertexPosColorList = new List<VertexPositionColor>();
             var faceSetPosColorList = new List<VertexPositionColor>();
             var faceSetPosColorTexList = new List<VertexPositionColorTexture>();
@@ -343,7 +356,9 @@ namespace FLVER_Editor
                     Program.vertices.Add(flver.Meshes[i].Vertices[j]);
                     Program.verticesInfo.Add(new VertexInfo { meshIndex = i, vertexIndex = (uint)j });
                 }
-                List<FLVER.Texture> texList = flver.Materials[flver.Meshes[i].MaterialIndex].Textures;
+                FLVER.Material currMaterial = flver.Materials.ElementAtOrDefault(flver.Meshes[i].MaterialIndex);
+                if (currMaterial == null) continue;
+                List<FLVER.Texture> texList = currMaterial.Textures;
                 if (texList.Count <= 0) continue;
                 var vertexTexMap = new VertexTexMap
                 {
@@ -419,6 +434,8 @@ namespace FLVER_Editor
             viewer.vertices = vertexPosColorList.ToArray();
             viewer.vertexTexMapList = vertexTexMapList.ToArray();
             viewer.faceSets = faceSetPosColorList.ToArray();
+            if (dispMaleBody) flver.Meshes.Remove(maleBodyFlver.Meshes[0]);
+            else if (dispFemaleBody) flver.Meshes.Remove(femaleBodyFlver.Meshes[0]);
         }
 
         private static void ClearViewerMaterialHighlight()
@@ -2286,6 +2303,25 @@ namespace FLVER_Editor
             userConfigJson["EditorWindowWidth"] = Size.Width;
             userConfigJson["EditorWindowHeight"] = Size.Height;
             WriteUserConfig();
+        }
+
+        private static void ToggleBodyModelDisplay(ref bool dispBodyModel)
+        {
+            dispBodyModel = !dispBodyModel;
+            UpdateMesh();
+            ShowInformationDialog(dispBodyModel ? "Body model is now visible!" : "Body model is now hidden!");
+        }
+
+        private void DisplayMaleBodyButton_Click(object sender, EventArgs e)
+        {
+            dispFemaleBody = false;
+            ToggleBodyModelDisplay(ref dispMaleBody);
+        }
+
+        private void DisplayFemaleBodyButton_Click(object sender, EventArgs e)
+        {
+            dispMaleBody = false;
+            ToggleBodyModelDisplay(ref dispFemaleBody);
         }
 
         private enum TextureFormats

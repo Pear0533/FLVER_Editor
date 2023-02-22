@@ -63,6 +63,26 @@ namespace FLVER_Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap display_female_body_icon {
+            get {
+                object obj = ResourceManager.GetObject("display_female_body_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap display_male_body_icon {
+            get {
+                object obj = ResourceManager.GetObject("display_male_body_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap hide_all_mesh_icon {
             get {
                 object obj = ResourceManager.GetObject("hide_all_mesh_icon", resourceCulture);

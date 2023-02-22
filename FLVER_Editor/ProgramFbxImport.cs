@@ -10,10 +10,11 @@ namespace FLVER_Editor
 {
     internal static partial class Program
     {
-        public static bool ImportFBX(string modelFilePath)
+        public static bool ImportFBX(string modelFilePath, bool isLoadingMaleBody = false, bool isLoadingFemaleBody = false)
         {
             try
             {
+                FLVER targetFlver = isLoadingMaleBody ? MainWindow.maleBodyFlver : isLoadingFemaleBody ? MainWindow.femaleBodyFlver : flver;
                 var importer = new AssimpContext();
                 string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 string conversionTableStr = File.ReadAllText(assemblyPath + "\\boneConversion.ini");
@@ -36,7 +37,7 @@ namespace FLVER_Editor
                 Scene md = importer.ImportFile(modelFilePath, PostProcessSteps.CalculateTangentSpace);
                 boneParentList = new Dictionary<string, string>();
                 printNodeStruct(md.RootNode);
-                int layoutCount = flver.BufferLayouts.Count;
+                int layoutCount = targetFlver.BufferLayouts.Count;
                 var newBL = new FLVER.BufferLayout
                 {
                     new FLVER.BufferLayout.Member(0, 0, FLVER.BufferLayout.MemberType.Float3, FLVER.BufferLayout.MemberSemantic.Position, 0),
@@ -48,14 +49,17 @@ namespace FLVER_Editor
                     new FLVER.BufferLayout.Member(0, 32, FLVER.BufferLayout.MemberType.Byte4C, FLVER.BufferLayout.MemberSemantic.VertexColor, 1),
                     new FLVER.BufferLayout.Member(0, 36, FLVER.BufferLayout.MemberType.UVPair, FLVER.BufferLayout.MemberSemantic.UV, 0)
                 };
-                flver.BufferLayouts.Add(newBL);
-                int materialCount = flver.Materials.Count;
-                foreach (Material mat in md.Materials)
+                targetFlver.BufferLayouts.Add(newBL);
+                int materialCount = targetFlver.Materials.Count;
+                if (materialCount > 0)
                 {
-                    FLVER.Material newMaterial = GetBaseMaterial(mat.TextureDiffuse.FilePath, mat.TextureSpecular.FilePath, mat.TextureNormal.FilePath);
-                    newMaterial.Name = mat.Name;
-                    newMaterial.Unk18 = flver.Materials[flver.Materials.Count - 1].Unk18 + 1;
-                    flver.Materials.Add(newMaterial);
+                    foreach (Material mat in md.Materials)
+                    {
+                        FLVER.Material newMaterial = GetBaseMaterial(mat.TextureDiffuse.FilePath, mat.TextureSpecular.FilePath, mat.TextureNormal.FilePath);
+                        newMaterial.Name = mat.Name;
+                        newMaterial.Unk18 = targetFlver.Materials[targetFlver.Materials.Count - 1].Unk18 + 1;
+                        targetFlver.Materials.Add(newMaterial);
+                    }
                 }
                 foreach (Mesh m in md.Meshes)
                 {
@@ -92,11 +96,11 @@ namespace FLVER_Editor
                             if (conversionTable.ContainsKey(m.Bones[i2].Name))
                             {
                                 boneName = conversionTable[boneName];
-                                boneIndex = FindBoneIndexByName(flver, boneName);
+                                boneIndex = FindBoneIndexByName(targetFlver, boneName);
                             }
                             else
                             {
-                                boneIndex = FindBoneIndexByName(flver, boneName);
+                                boneIndex = FindBoneIndexByName(targetFlver, boneName);
                                 for (var bp = 0; bp < boneFindParentTimes; bp++)
                                 {
                                     if (boneIndex != -1) continue;
@@ -107,7 +111,7 @@ namespace FLVER_Editor
                                     {
                                         boneName = conversionTable[boneName];
                                     }
-                                    boneIndex = FindBoneIndexByName(flver, boneName);
+                                    boneIndex = FindBoneIndexByName(targetFlver, boneName);
                                 }
                             }
                             if (boneIndex == -1)
@@ -189,9 +193,10 @@ namespace FLVER_Editor
                     mn.FaceSets[0].Vertices = faceIndices.ToArray();
                     if (mn.FaceSets[0].Vertices.Length > 65534) mn.FaceSets[0].IndexSize = 32;
                     mn.MaterialIndex = materialCount + m.MaterialIndex;
-                    flver.Meshes.Add(mn);
+                    targetFlver.Meshes.Add(mn);
                 }
-                MainWindow.ShowInformationDialog("Successfully imported model into the current FLVER file!");
+                if (!isLoadingMaleBody && !isLoadingFemaleBody)
+                    MainWindow.ShowInformationDialog("Successfully imported model into the current FLVER file!");
                 return true;
             }
             catch
