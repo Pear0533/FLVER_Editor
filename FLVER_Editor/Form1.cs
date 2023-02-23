@@ -105,10 +105,18 @@ namespace FLVER_Editor
             if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
         }
 
+        private static void ApplyBodyModelMaterial(FLVER bodyFlver)
+        {
+            bodyFlver.Materials.Add(Program.GetBaseMaterial());
+            bodyFlver.Meshes[0].MaterialIndex = 0;
+        }
+
         private static void ImportBodyModels()
         {
             Program.ImportFBX($"{rootFolderPath}\\malebody.obj", true);
             Program.ImportFBX($"{rootFolderPath}\\femalebody.obj", false, true);
+            ApplyBodyModelMaterial(maleBodyFlver);
+            ApplyBodyModelMaterial(femaleBodyFlver);
         }
 
         private void SetVersionString()
