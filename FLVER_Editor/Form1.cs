@@ -868,7 +868,7 @@ namespace FLVER_Editor
             if (dummyIsSelected)
             {
                 isSettingDefaultInfo = true;
-                bool hasIndices = selectedDummyIndices.Count != 0;
+                bool hasIndices = selectedDummyIndices.Count != 0 || selectedMeshIndices.Count > 0;
                 ResetModifierNumBoxValues();
                 meshModifiersContainer.Enabled = hasIndices;
                 if (hasIndices)
@@ -888,7 +888,7 @@ namespace FLVER_Editor
             if (meshIsSelected)
             {
                 isSettingDefaultInfo = true;
-                bool hasIndices = selectedMeshIndices.Count != 0;
+                bool hasIndices = selectedMeshIndices.Count != 0 || selectedDummyIndices.Count > 0;
                 ResetModifierNumBoxValues();
                 meshModifiersContainer.Enabled = hasIndices;
                 if (hasIndices)
