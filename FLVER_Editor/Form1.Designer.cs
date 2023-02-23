@@ -727,7 +727,8 @@
             this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.meshTable.Size = new System.Drawing.Size(492, 163);
             this.meshTable.TabIndex = 11;
-            this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTableSelectCheckboxClicked);
+            this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTable_CellContentClick);
+            this.meshTable.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTable_CellContentDoubleClick);
             this.meshTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTableCellValueChanged);
             // 
             // Column1
@@ -845,7 +846,8 @@
             this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.dummiesTable.Size = new System.Drawing.Size(492, 171);
             this.dummiesTable.TabIndex = 12;
-            this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTableSelectCheckboxClicked);
+            this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTable_CellContentClick);
+            this.dummiesTable.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTable_CellContentDoubleClick);
             this.dummiesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTableCellValueChanged);
             // 
             // dataGridViewTextBoxColumn3

@@ -969,50 +969,55 @@ namespace FLVER_Editor
             ShowInformationDialog("Successfully applied mesh simple skin!");
         }
 
-        private void MeshTableSelectCheckboxClicked(object sender, DataGridViewCellEventArgs e)
+        private void MeshTableCheckboxSelected(int rowIndex, int columnIndex)
         {
-            if (e.RowIndex < 0) return;
-            switch (e.ColumnIndex)
+            if (rowIndex < 0) return;
+            switch (columnIndex)
             {
                 case 2:
-                    ApplyMeshSimpleSkin(e.RowIndex);
+                    ApplyMeshSimpleSkin(rowIndex);
                     break;
                 case 3:
-                    selectedMeshIndices = UpdateIndicesList(meshTable, selectedMeshIndices, e.ColumnIndex, e.RowIndex, ref meshIsSelected);
+                    selectedMeshIndices = UpdateIndicesList(meshTable, selectedMeshIndices, columnIndex, rowIndex, ref meshIsSelected);
                     UpdateSelectedMeshes();
                     break;
                 case 4:
-                    hiddenMeshIndices = UpdateIndicesList(meshTable, hiddenMeshIndices, e.ColumnIndex, e.RowIndex, ref meshIsHidden);
+                    hiddenMeshIndices = UpdateIndicesList(meshTable, hiddenMeshIndices, columnIndex, rowIndex, ref meshIsHidden);
                     UpdateMesh();
                     break;
             }
         }
 
-        private void DummiesTableSelectCheckboxClicked(object sender, DataGridViewCellEventArgs e)
+        private void MeshTable_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0) return;
-            switch (e.ColumnIndex)
+            MeshTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
+        }
+
+        private void DummiesTableCheckboxSelected(int rowIndex, int columnIndex)
+        {
+            if (rowIndex < 0) return;
+            switch (columnIndex)
             {
                 case 4:
-                    selectedDummyIndices = UpdateIndicesList(dummiesTable, selectedDummyIndices, e.ColumnIndex, e.RowIndex, ref dummyIsSelected);
+                    selectedDummyIndices = UpdateIndicesList(dummiesTable, selectedDummyIndices, columnIndex, rowIndex, ref dummyIsSelected);
                     UpdateSelectedDummies();
                     break;
                 case 5:
                     var duplicatedDummy = new FLVER.Dummy
                     {
-                        Position = flver.Dummies[e.RowIndex].Position,
-                        Forward = flver.Dummies[e.RowIndex].Forward,
-                        ReferenceID = flver.Dummies[e.RowIndex].ReferenceID,
-                        AttachBoneIndex = flver.Dummies[e.RowIndex].AttachBoneIndex,
-                        DummyBoneIndex = flver.Dummies[e.RowIndex].DummyBoneIndex,
-                        Upward = flver.Dummies[e.RowIndex].Upward,
-                        Unk0C = flver.Dummies[e.RowIndex].Unk0C,
-                        Unk0D = flver.Dummies[e.RowIndex].Unk0D,
-                        Unk0E = flver.Dummies[e.RowIndex].Unk0E,
-                        Flag1 = flver.Dummies[e.RowIndex].Flag1,
-                        Flag2 = flver.Dummies[e.RowIndex].Flag2,
-                        Unk30 = flver.Dummies[e.RowIndex].Unk30,
-                        Unk34 = flver.Dummies[e.RowIndex].Unk34
+                        Position = flver.Dummies[rowIndex].Position,
+                        Forward = flver.Dummies[rowIndex].Forward,
+                        ReferenceID = flver.Dummies[rowIndex].ReferenceID,
+                        AttachBoneIndex = flver.Dummies[rowIndex].AttachBoneIndex,
+                        DummyBoneIndex = flver.Dummies[rowIndex].DummyBoneIndex,
+                        Upward = flver.Dummies[rowIndex].Upward,
+                        Unk0C = flver.Dummies[rowIndex].Unk0C,
+                        Unk0D = flver.Dummies[rowIndex].Unk0D,
+                        Unk0E = flver.Dummies[rowIndex].Unk0E,
+                        Flag1 = flver.Dummies[rowIndex].Flag1,
+                        Flag2 = flver.Dummies[rowIndex].Flag2,
+                        Unk30 = flver.Dummies[rowIndex].Unk30,
+                        Unk34 = flver.Dummies[rowIndex].Unk34
                     };
                     flver.Dummies.Add(duplicatedDummy);
                     DeselectAllSelectedThings();
@@ -1020,6 +1025,11 @@ namespace FLVER_Editor
                     UpdateMesh();
                     break;
             }
+        }
+
+        private void DummiesTable_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            DummiesTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
         }
 
         private static System.Numerics.Vector3 CreateTranslationVector(float x, float y, float z, float offset, int nbi)
@@ -2466,6 +2476,16 @@ namespace FLVER_Editor
 
                 public Vector2 Unk14 { get; set; }
             }
+        }
+
+        private void MeshTable_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            MeshTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
+        }
+
+        private void DummiesTable_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            DummiesTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
         }
     }
 }
