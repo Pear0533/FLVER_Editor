@@ -620,46 +620,58 @@ namespace FLVER_Editor
             return filePath.Contains(".flv") || filePath.Contains(".flver");
         }
 
-        private static FLVER ReadFLVERFromDCXPath(string filePath, bool setMainFlverArchiveType, bool setBinderIndex, bool wantsTpf)
+        private FLVER ReadFLVERFromDCXPath(string filePath, bool setMainFlverArchiveType, bool setBinderIndex, bool wantsTpf)
         {
             var flverFiles = new List<BinderFile>();
+            BND4 newFlverBnd = null;
             try
             {
-                flverBnd = SoulsFile<BND4>.Read(filePath);
+                newFlverBnd = SoulsFile<BND4>.Read(filePath);
+                flverBnd = newFlverBnd;
             }
             catch
             {
-                flverBnd = SoulsFile<BND4>.Read(DCX.Decompress(filePath));
-            }
-            if (setMainFlverArchiveType) flverArchiveType = flverBnd.Compression;
-            var binderIndex = 0;
-            foreach (BinderFile file in flverBnd.Files)
-            {
-                if (IsFLVERPath(file.Name))
+                try
                 {
-                    flverFiles.Add(file);
-                    if (currFlverFileBinderIndex == -1 && setBinderIndex) currFlverFileBinderIndex = binderIndex;
+                    newFlverBnd = SoulsFile<BND4>.Read(DCX.Decompress(filePath));
+                    flverBnd = newFlverBnd;
                 }
-                else if (file.Name.EndsWith(".tpf") && wantsTpf)
-                {
-                    try
-                    {
-                        Program.tpf = TPF.Read(file.Bytes);
-                    }
-                    catch
-                    {
-                        ShowErrorDialog($"The TPF file {file.Name} is unsupported.");
-                    }
-                }
-                binderIndex++;
+                catch { }
             }
-            if (flverFiles.Count > 0)
+            if (newFlverBnd != null)
             {
-                FLVER currFlver = FLVER.Read(flverFiles[0].Bytes);
-                return currFlver;
+                if (setMainFlverArchiveType) flverArchiveType = flverBnd.Compression;
+                var binderIndex = 0;
+                foreach (BinderFile file in flverBnd.Files)
+                {
+                    if (IsFLVERPath(file.Name))
+                    {
+                        flverFiles.Add(file);
+                        if (currFlverFileBinderIndex == -1 && setBinderIndex) currFlverFileBinderIndex = binderIndex;
+                    }
+                    else if (file.Name.EndsWith(".tpf") && wantsTpf)
+                    {
+                        try
+                        {
+                            Program.tpf = TPF.Read(file.Bytes);
+                        }
+                        catch { }
+                    }
+                    binderIndex++;
+                }
+                if (flverFiles.Count == 1) return FLVER.Read(flverFiles[0].Bytes);
+                if (flverFiles.Count > 1)
+                {
+                    int selectedFlverIndex = ShowSelectorDialog("Pick a FLVER", flverFiles);
+                    if (!setBinderIndex || selectedFlverIndex == -1) return selectedFlverIndex == -1 ? null : FLVER.Read(flverFiles[selectedFlverIndex].Bytes);
+                    int binderWiseSelectedFlverIndex = flverBnd.Files.FindIndex(i =>
+                        i.Name.IndexOf(flverFiles[selectedFlverIndex].Name, StringComparison.OrdinalIgnoreCase) != -1);
+                    currFlverFileBinderIndex = binderWiseSelectedFlverIndex;
+                    return FLVER.Read(flverFiles[selectedFlverIndex].Bytes);
+                }
             }
             ShowInformationDialog("No FLVER files were found in the DCX archive.");
-            return new FLVER();
+            return null;
         }
 
         private bool OpenFLVERFile()
@@ -686,7 +698,9 @@ namespace FLVER_Editor
             }
             else
             {
-                flver = ReadFLVERFromDCXPath(flverFilePath, true, true, true);
+                FLVER newFlver = ReadFLVERFromDCXPath(flverFilePath, true, true, true);
+                if (newFlver == null) return false;
+                flver = newFlver;
                 Program.flver = flver;
             }
             currFlverBytes = flver.Write();
@@ -902,16 +916,16 @@ namespace FLVER_Editor
             UpdateMesh();
         }
 
-        private int ShowPickABoneDialog()
+        private int ShowSelectorDialog<T>(string windowTitle, IEnumerable<T> selectorList)
         {
-            var bonePickForm = new Form();
-            bonePickForm.Text = @"Pick a Bone";
-            bonePickForm.Icon = Icon;
-            bonePickForm.Width = 500;
-            bonePickForm.Height = 500;
-            bonePickForm.MinimumSize = new Size(300, 300);
-            bonePickForm.StartPosition = FormStartPosition.CenterScreen;
-            bonePickForm.MaximizeBox = false;
+            var selectorForm = new Form();
+            selectorForm.Text = windowTitle;
+            selectorForm.Icon = Icon;
+            selectorForm.Width = 500;
+            selectorForm.Height = 500;
+            selectorForm.MinimumSize = new Size(300, 300);
+            selectorForm.StartPosition = FormStartPosition.CenterScreen;
+            selectorForm.MaximizeBox = false;
             var boneSelectionBox = new TreeView();
             boneSelectionBox.Width = 450;
             boneSelectionBox.Height = 420;
@@ -937,25 +951,26 @@ namespace FLVER_Editor
 
             void CloseDialogHandler(object s, EventArgs e)
             {
-                bonePickForm.Close();
+                selectorForm.Close();
             }
 
             cancelButton.Click += CloseDialogHandler;
             okButton.Click += CloseDialogHandler;
-            bonePickForm.AcceptButton = okButton;
-            bonePickForm.Controls.Add(boneSelectionBox);
-            bonePickForm.Controls.Add(cancelButton);
-            bonePickForm.Controls.Add(okButton);
-            foreach (FLVER.Bone bone in flver.Bones)
-                boneSelectionBox.Nodes.Add(new TreeNode(bone.Name));
-            return bonePickForm.ShowDialog() == DialogResult.OK ? boneSelectionBox.SelectedNode.Index : -1;
+            selectorForm.AcceptButton = okButton;
+            selectorForm.Controls.Add(boneSelectionBox);
+            selectorForm.Controls.Add(cancelButton);
+            selectorForm.Controls.Add(okButton);
+            foreach (T item in selectorList)
+                boneSelectionBox.Nodes.Add(new TreeNode(Path.GetFileName(((dynamic)item).Name)));
+            return selectorForm.ShowDialog() == DialogResult.OK ? boneSelectionBox.SelectedNode.Index : -1;
         }
 
         private void ApplyMeshSimpleSkin(int meshIndex)
         {
-            int boneIndex = ShowPickABoneDialog();
+            int boneIndex = ShowSelectorDialog("Pick a Bone", flver.Bones);
             if (boneIndex == -1) return;
-            List<FLVER.Vertex> unweightedVerts = flver.Meshes[meshIndex].Vertices.Where(v => !v.BoneIndices.Contains(boneIndex) && v.BoneWeights.All(i => i == 0)).ToList();
+            List<FLVER.Vertex> unweightedVerts = flver.Meshes[meshIndex].Vertices.Where(v =>
+                v.BoneIndices != null && !v.BoneIndices.Contains(boneIndex) && v.BoneWeights != null && v.BoneWeights.All(i => i == 0)).ToList();
             if (!unweightedVerts.Any())
             {
                 ShowInformationDialog("Found no unweighted vertices to apply default weights to.");
@@ -1717,6 +1732,7 @@ namespace FLVER_Editor
             {
                 FLVER newFlver = IsFLVERPath(newFlverFilePath) ? FLVER.Read(newFlverFilePath) :
                     ReadFLVERFromDCXPath(newFlverFilePath, false, false, false);
+                if (newFlver == null) return;
                 int materialOffset = flver.Materials.Count;
                 int layoutOffset = flver.BufferLayouts.Count;
                 var newFlverToCurrentFlver = new Dictionary<int, int>();
@@ -2342,6 +2358,16 @@ namespace FLVER_Editor
             ToggleBodyModelDisplay(ref dispFemaleBody);
         }
 
+        private void MeshTable_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            MeshTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
+        }
+
+        private void DummiesTable_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            DummiesTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
+        }
+
         private enum TextureFormats
         {
             DXT1 = 0,
@@ -2476,16 +2502,6 @@ namespace FLVER_Editor
 
                 public Vector2 Unk14 { get; set; }
             }
-        }
-
-        private void MeshTable_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            MeshTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
-        }
-
-        private void DummiesTable_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            DummiesTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
         }
     }
 }

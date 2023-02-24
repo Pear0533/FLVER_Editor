@@ -276,22 +276,22 @@
             // importToolStripMenuItem1
             // 
             this.importToolStripMenuItem1.Name = "importToolStripMenuItem1";
-            this.importToolStripMenuItem1.Size = new System.Drawing.Size(110, 22);
-            this.importToolStripMenuItem1.Text = "Import";
+            this.importToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.importToolStripMenuItem1.Text = "Import (Ctrl+I)";
             this.importToolStripMenuItem1.Click += new System.EventHandler(this.ImportToolStripMenuItemClicked);
             // 
             // exportToolStripMenuItem2
             // 
             this.exportToolStripMenuItem2.Name = "exportToolStripMenuItem2";
-            this.exportToolStripMenuItem2.Size = new System.Drawing.Size(110, 22);
-            this.exportToolStripMenuItem2.Text = "Export";
+            this.exportToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.exportToolStripMenuItem2.Text = "Export (Ctrl+E)";
             this.exportToolStripMenuItem2.Click += new System.EventHandler(this.ExportToolStripMenuItemClicked);
             // 
             // mergeToolStripMenuItem2
             // 
             this.mergeToolStripMenuItem2.Name = "mergeToolStripMenuItem2";
-            this.mergeToolStripMenuItem2.Size = new System.Drawing.Size(110, 22);
-            this.mergeToolStripMenuItem2.Text = "Merge";
+            this.mergeToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
+            this.mergeToolStripMenuItem2.Text = "Merge (Ctrl+M)";
             this.mergeToolStripMenuItem2.Click += new System.EventHandler(this.MergeToolStripMenuItemClicked);
             // 
             // presetsFileToolStripMenuItem
