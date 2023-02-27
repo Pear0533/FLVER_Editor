@@ -27,11 +27,11 @@ namespace FLVER_Editor
 {
     public partial class MainWindow : Form
     {
-        private const int mtEditButtonIndex = 5;
-        private const int mtViewerHighlightButtonIndex = 6;
-        private const int mtAddPresetCbIndex = 7;
-        private const int mtApplyPresetCbIndex = 8;
-        private const int mtDeleteCbIndex = 9;
+        private const int mtEditButtonIndex = 6;
+        private const int mtViewerHighlightButtonIndex = 7;
+        private const int mtAddPresetCbIndex = 8;
+        private const int mtApplyPresetCbIndex = 9;
+        private const int mtDeleteCbIndex = 10;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string jsonFileFilter = @"JSON File (*.json)|*.json";
         private const string version = "1.83";
@@ -527,6 +527,20 @@ namespace FLVER_Editor
             DisableDataTableColumnSorting(dummiesTable);
         }
 
+        private static int GetModelMask(string materialName)
+        {
+            int modelMask = -1;
+            int maskIndex = materialName.IndexOf("#", StringComparison.Ordinal);
+            if (maskIndex == -1) return modelMask;
+            try
+            {
+                string modelMaskStr = materialName.Substring(maskIndex + 1, maskIndex + 2);
+                modelMask = int.Parse(modelMaskStr);
+            }
+            catch { }
+            return modelMask;
+        }
+
         private void UpdateUI()
         {
             isSettingDefaultInfo = true;
@@ -555,10 +569,10 @@ namespace FLVER_Editor
                 var row = new DataGridViewRow();
                 material.Unk18 = i;
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i }, new DataGridViewTextBoxCell { Value = material.Name },
-                    new DataGridViewTextBoxCell { Value = material.Flags },
+                    new DataGridViewTextBoxCell { Value = GetModelMask(material.Name) }, new DataGridViewTextBoxCell { Value = material.Flags },
                     new DataGridViewTextBoxCell { Value = material.MTD }, new DataGridViewTextBoxCell { Value = material.Unk18 });
                 for (var j = 0; j < 3; ++j)
-                    row.Cells.Add(new DataGridViewButtonCell { Value = materialsTable.Columns[j + 5].HeaderText });
+                    row.Cells.Add(new DataGridViewButtonCell { Value = materialsTable.Columns[j + 6].HeaderText });
                 for (var j = 0; j < 2; ++j)
                     row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
                 materialsTable.Rows.Add(row);
@@ -1380,11 +1394,27 @@ namespace FLVER_Editor
             UpdateMesh();
         }
 
+        private static string ReplaceModelMask(string materialName, string newModelMaskStr)
+        {
+            string ogModelMask = GetModelMask(materialName).ToString().PadLeft(2, '0');
+            string newModelMask = newModelMaskStr.PadLeft(2, '0');
+            int.TryParse(newModelMask, out int newModelMaskVal);
+            if (newModelMaskVal >= 0 && newModelMask.Length == 2)
+            {
+                return materialName.IndexOf(ogModelMask, StringComparison.Ordinal) == -1 ?
+                    materialName.Insert(0, $"#{newModelMask}#") :
+                    materialName.Replace(ogModelMask, newModelMask);
+            }
+            ShowInformationDialog("The input value must be a positive two-digit integer.");
+            return materialName;
+        }
+
         private void MaterialsTableCellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (isSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex)) return;
             try
             {
+                string materialName = flver.Materials[e.RowIndex].Name;
                 var materialsTableValue = materialsTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
                 if (materialsTableValue != null)
                 {
@@ -1394,12 +1424,15 @@ namespace FLVER_Editor
                             flver.Materials[e.RowIndex].Name = materialsTableValue;
                             break;
                         case 2:
-                            flver.Materials[e.RowIndex].Flags = int.Parse(materialsTableValue);
+                            flver.Materials[e.RowIndex].Name = ReplaceModelMask(materialName, materialsTableValue);
                             break;
                         case 3:
-                            flver.Materials[e.RowIndex].MTD = materialsTableValue;
+                            flver.Materials[e.RowIndex].Flags = int.Parse(materialsTableValue);
                             break;
                         case 4:
+                            flver.Materials[e.RowIndex].MTD = materialsTableValue;
+                            break;
+                        case 5:
                             flver.Materials[e.RowIndex].Unk18 = int.Parse(materialsTableValue);
                             break;
                     }
