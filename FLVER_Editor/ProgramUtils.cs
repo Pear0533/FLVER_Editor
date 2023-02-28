@@ -300,7 +300,7 @@ namespace FLVER_Editor
             return new Vector3D(v.X, v.Y, v.Z);
         }
 
-        private static FLVER.FaceSet generateBasicFaceSet()
+        public static FLVER.FaceSet generateBasicFaceSet()
         {
             var ans = new FLVER.FaceSet();
             ans.CullBackfaces = true;
@@ -311,7 +311,7 @@ namespace FLVER_Editor
             return ans;
         }
 
-        private static FLVER.Vertex generateVertex(System.Numerics.Vector3 pos, System.Numerics.Vector3 uv1, System.Numerics.Vector3 uv2, System.Numerics.Vector3 normal,
+        public static FLVER.Vertex generateVertex(System.Numerics.Vector3 pos, System.Numerics.Vector3 uv1, System.Numerics.Vector3 uv2, System.Numerics.Vector3 normal,
             System.Numerics.Vector3 tangets, int tangentW = -1)
         {
             var ans = new FLVER.Vertex();
@@ -327,6 +327,26 @@ namespace FLVER_Editor
             ans.Tangents = new List<Vector4>();
             ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangentW));
             ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangentW));
+            ans.Colors = new List<FLVER.Vertex.Color>();
+            ans.Colors.Add(new FLVER.Vertex.Color(255, 255, 255, 255));
+            return ans;
+        }
+
+        public static FLVER.Vertex generateVertexV4(System.Numerics.Vector3 pos, System.Numerics.Vector3 uv1, System.Numerics.Vector3 uv2, Vector4 normal, Vector4 tangets, int tangentW = -1)
+        {
+            FLVER.Vertex ans = new FLVER.Vertex();
+            ans.Positions = new List<System.Numerics.Vector3>();
+            ans.Positions.Add(pos);
+            ans.BoneIndices = new int[4] { 0, 0, 0, 0 };
+            ans.BoneWeights = new float[4] { 1, 0, 0, 0 };
+            ans.UVs = new List<System.Numerics.Vector3>();
+            ans.UVs.Add(uv1);
+            ans.UVs.Add(uv2);
+            ans.Normals = new List<Vector4>();
+            ans.Normals.Add(new Vector4(normal.X, normal.Y, normal.Z, normal.W));
+            ans.Tangents = new List<Vector4>();
+            ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangets.W));
+            ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangets.W));
             ans.Colors = new List<FLVER.Vertex.Color>();
             ans.Colors.Add(new FLVER.Vertex.Color(255, 255, 255, 255));
             return ans;

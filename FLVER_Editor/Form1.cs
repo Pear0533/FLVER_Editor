@@ -2401,6 +2401,49 @@ namespace FLVER_Editor
             DummiesTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
         }
 
+        private void SolveAllMeshLODsButton_Click(object sender, EventArgs e)
+        {
+            int layoutCount = flver.BufferLayouts.Count;
+            var newBL = new FLVER.BufferLayout
+            {
+                new FLVER.BufferLayout.Member(0, 0, FLVER.BufferLayout.MemberType.Float3, FLVER.BufferLayout.MemberSemantic.Position, 0),
+                new FLVER.BufferLayout.Member(0, 12, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.Normal, 0),
+                new FLVER.BufferLayout.Member(0, 16, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.Tangent, 0),
+                new FLVER.BufferLayout.Member(0, 20, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.Tangent, 1),
+                new FLVER.BufferLayout.Member(0, 24, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.BoneIndices, 0),
+                new FLVER.BufferLayout.Member(0, 28, FLVER.BufferLayout.MemberType.Byte4C, FLVER.BufferLayout.MemberSemantic.BoneWeights, 0),
+                new FLVER.BufferLayout.Member(0, 32, FLVER.BufferLayout.MemberType.Byte4C, FLVER.BufferLayout.MemberSemantic.VertexColor, 1),
+                new FLVER.BufferLayout.Member(0, 36, FLVER.BufferLayout.MemberType.UVPair, FLVER.BufferLayout.MemberSemantic.UV, 0)
+            };
+            flver.BufferLayouts.Add(newBL);
+            foreach (FLVER.Mesh mn in flver.Meshes)
+            {
+                mn.BoundingBoxMax = new System.Numerics.Vector3(1, 1, 1);
+                mn.BoundingBoxMin = new System.Numerics.Vector3(-1, -1, -1);
+                mn.BoundingBoxUnk = new System.Numerics.Vector3();
+                mn.Unk1 = 0;
+                mn.DefaultBoneIndex = 0;
+                mn.Dynamic = true;
+                mn.VertexBuffers = new List<FLVER.VertexBuffer> { new FLVER.VertexBuffer(0, layoutCount, -1) };
+                uint[] varray = mn.FaceSets[0].Vertices;
+                mn.FaceSets = new List<FLVER.FaceSet>();
+                for (var i = 0; i < mn.Vertices.Count; i++)
+                {
+                    FLVER.Vertex vit = mn.Vertices[i];
+                    mn.Vertices[i] = Program.generateVertexV4(new System.Numerics.Vector3(vit.Positions[0].X, vit.Positions[0].Y, vit.Positions[0].Z), vit.UVs[0], vit.UVs[0],
+                        vit.Normals[0], vit.Tangents[0], 1);
+                    mn.Vertices[i].BoneIndices = vit.BoneIndices;
+                    mn.Vertices[i].BoneWeights = vit.BoneWeights;
+                }
+                mn.FaceSets.Add(Program.generateBasicFaceSet());
+                mn.FaceSets[0].Vertices = varray;
+                mn.FaceSets[0].CullBackfaces = false;
+                if (mn.FaceSets[0].Vertices.Length <= 65534) continue;
+                mn.FaceSets[0].IndexSize = 32;
+            }
+            ShowInformationDialog("Successfully solved all mesh LODs!");
+        }
+
         private enum TextureFormats
         {
             DXT1 = 0,

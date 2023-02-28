@@ -129,5 +129,15 @@ namespace FLVER_Editor.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap solve_all_mesh_lods_icon {
+            get {
+                object obj = ResourceManager.GetObject("solve_all_mesh_lods_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
