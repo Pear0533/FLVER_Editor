@@ -12,9 +12,7 @@ namespace FLVER_Editor
     {
         public static bool ImportFBX(string modelFilePath, bool isLoadingMaleBody = false, bool isLoadingFemaleBody = false)
         {
-            try
-            {
-                FLVER targetFlver = isLoadingMaleBody ? MainWindow.maleBodyFlver : isLoadingFemaleBody ? MainWindow.femaleBodyFlver : flver;
+            FLVER targetFlver = isLoadingMaleBody ? MainWindow.maleBodyFlver : isLoadingFemaleBody ? MainWindow.femaleBodyFlver : flver;
                 var importer = new AssimpContext();
                 string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 string conversionTableStr = File.ReadAllText(assemblyPath + "\\boneConversion.ini");
@@ -198,12 +196,6 @@ namespace FLVER_Editor
                 if (!isLoadingMaleBody && !isLoadingFemaleBody)
                     MainWindow.ShowInformationDialog("Successfully imported model into the current FLVER file!");
                 return true;
-            }
-            catch
-            {
-                MainWindow.ShowErrorDialog("An error occurred while attempting to import an external model file.");
-                return false;
-            }
         }
     }
 }

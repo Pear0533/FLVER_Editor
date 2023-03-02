@@ -66,6 +66,11 @@ namespace FLVER_Editor
             material.Textures.Add(newTexture);
         }
 
+        public static string FilterInvalidPathChars(string path)
+        {
+            return string.Concat(path.Split(Path.GetInvalidPathChars()));
+        }
+
         public static FLVER.Material GetBaseMaterial(string albedoPath = null, string metallicPath = null, string normalPath = null)
         {
             var baseMaterial = new FLVER.Material("", "C[AMSN]_e.mtd", 390)
@@ -139,11 +144,11 @@ namespace FLVER_Editor
                 }
             };
             SetMaterialPath(baseMaterial, "C_AMSN__snp_Texture2D_2_AlbedoMap_0",
-                albedoPath != null ? Path.GetFileNameWithoutExtension(albedoPath) + ".tif" : "");
+                albedoPath != null ? Path.GetFileNameWithoutExtension(FilterInvalidPathChars(albedoPath)) + ".tif" : "");
             SetMaterialPath(baseMaterial, "C_AMSN__snp_Texture2D_0_MetallicMap_0",
-                metallicPath != null ? Path.GetFileNameWithoutExtension(metallicPath) + ".tif" : "");
+                metallicPath != null ? Path.GetFileNameWithoutExtension(FilterInvalidPathChars(metallicPath)) + ".tif" : "");
             SetMaterialPath(baseMaterial, "C_AMSN__snp_Texture2D_7_NormalMap_4",
-                normalPath != null ? Path.GetFileNameWithoutExtension(normalPath) + ".tif" : "");
+                normalPath != null ? Path.GetFileNameWithoutExtension(FilterInvalidPathChars(normalPath)) + ".tif" : "");
             return baseMaterial;
         }
     }

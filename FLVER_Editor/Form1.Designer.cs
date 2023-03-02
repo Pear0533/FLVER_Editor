@@ -7,12 +7,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.ribbon = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,6 +52,14 @@
             this.multiSelectMenuTextbox = new System.Windows.Forms.ToolStripTextBox();
             this.meshTabPage = new System.Windows.Forms.TabPage();
             this.functionsGroupBox = new System.Windows.Forms.GroupBox();
+            this.solveAllMeshLODsButton = new System.Windows.Forms.Button();
+            this.displayFemaleBodyButton = new System.Windows.Forms.Button();
+            this.displayMaleBodyButton = new System.Windows.Forms.Button();
+            this.setAllBBsMaxSizeButton = new System.Windows.Forms.Button();
+            this.hideAllMeshesButton = new System.Windows.Forms.Button();
+            this.selectAllMeshesButton = new System.Windows.Forms.Button();
+            this.selectAllDummiesButton = new System.Windows.Forms.Button();
+            this.solveAllBBsButton = new System.Windows.Forms.Button();
             this.meshPagePanelsContainer = new System.Windows.Forms.SplitContainer();
             this.meshPageTablesContainer = new System.Windows.Forms.SplitContainer();
             this.meshTable = new System.Windows.Forms.DataGridView();
@@ -169,14 +177,6 @@
             this.displayMaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.displayFemaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.solveAllMeshLODsTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.solveAllMeshLODsButton = new System.Windows.Forms.Button();
-            this.displayFemaleBodyButton = new System.Windows.Forms.Button();
-            this.displayMaleBodyButton = new System.Windows.Forms.Button();
-            this.setAllBBsMaxSizeButton = new System.Windows.Forms.Button();
-            this.hideAllMeshesButton = new System.Windows.Forms.Button();
-            this.selectAllMeshesButton = new System.Windows.Forms.Button();
-            this.selectAllDummiesButton = new System.Windows.Forms.Button();
-            this.solveAllBBsButton = new System.Windows.Forms.Button();
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -451,6 +451,7 @@
             // 
             // autoSaveIntervalSelector
             // 
+            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -529,6 +530,7 @@
             // 
             // multiSelectMenuTextbox
             // 
+            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -561,6 +563,118 @@
             this.functionsGroupBox.TabIndex = 17;
             this.functionsGroupBox.TabStop = false;
             this.functionsGroupBox.Text = "Functions";
+            // 
+            // solveAllMeshLODsButton
+            // 
+            this.solveAllMeshLODsButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.solve_all_mesh_lods_icon;
+            this.solveAllMeshLODsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.solveAllMeshLODsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.solveAllMeshLODsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.solveAllMeshLODsButton.Location = new System.Drawing.Point(223, 16);
+            this.solveAllMeshLODsButton.Name = "solveAllMeshLODsButton";
+            this.solveAllMeshLODsButton.Size = new System.Drawing.Size(40, 40);
+            this.solveAllMeshLODsButton.TabIndex = 19;
+            this.solveAllMeshLODsTooltip.SetToolTip(this.solveAllMeshLODsButton, "Solve All Mesh LODs");
+            this.solveAllMeshLODsButton.UseVisualStyleBackColor = true;
+            this.solveAllMeshLODsButton.Click += new System.EventHandler(this.SolveAllMeshLODsButton_Click);
+            // 
+            // displayFemaleBodyButton
+            // 
+            this.displayFemaleBodyButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("displayFemaleBodyButton.BackgroundImage")));
+            this.displayFemaleBodyButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.displayFemaleBodyButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.displayFemaleBodyButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.displayFemaleBodyButton.Location = new System.Drawing.Point(311, 16);
+            this.displayFemaleBodyButton.Name = "displayFemaleBodyButton";
+            this.displayFemaleBodyButton.Size = new System.Drawing.Size(40, 40);
+            this.displayFemaleBodyButton.TabIndex = 18;
+            this.displayFemaleBodyTooltip.SetToolTip(this.displayFemaleBodyButton, "Display Female Body");
+            this.displayFemaleBodyButton.UseVisualStyleBackColor = true;
+            this.displayFemaleBodyButton.Click += new System.EventHandler(this.DisplayFemaleBodyButton_Click);
+            // 
+            // displayMaleBodyButton
+            // 
+            this.displayMaleBodyButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.display_male_body_icon;
+            this.displayMaleBodyButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.displayMaleBodyButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.displayMaleBodyButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.displayMaleBodyButton.Location = new System.Drawing.Point(267, 16);
+            this.displayMaleBodyButton.Name = "displayMaleBodyButton";
+            this.displayMaleBodyButton.Size = new System.Drawing.Size(40, 40);
+            this.displayMaleBodyButton.TabIndex = 17;
+            this.displayMaleBodyTooltip.SetToolTip(this.displayMaleBodyButton, "Display Male Body");
+            this.displayMaleBodyButton.UseVisualStyleBackColor = true;
+            this.displayMaleBodyButton.Click += new System.EventHandler(this.DisplayMaleBodyButton_Click);
+            // 
+            // setAllBBsMaxSizeButton
+            // 
+            this.setAllBBsMaxSizeButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.solve_all_bbs_max_size_icon;
+            this.setAllBBsMaxSizeButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.setAllBBsMaxSizeButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.setAllBBsMaxSizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.setAllBBsMaxSizeButton.Location = new System.Drawing.Point(179, 16);
+            this.setAllBBsMaxSizeButton.Name = "setAllBBsMaxSizeButton";
+            this.setAllBBsMaxSizeButton.Size = new System.Drawing.Size(40, 40);
+            this.setAllBBsMaxSizeButton.TabIndex = 15;
+            this.setAllBBsMaxSizeButtonTooltip.SetToolTip(this.setAllBBsMaxSizeButton, "Set All Bounding Boxes Max Size");
+            this.setAllBBsMaxSizeButton.UseVisualStyleBackColor = true;
+            this.setAllBBsMaxSizeButton.Click += new System.EventHandler(this.SetAllBBsMaxSizeButtonClicked);
+            // 
+            // hideAllMeshesButton
+            // 
+            this.hideAllMeshesButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.hide_all_mesh_icon;
+            this.hideAllMeshesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.hideAllMeshesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.hideAllMeshesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.hideAllMeshesButton.Location = new System.Drawing.Point(50, 16);
+            this.hideAllMeshesButton.Name = "hideAllMeshesButton";
+            this.hideAllMeshesButton.Size = new System.Drawing.Size(40, 40);
+            this.hideAllMeshesButton.TabIndex = 16;
+            this.hideAllMeshesButtonTooltip.SetToolTip(this.hideAllMeshesButton, "Hide All Mesh");
+            this.hideAllMeshesButton.UseVisualStyleBackColor = true;
+            this.hideAllMeshesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.HideAllMeshesButton_MouseClick);
+            // 
+            // selectAllMeshesButton
+            // 
+            this.selectAllMeshesButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.select_all_mesh_icon;
+            this.selectAllMeshesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.selectAllMeshesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.selectAllMeshesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.selectAllMeshesButton.Location = new System.Drawing.Point(7, 16);
+            this.selectAllMeshesButton.Name = "selectAllMeshesButton";
+            this.selectAllMeshesButton.Size = new System.Drawing.Size(40, 40);
+            this.selectAllMeshesButton.TabIndex = 9;
+            this.selectAllMeshButtonTooltip.SetToolTip(this.selectAllMeshesButton, "Select All Mesh");
+            this.selectAllMeshesButton.UseVisualStyleBackColor = true;
+            this.selectAllMeshesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllMeshesButtonClicked);
+            // 
+            // selectAllDummiesButton
+            // 
+            this.selectAllDummiesButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.select_all_dummies_icon;
+            this.selectAllDummiesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.selectAllDummiesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.selectAllDummiesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.selectAllDummiesButton.Location = new System.Drawing.Point(93, 16);
+            this.selectAllDummiesButton.Name = "selectAllDummiesButton";
+            this.selectAllDummiesButton.Size = new System.Drawing.Size(40, 40);
+            this.selectAllDummiesButton.TabIndex = 13;
+            this.selectAllDummiesButtonTooltip.SetToolTip(this.selectAllDummiesButton, "Select All Dummies");
+            this.selectAllDummiesButton.UseVisualStyleBackColor = true;
+            this.selectAllDummiesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllDummiesButtonClicked);
+            // 
+            // solveAllBBsButton
+            // 
+            this.solveAllBBsButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.solve_all_bbs_icon;
+            this.solveAllBBsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.solveAllBBsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.solveAllBBsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.solveAllBBsButton.Location = new System.Drawing.Point(136, 16);
+            this.solveAllBBsButton.Name = "solveAllBBsButton";
+            this.solveAllBBsButton.Size = new System.Drawing.Size(40, 40);
+            this.solveAllBBsButton.TabIndex = 14;
+            this.solveAllBBsButtonTooltip.SetToolTip(this.solveAllBBsButton, "Solve All Bounding Boxes");
+            this.solveAllBBsButton.UseVisualStyleBackColor = true;
+            this.solveAllBBsButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SolveAllBBsButtonClicked);
             // 
             // meshPagePanelsContainer
             // 
@@ -771,7 +885,7 @@
             this.dataGridViewTextBoxColumn11.HeaderText = "Ref. ID";
             this.dataGridViewTextBoxColumn11.MinimumWidth = 8;
             this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
-            this.dataGridViewTextBoxColumn11.Width = 66;
+            this.dataGridViewTextBoxColumn11.Width = 52;
             // 
             // Column15
             // 
@@ -1498,7 +1612,7 @@
             // 
             this.Column19.HeaderText = "Model Mask";
             this.Column19.Name = "Column19";
-            this.Column19.Width = 90;
+            this.Column19.Width = 83;
             // 
             // Column14
             // 
@@ -1512,14 +1626,14 @@
             this.Column5.HeaderText = "MTD Path";
             this.Column5.MinimumWidth = 8;
             this.Column5.Name = "Column5";
-            this.Column5.Width = 81;
+            this.Column5.Width = 75;
             // 
             // dataGridViewTextBoxColumn4
             // 
             this.dataGridViewTextBoxColumn4.HeaderText = "Internal Index";
             this.dataGridViewTextBoxColumn4.MinimumWidth = 8;
             this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            this.dataGridViewTextBoxColumn4.Width = 96;
+            this.dataGridViewTextBoxColumn4.Width = 88;
             // 
             // Column6
             // 
@@ -1529,7 +1643,7 @@
             this.Column6.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Column6.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             this.Column6.Text = "";
-            this.Column6.Width = 94;
+            this.Column6.Width = 87;
             // 
             // Column20
             // 
@@ -1834,118 +1948,6 @@
             this.meshTabDataTableSelector.Size = new System.Drawing.Size(124, 21);
             this.meshTabDataTableSelector.TabIndex = 1;
             this.meshTabDataTableSelector.SelectedIndexChanged += new System.EventHandler(this.MeshTabDataTableSelector_SelectedIndexChanged);
-            // 
-            // solveAllMeshLODsButton
-            // 
-            this.solveAllMeshLODsButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.solve_all_mesh_lods_icon;
-            this.solveAllMeshLODsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.solveAllMeshLODsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.solveAllMeshLODsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.solveAllMeshLODsButton.Location = new System.Drawing.Point(223, 16);
-            this.solveAllMeshLODsButton.Name = "solveAllMeshLODsButton";
-            this.solveAllMeshLODsButton.Size = new System.Drawing.Size(40, 40);
-            this.solveAllMeshLODsButton.TabIndex = 19;
-            this.solveAllMeshLODsTooltip.SetToolTip(this.solveAllMeshLODsButton, "Solve All Mesh LODs");
-            this.solveAllMeshLODsButton.UseVisualStyleBackColor = true;
-            this.solveAllMeshLODsButton.Click += new System.EventHandler(this.SolveAllMeshLODsButton_Click);
-            // 
-            // displayFemaleBodyButton
-            // 
-            this.displayFemaleBodyButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("displayFemaleBodyButton.BackgroundImage")));
-            this.displayFemaleBodyButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.displayFemaleBodyButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.displayFemaleBodyButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.displayFemaleBodyButton.Location = new System.Drawing.Point(311, 16);
-            this.displayFemaleBodyButton.Name = "displayFemaleBodyButton";
-            this.displayFemaleBodyButton.Size = new System.Drawing.Size(40, 40);
-            this.displayFemaleBodyButton.TabIndex = 18;
-            this.displayFemaleBodyTooltip.SetToolTip(this.displayFemaleBodyButton, "Display Female Body");
-            this.displayFemaleBodyButton.UseVisualStyleBackColor = true;
-            this.displayFemaleBodyButton.Click += new System.EventHandler(this.DisplayFemaleBodyButton_Click);
-            // 
-            // displayMaleBodyButton
-            // 
-            this.displayMaleBodyButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.display_male_body_icon;
-            this.displayMaleBodyButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.displayMaleBodyButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.displayMaleBodyButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.displayMaleBodyButton.Location = new System.Drawing.Point(267, 16);
-            this.displayMaleBodyButton.Name = "displayMaleBodyButton";
-            this.displayMaleBodyButton.Size = new System.Drawing.Size(40, 40);
-            this.displayMaleBodyButton.TabIndex = 17;
-            this.displayMaleBodyTooltip.SetToolTip(this.displayMaleBodyButton, "Display Male Body");
-            this.displayMaleBodyButton.UseVisualStyleBackColor = true;
-            this.displayMaleBodyButton.Click += new System.EventHandler(this.DisplayMaleBodyButton_Click);
-            // 
-            // setAllBBsMaxSizeButton
-            // 
-            this.setAllBBsMaxSizeButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.solve_all_bbs_max_size_icon;
-            this.setAllBBsMaxSizeButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.setAllBBsMaxSizeButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.setAllBBsMaxSizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.setAllBBsMaxSizeButton.Location = new System.Drawing.Point(179, 16);
-            this.setAllBBsMaxSizeButton.Name = "setAllBBsMaxSizeButton";
-            this.setAllBBsMaxSizeButton.Size = new System.Drawing.Size(40, 40);
-            this.setAllBBsMaxSizeButton.TabIndex = 15;
-            this.setAllBBsMaxSizeButtonTooltip.SetToolTip(this.setAllBBsMaxSizeButton, "Set All Bounding Boxes Max Size");
-            this.setAllBBsMaxSizeButton.UseVisualStyleBackColor = true;
-            this.setAllBBsMaxSizeButton.Click += new System.EventHandler(this.SetAllBBsMaxSizeButtonClicked);
-            // 
-            // hideAllMeshesButton
-            // 
-            this.hideAllMeshesButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.hide_all_mesh_icon;
-            this.hideAllMeshesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.hideAllMeshesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.hideAllMeshesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.hideAllMeshesButton.Location = new System.Drawing.Point(50, 16);
-            this.hideAllMeshesButton.Name = "hideAllMeshesButton";
-            this.hideAllMeshesButton.Size = new System.Drawing.Size(40, 40);
-            this.hideAllMeshesButton.TabIndex = 16;
-            this.hideAllMeshesButtonTooltip.SetToolTip(this.hideAllMeshesButton, "Hide All Mesh");
-            this.hideAllMeshesButton.UseVisualStyleBackColor = true;
-            this.hideAllMeshesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.HideAllMeshesButton_MouseClick);
-            // 
-            // selectAllMeshesButton
-            // 
-            this.selectAllMeshesButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.select_all_mesh_icon;
-            this.selectAllMeshesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.selectAllMeshesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.selectAllMeshesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.selectAllMeshesButton.Location = new System.Drawing.Point(7, 16);
-            this.selectAllMeshesButton.Name = "selectAllMeshesButton";
-            this.selectAllMeshesButton.Size = new System.Drawing.Size(40, 40);
-            this.selectAllMeshesButton.TabIndex = 9;
-            this.selectAllMeshButtonTooltip.SetToolTip(this.selectAllMeshesButton, "Select All Mesh");
-            this.selectAllMeshesButton.UseVisualStyleBackColor = true;
-            this.selectAllMeshesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllMeshesButtonClicked);
-            // 
-            // selectAllDummiesButton
-            // 
-            this.selectAllDummiesButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.select_all_dummies_icon;
-            this.selectAllDummiesButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.selectAllDummiesButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.selectAllDummiesButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.selectAllDummiesButton.Location = new System.Drawing.Point(93, 16);
-            this.selectAllDummiesButton.Name = "selectAllDummiesButton";
-            this.selectAllDummiesButton.Size = new System.Drawing.Size(40, 40);
-            this.selectAllDummiesButton.TabIndex = 13;
-            this.selectAllDummiesButtonTooltip.SetToolTip(this.selectAllDummiesButton, "Select All Dummies");
-            this.selectAllDummiesButton.UseVisualStyleBackColor = true;
-            this.selectAllDummiesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllDummiesButtonClicked);
-            // 
-            // solveAllBBsButton
-            // 
-            this.solveAllBBsButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.solve_all_bbs_icon;
-            this.solveAllBBsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.solveAllBBsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
-            this.solveAllBBsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.solveAllBBsButton.Location = new System.Drawing.Point(136, 16);
-            this.solveAllBBsButton.Name = "solveAllBBsButton";
-            this.solveAllBBsButton.Size = new System.Drawing.Size(40, 40);
-            this.solveAllBBsButton.TabIndex = 14;
-            this.solveAllBBsButtonTooltip.SetToolTip(this.solveAllBBsButton, "Solve All Bounding Boxes");
-            this.solveAllBBsButton.UseVisualStyleBackColor = true;
-            this.solveAllBBsButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SolveAllBBsButtonClicked);
             // 
             // MainWindow
             // 
