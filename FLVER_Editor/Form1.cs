@@ -34,7 +34,7 @@ namespace FLVER_Editor
         private const int mtDeleteCbIndex = 10;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string jsonFileFilter = @"JSON File (*.json)|*.json";
-        private const string version = "1.84";
+        private const string version = "1.85";
         private const string patreonSupportUri = "https://www.patreon.com/theonlypear";
         private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
         private const string baseMaterialDictKey = "Base Material";
