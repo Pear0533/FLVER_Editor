@@ -719,6 +719,7 @@ namespace FLVER_Editor
             }
             currFlverBytes = flver.Write();
             saveToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
+            changePartIDToolStripMenuItem.Enabled = flverFilePath.EndsWith(".dcx");
             matBinBndPath = null;
             UpdateUI();
             DeselectAllSelectedThings();
@@ -2442,6 +2443,35 @@ namespace FLVER_Editor
                 mn.FaceSets[0].IndexSize = 32;
             }
             ShowInformationDialog("Successfully solved all mesh LODs!");
+        }
+
+        private static int GetModelPartIDFromName(string name)
+        {
+            string idMatch = Regex.Match(name, @"\d+").Value;
+            int.TryParse(idMatch, out int id);
+            if (id == 0) return -1;
+            return id;
+        }
+
+        private void ChangePartIDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string newPartIDStr = ShowInputDialog("Enter a new model part ID:", "Part ID");
+            if (newPartIDStr == "") return;
+            int.TryParse(newPartIDStr, out int newPartID);
+            if (newPartID == 0)
+            {
+                ShowInformationDialog("The model part ID entered was either 0 or invalid.");
+                return;
+            }
+            string ogModelPath = flverBnd.Files[currFlverFileBinderIndex].Name;
+            int ogModelPartID = GetModelPartIDFromName(Path.GetFileName(ogModelPath));
+            if (ogModelPartID == -1)
+            {
+                ShowInformationDialog("The model's filename has no valid part ID.");
+                return;
+            }
+            flverBnd.Files[currFlverFileBinderIndex].Name = ogModelPath?.Replace(ogModelPartID.ToString(), newPartID.ToString());
+            ShowInformationDialog("Successfully changed the current model's part ID!");
         }
 
         private enum TextureFormats
