@@ -613,9 +613,9 @@ namespace FLVER_Editor
             if (!File.Exists(backupFilePath)) File.Copy(flverFilePath, backupFilePath);
         }
 
-        private static void UpdateWindowTitle()
+        private static void UpdateWindowTitle(string flverPath)
         {
-            Program.window.Text = $@"{Program.windowTitle} - {Path.GetFileName(flverFilePath)}";
+            Program.window.Text = $@"{Program.windowTitle} - {Path.GetFileName(flverPath)}";
         }
 
         private static string PromptFLVERModel()
@@ -701,7 +701,7 @@ namespace FLVER_Editor
                 flverFilePath = PromptFLVERModel();
                 if (flverFilePath == "") return false;
             }
-            if (Program.window != null) UpdateWindowTitle();
+            if (Program.window != null) UpdateWindowTitle(flverFilePath);
             Mono3D.textureMap = new Dictionary<string, Texture2D>();
             Program.tpf = null;
             Program.filePath = flverFilePath;
@@ -719,7 +719,6 @@ namespace FLVER_Editor
             }
             currFlverBytes = flver.Write();
             saveToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
-            changePartIDToolStripMenuItem.Enabled = flverFilePath.EndsWith(".dcx");
             matBinBndPath = null;
             UpdateUI();
             DeselectAllSelectedThings();
@@ -1337,7 +1336,28 @@ namespace FLVER_Editor
             var dialog = new SaveFileDialog
                 { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(flverFilePath.Replace(".dcx", "")) };
             if (dialog.ShowDialog() != DialogResult.OK) return;
-            SaveFLVERFile(dialog.FileName);
+            string modelFilePath = dialog.FileName;
+            if (flverFilePath.EndsWith(".dcx"))
+            {
+                int newPartID = GetModelPartIDFromName(modelFilePath);
+                if (newPartID != 0)
+                {
+                    int ogModelPartID = GetModelPartIDFromName(flverFilePath);
+                    if (ogModelPartID != -1)
+                    {
+                        foreach (BinderFile file in flverBnd.Files)
+                        {
+                            if (!Path.GetFileName(file.Name).Contains(ogModelPartID.ToString())) continue;
+                            if (file.Name == null) continue;
+                            string newInternalPath = file.Name.Replace(ogModelPartID.ToString(), newPartID.ToString());
+                            file.Name = newInternalPath;
+                            if (file.Name.EndsWith(".flver") || file.Name.EndsWith(".flv"))
+                                UpdateWindowTitle($"{newInternalPath.ToLower()}.dcx");
+                        }
+                    }
+                }
+            }
+            SaveFLVERFile(modelFilePath);
         }
 
         private void SaveButtonClicked(object sender, EventArgs e)
@@ -2038,7 +2058,7 @@ namespace FLVER_Editor
 
         private void MainWindowLoad(object sender, EventArgs e)
         {
-            UpdateWindowTitle();
+            UpdateWindowTitle(flverFilePath);
             tabWindow.DrawMode = TabDrawMode.OwnerDrawFixed;
             tabWindow.DrawItem += TabWindowDrawItem;
             TopMost = false;
@@ -2447,31 +2467,10 @@ namespace FLVER_Editor
 
         private static int GetModelPartIDFromName(string name)
         {
-            string idMatch = Regex.Match(name, @"\d+").Value;
+            string idMatch = Regex.Match(Path.GetFileName(name), @"\d+").Value;
             int.TryParse(idMatch, out int id);
             if (id == 0) return -1;
             return id;
-        }
-
-        private void ChangePartIDToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string newPartIDStr = ShowInputDialog("Enter a new model part ID:", "Part ID");
-            if (newPartIDStr == "") return;
-            int.TryParse(newPartIDStr, out int newPartID);
-            if (newPartID == 0)
-            {
-                ShowInformationDialog("The model part ID entered was either 0 or invalid.");
-                return;
-            }
-            string ogModelPath = flverBnd.Files[currFlverFileBinderIndex].Name;
-            int ogModelPartID = GetModelPartIDFromName(Path.GetFileName(ogModelPath));
-            if (ogModelPartID == -1)
-            {
-                ShowInformationDialog("The model's filename has no valid part ID.");
-                return;
-            }
-            flverBnd.Files[currFlverFileBinderIndex].Name = ogModelPath?.Replace(ogModelPartID.ToString(), newPartID.ToString());
-            ShowInformationDialog("Successfully changed the current model's part ID!");
         }
 
         private enum TextureFormats
