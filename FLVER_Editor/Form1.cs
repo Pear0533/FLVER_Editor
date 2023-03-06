@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web.Script.Serialization;
@@ -104,6 +104,21 @@ namespace FLVER_Editor
             Mono3D.mainForm = this;
             if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
         }
+
+        public static bool IsMainWindowFocused()
+        {
+            IntPtr activatedHandle = GetForegroundWindow();
+            if (activatedHandle == IntPtr.Zero) return false;
+            int procId = Process.GetCurrentProcess().Id;
+            GetWindowThreadProcessId(activatedHandle, out int activeProcId);
+            return activeProcId == procId;
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
 
         private static void ApplyBodyModelMaterial(FLVER bodyFlver)
         {
@@ -1833,8 +1848,9 @@ namespace FLVER_Editor
             MergeFLVERFile();
         }
 
-        private void MainWindowClosing(object sender, CancelEventArgs e)
+        private void MainWindowClosing(object sender, FormClosingEventArgs e)
         {
+            if (!IsMainWindowFocused()) return;
             byte[] newFlverBytes = flver.Write();
             if (newFlverBytes.SequenceEqual(currFlverBytes)) return;
             DialogResult result = MessageBox.Show(@"Do you want to save changes to the FLVER before quitting?", @"Warning", MessageBoxButtons.YesNoCancel,
