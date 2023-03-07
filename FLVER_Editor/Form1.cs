@@ -40,6 +40,8 @@ namespace FLVER_Editor
         private const string baseMaterialDictKey = "Base Material";
         public static List<string> arguments;
         public static FLVER flver;
+        public static FLVER undoFlver;
+        public static FLVER redoFlver;
         public static FLVER maleBodyFlver = new FLVER();
         public static FLVER femaleBodyFlver = new FLVER();
         private static byte[] currFlverBytes;
@@ -868,6 +870,7 @@ namespace FLVER_Editor
             if (e.RowIndex < 0 || e.ColumnIndex != 2) return;
             var dialog = new OpenFileDialog { Filter = imageFilesFilter };
             if (dialog.ShowDialog() != DialogResult.OK) return;
+            UpdateUndoState();
             flver.Materials[selectedMaterialIndex].Textures[e.RowIndex].Path = $"{Path.GetFileNameWithoutExtension(dialog.FileName)}.tif";
             InjectTextureIntoTPF(dialog.FileName);
             UpdateTexturesTable();
@@ -1005,6 +1008,7 @@ namespace FLVER_Editor
                 ShowInformationDialog("Found no unweighted vertices to apply default weights to.");
                 return;
             }
+            UpdateUndoState();
             foreach (FLVER.Vertex v in unweightedVerts)
             {
                 v.BoneIndices[0] = boneIndex;
@@ -1047,6 +1051,7 @@ namespace FLVER_Editor
                     UpdateSelectedDummies();
                     break;
                 case 5:
+                    UpdateUndoState();
                     var duplicatedDummy = new FLVER.Dummy
                     {
                         Position = flver.Dummies[rowIndex].Position,
@@ -1196,6 +1201,7 @@ namespace FLVER_Editor
         private void ModifierNumBoxValueChanged(object sender, EventArgs e)
         {
             if (isSettingDefaultInfo) return;
+            UpdateUndoState();
             var numBox = (NumericUpDown)sender;
             int nbi = meshModifiersNumBoxesContainer.GetRow(numBox) * meshModifiersNumBoxesContainer.ColumnCount
                 + meshModifiersNumBoxesContainer.GetColumn(numBox);
@@ -1222,10 +1228,35 @@ namespace FLVER_Editor
             if (numBox == scaleXNumBox || numBox == scaleYNumBox || numBox == scaleZNumBox) prevNumVal = (float)(numBox.Value / 300);
         }
 
+        private void UpdateUndoState()
+        {
+            undoToolStripMenuItem.Enabled = true;
+            undoFlver = FLVER.Read(flver.Write());
+        }
+
+        private void Undo()
+        {
+            undoToolStripMenuItem.Enabled = false;
+            flver = FLVER.Read(undoFlver.Write());
+        }
+
+        private void Redo()
+        {
+            redoToolStripMenuItem.Enabled = false;
+            flver = FLVER.Read(redoFlver.Write());
+        }
+
+        private void UpdateRedoState()
+        {
+            redoToolStripMenuItem.Enabled = true;
+            redoFlver = FLVER.Read(flver.Write());
+        }
+
         private void MaterialsTableOkButtonClicked(object sender, MouseEventArgs e)
         {
             try
             {
+                UpdateUndoState();
                 foreach (DataGridViewRow row in materialsTable.Rows)
                 {
                     if (!(bool)row.Cells[mtApplyPresetCbIndex].Value) continue;
@@ -1297,6 +1328,7 @@ namespace FLVER_Editor
 
         private void DeleteSelectedButtonClicked(object sender, MouseEventArgs e)
         {
+            UpdateUndoState();
             for (int i = flver.Meshes.Count - 1; i >= 0; --i)
             {
                 if (!(bool)meshTable.Rows[i].Cells[3].Value) continue;
@@ -1395,6 +1427,7 @@ namespace FLVER_Editor
             if (isSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex)) return;
             try
             {
+                UpdateUndoState();
                 var bonesTableValue = bonesTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
                 if (bonesTableValue != null)
                 {
@@ -1450,6 +1483,7 @@ namespace FLVER_Editor
             if (isSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex)) return;
             try
             {
+                UpdateUndoState();
                 string materialName = flver.Materials[e.RowIndex].Name;
                 var materialsTableValue = materialsTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
                 if (materialsTableValue != null)
@@ -1485,6 +1519,7 @@ namespace FLVER_Editor
             if (isSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex)) return;
             try
             {
+                UpdateUndoState();
                 string textureTableValue = texturesTable[e.ColumnIndex, e.RowIndex].Value?.ToString() ?? "";
                 switch (e.ColumnIndex)
                 {
@@ -1546,6 +1581,7 @@ namespace FLVER_Editor
             if (isSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex) || e.ColumnIndex != 2) return;
             try
             {
+                UpdateUndoState();
                 var boneWeightValue = meshTable[2, e.RowIndex].Value?.ToString();
                 if (boneWeightValue != null)
                 {
@@ -1577,6 +1613,7 @@ namespace FLVER_Editor
         private void ReverseFaceSetsCheckboxChanged(object sender, EventArgs e)
         {
             if (isSettingDefaultInfo) return;
+            UpdateUndoState();
             foreach (FLVER.FaceSet fs in selectedMeshIndices.SelectMany(i => flver.Meshes[i].FaceSets))
             {
                 for (var j = 0; j < fs.Vertices.Length; j += 3)
@@ -1588,6 +1625,7 @@ namespace FLVER_Editor
         private void ReverseNormalsCheckboxChanged(object sender, EventArgs e)
         {
             if (isSettingDefaultInfo) return;
+            UpdateUndoState();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
             {
                 for (var j = 0; j < v.Normals.Count; ++j)
@@ -1676,6 +1714,7 @@ namespace FLVER_Editor
 
         private void SolveAllBBsButtonClicked(object sender, MouseEventArgs e)
         {
+            UpdateUndoState();
             flver.Header.BoundingBoxMin = new System.Numerics.Vector3();
             flver.Header.BoundingBoxMax = new System.Numerics.Vector3();
             foreach (FLVER.Bone bone in flver.Bones)
@@ -1706,6 +1745,7 @@ namespace FLVER_Editor
         private void DummiesTableOKButtonClicked(object sender, MouseEventArgs e)
         {
             if (dummyPresetsSelector.SelectedIndex < 0) return;
+            UpdateUndoState();
             DeselectAllSelectedThings();
             string dummyJson = new JavaScriptSerializer().Serialize(dummyPresets.Values.ToArray()[dummyPresetsSelector.SelectedIndex]);
             flver.Dummies = new JavaScriptSerializer().Deserialize<List<FLVER.Dummy>>(dummyJson);
@@ -1781,6 +1821,7 @@ namespace FLVER_Editor
                 if (!Program.ImportFBX(dialog.FileName)) return;
             }
             else if (!Program.ImportFBX(filePath)) return;
+            UpdateUndoState();
             flver = Program.flver;
             DeselectAllSelectedThings();
             UpdateUI();
@@ -1799,6 +1840,7 @@ namespace FLVER_Editor
             if (newFlverFilePath == "") return;
             try
             {
+                UpdateUndoState();
                 FLVER newFlver = IsFLVERPath(newFlverFilePath) ? FLVER.Read(newFlverFilePath) :
                     ReadFLVERFromDCXPath(newFlverFilePath, false, false, false);
                 if (newFlver == null) return;
@@ -1868,6 +1910,7 @@ namespace FLVER_Editor
 
         private void AddDummyButtonClicked(object sender, MouseEventArgs e)
         {
+            UpdateUndoState();
             var newDummy = new FLVER.Dummy
             {
                 Position = flver.Dummies.Count > 0 ? flver.Dummies[flver.Dummies.Count - 1].Position : new System.Numerics.Vector3(0, 0, 0),
@@ -1884,6 +1927,7 @@ namespace FLVER_Editor
             if (isSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex)) return;
             try
             {
+                UpdateUndoState();
                 var dummiesTableValue = dummiesTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
                 if (dummiesTableValue != null)
                 {
@@ -1909,6 +1953,7 @@ namespace FLVER_Editor
 
         private void CenterToWorldButtonClicked(object sender, MouseEventArgs e)
         {
+            UpdateUndoState();
             float[] totals = CalculateMeshTotals();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
                 v.Positions[0] = new System.Numerics.Vector3(v.Positions[0].X - totals[0], v.Positions[0].Y - totals[1], v.Positions[0].Z - totals[2]);
@@ -1925,6 +1970,7 @@ namespace FLVER_Editor
             if (dialog.ShowDialog() != DialogResult.OK) return;
             try
             {
+                UpdateUndoState();
                 string jsonText = File.ReadAllText(dialog.FileName);
                 switch (type)
                 {
@@ -2042,6 +2088,7 @@ namespace FLVER_Editor
 
         private void SetAllBBsMaxSizeButtonClicked(object sender, EventArgs e)
         {
+            UpdateUndoState();
             var minVector = new System.Numerics.Vector3(0, 0, 0);
             var maxVector = new System.Numerics.Vector3(999, 999, 999);
             flver.Header.BoundingBoxMin = maxVector;
@@ -2141,8 +2188,9 @@ namespace FLVER_Editor
             WriteUserConfig();
         }
 
-        private static void MirrorMesh(int nbi)
+        private void MirrorMesh(int nbi)
         {
+            UpdateUndoState();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
                 ScaleThing(v, 0, new float[3], nbi, false, true);
             foreach (FLVER.Dummy d in selectedDummyIndices.Select(i => flver.Dummies[i]))
@@ -2487,6 +2535,22 @@ namespace FLVER_Editor
             int.TryParse(idMatch, out int id);
             if (id == 0) return -1;
             return id;
+        }
+
+        private void UndoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UpdateRedoState();
+            Undo();
+            UpdateUI();
+            UpdateMesh();
+        }
+
+        private void RedoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UpdateUndoState();
+            Redo();
+            UpdateUI();
+            UpdateMesh();
         }
 
         private enum TextureFormats

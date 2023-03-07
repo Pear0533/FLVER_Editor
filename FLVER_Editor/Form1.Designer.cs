@@ -38,6 +38,9 @@
             this.exportJSONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bonesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.materialsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toggleTextureRefreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toggleAutoSaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -219,6 +222,7 @@
             this.ribbon.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.ribbon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
             this.preferencesToolStripMenuItem,
             this.supportPearToolStripMenuItem});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
@@ -421,6 +425,31 @@
             this.materialsToolStripMenuItem1.Size = new System.Drawing.Size(122, 22);
             this.materialsToolStripMenuItem1.Text = "Materials";
             this.materialsToolStripMenuItem1.Click += new System.EventHandler(this.ExportMaterialsJSONButtonClicked);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.undoToolStripMenuItem,
+            this.redoToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 22);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Enabled = false;
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.UndoToolStripMenuItem_Click);
+            // 
+            // redoToolStripMenuItem
+            // 
+            this.redoToolStripMenuItem.Enabled = false;
+            this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redoToolStripMenuItem.Text = "Redo";
+            this.redoToolStripMenuItem.Click += new System.EventHandler(this.RedoToolStripMenuItem_Click);
             // 
             // preferencesToolStripMenuItem
             // 
@@ -2186,5 +2215,8 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column8;
         private System.Windows.Forms.Button solveAllMeshLODsButton;
         private System.Windows.Forms.ToolTip solveAllMeshLODsTooltip;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
     }
 }
