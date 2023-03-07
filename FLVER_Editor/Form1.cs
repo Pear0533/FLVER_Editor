@@ -85,6 +85,7 @@ namespace FLVER_Editor
         public static bool areDummyIdsVisible = true;
         private static bool dispMaleBody;
         private static bool dispFemaleBody;
+        private static bool stopAutoInternalIndexOverride;
 
         public MainWindow()
         {
@@ -584,7 +585,7 @@ namespace FLVER_Editor
             {
                 FLVER.Material material = flver.Materials[i];
                 var row = new DataGridViewRow();
-                material.Unk18 = i;
+                if (!stopAutoInternalIndexOverride) material.Unk18 = i;
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i }, new DataGridViewTextBoxCell { Value = material.Name },
                     new DataGridViewTextBoxCell { Value = GetModelMask(material.Name) }, new DataGridViewTextBoxCell { Value = material.Flags },
                     new DataGridViewTextBoxCell { Value = material.MTD }, new DataGridViewTextBoxCell { Value = material.Unk18 });
@@ -708,6 +709,7 @@ namespace FLVER_Editor
         private bool OpenFLVERFile()
         {
             isSettingDefaultInfo = true;
+            stopAutoInternalIndexOverride = false;
             if (arguments.Count > 0)
             {
                 flverFilePath = arguments[0].ToLower();
@@ -740,10 +742,12 @@ namespace FLVER_Editor
             UpdateUI();
             DeselectAllSelectedThings();
             ClearViewerMaterialHighlight();
+            ClearUndoRedoStates();
             LoadMaterialPresets();
             LoadDummyPresets();
             LoadViewer();
             isSettingDefaultInfo = false;
+            stopAutoInternalIndexOverride = true;
             return true;
         }
 
@@ -1228,30 +1232,6 @@ namespace FLVER_Editor
             if (numBox == scaleXNumBox || numBox == scaleYNumBox || numBox == scaleZNumBox) prevNumVal = (float)(numBox.Value / 300);
         }
 
-        private void UpdateUndoState()
-        {
-            undoToolStripMenuItem.Enabled = true;
-            undoFlver = FLVER.Read(flver.Write());
-        }
-
-        private void Undo()
-        {
-            undoToolStripMenuItem.Enabled = false;
-            flver = FLVER.Read(undoFlver.Write());
-        }
-
-        private void Redo()
-        {
-            redoToolStripMenuItem.Enabled = false;
-            flver = FLVER.Read(redoFlver.Write());
-        }
-
-        private void UpdateRedoState()
-        {
-            redoToolStripMenuItem.Enabled = true;
-            redoFlver = FLVER.Read(flver.Write());
-        }
-
         private void MaterialsTableOkButtonClicked(object sender, MouseEventArgs e)
         {
             try
@@ -1398,8 +1378,6 @@ namespace FLVER_Editor
                             if (file.Name == null) continue;
                             string newInternalPath = file.Name.Replace(ogModelPartID.ToString(), newPartID.ToString());
                             file.Name = newInternalPath;
-                            if (file.Name.EndsWith(".flver") || file.Name.EndsWith(".flv"))
-                                UpdateWindowTitle($"{newInternalPath.ToLower()}.dcx");
                         }
                     }
                 }
@@ -1814,6 +1792,7 @@ namespace FLVER_Editor
 
         private void ImportFLVERFile(bool prompt, string filePath)
         {
+            UpdateUndoState();
             if (prompt)
             {
                 var dialog = new OpenFileDialog { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
@@ -2551,6 +2530,38 @@ namespace FLVER_Editor
             Redo();
             UpdateUI();
             UpdateMesh();
+        }
+
+        private void UpdateUndoState()
+        {
+            undoToolStripMenuItem.Enabled = true;
+            undoFlver = FLVER.Read(flver.Write());
+        }
+
+        private void Undo()
+        {
+            undoToolStripMenuItem.Enabled = false;
+            flver = FLVER.Read(undoFlver.Write());
+        }
+
+        private void Redo()
+        {
+            redoToolStripMenuItem.Enabled = false;
+            flver = FLVER.Read(redoFlver.Write());
+        }
+
+        private void UpdateRedoState()
+        {
+            redoToolStripMenuItem.Enabled = true;
+            redoFlver = FLVER.Read(flver.Write());
+        }
+
+        private void ClearUndoRedoStates()
+        {
+            undoFlver = null;
+            redoFlver = null;
+            undoToolStripMenuItem.Enabled = false;
+            redoToolStripMenuItem.Enabled = false;
         }
 
         private enum TextureFormats
