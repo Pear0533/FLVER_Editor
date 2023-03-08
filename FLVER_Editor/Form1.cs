@@ -21,6 +21,8 @@ using Matrix4x4 = System.Numerics.Matrix4x4;
 using PrimitiveType = Assimp.PrimitiveType;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
+// NOTE: UNDO/REDO WITH MODIFIER BOXES, CHECKBOXES, AND ROTATION RESIDUE
+
 // ReSharper disable UnusedMember.Local
 
 namespace FLVER_Editor
@@ -605,8 +607,15 @@ namespace FLVER_Editor
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i },
                     new DataGridViewTextBoxCell { Value = flver.Materials[mesh.MaterialIndex].Name });
                 row.Cells.Add(new DataGridViewButtonCell { Value = "Apply" });
-                for (var j = 0; j < 2; ++j)
+                try
+                {
+                    row.Cells.Add(new DataGridViewCheckBoxCell { Value = selectedMeshIndices[i] >= 0 });
+                }
+                catch
+                {
                     row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
+                }
+                row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
                 meshTable.Rows.Add(row);
             }
             for (var i = 0; i < flver.Dummies.Count; ++i)
@@ -620,6 +629,11 @@ namespace FLVER_Editor
                 row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
                 row.Cells.Add(new DataGridViewButtonCell { Value = dummiesTable.Columns[5].HeaderText });
                 dummiesTable.Rows.Add(row);
+            }
+            if (selectedMaterialIndex != -1)
+            {
+                applyMatBinTexturesButton.Enabled = true;
+                UpdateTexturesTable();
             }
             isSettingDefaultInfo = false;
         }
@@ -2477,6 +2491,7 @@ namespace FLVER_Editor
 
         private void SolveAllMeshLODsButton_Click(object sender, EventArgs e)
         {
+            UpdateUndoState();
             int layoutCount = flver.BufferLayouts.Count;
             var newBL = new FLVER.BufferLayout
             {
