@@ -40,8 +40,10 @@ namespace FLVER_Editor
         private const string baseMaterialDictKey = "Base Material";
         public static List<string> arguments;
         public static FLVER flver;
-        public static FLVER undoFlver;
-        public static FLVER redoFlver;
+        public static List<FLVER> undoFlverList = new List<FLVER>();
+        public static List<FLVER> redoFlverList = new List<FLVER>();
+        public static int currUndoFlverListIndex = -1;
+        public static int currRedoFlverListIndex = -1;
         public static FLVER maleBodyFlver = new FLVER();
         public static FLVER femaleBodyFlver = new FLVER();
         private static byte[] currFlverBytes;
@@ -2262,6 +2264,14 @@ namespace FLVER_Editor
                     e.SuppressKeyPress = true;
                     MergeFLVERFile();
                     break;
+                case true when e.KeyCode == Keys.Z:
+                    e.SuppressKeyPress = true;
+                    Undo();
+                    break;
+                case true when e.KeyCode == Keys.Y:
+                    e.SuppressKeyPress = true;
+                    Redo();
+                    break;
             }
         }
 
@@ -2518,48 +2528,66 @@ namespace FLVER_Editor
 
         private void UndoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UpdateRedoState();
             Undo();
-            UpdateUI();
-            UpdateMesh();
         }
 
         private void RedoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            UpdateUndoState();
             Redo();
-            UpdateUI();
-            UpdateMesh();
         }
 
-        private void UpdateUndoState()
+        private void UpdateUndoState(bool clearAllRedoActions = true)
         {
+            if (clearAllRedoActions)
+            {
+                redoFlverList.Clear();
+                currRedoFlverListIndex = -1;
+                redoToolStripMenuItem.Enabled = false;
+            }
             undoToolStripMenuItem.Enabled = true;
-            undoFlver = FLVER.Read(flver.Write());
-        }
-
-        private void Undo()
-        {
-            undoToolStripMenuItem.Enabled = false;
-            flver = FLVER.Read(undoFlver.Write());
-        }
-
-        private void Redo()
-        {
-            redoToolStripMenuItem.Enabled = false;
-            flver = FLVER.Read(redoFlver.Write());
+            undoFlverList.Add(FLVER.Read(flver.Write()));
+            currUndoFlverListIndex++;
         }
 
         private void UpdateRedoState()
         {
             redoToolStripMenuItem.Enabled = true;
-            redoFlver = FLVER.Read(flver.Write());
+            redoFlverList.Add(FLVER.Read(flver.Write()));
+            currRedoFlverListIndex++;
+        }
+
+        private void Undo()
+        {
+            if (currUndoFlverListIndex < 0) return;
+            UpdateRedoState();
+            flver = FLVER.Read(undoFlverList[currUndoFlverListIndex].Write());
+            undoFlverList.RemoveAt(currUndoFlverListIndex);
+            currUndoFlverListIndex--;
+            UpdateUI();
+            UpdateMesh();
+            if (currUndoFlverListIndex != -1) return;
+            undoToolStripMenuItem.Enabled = false;
+        }
+
+        private void Redo()
+        {
+            if (currRedoFlverListIndex < 0) return;
+            UpdateUndoState(false);
+            flver = FLVER.Read(redoFlverList[currRedoFlverListIndex].Write());
+            redoFlverList.RemoveAt(currRedoFlverListIndex);
+            currRedoFlverListIndex--;
+            UpdateUI();
+            UpdateMesh();
+            if (currRedoFlverListIndex != -1) return;
+            redoToolStripMenuItem.Enabled = false;
         }
 
         private void ClearUndoRedoStates()
         {
-            undoFlver = null;
-            redoFlver = null;
+            undoFlverList.Clear();
+            redoFlverList.Clear();
+            currUndoFlverListIndex = -1;
+            currRedoFlverListIndex = -1;
             undoToolStripMenuItem.Enabled = false;
             redoToolStripMenuItem.Enabled = false;
         }
