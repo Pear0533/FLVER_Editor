@@ -21,8 +21,6 @@ using Matrix4x4 = System.Numerics.Matrix4x4;
 using PrimitiveType = Assimp.PrimitiveType;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
-// NOTE: REFACTOR UNDO/REDO CODE
-
 // ReSharper disable UnusedMember.Local
 
 namespace FLVER_Editor
