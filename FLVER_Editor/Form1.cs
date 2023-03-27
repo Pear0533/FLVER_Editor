@@ -34,7 +34,7 @@ namespace FLVER_Editor
         private const int mtDeleteCbIndex = 10;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string jsonFileFilter = @"JSON File (*.json)|*.json";
-        private const string version = "1.85";
+        private const string version = "1.87";
         private const string patreonSupportUri = "https://www.patreon.com/theonlypear";
         private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
         private const string baseMaterialDictKey = "Base Material";
@@ -874,7 +874,13 @@ namespace FLVER_Editor
             }
             catch { }
             var texture = new TPF.Texture(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, 0, File.ReadAllBytes(textureFilePath));
-            Program.tpf.Textures.Add(texture);
+            int existingTextureIndex = Program.tpf.Textures.FindIndex(i => i.Name == texture.Name);
+            if (existingTextureIndex != -1)
+            {
+                Program.tpf.Textures.RemoveAt(existingTextureIndex);
+                Program.tpf.Textures.Insert(existingTextureIndex, texture);
+            }
+            else Program.tpf.Textures.Add(texture);
             if (flverBndTpfEntry != null) flverBnd.Files[flverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Program.tpf.Write();
             else
             {
