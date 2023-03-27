@@ -864,7 +864,7 @@ namespace FLVER_Editor
 
         private static void InjectTextureIntoTPF(string textureFilePath)
         {
-            if (Program.tpf == null) return;
+            if (Program.tpf == null) Program.tpf = new TPF();
             BinderFile flverBndTpfEntry = flverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
             byte[] ddsBytes = File.ReadAllBytes(textureFilePath);
             var dds = new DDS(ddsBytes);
