@@ -8,11 +8,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle36 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle37 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle38 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle39 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle40 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ribbon = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,6 +86,11 @@
             this.label5 = new System.Windows.Forms.Label();
             this.dummyPresetsSelector = new System.Windows.Forms.ComboBox();
             this.meshModifiersContainer = new System.Windows.Forms.GroupBox();
+            this.flipYZAxisCheckbox = new System.Windows.Forms.CheckBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.centerZButton = new System.Windows.Forms.Button();
+            this.centerYButton = new System.Windows.Forms.Button();
+            this.label15 = new System.Windows.Forms.Label();
             this.zAxisLabel = new System.Windows.Forms.Label();
             this.yAxisLabel = new System.Windows.Forms.Label();
             this.xAxisLabel = new System.Windows.Forms.Label();
@@ -95,7 +100,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.deleteFacesetsCheckbox = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.centerToWorldButton = new System.Windows.Forms.Button();
+            this.centerXButton = new System.Windows.Forms.Button();
             this.uniformScaleCheckbox = new System.Windows.Forms.CheckBox();
             this.reverseFacesetsCheckbox = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -439,7 +444,7 @@
             // 
             this.undoToolStripMenuItem.Enabled = false;
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.undoToolStripMenuItem.Text = "Undo (Ctrl+Z)";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.UndoToolStripMenuItem_Click);
             // 
@@ -447,7 +452,7 @@
             // 
             this.redoToolStripMenuItem.Enabled = false;
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.redoToolStripMenuItem.Text = "Redo (Ctrl+Y)";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.RedoToolStripMenuItem_Click);
             // 
@@ -480,7 +485,6 @@
             // 
             // autoSaveIntervalSelector
             // 
-            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -559,7 +563,6 @@
             // 
             // multiSelectMenuTextbox
             // 
-            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -772,8 +775,8 @@
             this.meshTable.Name = "meshTable";
             this.meshTable.RowHeadersVisible = false;
             this.meshTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle36.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle36;
             this.meshTable.Size = new System.Drawing.Size(492, 163);
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTable_CellContentClick);
@@ -891,8 +894,8 @@
             this.dummiesTable.Name = "dummiesTable";
             this.dummiesTable.RowHeadersVisible = false;
             this.dummiesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle37.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle37;
             this.dummiesTable.Size = new System.Drawing.Size(492, 171);
             this.dummiesTable.TabIndex = 12;
             this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTable_CellContentClick);
@@ -983,6 +986,11 @@
             // 
             // meshModifiersContainer
             // 
+            this.meshModifiersContainer.Controls.Add(this.flipYZAxisCheckbox);
+            this.meshModifiersContainer.Controls.Add(this.label16);
+            this.meshModifiersContainer.Controls.Add(this.centerZButton);
+            this.meshModifiersContainer.Controls.Add(this.centerYButton);
+            this.meshModifiersContainer.Controls.Add(this.label15);
             this.meshModifiersContainer.Controls.Add(this.zAxisLabel);
             this.meshModifiersContainer.Controls.Add(this.yAxisLabel);
             this.meshModifiersContainer.Controls.Add(this.xAxisLabel);
@@ -992,7 +1000,7 @@
             this.meshModifiersContainer.Controls.Add(this.label7);
             this.meshModifiersContainer.Controls.Add(this.deleteFacesetsCheckbox);
             this.meshModifiersContainer.Controls.Add(this.label6);
-            this.meshModifiersContainer.Controls.Add(this.centerToWorldButton);
+            this.meshModifiersContainer.Controls.Add(this.centerXButton);
             this.meshModifiersContainer.Controls.Add(this.uniformScaleCheckbox);
             this.meshModifiersContainer.Controls.Add(this.reverseFacesetsCheckbox);
             this.meshModifiersContainer.Controls.Add(this.label8);
@@ -1012,6 +1020,54 @@
             this.meshModifiersContainer.TabIndex = 12;
             this.meshModifiersContainer.TabStop = false;
             this.meshModifiersContainer.Text = "Modifiers";
+            // 
+            // flipYZAxisCheckbox
+            // 
+            this.flipYZAxisCheckbox.AutoSize = true;
+            this.flipYZAxisCheckbox.Location = new System.Drawing.Point(9, 285);
+            this.flipYZAxisCheckbox.Name = "flipYZAxisCheckbox";
+            this.flipYZAxisCheckbox.Size = new System.Drawing.Size(15, 14);
+            this.flipYZAxisCheckbox.TabIndex = 69;
+            this.flipYZAxisCheckbox.UseVisualStyleBackColor = true;
+            this.flipYZAxisCheckbox.CheckedChanged += new System.EventHandler(this.FlipYZAxisCheckboxChanged);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(25, 285);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(62, 13);
+            this.label16.TabIndex = 68;
+            this.label16.Text = "Flip YZ Axis";
+            // 
+            // centerZButton
+            // 
+            this.centerZButton.Location = new System.Drawing.Point(147, 127);
+            this.centerZButton.Name = "centerZButton";
+            this.centerZButton.Size = new System.Drawing.Size(20, 22);
+            this.centerZButton.TabIndex = 67;
+            this.centerZButton.Text = "Z";
+            this.centerZButton.UseVisualStyleBackColor = true;
+            this.centerZButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.CenterZButtonClicked);
+            // 
+            // centerYButton
+            // 
+            this.centerYButton.Location = new System.Drawing.Point(123, 127);
+            this.centerYButton.Name = "centerYButton";
+            this.centerYButton.Size = new System.Drawing.Size(20, 22);
+            this.centerYButton.TabIndex = 66;
+            this.centerYButton.Text = "Y";
+            this.centerYButton.UseVisualStyleBackColor = true;
+            this.centerYButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.CenterYButtonClicked);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(6, 132);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(88, 13);
+            this.label15.TabIndex = 65;
+            this.label15.Text = "Center To World:";
             // 
             // zAxisLabel
             // 
@@ -1046,7 +1102,7 @@
             // mirrorZCheckbox
             // 
             this.mirrorZCheckbox.AutoSize = true;
-            this.mirrorZCheckbox.Location = new System.Drawing.Point(116, 126);
+            this.mirrorZCheckbox.Location = new System.Drawing.Point(114, 158);
             this.mirrorZCheckbox.Name = "mirrorZCheckbox";
             this.mirrorZCheckbox.Size = new System.Drawing.Size(33, 17);
             this.mirrorZCheckbox.TabIndex = 60;
@@ -1057,7 +1113,7 @@
             // mirrorYCheckbox
             // 
             this.mirrorYCheckbox.AutoSize = true;
-            this.mirrorYCheckbox.Location = new System.Drawing.Point(83, 126);
+            this.mirrorYCheckbox.Location = new System.Drawing.Point(81, 158);
             this.mirrorYCheckbox.Name = "mirrorYCheckbox";
             this.mirrorYCheckbox.Size = new System.Drawing.Size(33, 17);
             this.mirrorYCheckbox.TabIndex = 59;
@@ -1068,7 +1124,7 @@
             // mirrorXCheckbox
             // 
             this.mirrorXCheckbox.AutoSize = true;
-            this.mirrorXCheckbox.Location = new System.Drawing.Point(50, 126);
+            this.mirrorXCheckbox.Location = new System.Drawing.Point(48, 158);
             this.mirrorXCheckbox.Name = "mirrorXCheckbox";
             this.mirrorXCheckbox.Size = new System.Drawing.Size(33, 17);
             this.mirrorXCheckbox.TabIndex = 58;
@@ -1079,7 +1135,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 126);
+            this.label7.Location = new System.Drawing.Point(6, 159);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(36, 13);
             this.label7.TabIndex = 57;
@@ -1088,7 +1144,7 @@
             // deleteFacesetsCheckbox
             // 
             this.deleteFacesetsCheckbox.AutoSize = true;
-            this.deleteFacesetsCheckbox.Location = new System.Drawing.Point(9, 226);
+            this.deleteFacesetsCheckbox.Location = new System.Drawing.Point(9, 261);
             this.deleteFacesetsCheckbox.Name = "deleteFacesetsCheckbox";
             this.deleteFacesetsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.deleteFacesetsCheckbox.TabIndex = 45;
@@ -1097,21 +1153,21 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(25, 226);
+            this.label6.Location = new System.Drawing.Point(25, 261);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(108, 13);
             this.label6.TabIndex = 44;
             this.label6.Text = "Only Delete Facesets";
             // 
-            // centerToWorldButton
+            // centerXButton
             // 
-            this.centerToWorldButton.Location = new System.Drawing.Point(8, 246);
-            this.centerToWorldButton.Name = "centerToWorldButton";
-            this.centerToWorldButton.Size = new System.Drawing.Size(104, 22);
-            this.centerToWorldButton.TabIndex = 43;
-            this.centerToWorldButton.Text = "Center To World";
-            this.centerToWorldButton.UseVisualStyleBackColor = true;
-            this.centerToWorldButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.CenterToWorldButtonClicked);
+            this.centerXButton.Location = new System.Drawing.Point(99, 127);
+            this.centerXButton.Name = "centerXButton";
+            this.centerXButton.Size = new System.Drawing.Size(20, 22);
+            this.centerXButton.TabIndex = 43;
+            this.centerXButton.Text = "X";
+            this.centerXButton.UseVisualStyleBackColor = true;
+            this.centerXButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.CenterXButtonClicked);
             // 
             // uniformScaleCheckbox
             // 
@@ -1128,7 +1184,7 @@
             // reverseFacesetsCheckbox
             // 
             this.reverseFacesetsCheckbox.AutoSize = true;
-            this.reverseFacesetsCheckbox.Location = new System.Drawing.Point(9, 151);
+            this.reverseFacesetsCheckbox.Location = new System.Drawing.Point(9, 186);
             this.reverseFacesetsCheckbox.Name = "reverseFacesetsCheckbox";
             this.reverseFacesetsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.reverseFacesetsCheckbox.TabIndex = 39;
@@ -1138,7 +1194,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(25, 151);
+            this.label8.Location = new System.Drawing.Point(25, 186);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(93, 13);
             this.label8.TabIndex = 38;
@@ -1146,9 +1202,9 @@
             // 
             // deleteSelectedButton
             // 
-            this.deleteSelectedButton.Location = new System.Drawing.Point(115, 246);
+            this.deleteSelectedButton.Location = new System.Drawing.Point(8, 306);
             this.deleteSelectedButton.Name = "deleteSelectedButton";
-            this.deleteSelectedButton.Size = new System.Drawing.Size(104, 22);
+            this.deleteSelectedButton.Size = new System.Drawing.Size(111, 22);
             this.deleteSelectedButton.TabIndex = 10;
             this.deleteSelectedButton.Text = "Delete Selected";
             this.deleteSelectedButton.UseVisualStyleBackColor = true;
@@ -1447,7 +1503,7 @@
             // toggleBackfacesCheckbox
             // 
             this.toggleBackfacesCheckbox.AutoSize = true;
-            this.toggleBackfacesCheckbox.Location = new System.Drawing.Point(9, 201);
+            this.toggleBackfacesCheckbox.Location = new System.Drawing.Point(9, 236);
             this.toggleBackfacesCheckbox.Name = "toggleBackfacesCheckbox";
             this.toggleBackfacesCheckbox.Size = new System.Drawing.Size(15, 14);
             this.toggleBackfacesCheckbox.TabIndex = 29;
@@ -1457,7 +1513,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(25, 201);
+            this.label11.Location = new System.Drawing.Point(25, 236);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(123, 13);
             this.label11.TabIndex = 28;
@@ -1466,7 +1522,7 @@
             // reverseNormalsCheckbox
             // 
             this.reverseNormalsCheckbox.AutoSize = true;
-            this.reverseNormalsCheckbox.Location = new System.Drawing.Point(9, 176);
+            this.reverseNormalsCheckbox.Location = new System.Drawing.Point(9, 211);
             this.reverseNormalsCheckbox.Name = "reverseNormalsCheckbox";
             this.reverseNormalsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.reverseNormalsCheckbox.TabIndex = 27;
@@ -1476,7 +1532,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(25, 176);
+            this.label12.Location = new System.Drawing.Point(25, 211);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(88, 13);
             this.label12.TabIndex = 26;
@@ -1613,8 +1669,8 @@
             this.materialsTable.Name = "materialsTable";
             this.materialsTable.RowHeadersVisible = false;
             this.materialsTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle38.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle38;
             this.materialsTable.Size = new System.Drawing.Size(468, 394);
             this.materialsTable.TabIndex = 6;
             this.materialsTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableButtonClicked);
@@ -1766,8 +1822,8 @@
             this.texturesTable.Name = "texturesTable";
             this.texturesTable.RowHeadersVisible = false;
             this.texturesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle39.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle39;
             this.texturesTable.Size = new System.Drawing.Size(536, 394);
             this.texturesTable.TabIndex = 7;
             this.texturesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableButtonClicked);
@@ -1830,8 +1886,8 @@
             this.bonesTable.Name = "bonesTable";
             this.bonesTable.RowHeadersVisible = false;
             this.bonesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle40.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle40;
             this.bonesTable.Size = new System.Drawing.Size(1021, 456);
             this.bonesTable.TabIndex = 0;
             this.bonesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.BonesTableCellValueChanged);
@@ -2106,7 +2162,7 @@
         private System.Windows.Forms.Label versionStr;
         private System.Windows.Forms.Button addDummyButton;
         private System.Windows.Forms.CheckBox uniformScaleCheckbox;
-        private System.Windows.Forms.Button centerToWorldButton;
+        private System.Windows.Forms.Button centerXButton;
         private System.Windows.Forms.CheckBox deleteFacesetsCheckbox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ToolStripMenuItem loadJSONToolStripMenuItem;
@@ -2218,5 +2274,10 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Button centerZButton;
+        private System.Windows.Forms.Button centerYButton;
+        private System.Windows.Forms.CheckBox flipYZAxisCheckbox;
+        private System.Windows.Forms.Label label16;
     }
 }
