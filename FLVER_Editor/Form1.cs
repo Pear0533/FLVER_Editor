@@ -44,6 +44,7 @@ namespace FLVER_Editor
         public static List<FLVER> redoFlverList = new List<FLVER>();
         public static int currUndoFlverListIndex = -1;
         public static int currRedoFlverListIndex = -1;
+        public static int undoRedoStackLimit = 25;
         public static FLVER maleBodyFlver = new FLVER();
         public static FLVER femaleBodyFlver = new FLVER();
         private static byte[] currFlverBytes;
@@ -2566,6 +2567,9 @@ namespace FLVER_Editor
             undoToolStripMenuItem.Enabled = true;
             undoFlverList.Add(FLVER.Read(flver.Write()));
             currUndoFlverListIndex++;
+            if (currUndoFlverListIndex <= undoRedoStackLimit) return;
+            undoFlverList.RemoveAt(0);
+            currUndoFlverListIndex--;
         }
 
         private void UpdateRedoState()
