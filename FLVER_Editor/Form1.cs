@@ -1208,8 +1208,9 @@ namespace FLVER_Editor
             }
         }
 
-        private static float[] CalculateMeshTotals()
+        private float[] CalculateMeshTotals()
         {
+            if (useWorldOriginCheckbox.Checked) return new float[3];
             float vertexCount = 0, xSum = 0, ySum = 0, zSum = 0;
             foreach (int i in selectedMeshIndices)
             {
