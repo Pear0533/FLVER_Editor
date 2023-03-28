@@ -912,8 +912,9 @@ namespace FLVER_Editor
         private void EnableDisableExtraModifierOptions()
         {
             reverseFacesetsCheckbox.Enabled = reverseNormalsCheckbox.Enabled = toggleBackfacesCheckbox.Enabled =
-                deleteFacesetsCheckbox.Enabled = uniformScaleCheckbox.Enabled = centerXButton.Enabled = mirrorXCheckbox.Enabled =
-                    mirrorYCheckbox.Enabled = mirrorZCheckbox.Enabled = selectedMeshIndices.Count != 0;
+                deleteFacesetsCheckbox.Enabled = uniformScaleCheckbox.Enabled = centerXButton.Enabled = centerYButton.Enabled =
+                    centerZButton.Enabled = mirrorXCheckbox.Enabled = mirrorYCheckbox.Enabled = mirrorZCheckbox.Enabled =
+                        selectedMeshIndices.Count != 0;
         }
 
         private static List<int> UpdateIndicesList(DataGridView dataTable, List<int> indices, int columnIndex, int rowIndex, ref bool selectedFlag)
@@ -2607,6 +2608,7 @@ namespace FLVER_Editor
 
         private void FlipYZAxisCheckboxChanged(object sender, EventArgs e)
         {
+            UpdateUndoState();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
             {
                 v.Positions[0] = new System.Numerics.Vector3(v.Positions[0].X, v.Positions[0].Z, v.Positions[0].Y);
