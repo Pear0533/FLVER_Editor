@@ -2613,8 +2613,8 @@ namespace FLVER_Editor
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
             {
                 v.Positions[0] = new System.Numerics.Vector3(v.Positions[0].X, v.Positions[0].Z, v.Positions[0].Y);
-                v.Normals[0] = new Vector4(v.Normals[0].X, v.Normals[0].Z, v.Normals[0].Y, 1);
-                v.Normals[0] = new Vector4(v.Normals[0].X, v.Normals[0].Z, v.Normals[0].Y, 1);
+                v.Normals[0] = new Vector4(v.Normals[0].X, v.Normals[0].Z, v.Normals[0].Y, -1);
+                v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Z, v.Tangents[0].Y, 1);
             }
             foreach (FLVER.Dummy d in selectedDummyIndices.Select(i => flver.Dummies[i]))
                 d.Position = new System.Numerics.Vector3(d.Position.X, d.Position.Z, d.Position.Y);
