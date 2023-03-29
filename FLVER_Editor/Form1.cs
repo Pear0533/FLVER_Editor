@@ -1380,7 +1380,7 @@ namespace FLVER_Editor
             }
         }
 
-        private static void SaveFLVERAs()
+        private void SaveFLVERAs()
         {
             string bndFilter = flverFilePath.EndsWith(".dcx") ? "|BND File (*.dcx)|*.dcx" : "";
             SaveFileDialog dialog = new SaveFileDialog
@@ -1406,6 +1406,8 @@ namespace FLVER_Editor
                 }
             }
             SaveFLVERFile(modelFilePath);
+            arguments.Add(modelFilePath);
+            OpenFLVERFile();
         }
 
         private void SaveButtonClicked(object sender, EventArgs e)
