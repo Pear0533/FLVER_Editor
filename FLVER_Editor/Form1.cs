@@ -165,7 +165,7 @@ namespace FLVER_Editor
 
         private void SetAutoSaveEnabled()
         {
-            var autoSaveEnabledStr = userConfigJson["IsAutoSaveEnabled"]?.ToString();
+            string autoSaveEnabledStr = userConfigJson["IsAutoSaveEnabled"]?.ToString();
             if (autoSaveEnabledStr == null) return;
             autoSaveTimer.Enabled = !bool.Parse(autoSaveEnabledStr);
             ToggleAutoSaveState(false, false);
@@ -173,7 +173,7 @@ namespace FLVER_Editor
 
         private static void SetDummyIDsVisibility()
         {
-            var dummyIdsVisibilityStr = userConfigJson["AreDummyIDsVisible"]?.ToString();
+            string dummyIdsVisibilityStr = userConfigJson["AreDummyIDsVisible"]?.ToString();
             if (dummyIdsVisibilityStr == null) return;
             areDummyIdsVisible = bool.Parse(dummyIdsVisibilityStr);
         }
@@ -209,7 +209,7 @@ namespace FLVER_Editor
 
         private void SetDummyThickness()
         {
-            var dummyThicknessStr = userConfigJson["DummyThickness"]?.ToString();
+            string dummyThicknessStr = userConfigJson["DummyThickness"]?.ToString();
             if (dummyThicknessStr != null)
             {
                 dummyThickness = int.Parse(dummyThicknessStr);
@@ -220,15 +220,15 @@ namespace FLVER_Editor
 
         private void SetEditorWindowSize()
         {
-            var editorWindowWidthStr = userConfigJson["EditorWindowWidth"]?.ToString();
-            var editorWindowHeightStr = userConfigJson["EditorWindowHeight"]?.ToString();
+            string editorWindowWidthStr = userConfigJson["EditorWindowWidth"]?.ToString();
+            string editorWindowHeightStr = userConfigJson["EditorWindowHeight"]?.ToString();
             if (editorWindowWidthStr == null || editorWindowHeightStr == null) return;
             Size = new Size(int.Parse(editorWindowWidthStr), int.Parse(editorWindowHeightStr));
         }
 
         private void SetMaterialsTableView()
         {
-            var materialsTableViewSplitDistanceStr = userConfigJson["MaterialsTableViewSplitDistance"]?.ToString();
+            string materialsTableViewSplitDistanceStr = userConfigJson["MaterialsTableViewSplitDistance"]?.ToString();
             if (materialsTableViewSplitDistanceStr == null) return;
             materialsPagePanelsContainer.SplitterDistance = int.Parse(materialsTableViewSplitDistanceStr);
         }
@@ -288,11 +288,11 @@ namespace FLVER_Editor
         {
             if (dispMaleBody) flver.Meshes.Add(maleBodyFlver.Meshes[0]);
             else if (dispFemaleBody) flver.Meshes.Add(femaleBodyFlver.Meshes[0]);
-            var vertexPosColorList = new List<VertexPositionColor>();
-            var faceSetPosColorList = new List<VertexPositionColor>();
-            var faceSetPosColorTexList = new List<VertexPositionColorTexture>();
-            var vertexTexMapList = new List<VertexTexMap>();
-            for (var i = 0; i < flver.Meshes.Count; ++i)
+            List<VertexPositionColor> vertexPosColorList = new List<VertexPositionColor>();
+            List<VertexPositionColor> faceSetPosColorList = new List<VertexPositionColor>();
+            List<VertexPositionColorTexture> faceSetPosColorTexList = new List<VertexPositionColorTexture>();
+            List<VertexTexMap> vertexTexMapList = new List<VertexTexMap>();
+            for (int i = 0; i < flver.Meshes.Count; ++i)
             {
                 if (flver.Meshes[i] == null) continue;
                 bool renderBackFaces = flver.Meshes[i].FaceSets.Count > 0 && !flver.Meshes[i].FaceSets[0].CullBackfaces;
@@ -319,14 +319,14 @@ namespace FLVER_Editor
                         new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[1].Positions[0]), colorLine),
                         new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[2].Positions[0]), colorLine)
                     });
-                    var faceSetColor = new Microsoft.Xna.Framework.Color();
+                    Microsoft.Xna.Framework.Color faceSetColor = new Microsoft.Xna.Framework.Color();
                     Vector3 vectorA
                         = ConvertSysNumToXnaVector3(vertexArr[1].Positions[0]) - ConvertSysNumToXnaVector3(vertexArr[0].Positions[0]);
                     Vector3 vectorB
                         = ConvertSysNumToXnaVector3(vertexArr[2].Positions[0]) - ConvertSysNumToXnaVector3(vertexArr[0].Positions[0]);
                     Vector3 normalVector = VectorCrossProduct(vectorA, vectorB);
                     normalVector.Normalize();
-                    var lightVector = new Vector3(viewer.lightX, viewer.lightY, viewer.lightZ);
+                    Vector3 lightVector = new Vector3(viewer.lightX, viewer.lightY, viewer.lightZ);
                     lightVector.Normalize();
                     int faceSetColorVal = 125 + (int)(125 * VectorDotProduct(normalVector, lightVector));
                     faceSetColorVal = faceSetColorVal > 255 ? 255 : faceSetColorVal < 0 ? 0 : viewer.flatShading ? 255 : faceSetColorVal;
@@ -380,7 +380,7 @@ namespace FLVER_Editor
                                 new Microsoft.Xna.Framework.Vector2(vertexArr[2].UVs[0].X, vertexArr[2].UVs[0].Y))
                         });
                 }
-                for (var j = 0; j < flver.Meshes[i].Vertices.Count; ++j)
+                for (int j = 0; j < flver.Meshes[i].Vertices.Count; ++j)
                 {
                     Program.vertices.Add(flver.Meshes[i].Vertices[j]);
                     Program.verticesInfo.Add(new VertexInfo { meshIndex = i, vertexIndex = (uint)j });
@@ -389,7 +389,7 @@ namespace FLVER_Editor
                 if (currMaterial == null) continue;
                 List<FLVER.Texture> texList = currMaterial.Textures;
                 if (texList.Count <= 0) continue;
-                var vertexTexMap = new VertexTexMap
+                VertexTexMap vertexTexMap = new VertexTexMap
                 {
                     textureName = Path.GetFileNameWithoutExtension(texList[0].Path),
                     faceSetTextures = faceSetPosColorTexList.ToArray()
@@ -398,10 +398,10 @@ namespace FLVER_Editor
                 vertexTexMapList.Add(vertexTexMap);
             }
             if (vertexPosColorList.Count % 2 != 0) vertexPosColorList.Add(vertexPosColorList[vertexPosColorList.Count - 1]);
-            for (var i = 0; i < bonePositionList.Count; ++i)
+            for (int i = 0; i < bonePositionList.Count; ++i)
                 bonePositionList[i] = null;
-            var bonesTransform = new Transform3D[flver.Bones.Count];
-            for (var i = 0; i < flver.Bones.Count; ++i)
+            Transform3D[] bonesTransform = new Transform3D[flver.Bones.Count];
+            for (int i = 0; i < flver.Bones.Count; ++i)
             {
                 bonesTransform[i] = new Transform3D { rotOrder = rotOrder, position = new Vector3D(flver.Bones[i].Translation) };
                 bonesTransform[i].setRotationInRad(new Vector3D(flver.Bones[i].Rotation));
@@ -420,14 +420,14 @@ namespace FLVER_Editor
                 vertexPosColorList.Add(new VertexPositionColor(new Vector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
                     Microsoft.Xna.Framework.Color.Purple));
             }
-            for (var i = 0; i < flver.Dummies.Count; ++i)
+            for (int i = 0; i < flver.Dummies.Count; ++i)
             {
                 FLVER.Dummy dummy = flver.Dummies[i];
                 bool shouldSelectDummy = dummyIsSelected && selectedDummyIndices.IndexOf(i) != -1;
                 Microsoft.Xna.Framework.Color dummyColor = shouldSelectDummy ? Microsoft.Xna.Framework.Color.Yellow : Microsoft.Xna.Framework.Color.Purple;
                 float baseDummyYPos = dummy.Position.Y;
                 const float posStep = 0.0005f;
-                for (var j = 0; j < dummyThickness; ++j)
+                for (int j = 0; j < dummyThickness; ++j)
                 {
                     vertexPosColorList.AddRange(new[]
                     {
@@ -507,7 +507,7 @@ namespace FLVER_Editor
         private static bool LoadPresets(ComboBox selector, ref Dictionary<object, object> dict, string filePath)
         {
             selector.Items.Clear();
-            var hasRead = true;
+            bool hasRead = true;
             try
             {
                 dict = new JavaScriptSerializer().Deserialize<Dictionary<object, object>>(File.ReadAllText(filePath));
@@ -571,10 +571,10 @@ namespace FLVER_Editor
             texturesTable.Rows.Clear();
             meshTable.Rows.Clear();
             dummiesTable.Rows.Clear();
-            for (var i = 0; i < flver.Bones.Count; ++i)
+            for (int i = 0; i < flver.Bones.Count; ++i)
             {
                 FLVER.Bone bone = flver.Bones[i];
-                var row = new DataGridViewRow();
+                DataGridViewRow row = new DataGridViewRow();
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i }, new DataGridViewTextBoxCell { Value = bone.Name },
                     new DataGridViewTextBoxCell { Value = bone.ParentIndex }, new DataGridViewTextBoxCell { Value = bone.ChildIndex },
                     new DataGridViewTextBoxCell { Value = $"{bone.Translation.X},{bone.Translation.Y},{bone.Translation.Z}" },
@@ -584,25 +584,25 @@ namespace FLVER_Editor
                     new DataGridViewTextBoxCell { Value = $"{bone.BoundingBoxMax.X},{bone.BoundingBoxMax.Y},{bone.BoundingBoxMax.Z}" });
                 bonesTable.Rows.Add(row);
             }
-            for (var i = 0; i < flver.Materials.Count; ++i)
+            for (int i = 0; i < flver.Materials.Count; ++i)
             {
                 FLVER.Material material = flver.Materials[i];
-                var row = new DataGridViewRow();
+                DataGridViewRow row = new DataGridViewRow();
                 if (!stopAutoInternalIndexOverride) material.Unk18 = i;
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i }, new DataGridViewTextBoxCell { Value = material.Name },
                     new DataGridViewTextBoxCell { Value = GetModelMask(material.Name) }, new DataGridViewTextBoxCell { Value = material.Flags },
                     new DataGridViewTextBoxCell { Value = material.MTD }, new DataGridViewTextBoxCell { Value = material.Unk18 });
-                for (var j = 0; j < 3; ++j)
+                for (int j = 0; j < 3; ++j)
                     row.Cells.Add(new DataGridViewButtonCell { Value = materialsTable.Columns[j + 6].HeaderText });
-                for (var j = 0; j < 2; ++j)
+                for (int j = 0; j < 2; ++j)
                     row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
                 materialsTable.Rows.Add(row);
             }
-            for (var i = 0; i < flver.Meshes.Count; ++i)
+            for (int i = 0; i < flver.Meshes.Count; ++i)
             {
                 FLVER.Mesh mesh = flver.Meshes[i];
                 if (mesh.MaterialIndex < 0) mesh.MaterialIndex = 0;
-                var row = new DataGridViewRow();
+                DataGridViewRow row = new DataGridViewRow();
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i },
                     new DataGridViewTextBoxCell { Value = flver.Materials[mesh.MaterialIndex].Name });
                 row.Cells.Add(new DataGridViewButtonCell { Value = "Apply" });
@@ -617,10 +617,10 @@ namespace FLVER_Editor
                 row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
                 meshTable.Rows.Add(row);
             }
-            for (var i = 0; i < flver.Dummies.Count; ++i)
+            for (int i = 0; i < flver.Dummies.Count; ++i)
             {
                 FLVER.Dummy dummy = flver.Dummies[i];
-                var row = new DataGridViewRow();
+                DataGridViewRow row = new DataGridViewRow();
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i },
                     new DataGridViewTextBoxCell { Value = dummy.ReferenceID },
                     new DataGridViewTextBoxCell { Value = dummy.AttachBoneIndex },
@@ -653,7 +653,7 @@ namespace FLVER_Editor
 
         private static string PromptFLVERModel()
         {
-            var dialog = new OpenFileDialog
+            OpenFileDialog dialog = new OpenFileDialog
             {
                 Filter =
                     @"FLVER File (*.flv, *.flv.bak, *.flver, *.flver.bak)|*.flv;*.flv.bak;*.flver;*.flver.bak|BND File (*.dcx, *.dcx.bak)|*.dcx;*.dcx.bak|Model Container (*.flv, *.flv.bak, *.flver, *.flver.bak, *.dcx, *.dcx.bak)|*.flv;*.flv.bak;*.flver;*.flver.bak;*.dcx;*.dcx.bak",
@@ -669,7 +669,7 @@ namespace FLVER_Editor
 
         private FLVER ReadFLVERFromDCXPath(string filePath, bool setMainFlverArchiveType, bool setBinderIndex, bool wantsTpf)
         {
-            var flverFiles = new List<BinderFile>();
+            List<BinderFile> flverFiles = new List<BinderFile>();
             BND4 newFlverBnd = null;
             try
             {
@@ -688,7 +688,7 @@ namespace FLVER_Editor
             if (newFlverBnd != null)
             {
                 if (setMainFlverArchiveType) flverArchiveType = flverBnd.Compression;
-                var binderIndex = 0;
+                int binderIndex = 0;
                 foreach (BinderFile file in flverBnd.Files)
                 {
                     if (IsFLVERPath(file.Name))
@@ -775,10 +775,10 @@ namespace FLVER_Editor
         {
             if (selectedMaterialIndex == -1) return;
             texturesTable.Rows.Clear();
-            for (var i = 0; i < flver.Materials[selectedMaterialIndex].Textures.Count; ++i)
+            for (int i = 0; i < flver.Materials[selectedMaterialIndex].Textures.Count; ++i)
             {
                 FLVER.Material material = flver.Materials[selectedMaterialIndex];
-                var row = new DataGridViewRow();
+                DataGridViewRow row = new DataGridViewRow();
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = material.Textures[i].Type },
                     new DataGridViewTextBoxCell { Value = material.Textures[i].Path });
                 row.Cells.Add(new DataGridViewButtonCell { Value = texturesTable.Columns[2].HeaderText });
@@ -838,7 +838,7 @@ namespace FLVER_Editor
 
         private static bool AreCheckboxesInDataTableAllChecked(DataGridView table, int columnIndex)
         {
-            var allChecked = true;
+            bool allChecked = true;
             foreach (DataGridViewRow row in table.Rows)
                 if (!(bool)row.Cells[columnIndex].Value)
                     allChecked = false;
@@ -867,14 +867,14 @@ namespace FLVER_Editor
             if (Program.tpf == null) Program.tpf = new TPF();
             BinderFile flverBndTpfEntry = flverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
             byte[] ddsBytes = File.ReadAllBytes(textureFilePath);
-            var dds = new DDS(ddsBytes);
+            DDS dds = new DDS(ddsBytes);
             byte formatByte = 107;
             try
             {
                 formatByte = (byte)Enum.Parse(typeof(TextureFormats), dds.header10.dxgiFormat.ToString());
             }
             catch { }
-            var texture = new TPF.Texture(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, 0, File.ReadAllBytes(textureFilePath));
+            TPF.Texture texture = new TPF.Texture(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, 0, File.ReadAllBytes(textureFilePath));
             int existingTextureIndex = Program.tpf.Textures.FindIndex(i => i.Name == texture.Name);
             if (existingTextureIndex != -1)
             {
@@ -893,7 +893,7 @@ namespace FLVER_Editor
         private void TexturesTableButtonClicked(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0 || e.ColumnIndex != 2) return;
-            var dialog = new OpenFileDialog { Filter = imageFilesFilter };
+            OpenFileDialog dialog = new OpenFileDialog { Filter = imageFilesFilter };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             UpdateUndoState();
             flver.Materials[selectedMaterialIndex].Textures[e.RowIndex].Path = $"{Path.GetFileNameWithoutExtension(dialog.FileName)}.tif";
@@ -976,7 +976,7 @@ namespace FLVER_Editor
 
         private int ShowSelectorDialog<T>(string windowTitle, IEnumerable<T> selectorList)
         {
-            var selectorForm = new Form();
+            Form selectorForm = new Form();
             selectorForm.Text = windowTitle;
             selectorForm.Icon = Icon;
             selectorForm.Width = 500;
@@ -984,12 +984,12 @@ namespace FLVER_Editor
             selectorForm.MinimumSize = new Size(300, 300);
             selectorForm.StartPosition = FormStartPosition.CenterScreen;
             selectorForm.MaximizeBox = false;
-            var boneSelectionBox = new TreeView();
+            TreeView boneSelectionBox = new TreeView();
             boneSelectionBox.Width = 450;
             boneSelectionBox.Height = 420;
             boneSelectionBox.Location = new Point(boneSelectionBox.Location.X + 15, boneSelectionBox.Location.Y + 5);
             boneSelectionBox.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom;
-            var cancelButton = new Button
+            Button cancelButton = new Button
             {
                 Text = @"Cancel",
                 Size = new Size(65, 25),
@@ -997,7 +997,7 @@ namespace FLVER_Editor
                     boneSelectionBox.Bottom + 5),
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Right
             };
-            var okButton = new Button
+            Button okButton = new Button
             {
                 Text = @"OK",
                 Size = new Size(50, 25),
@@ -1078,7 +1078,7 @@ namespace FLVER_Editor
                     break;
                 case 5:
                     UpdateUndoState();
-                    var duplicatedDummy = new FLVER.Dummy
+                    FLVER.Dummy duplicatedDummy = new FLVER.Dummy
                     {
                         Position = flver.Dummies[rowIndex].Position,
                         Forward = flver.Dummies[rowIndex].Forward,
@@ -1129,7 +1129,7 @@ namespace FLVER_Editor
             float newX = nbi == 1 ? offset : 0;
             float newY = nbi == 0 ? offset : 0;
             float newZ = nbi == 2 ? offset : 0;
-            var vector = new System.Numerics.Vector3(x - totals[0], y - totals[1], z - totals[2]);
+            System.Numerics.Vector3 vector = new System.Numerics.Vector3(x - totals[0], y - totals[1], z - totals[2]);
             vector = Program.RotatePoint(vector, newY, newX, newZ);
             return w == 0 ? (dynamic)new System.Numerics.Vector3(vector.X + totals[0], vector.Y + totals[1], vector.Z + totals[2]) :
                 new Vector4(vector.X + totals[0], vector.Y + totals[1], vector.Z + totals[2], w);
@@ -1229,10 +1229,10 @@ namespace FLVER_Editor
         {
             if (isSettingDefaultInfo) return;
             UpdateUndoState();
-            var numBox = (NumericUpDown)sender;
+            NumericUpDown numBox = (NumericUpDown)sender;
             int nbi = meshModifiersNumBoxesContainer.GetRow(numBox) * meshModifiersNumBoxesContainer.ColumnCount
                 + meshModifiersNumBoxesContainer.GetColumn(numBox);
-            var newNumVal = (float)(numBox == rotXNumBox || numBox == rotYNumBox || numBox == rotZNumBox ? ToRadians(numBox.Value) : numBox.Value);
+            float newNumVal = (float)(numBox == rotXNumBox || numBox == rotYNumBox || numBox == rotZNumBox ? ToRadians(numBox.Value) : numBox.Value);
             if (numBox == rotYNumBox && selectedMeshIndices.Count != 0) newNumVal = -newNumVal;
             if (numBox == scaleXNumBox || numBox == scaleYNumBox || numBox == scaleZNumBox) newNumVal = (float)(numBox.Value / 300);
             float offset = newNumVal < prevNumVal ?
@@ -1249,7 +1249,7 @@ namespace FLVER_Editor
 
         private void ModifierNumBoxFocused(object sender, EventArgs e)
         {
-            var numBox = (NumericUpDown)sender;
+            NumericUpDown numBox = (NumericUpDown)sender;
             prevNumVal = (float)(numBox == rotXNumBox || numBox == rotYNumBox || numBox == rotZNumBox ? ToRadians(numBox.Value) : numBox.Value);
             if (numBox == rotYNumBox && selectedMeshIndices.Count != 0) prevNumVal = -prevNumVal;
             if (numBox == scaleXNumBox || numBox == scaleYNumBox || numBox == scaleZNumBox) prevNumVal = (float)(numBox.Value / 300);
@@ -1338,7 +1338,7 @@ namespace FLVER_Editor
                 if (deleteFacesetsCheckbox.Checked)
                 {
                     foreach (FLVER.FaceSet fs in flver.Meshes[i].FaceSets)
-                        for (var j = 0; j < fs.Vertices.Length; ++j)
+                        for (int j = 0; j < fs.Vertices.Length; ++j)
                             fs.Vertices[j] = 1;
                 }
                 else
@@ -1383,7 +1383,7 @@ namespace FLVER_Editor
         private static void SaveFLVERAs()
         {
             string bndFilter = flverFilePath.EndsWith(".dcx") ? "|BND File (*.dcx)|*.dcx" : "";
-            var dialog = new SaveFileDialog
+            SaveFileDialog dialog = new SaveFileDialog
                 { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(flverFilePath.Replace(".dcx", "")) };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             string modelFilePath = dialog.FileName;
@@ -1429,7 +1429,7 @@ namespace FLVER_Editor
             try
             {
                 UpdateUndoState();
-                var bonesTableValue = bonesTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
+                string bonesTableValue = bonesTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
                 if (bonesTableValue != null)
                 {
                     switch (e.ColumnIndex)
@@ -1449,7 +1449,7 @@ namespace FLVER_Editor
                         case 7:
                         case 8:
                             string[] comp = bonesTableValue.Split(',');
-                            var vector = new System.Numerics.Vector3(float.Parse(comp[0]), float.Parse(comp[1]), float.Parse(comp[2]));
+                            System.Numerics.Vector3 vector = new System.Numerics.Vector3(float.Parse(comp[0]), float.Parse(comp[1]), float.Parse(comp[2]));
                             flver.Bones[e.RowIndex].Translation = e.ColumnIndex == 4 ? vector : flver.Bones[e.RowIndex].Translation;
                             flver.Bones[e.RowIndex].Scale = e.ColumnIndex == 5 ? vector : flver.Bones[e.RowIndex].Scale;
                             flver.Bones[e.RowIndex].Rotation = e.ColumnIndex == 6 ? vector : flver.Bones[e.RowIndex].Rotation;
@@ -1486,7 +1486,7 @@ namespace FLVER_Editor
             {
                 UpdateUndoState();
                 string materialName = flver.Materials[e.RowIndex].Name;
-                var materialsTableValue = materialsTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
+                string materialsTableValue = materialsTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
                 if (materialsTableValue != null)
                 {
                     switch (e.ColumnIndex)
@@ -1554,7 +1554,7 @@ namespace FLVER_Editor
 
         public static string ShowInputDialog(string text, string caption)
         {
-            var prompt = new Form
+            Form prompt = new Form
             {
                 Width = 240,
                 Height = 125,
@@ -1563,11 +1563,11 @@ namespace FLVER_Editor
                 StartPosition = FormStartPosition.CenterScreen,
                 MaximizeBox = false
             };
-            var textLabel = new Label { Left = 8, Top = 8, Width = 200, Text = text };
-            var textBox = new TextBox { Left = 10, Top = 28, Width = 200 };
-            var cancelButton = new Button { Text = @"Cancel", Left = 9, Width = 100, Top = 55, DialogResult = DialogResult.Cancel };
+            Label textLabel = new Label { Left = 8, Top = 8, Width = 200, Text = text };
+            TextBox textBox = new TextBox { Left = 10, Top = 28, Width = 200 };
+            Button cancelButton = new Button { Text = @"Cancel", Left = 9, Width = 100, Top = 55, DialogResult = DialogResult.Cancel };
             cancelButton.Click += (sender, e) => { prompt.Close(); };
-            var confirmation = new Button { Text = @"OK", Left = 112, Width = 100, Top = 55, DialogResult = DialogResult.OK };
+            Button confirmation = new Button { Text = @"OK", Left = 112, Width = 100, Top = 55, DialogResult = DialogResult.OK };
             confirmation.Click += (sender, e) => { prompt.Close(); };
             prompt.Controls.Add(textBox);
             prompt.Controls.Add(cancelButton);
@@ -1583,20 +1583,20 @@ namespace FLVER_Editor
             try
             {
                 UpdateUndoState();
-                var boneWeightValue = meshTable[2, e.RowIndex].Value?.ToString();
+                string boneWeightValue = meshTable[2, e.RowIndex].Value?.ToString();
                 if (boneWeightValue != null)
                 {
                     int newBoneWeight = int.Parse(boneWeightValue);
                     foreach (FLVER.Vertex v in flver.Meshes[e.RowIndex].Vertices)
                     {
-                        for (var i = 0; i < v.Positions.Count; ++i)
+                        for (int i = 0; i < v.Positions.Count; ++i)
                         {
                             if (v.BoneWeights == null)
                             {
                                 v.BoneWeights = new float[4];
                                 v.BoneIndices = new int[4];
                             }
-                            for (var j = 0; j < v.BoneWeights.Length; ++j)
+                            for (int j = 0; j < v.BoneWeights.Length; ++j)
                                 v.BoneWeights[j] = 0;
                             v.BoneIndices[0] = newBoneWeight;
                             v.BoneWeights[0] = 1;
@@ -1611,16 +1611,21 @@ namespace FLVER_Editor
             UpdateMesh();
         }
 
-        private void ReverseFaceSetsCheckboxChanged(object sender, EventArgs e)
+        private void ReverseFaceSets()
         {
-            if (isSettingDefaultInfo) return;
             UpdateUndoState();
             foreach (FLVER.FaceSet fs in selectedMeshIndices.SelectMany(i => flver.Meshes[i].FaceSets))
             {
-                for (var j = 0; j < fs.Vertices.Length; j += 3)
+                for (int j = 0; j < fs.Vertices.Length; j += 3)
                     (fs.Vertices[j + 1], fs.Vertices[j + 2]) = (fs.Vertices[j + 2], fs.Vertices[j + 1]);
             }
             UpdateMesh();
+        }
+
+        private void ReverseFaceSetsCheckboxChanged(object sender, EventArgs e)
+        {
+            if (isSettingDefaultInfo) return;
+            ReverseFaceSets();
         }
 
         private void ReverseNormalsCheckboxChanged(object sender, EventArgs e)
@@ -1629,9 +1634,9 @@ namespace FLVER_Editor
             UpdateUndoState();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
             {
-                for (var j = 0; j < v.Normals.Count; ++j)
+                for (int j = 0; j < v.Normals.Count; ++j)
                     v.Normals[j] = new Vector4(-v.Normals[j].X, -v.Normals[j].Y, -v.Normals[j].Z, v.Normals[j].W);
-                for (var j = 0; j < v.Tangents.Count; ++j)
+                for (int j = 0; j < v.Tangents.Count; ++j)
                     v.Tangents[j] = new Vector4(-v.Tangents[j].X, -v.Tangents[j].Y, -v.Tangents[j].Z, v.Tangents[j].W);
             }
             ShowInformationDialog("Mesh normals have been reversed!");
@@ -1732,7 +1737,7 @@ namespace FLVER_Editor
                     if (vertex.BoneIndices == null) continue;
                     foreach (int boneIndex in vertex.BoneIndices)
                     {
-                        var boneDoesNotExist = false;
+                        bool boneDoesNotExist = false;
                         if (boneIndex >= 0 && boneIndex < flver.Bones.Count) flver.Bones[boneIndex].Unk3C = 0;
                         else boneDoesNotExist = true;
                         if (!boneDoesNotExist) UpdateBonesBoundingBox(flver.Bones[boneIndex], flver.Bones, vertex.Positions[0]);
@@ -1765,34 +1770,34 @@ namespace FLVER_Editor
 
         private static void ExportFLVERAsDAE()
         {
-            var dialog = new SaveFileDialog { FileName = $"{Path.GetFileNameWithoutExtension(flverFilePath)}.dae", Filter = @"Collada DAE File (*.dae)|*.dae" };
+            SaveFileDialog dialog = new SaveFileDialog { FileName = $"{Path.GetFileNameWithoutExtension(flverFilePath)}.dae", Filter = @"Collada DAE File (*.dae)|*.dae" };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             try
             {
-                var scene = new Scene { RootNode = new Node() };
+                Scene scene = new Scene { RootNode = new Node() };
                 foreach (FLVER.Material m in flver.Materials)
                     scene.Materials.Add(new Material { Name = m.Name });
-                for (var i = 0; i < flver.Meshes.Count; ++i)
+                for (int i = 0; i < flver.Meshes.Count; ++i)
                 {
                     FLVER.Mesh m = flver.Meshes[i];
-                    var newMesh = new Mesh("Mesh_M" + i, PrimitiveType.Triangle);
+                    Mesh newMesh = new Mesh("Mesh_M" + i, PrimitiveType.Triangle);
                     foreach (FLVER.Vertex v in m.Vertices)
                     {
                         newMesh.Vertices.Add(new Assimp.Vector3D(v.Positions[0].X, v.Positions[0].Y, v.Positions[0].Z));
                         newMesh.Normals.Add(new Assimp.Vector3D(v.Normals[0].X, v.Normals[0].Y, v.Normals[0].Z));
                         newMesh.Tangents.Add(new Assimp.Vector3D(v.Tangents[0].X, v.Tangents[0].Y, v.Tangents[0].Z));
-                        for (var j = 0; j < v.UVs.Count; ++j)
+                        for (int j = 0; j < v.UVs.Count; ++j)
                             newMesh.TextureCoordinateChannels[j].Add(new Assimp.Vector3D(v.UVs[j].X, 1 - v.UVs[j].Y, 0));
                     }
                     foreach (uint[] arr in m.FaceSets.SelectMany(fs => fs.GetFaces()))
                         newMesh.Faces.Add(new Face(new[] { (int)arr[0], (int)arr[1], (int)arr[2] }));
                     newMesh.MaterialIndex = m.MaterialIndex;
                     scene.Meshes.Add(newMesh);
-                    var nodeBase = new Node { Name = "M_" + i + "_" + flver.Materials[m.MaterialIndex].Name };
+                    Node nodeBase = new Node { Name = "M_" + i + "_" + flver.Materials[m.MaterialIndex].Name };
                     nodeBase.MeshIndices.Add(i);
                     scene.RootNode.Children.Add(nodeBase);
                 }
-                var exporter = new AssimpContext();
+                AssimpContext exporter = new AssimpContext();
                 bool hasExported = exporter.ExportFile(scene, dialog.FileName, "collada");
                 if (hasExported) ShowInformationDialog("Successfully exported FLVER file to the Collada DAE format!");
             }
@@ -1809,7 +1814,7 @@ namespace FLVER_Editor
 
         private string PromptImportModel()
         {
-            var dialog = new OpenFileDialog { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
+            OpenFileDialog dialog = new OpenFileDialog { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
             return dialog.ShowDialog() != DialogResult.OK ? "" : dialog.FileName;
         }
 
@@ -1818,7 +1823,7 @@ namespace FLVER_Editor
             UpdateUndoState();
             if (prompt)
             {
-                var dialog = new OpenFileDialog { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
+                OpenFileDialog dialog = new OpenFileDialog { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
                 if (dialog.ShowDialog() != DialogResult.OK) return;
                 if (!Program.ImportFBX(dialog.FileName)) return;
             }
@@ -1848,11 +1853,11 @@ namespace FLVER_Editor
                 if (newFlver == null) return;
                 int materialOffset = flver.Materials.Count;
                 int layoutOffset = flver.BufferLayouts.Count;
-                var newFlverToCurrentFlver = new Dictionary<int, int>();
-                for (var i = 0; i < newFlver.Bones.Count; ++i)
+                Dictionary<int, int> newFlverToCurrentFlver = new Dictionary<int, int>();
+                for (int i = 0; i < newFlver.Bones.Count; ++i)
                 {
                     FLVER.Bone attachBone = newFlver.Bones[i];
-                    for (var j = 0; j < flver.Bones.Count; ++j)
+                    for (int j = 0; j < flver.Bones.Count; ++j)
                     {
                         if (attachBone.Name != flver.Bones[j].Name) continue;
                         newFlverToCurrentFlver.Add(i, j);
@@ -1866,7 +1871,7 @@ namespace FLVER_Editor
                         vb.LayoutIndex += layoutOffset;
                     foreach (FLVER.Vertex v in m.Vertices.Where(v => v.BoneIndices != null))
                     {
-                        for (var i = 0; i < v.BoneIndices.Length; ++i)
+                        for (int i = 0; i < v.BoneIndices.Length; ++i)
                         {
                             if (newFlverToCurrentFlver.ContainsKey(v.BoneIndices[i])) v.BoneIndices[i] = newFlverToCurrentFlver[v.BoneIndices[i]];
                         }
@@ -1913,7 +1918,7 @@ namespace FLVER_Editor
         private void AddDummyButtonClicked(object sender, MouseEventArgs e)
         {
             UpdateUndoState();
-            var newDummy = new FLVER.Dummy
+            FLVER.Dummy newDummy = new FLVER.Dummy
             {
                 Position = flver.Dummies.Count > 0 ? flver.Dummies[flver.Dummies.Count - 1].Position : new System.Numerics.Vector3(0, 0, 0),
                 ReferenceID = -1
@@ -1930,7 +1935,7 @@ namespace FLVER_Editor
             try
             {
                 UpdateUndoState();
-                var dummiesTableValue = dummiesTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
+                string dummiesTableValue = dummiesTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
                 if (dummiesTableValue != null)
                 {
                     short parsed = short.Parse(dummiesTableValue);
@@ -1957,7 +1962,7 @@ namespace FLVER_Editor
 
         private void LoadJSON(int type)
         {
-            var dialog = new OpenFileDialog { Filter = jsonFileFilter };
+            OpenFileDialog dialog = new OpenFileDialog { Filter = jsonFileFilter };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             try
             {
@@ -1986,7 +1991,7 @@ namespace FLVER_Editor
 
         private static void ExportJSON(dynamic list)
         {
-            var dialog = new SaveFileDialog { Filter = jsonFileFilter };
+            SaveFileDialog dialog = new SaveFileDialog { Filter = jsonFileFilter };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             try
             {
@@ -2021,7 +2026,7 @@ namespace FLVER_Editor
 
         private void BrowsePresetsFile(bool materialPresetsFile)
         {
-            var dialog = new OpenFileDialog { Filter = jsonFileFilter, Multiselect = false };
+            OpenFileDialog dialog = new OpenFileDialog { Filter = jsonFileFilter, Multiselect = false };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             File.WriteAllText(materialPresetsFile ? materialPresetsFilePath : dummyPresetsFilePath, File.ReadAllText(dialog.FileName));
             if (materialPresetsFile) LoadMaterialPresets();
@@ -2055,9 +2060,9 @@ namespace FLVER_Editor
 
         private void MergePresets(bool materialPresetsFile)
         {
-            var dialog = new OpenFileDialog { Filter = jsonFileFilter, Multiselect = false };
+            OpenFileDialog dialog = new OpenFileDialog { Filter = jsonFileFilter, Multiselect = false };
             if (dialog.ShowDialog() != DialogResult.OK) return;
-            var newPresets = new JavaScriptSerializer().Deserialize<Dictionary<object, object>>(File.ReadAllText(dialog.FileName));
+            Dictionary<object, object> newPresets = new JavaScriptSerializer().Deserialize<Dictionary<object, object>>(File.ReadAllText(dialog.FileName));
             Dictionary<object, object> presets = materialPresetsFile ? materialPresets : dummyPresets;
             foreach (KeyValuePair<object, object> preset in newPresets.Where(preset => !presets.ContainsKey(preset.Key)))
                 presets.Add(preset.Key, preset.Value);
@@ -2080,8 +2085,8 @@ namespace FLVER_Editor
         private void SetAllBBsMaxSizeButtonClicked(object sender, EventArgs e)
         {
             UpdateUndoState();
-            var minVector = new System.Numerics.Vector3(0, 0, 0);
-            var maxVector = new System.Numerics.Vector3(999, 999, 999);
+            System.Numerics.Vector3 minVector = new System.Numerics.Vector3(0, 0, 0);
+            System.Numerics.Vector3 maxVector = new System.Numerics.Vector3(999, 999, 999);
             flver.Header.BoundingBoxMin = maxVector;
             flver.Header.BoundingBoxMax = minVector;
             foreach (FLVER.Mesh mesh in from mesh in flver.Meshes from vertex in mesh.Vertices select mesh)
@@ -2096,16 +2101,16 @@ namespace FLVER_Editor
         private void TabWindowDrawItem(object sender, DrawItemEventArgs e)
         {
             Rectangle rec = tabWindow.ClientRectangle;
-            var StrFormat = new StringFormat();
+            StringFormat StrFormat = new StringFormat();
             StrFormat.LineAlignment = StringAlignment.Center;
             StrFormat.Alignment = StringAlignment.Center;
-            var backColor = new SolidBrush(tabWindowBackColor);
+            SolidBrush backColor = new SolidBrush(tabWindowBackColor);
             e.Graphics.FillRectangle(backColor, rec);
             Font fntTab = e.Font;
-            for (var i = 0; i < tabWindow.TabPages.Count; i++)
+            for (int i = 0; i < tabWindow.TabPages.Count; i++)
             {
                 RectangleF tabTextArea = tabWindow.GetTabRect(i);
-                var fontColor = new SolidBrush(tabWindowForeColor);
+                SolidBrush fontColor = new SolidBrush(tabWindowForeColor);
                 e.Graphics.DrawString(tabWindow.TabPages[i].Text, fntTab, fontColor, tabTextArea, StrFormat);
             }
         }
@@ -2124,14 +2129,14 @@ namespace FLVER_Editor
             {
                 try
                 {
-                    var matBinBndPathStr = userConfigJson["MatBinBndPath"]?.ToString();
+                    string matBinBndPathStr = userConfigJson["MatBinBndPath"]?.ToString();
                     matBinBndPath = matBinBndPathStr ?? throw new Exception();
                     File.ReadAllBytes(matBinBndPath);
                 }
                 catch
                 {
                     matBinBndPath = null;
-                    var dialog = new OpenFileDialog { Filter = @"MATBIN BND (*.matbinbnd.dcx)|*.matbinbnd.dcx" };
+                    OpenFileDialog dialog = new OpenFileDialog { Filter = @"MATBIN BND (*.matbinbnd.dcx)|*.matbinbnd.dcx" };
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
                         matBinBndPath = dialog.FileName;
@@ -2150,7 +2155,7 @@ namespace FLVER_Editor
                 string rawMaterialFileName = Path.GetFileNameWithoutExtension(flver.Materials[selectedMaterialIndex].MTD);
                 string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name);
                 if (rawMaterialFileName != rawMatBinFileName) continue;
-                var matBin = new MATBIN();
+                MATBIN matBin = new MATBIN();
                 matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
                 if (matBin.Samplers.Any(sampler => sampler.Path != ""))
                 {
@@ -2182,11 +2187,16 @@ namespace FLVER_Editor
         private void MirrorMesh(int nbi)
         {
             UpdateUndoState();
-            float[] totals = CalculateMeshTotals();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
-                ScaleThing(v, 0, totals, nbi, false, true);
-            foreach (FLVER.Dummy d in selectedDummyIndices.Select(i => flver.Dummies[i]))
-                ScaleThing(d, 0, totals, nbi, false, true);
+            {
+                v.Positions[0] = new System.Numerics.Vector3(v.Positions[0].X * (nbi == 0 ? -1 : 1),
+                    v.Positions[0].Y * (nbi == 1 ? -1 : 1), v.Positions[0].Z * (nbi == 2 ? -1 : 1));
+                v.Normals[0] = new Vector4(v.Normals[0].X * (nbi == 0 ? -1 : 1),
+                    v.Normals[0].Y * (nbi == 1 ? -1 : 1), v.Normals[0].Z * (nbi == 2 ? -1 : 1), -1);
+                v.Tangents[0] = new Vector4(v.Tangents[0].X * (nbi == 0 ? -1 : 1),
+                    v.Tangents[0].Y * (nbi == 1 ? -1 : 1), v.Tangents[0].Z * (nbi == 2 ? -1 : 1), 1);
+            }
+            ReverseFaceSets();
             UpdateMesh();
         }
 
@@ -2307,7 +2317,7 @@ namespace FLVER_Editor
 
         private static bool PromptDeletePreset(object sender, ref Dictionary<object, object> presets)
         {
-            var box = (ComboBox)sender;
+            ComboBox box = (ComboBox)sender;
             if (box.SelectedItem == null) return false;
             DialogResult result = ShowQuestionDialog("Are you sure you want to delete this preset?");
             if (result != DialogResult.Yes) return false;
@@ -2331,7 +2341,7 @@ namespace FLVER_Editor
 
         private static void ExportPresetsFile(ref Dictionary<object, object> presets)
         {
-            var dialog = new SaveFileDialog { Filter = jsonFileFilter };
+            SaveFileDialog dialog = new SaveFileDialog { Filter = jsonFileFilter };
             if (dialog.ShowDialog() != DialogResult.OK) return;
             File.WriteAllText(dialog.FileName, JsonConvert.SerializeObject(presets, Formatting.Indented));
             ShowInformationDialog("Successfully exported presets file!");
@@ -2490,7 +2500,7 @@ namespace FLVER_Editor
         {
             UpdateUndoState();
             int layoutCount = flver.BufferLayouts.Count;
-            var newBL = new FLVER.BufferLayout
+            FLVER.BufferLayout newBL = new FLVER.BufferLayout
             {
                 new FLVER.BufferLayout.Member(0, 0, FLVER.BufferLayout.MemberType.Float3, FLVER.BufferLayout.MemberSemantic.Position, 0),
                 new FLVER.BufferLayout.Member(0, 12, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.Normal, 0),
@@ -2513,7 +2523,7 @@ namespace FLVER_Editor
                 mn.VertexBuffers = new List<FLVER.VertexBuffer> { new FLVER.VertexBuffer(0, layoutCount, -1) };
                 uint[] varray = mn.FaceSets[0].Vertices;
                 mn.FaceSets = new List<FLVER.FaceSet>();
-                for (var i = 0; i < mn.Vertices.Count; i++)
+                for (int i = 0; i < mn.Vertices.Count; i++)
                 {
                     FLVER.Vertex vit = mn.Vertices[i];
                     mn.Vertices[i] = Program.generateVertexV4(new System.Numerics.Vector3(vit.Positions[0].X, vit.Positions[0].Y, vit.Positions[0].Z), vit.UVs[0], vit.UVs[0],
@@ -2701,10 +2711,10 @@ namespace FLVER_Editor
                 int samplerCount = br.ReadInt32();
                 br.ReadBytes(0x14);
                 Params = new List<Param>(paramCount);
-                for (var i = 0; i < paramCount; i++)
+                for (int i = 0; i < paramCount; i++)
                     Params.Add(new Param(br));
                 Samplers = new List<Sampler>(samplerCount);
-                for (var i = 0; i < samplerCount; i++)
+                for (int i = 0; i < samplerCount; i++)
                     Samplers.Add(new Sampler(br));
             }
 
