@@ -138,12 +138,6 @@ namespace FLVER_Editor
                             uv1.Y = 1 - uv1.Y;
                             uv2 = getMyV3D(channels[i]);
                             uv2.Y = 1 - uv2.Y;
-                            bool isMirrored = uv1.X < 0.0f || uv1.X > 1.0f || uv2.X < 0.0f || uv2.X > 1.0f;
-                            if (isMirrored)
-                            {
-                                for (int j = 0; j < m.Normals.Count; ++j)
-                                    m.Normals[j] = -m.Normals[j];
-                            }
                         }
                         var normal = new Vector3D(0, 1, 0);
                         if (m.HasNormals && m.Normals.Count > i)
