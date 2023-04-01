@@ -2660,6 +2660,22 @@ namespace FLVER_Editor
             CenterMeshToWorld(2);
         }
 
+        private void FixMirroredUVsCheckboxChecked(object sender, EventArgs e)
+        {
+            if (isSettingDefaultInfo) return;
+            UpdateUndoState();
+            foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
+            {
+                for (int i = 0; i < v.Tangents.Count; ++i)
+                {
+                    if (v.UVs[0].X > 1.0f)
+                        v.Tangents[i] = new Vector4(-v.Tangents[i].X, v.Tangents[i].Y, -v.Tangents[i].Z, v.Tangents[i].W);
+                }
+            }
+            ShowInformationDialog("Successfully fixed model to work with mirrored UVs!");
+            UpdateMesh();
+        }
+
         private enum TextureFormats
         {
             DXT1 = 0,
