@@ -2669,7 +2669,7 @@ namespace FLVER_Editor
                 for (int i = 0; i < v.Tangents.Count; ++i)
                 {
                     if (v.UVs[0].X > 1.0f)
-                        v.Tangents[i] = new Vector4(-v.Tangents[i].X, v.Tangents[i].Y, -v.Tangents[i].Z, v.Tangents[i].W);
+                        v.Tangents[i] = new Vector4(v.Tangents[i].X, v.Tangents[i].Y, -v.Tangents[i].Z, v.Tangents[i].W);
                 }
             }
             ShowInformationDialog("Successfully fixed model to work with mirrored UVs!");
