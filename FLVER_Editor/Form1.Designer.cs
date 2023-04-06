@@ -8,11 +8,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle31 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle32 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle33 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle34 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle35 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ribbon = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,7 +86,14 @@
             this.label5 = new System.Windows.Forms.Label();
             this.dummyPresetsSelector = new System.Windows.Forms.ComboBox();
             this.meshModifiersContainer = new System.Windows.Forms.GroupBox();
-            this.fixMirroredUVsCheckbox = new System.Windows.Forms.CheckBox();
+            this.noWindowCheckbox = new System.Windows.Forms.CheckBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.flipUVsWindowSizeNumBox = new System.Windows.Forms.NumericUpDown();
+            this.flipUVsWCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipUVsZCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipUVsYCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipUVsXCheckbox = new System.Windows.Forms.CheckBox();
+            this.label17 = new System.Windows.Forms.Label();
             this.useWorldOriginCheckbox = new System.Windows.Forms.CheckBox();
             this.flipYZAxisCheckbox = new System.Windows.Forms.CheckBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -187,7 +194,7 @@
             this.displayMaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.displayFemaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.solveAllMeshLODsTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.label17 = new System.Windows.Forms.Label();
+            this.windowSizeTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -203,6 +210,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.meshTable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dummiesTable)).BeginInit();
             this.meshModifiersContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.flipUVsWindowSizeNumBox)).BeginInit();
             this.meshModifiersNumBoxesContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rotZNumBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.scaleZNumBox)).BeginInit();
@@ -488,6 +496,7 @@
             // 
             // autoSaveIntervalSelector
             // 
+            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -566,6 +575,7 @@
             // 
             // multiSelectMenuTextbox
             // 
+            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -778,8 +788,8 @@
             this.meshTable.Name = "meshTable";
             this.meshTable.RowHeadersVisible = false;
             this.meshTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle31.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle31;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.meshTable.Size = new System.Drawing.Size(492, 163);
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTable_CellContentClick);
@@ -897,8 +907,8 @@
             this.dummiesTable.Name = "dummiesTable";
             this.dummiesTable.RowHeadersVisible = false;
             this.dummiesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle32.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle32;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.dummiesTable.Size = new System.Drawing.Size(492, 171);
             this.dummiesTable.TabIndex = 12;
             this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTable_CellContentClick);
@@ -989,8 +999,14 @@
             // 
             // meshModifiersContainer
             // 
+            this.meshModifiersContainer.Controls.Add(this.noWindowCheckbox);
+            this.meshModifiersContainer.Controls.Add(this.label18);
+            this.meshModifiersContainer.Controls.Add(this.flipUVsWindowSizeNumBox);
+            this.meshModifiersContainer.Controls.Add(this.flipUVsWCheckbox);
+            this.meshModifiersContainer.Controls.Add(this.flipUVsZCheckbox);
+            this.meshModifiersContainer.Controls.Add(this.flipUVsYCheckbox);
+            this.meshModifiersContainer.Controls.Add(this.flipUVsXCheckbox);
             this.meshModifiersContainer.Controls.Add(this.label17);
-            this.meshModifiersContainer.Controls.Add(this.fixMirroredUVsCheckbox);
             this.meshModifiersContainer.Controls.Add(this.useWorldOriginCheckbox);
             this.meshModifiersContainer.Controls.Add(this.flipYZAxisCheckbox);
             this.meshModifiersContainer.Controls.Add(this.label16);
@@ -1027,15 +1043,98 @@
             this.meshModifiersContainer.TabStop = false;
             this.meshModifiersContainer.Text = "Modifiers";
             // 
-            // fixMirroredUVsCheckbox
+            // noWindowCheckbox
             // 
-            this.fixMirroredUVsCheckbox.AutoSize = true;
-            this.fixMirroredUVsCheckbox.Location = new System.Drawing.Point(9, 309);
-            this.fixMirroredUVsCheckbox.Name = "fixMirroredUVsCheckbox";
-            this.fixMirroredUVsCheckbox.Size = new System.Drawing.Size(15, 14);
-            this.fixMirroredUVsCheckbox.TabIndex = 71;
-            this.fixMirroredUVsCheckbox.UseVisualStyleBackColor = true;
-            this.fixMirroredUVsCheckbox.CheckedChanged += new System.EventHandler(this.FixMirroredUVsCheckboxChecked);
+            this.noWindowCheckbox.AutoSize = true;
+            this.noWindowCheckbox.Location = new System.Drawing.Point(193, 206);
+            this.noWindowCheckbox.Name = "noWindowCheckbox";
+            this.noWindowCheckbox.Size = new System.Drawing.Size(82, 17);
+            this.noWindowCheckbox.TabIndex = 78;
+            this.noWindowCheckbox.Text = "No Window";
+            this.noWindowCheckbox.UseVisualStyleBackColor = true;
+            this.noWindowCheckbox.CheckedChanged += new System.EventHandler(this.NoWindowCheckbox_CheckedChanged);
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(190, 165);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(72, 13);
+            this.label18.TabIndex = 77;
+            this.label18.Text = "Window Size:";
+            // 
+            // flipUVsWindowSizeNumBox
+            // 
+            this.flipUVsWindowSizeNumBox.DecimalPlaces = 1;
+            this.flipUVsWindowSizeNumBox.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            this.flipUVsWindowSizeNumBox.Location = new System.Drawing.Point(193, 182);
+            this.flipUVsWindowSizeNumBox.Name = "flipUVsWindowSizeNumBox";
+            this.flipUVsWindowSizeNumBox.Size = new System.Drawing.Size(83, 20);
+            this.flipUVsWindowSizeNumBox.TabIndex = 76;
+            this.windowSizeTooltip.SetToolTip(this.flipUVsWindowSizeNumBox, "Defines the size of the UV window to exclude from the flip operation.");
+            this.flipUVsWindowSizeNumBox.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            65536});
+            this.flipUVsWindowSizeNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
+            // 
+            // flipUVsWCheckbox
+            // 
+            this.flipUVsWCheckbox.AutoSize = true;
+            this.flipUVsWCheckbox.Location = new System.Drawing.Point(157, 184);
+            this.flipUVsWCheckbox.Name = "flipUVsWCheckbox";
+            this.flipUVsWCheckbox.Size = new System.Drawing.Size(37, 17);
+            this.flipUVsWCheckbox.TabIndex = 75;
+            this.flipUVsWCheckbox.Text = "W";
+            this.flipUVsWCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsWCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsWCheckbox_CheckedChanged);
+            // 
+            // flipUVsZCheckbox
+            // 
+            this.flipUVsZCheckbox.AutoSize = true;
+            this.flipUVsZCheckbox.Location = new System.Drawing.Point(125, 184);
+            this.flipUVsZCheckbox.Name = "flipUVsZCheckbox";
+            this.flipUVsZCheckbox.Size = new System.Drawing.Size(33, 17);
+            this.flipUVsZCheckbox.TabIndex = 74;
+            this.flipUVsZCheckbox.Text = "Z";
+            this.flipUVsZCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsZCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsZCheckbox_CheckedChanged);
+            // 
+            // flipUVsYCheckbox
+            // 
+            this.flipUVsYCheckbox.AutoSize = true;
+            this.flipUVsYCheckbox.Location = new System.Drawing.Point(92, 184);
+            this.flipUVsYCheckbox.Name = "flipUVsYCheckbox";
+            this.flipUVsYCheckbox.Size = new System.Drawing.Size(33, 17);
+            this.flipUVsYCheckbox.TabIndex = 73;
+            this.flipUVsYCheckbox.Text = "Y";
+            this.flipUVsYCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsYCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsYCheckbox_CheckedChanged);
+            // 
+            // flipUVsXCheckbox
+            // 
+            this.flipUVsXCheckbox.AutoSize = true;
+            this.flipUVsXCheckbox.Location = new System.Drawing.Point(59, 184);
+            this.flipUVsXCheckbox.Name = "flipUVsXCheckbox";
+            this.flipUVsXCheckbox.Size = new System.Drawing.Size(33, 17);
+            this.flipUVsXCheckbox.TabIndex = 72;
+            this.flipUVsXCheckbox.Text = "X";
+            this.flipUVsXCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsXCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsXCheckbox_CheckedChanged);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 185);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(49, 13);
+            this.label17.TabIndex = 71;
+            this.label17.Text = "Flip UVs:";
             // 
             // useWorldOriginCheckbox
             // 
@@ -1050,7 +1149,7 @@
             // flipYZAxisCheckbox
             // 
             this.flipYZAxisCheckbox.AutoSize = true;
-            this.flipYZAxisCheckbox.Location = new System.Drawing.Point(9, 285);
+            this.flipYZAxisCheckbox.Location = new System.Drawing.Point(9, 312);
             this.flipYZAxisCheckbox.Name = "flipYZAxisCheckbox";
             this.flipYZAxisCheckbox.Size = new System.Drawing.Size(15, 14);
             this.flipYZAxisCheckbox.TabIndex = 69;
@@ -1060,7 +1159,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(25, 285);
+            this.label16.Location = new System.Drawing.Point(25, 312);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(62, 13);
             this.label16.TabIndex = 68;
@@ -1170,7 +1269,7 @@
             // deleteFacesetsCheckbox
             // 
             this.deleteFacesetsCheckbox.AutoSize = true;
-            this.deleteFacesetsCheckbox.Location = new System.Drawing.Point(9, 261);
+            this.deleteFacesetsCheckbox.Location = new System.Drawing.Point(9, 288);
             this.deleteFacesetsCheckbox.Name = "deleteFacesetsCheckbox";
             this.deleteFacesetsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.deleteFacesetsCheckbox.TabIndex = 45;
@@ -1179,7 +1278,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(25, 261);
+            this.label6.Location = new System.Drawing.Point(25, 288);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(108, 13);
             this.label6.TabIndex = 44;
@@ -1210,7 +1309,7 @@
             // reverseFacesetsCheckbox
             // 
             this.reverseFacesetsCheckbox.AutoSize = true;
-            this.reverseFacesetsCheckbox.Location = new System.Drawing.Point(9, 186);
+            this.reverseFacesetsCheckbox.Location = new System.Drawing.Point(9, 213);
             this.reverseFacesetsCheckbox.Name = "reverseFacesetsCheckbox";
             this.reverseFacesetsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.reverseFacesetsCheckbox.TabIndex = 39;
@@ -1220,7 +1319,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(25, 186);
+            this.label8.Location = new System.Drawing.Point(25, 213);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(93, 13);
             this.label8.TabIndex = 38;
@@ -1529,7 +1628,7 @@
             // toggleBackfacesCheckbox
             // 
             this.toggleBackfacesCheckbox.AutoSize = true;
-            this.toggleBackfacesCheckbox.Location = new System.Drawing.Point(9, 236);
+            this.toggleBackfacesCheckbox.Location = new System.Drawing.Point(9, 263);
             this.toggleBackfacesCheckbox.Name = "toggleBackfacesCheckbox";
             this.toggleBackfacesCheckbox.Size = new System.Drawing.Size(15, 14);
             this.toggleBackfacesCheckbox.TabIndex = 29;
@@ -1539,7 +1638,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(25, 236);
+            this.label11.Location = new System.Drawing.Point(25, 263);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(123, 13);
             this.label11.TabIndex = 28;
@@ -1548,7 +1647,7 @@
             // reverseNormalsCheckbox
             // 
             this.reverseNormalsCheckbox.AutoSize = true;
-            this.reverseNormalsCheckbox.Location = new System.Drawing.Point(9, 211);
+            this.reverseNormalsCheckbox.Location = new System.Drawing.Point(9, 238);
             this.reverseNormalsCheckbox.Name = "reverseNormalsCheckbox";
             this.reverseNormalsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.reverseNormalsCheckbox.TabIndex = 27;
@@ -1558,7 +1657,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(25, 211);
+            this.label12.Location = new System.Drawing.Point(25, 238);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(88, 13);
             this.label12.TabIndex = 26;
@@ -1695,8 +1794,8 @@
             this.materialsTable.Name = "materialsTable";
             this.materialsTable.RowHeadersVisible = false;
             this.materialsTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle33.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle33;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
             this.materialsTable.Size = new System.Drawing.Size(468, 394);
             this.materialsTable.TabIndex = 6;
             this.materialsTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableButtonClicked);
@@ -1848,8 +1947,8 @@
             this.texturesTable.Name = "texturesTable";
             this.texturesTable.RowHeadersVisible = false;
             this.texturesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle34.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle34;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.texturesTable.Size = new System.Drawing.Size(536, 394);
             this.texturesTable.TabIndex = 7;
             this.texturesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableButtonClicked);
@@ -1912,8 +2011,8 @@
             this.bonesTable.Name = "bonesTable";
             this.bonesTable.RowHeadersVisible = false;
             this.bonesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle35.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle35;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
             this.bonesTable.Size = new System.Drawing.Size(1021, 456);
             this.bonesTable.TabIndex = 0;
             this.bonesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.BonesTableCellValueChanged);
@@ -2060,15 +2159,6 @@
             this.meshTabDataTableSelector.TabIndex = 1;
             this.meshTabDataTableSelector.SelectedIndexChanged += new System.EventHandler(this.MeshTabDataTableSelector_SelectedIndexChanged);
             // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(25, 308);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(84, 13);
-            this.label17.TabIndex = 72;
-            this.label17.Text = "Fix Mirrored UVs";
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2114,6 +2204,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dummiesTable)).EndInit();
             this.meshModifiersContainer.ResumeLayout(false);
             this.meshModifiersContainer.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.flipUVsWindowSizeNumBox)).EndInit();
             this.meshModifiersNumBoxesContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.rotZNumBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.scaleZNumBox)).EndInit();
@@ -2315,7 +2406,14 @@
         private System.Windows.Forms.CheckBox flipYZAxisCheckbox;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.CheckBox useWorldOriginCheckbox;
-        private System.Windows.Forms.CheckBox fixMirroredUVsCheckbox;
+        private System.Windows.Forms.CheckBox flipUVsWCheckbox;
+        private System.Windows.Forms.CheckBox flipUVsZCheckbox;
+        private System.Windows.Forms.CheckBox flipUVsYCheckbox;
+        private System.Windows.Forms.CheckBox flipUVsXCheckbox;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.NumericUpDown flipUVsWindowSizeNumBox;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.CheckBox noWindowCheckbox;
+        private System.Windows.Forms.ToolTip windowSizeTooltip;
     }
 }

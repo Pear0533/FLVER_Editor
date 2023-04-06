@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -2660,20 +2661,51 @@ namespace FLVER_Editor
             CenterMeshToWorld(2);
         }
 
-        private void FixMirroredUVsCheckboxChecked(object sender, EventArgs e)
+        private void FlipUVsOnAxis(int axisIndex)
         {
             if (isSettingDefaultInfo) return;
             UpdateUndoState();
+            float wSize = float.Parse(flipUVsWindowSizeNumBox.Value.ToString(CultureInfo.InvariantCulture));
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
             {
                 for (int i = 0; i < v.Tangents.Count; ++i)
                 {
-                    if (v.UVs[0].X < 1.0f)
-                        v.Tangents[i] = new Vector4(-v.Tangents[i].X, -v.Tangents[i].Y, -v.Tangents[i].Z, v.Tangents[i].W);
+                    bool matchesWSize = noWindowCheckbox.Checked || v.UVs[0].X < wSize || v.UVs[0].Y < -wSize;
+                    if (!matchesWSize) continue;
+                    float flippedTanX = axisIndex == 0 ? -v.Tangents[i].X : v.Tangents[i].X;
+                    float flippedTanY = axisIndex == 1 ? -v.Tangents[i].Y : v.Tangents[i].Y;
+                    float flippedTanZ = axisIndex == 2 ? -v.Tangents[i].Z : v.Tangents[i].Z;
+                    float flippedTanW = axisIndex == 3 ? -v.Tangents[i].W : v.Tangents[i].W;
+                    v.Tangents[i] = new Vector4(flippedTanX, flippedTanY, flippedTanZ, flippedTanW);
                 }
             }
-            ShowInformationDialog("Successfully fixed model to work with mirrored UVs!");
+            ShowInformationDialog("Successfully flipped mesh UVs on the specified axis!");
             UpdateMesh();
+        }
+
+        private void FlipUVsXCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            FlipUVsOnAxis(0);
+        }
+
+        private void FlipUVsYCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            FlipUVsOnAxis(1);
+        }
+
+        private void FlipUVsZCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            FlipUVsOnAxis(2);
+        }
+
+        private void FlipUVsWCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            FlipUVsOnAxis(3);
+        }
+
+        private void NoWindowCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            flipUVsWindowSizeNumBox.Enabled = !noWindowCheckbox.Checked;
         }
 
         private enum TextureFormats
