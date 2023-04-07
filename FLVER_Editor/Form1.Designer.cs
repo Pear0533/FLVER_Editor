@@ -8,11 +8,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ribbon = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,10 +89,6 @@
             this.noWindowCheckbox = new System.Windows.Forms.CheckBox();
             this.label18 = new System.Windows.Forms.Label();
             this.flipUVsWindowSizeNumBox = new System.Windows.Forms.NumericUpDown();
-            this.flipUVsWCheckbox = new System.Windows.Forms.CheckBox();
-            this.flipUVsZCheckbox = new System.Windows.Forms.CheckBox();
-            this.flipUVsYCheckbox = new System.Windows.Forms.CheckBox();
-            this.flipUVsXCheckbox = new System.Windows.Forms.CheckBox();
             this.label17 = new System.Windows.Forms.Label();
             this.useWorldOriginCheckbox = new System.Windows.Forms.CheckBox();
             this.flipYZAxisCheckbox = new System.Windows.Forms.CheckBox();
@@ -195,6 +191,10 @@
             this.displayFemaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.solveAllMeshLODsTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.windowSizeTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.flipUVsWCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipUVsZCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipUVsYCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipUVsXCheckbox = new System.Windows.Forms.CheckBox();
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -496,7 +496,6 @@
             // 
             // autoSaveIntervalSelector
             // 
-            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -575,7 +574,6 @@
             // 
             // multiSelectMenuTextbox
             // 
-            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -689,7 +687,7 @@
             this.selectAllMeshesButton.Name = "selectAllMeshesButton";
             this.selectAllMeshesButton.Size = new System.Drawing.Size(40, 40);
             this.selectAllMeshesButton.TabIndex = 9;
-            this.selectAllMeshButtonTooltip.SetToolTip(this.selectAllMeshesButton, "Select All Mesh");
+            this.selectAllMeshButtonTooltip.SetToolTip(this.selectAllMeshesButton, "Select All Mesh (Ctrl+M)");
             this.selectAllMeshesButton.UseVisualStyleBackColor = true;
             this.selectAllMeshesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllMeshesButtonClicked);
             // 
@@ -703,7 +701,7 @@
             this.selectAllDummiesButton.Name = "selectAllDummiesButton";
             this.selectAllDummiesButton.Size = new System.Drawing.Size(40, 40);
             this.selectAllDummiesButton.TabIndex = 13;
-            this.selectAllDummiesButtonTooltip.SetToolTip(this.selectAllDummiesButton, "Select All Dummies");
+            this.selectAllDummiesButtonTooltip.SetToolTip(this.selectAllDummiesButton, "Select All Dummies (Ctrl+D)");
             this.selectAllDummiesButton.UseVisualStyleBackColor = true;
             this.selectAllDummiesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllDummiesButtonClicked);
             // 
@@ -788,8 +786,8 @@
             this.meshTable.Name = "meshTable";
             this.meshTable.RowHeadersVisible = false;
             this.meshTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle6;
             this.meshTable.Size = new System.Drawing.Size(492, 163);
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTable_CellContentClick);
@@ -907,8 +905,8 @@
             this.dummiesTable.Name = "dummiesTable";
             this.dummiesTable.RowHeadersVisible = false;
             this.dummiesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle7;
             this.dummiesTable.Size = new System.Drawing.Size(492, 171);
             this.dummiesTable.TabIndex = 12;
             this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTable_CellContentClick);
@@ -1082,50 +1080,6 @@
             0,
             65536});
             this.flipUVsWindowSizeNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
-            // 
-            // flipUVsWCheckbox
-            // 
-            this.flipUVsWCheckbox.AutoSize = true;
-            this.flipUVsWCheckbox.Location = new System.Drawing.Point(157, 184);
-            this.flipUVsWCheckbox.Name = "flipUVsWCheckbox";
-            this.flipUVsWCheckbox.Size = new System.Drawing.Size(37, 17);
-            this.flipUVsWCheckbox.TabIndex = 75;
-            this.flipUVsWCheckbox.Text = "W";
-            this.flipUVsWCheckbox.UseVisualStyleBackColor = true;
-            this.flipUVsWCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsWCheckbox_CheckedChanged);
-            // 
-            // flipUVsZCheckbox
-            // 
-            this.flipUVsZCheckbox.AutoSize = true;
-            this.flipUVsZCheckbox.Location = new System.Drawing.Point(125, 184);
-            this.flipUVsZCheckbox.Name = "flipUVsZCheckbox";
-            this.flipUVsZCheckbox.Size = new System.Drawing.Size(33, 17);
-            this.flipUVsZCheckbox.TabIndex = 74;
-            this.flipUVsZCheckbox.Text = "Z";
-            this.flipUVsZCheckbox.UseVisualStyleBackColor = true;
-            this.flipUVsZCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsZCheckbox_CheckedChanged);
-            // 
-            // flipUVsYCheckbox
-            // 
-            this.flipUVsYCheckbox.AutoSize = true;
-            this.flipUVsYCheckbox.Location = new System.Drawing.Point(92, 184);
-            this.flipUVsYCheckbox.Name = "flipUVsYCheckbox";
-            this.flipUVsYCheckbox.Size = new System.Drawing.Size(33, 17);
-            this.flipUVsYCheckbox.TabIndex = 73;
-            this.flipUVsYCheckbox.Text = "Y";
-            this.flipUVsYCheckbox.UseVisualStyleBackColor = true;
-            this.flipUVsYCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsYCheckbox_CheckedChanged);
-            // 
-            // flipUVsXCheckbox
-            // 
-            this.flipUVsXCheckbox.AutoSize = true;
-            this.flipUVsXCheckbox.Location = new System.Drawing.Point(59, 184);
-            this.flipUVsXCheckbox.Name = "flipUVsXCheckbox";
-            this.flipUVsXCheckbox.Size = new System.Drawing.Size(33, 17);
-            this.flipUVsXCheckbox.TabIndex = 72;
-            this.flipUVsXCheckbox.Text = "X";
-            this.flipUVsXCheckbox.UseVisualStyleBackColor = true;
-            this.flipUVsXCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsXCheckbox_CheckedChanged);
             // 
             // label17
             // 
@@ -1794,8 +1748,8 @@
             this.materialsTable.Name = "materialsTable";
             this.materialsTable.RowHeadersVisible = false;
             this.materialsTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle8;
             this.materialsTable.Size = new System.Drawing.Size(468, 394);
             this.materialsTable.TabIndex = 6;
             this.materialsTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableButtonClicked);
@@ -1947,8 +1901,8 @@
             this.texturesTable.Name = "texturesTable";
             this.texturesTable.RowHeadersVisible = false;
             this.texturesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle9;
             this.texturesTable.Size = new System.Drawing.Size(536, 394);
             this.texturesTable.TabIndex = 7;
             this.texturesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableButtonClicked);
@@ -2011,8 +1965,8 @@
             this.bonesTable.Name = "bonesTable";
             this.bonesTable.RowHeadersVisible = false;
             this.bonesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle10;
             this.bonesTable.Size = new System.Drawing.Size(1021, 456);
             this.bonesTable.TabIndex = 0;
             this.bonesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.BonesTableCellValueChanged);
@@ -2158,6 +2112,50 @@
             this.meshTabDataTableSelector.Size = new System.Drawing.Size(124, 21);
             this.meshTabDataTableSelector.TabIndex = 1;
             this.meshTabDataTableSelector.SelectedIndexChanged += new System.EventHandler(this.MeshTabDataTableSelector_SelectedIndexChanged);
+            // 
+            // flipUVsWCheckbox
+            // 
+            this.flipUVsWCheckbox.AutoSize = true;
+            this.flipUVsWCheckbox.Location = new System.Drawing.Point(157, 184);
+            this.flipUVsWCheckbox.Name = "flipUVsWCheckbox";
+            this.flipUVsWCheckbox.Size = new System.Drawing.Size(37, 17);
+            this.flipUVsWCheckbox.TabIndex = 75;
+            this.flipUVsWCheckbox.Text = "W";
+            this.flipUVsWCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsWCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsWCheckbox_CheckedChanged);
+            // 
+            // flipUVsZCheckbox
+            // 
+            this.flipUVsZCheckbox.AutoSize = true;
+            this.flipUVsZCheckbox.Location = new System.Drawing.Point(125, 184);
+            this.flipUVsZCheckbox.Name = "flipUVsZCheckbox";
+            this.flipUVsZCheckbox.Size = new System.Drawing.Size(33, 17);
+            this.flipUVsZCheckbox.TabIndex = 74;
+            this.flipUVsZCheckbox.Text = "Z";
+            this.flipUVsZCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsZCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsZCheckbox_CheckedChanged);
+            // 
+            // flipUVsYCheckbox
+            // 
+            this.flipUVsYCheckbox.AutoSize = true;
+            this.flipUVsYCheckbox.Location = new System.Drawing.Point(92, 184);
+            this.flipUVsYCheckbox.Name = "flipUVsYCheckbox";
+            this.flipUVsYCheckbox.Size = new System.Drawing.Size(33, 17);
+            this.flipUVsYCheckbox.TabIndex = 73;
+            this.flipUVsYCheckbox.Text = "Y";
+            this.flipUVsYCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsYCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsYCheckbox_CheckedChanged);
+            // 
+            // flipUVsXCheckbox
+            // 
+            this.flipUVsXCheckbox.AutoSize = true;
+            this.flipUVsXCheckbox.Location = new System.Drawing.Point(59, 184);
+            this.flipUVsXCheckbox.Name = "flipUVsXCheckbox";
+            this.flipUVsXCheckbox.Size = new System.Drawing.Size(33, 17);
+            this.flipUVsXCheckbox.TabIndex = 72;
+            this.flipUVsXCheckbox.Text = "X";
+            this.flipUVsXCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsXCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsXCheckbox_CheckedChanged);
             // 
             // MainWindow
             // 
@@ -2406,14 +2404,14 @@
         private System.Windows.Forms.CheckBox flipYZAxisCheckbox;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.CheckBox useWorldOriginCheckbox;
-        private System.Windows.Forms.CheckBox flipUVsWCheckbox;
-        private System.Windows.Forms.CheckBox flipUVsZCheckbox;
-        private System.Windows.Forms.CheckBox flipUVsYCheckbox;
-        private System.Windows.Forms.CheckBox flipUVsXCheckbox;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.NumericUpDown flipUVsWindowSizeNumBox;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.CheckBox noWindowCheckbox;
         private System.Windows.Forms.ToolTip windowSizeTooltip;
+        private System.Windows.Forms.CheckBox flipUVsWCheckbox;
+        private System.Windows.Forms.CheckBox flipUVsZCheckbox;
+        private System.Windows.Forms.CheckBox flipUVsYCheckbox;
+        private System.Windows.Forms.CheckBox flipUVsXCheckbox;
     }
 }

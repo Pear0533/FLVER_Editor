@@ -473,6 +473,23 @@ namespace FLVER_Editor
             selectedMaterialMeshIndices.Clear();
         }
 
+        private void ResetModifierCheckboxes()
+        {
+            isSettingDefaultInfo = true;
+            mirrorXCheckbox.Checked = false;
+            mirrorYCheckbox.Checked = false;
+            mirrorZCheckbox.Checked = false;
+            flipUVsXCheckbox.Checked = false;
+            flipUVsYCheckbox.Checked = false;
+            flipUVsZCheckbox.Checked = false;
+            flipUVsWCheckbox.Checked = false;
+            reverseFacesetsCheckbox.Checked = false;
+            reverseNormalsCheckbox.Checked = false;
+            toggleBackfacesCheckbox.Checked = false;
+            flipYZAxisCheckbox.Checked = false;
+            isSettingDefaultInfo = false;
+        }
+
         private void DeselectAllSelectedThings()
         {
             isSettingDefaultInfo = true;
@@ -912,10 +929,13 @@ namespace FLVER_Editor
 
         private void EnableDisableExtraModifierOptions()
         {
+            // NOTE: Determine which properties are appropriate for dummies to make use of
             reverseFacesetsCheckbox.Enabled = reverseNormalsCheckbox.Enabled = toggleBackfacesCheckbox.Enabled =
                 deleteFacesetsCheckbox.Enabled = uniformScaleCheckbox.Enabled = centerXButton.Enabled = centerYButton.Enabled =
                     centerZButton.Enabled = mirrorXCheckbox.Enabled = mirrorYCheckbox.Enabled = mirrorZCheckbox.Enabled =
-                        selectedMeshIndices.Count != 0;
+                        flipUVsXCheckbox.Enabled = flipUVsYCheckbox.Enabled = flipUVsZCheckbox.Enabled = flipUVsWCheckbox.Enabled =
+                            flipUVsWindowSizeNumBox.Enabled = noWindowCheckbox.Enabled = useWorldOriginCheckbox.Enabled =
+                                flipYZAxisCheckbox.Enabled = selectedMeshIndices.Count != 0;
         }
 
         private static List<int> UpdateIndicesList(DataGridView dataTable, List<int> indices, int columnIndex, int rowIndex, ref bool selectedFlag)
@@ -943,6 +963,7 @@ namespace FLVER_Editor
                 isSettingDefaultInfo = true;
                 bool hasIndices = selectedDummyIndices.Count != 0 || selectedMeshIndices.Count > 0;
                 ResetModifierNumBoxValues();
+                ResetModifierCheckboxes();
                 meshModifiersContainer.Enabled = hasIndices;
                 if (hasIndices)
                 {
@@ -963,6 +984,7 @@ namespace FLVER_Editor
                 isSettingDefaultInfo = true;
                 bool hasIndices = selectedMeshIndices.Count != 0 || selectedDummyIndices.Count > 0;
                 ResetModifierNumBoxValues();
+                ResetModifierCheckboxes();
                 meshModifiersContainer.Enabled = hasIndices;
                 if (hasIndices)
                 {
@@ -2284,7 +2306,7 @@ namespace FLVER_Editor
                     e.SuppressKeyPress = true;
                     ImportFLVERFile(true, "");
                     break;
-                case true when e.KeyCode == Keys.M:
+                case true when !e.Shift && e.KeyCode == Keys.M:
                     e.SuppressKeyPress = true;
                     MergeFLVERFile();
                     break;
@@ -2295,6 +2317,12 @@ namespace FLVER_Editor
                 case true when e.KeyCode == Keys.Y:
                     e.SuppressKeyPress = true;
                     Redo();
+                    break;
+                case true when e.Shift && e.KeyCode == Keys.M:
+                    ModifyAllThings(meshTable, 3);
+                    break;
+                case true when e.Shift && e.KeyCode == Keys.D:
+                    ModifyAllThings(dummiesTable, 4);
                     break;
             }
         }
