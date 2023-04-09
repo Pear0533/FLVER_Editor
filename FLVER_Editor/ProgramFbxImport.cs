@@ -148,12 +148,6 @@ namespace FLVER_Editor
                         if (m.Tangents.Count > i)
                         {
                             tangent = getMyV3D(m.Tangents[i]).normalize();
-                            if (uv1.X < 1.0f)
-                            {
-                                tangent.X = -tangent.X;
-                                tangent.Y = -tangent.Y;
-                                tangent.Z = -tangent.Z;
-                            }
                         }
                         else
                         {
