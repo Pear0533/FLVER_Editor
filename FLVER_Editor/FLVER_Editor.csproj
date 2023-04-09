@@ -137,9 +137,7 @@
     <None Include="Content\Segoe UI.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="dpresets.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="dpresets.json" />
     <None Include="femalebody.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

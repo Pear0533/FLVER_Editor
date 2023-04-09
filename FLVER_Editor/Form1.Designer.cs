@@ -8,11 +8,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ribbon = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -705,7 +705,7 @@
             this.selectAllMeshesButton.Name = "selectAllMeshesButton";
             this.selectAllMeshesButton.Size = new System.Drawing.Size(40, 40);
             this.selectAllMeshesButton.TabIndex = 9;
-            this.selectAllMeshButtonTooltip.SetToolTip(this.selectAllMeshesButton, "Select All Mesh (Ctrl+M)");
+            this.selectAllMeshButtonTooltip.SetToolTip(this.selectAllMeshesButton, "Select All Mesh (Ctrl+Shift+M)");
             this.selectAllMeshesButton.UseVisualStyleBackColor = true;
             this.selectAllMeshesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllMeshesButtonClicked);
             // 
@@ -719,7 +719,7 @@
             this.selectAllDummiesButton.Name = "selectAllDummiesButton";
             this.selectAllDummiesButton.Size = new System.Drawing.Size(40, 40);
             this.selectAllDummiesButton.TabIndex = 13;
-            this.selectAllDummiesButtonTooltip.SetToolTip(this.selectAllDummiesButton, "Select All Dummies (Ctrl+D)");
+            this.selectAllDummiesButtonTooltip.SetToolTip(this.selectAllDummiesButton, "Select All Dummies (Ctrl+Shift+D)");
             this.selectAllDummiesButton.UseVisualStyleBackColor = true;
             this.selectAllDummiesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllDummiesButtonClicked);
             // 
@@ -804,8 +804,8 @@
             this.meshTable.Name = "meshTable";
             this.meshTable.RowHeadersVisible = false;
             this.meshTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.meshTable.Size = new System.Drawing.Size(492, 163);
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTable_CellContentClick);
@@ -923,8 +923,8 @@
             this.dummiesTable.Name = "dummiesTable";
             this.dummiesTable.RowHeadersVisible = false;
             this.dummiesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.dummiesTable.Size = new System.Drawing.Size(492, 171);
             this.dummiesTable.TabIndex = 12;
             this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTable_CellContentClick);
@@ -1810,8 +1810,8 @@
             this.materialsTable.Name = "materialsTable";
             this.materialsTable.RowHeadersVisible = false;
             this.materialsTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
             this.materialsTable.Size = new System.Drawing.Size(468, 394);
             this.materialsTable.TabIndex = 6;
             this.materialsTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableButtonClicked);
@@ -1963,8 +1963,8 @@
             this.texturesTable.Name = "texturesTable";
             this.texturesTable.RowHeadersVisible = false;
             this.texturesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.texturesTable.Size = new System.Drawing.Size(536, 394);
             this.texturesTable.TabIndex = 7;
             this.texturesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableButtonClicked);
@@ -2027,8 +2027,8 @@
             this.bonesTable.Name = "bonesTable";
             this.bonesTable.RowHeadersVisible = false;
             this.bonesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
             this.bonesTable.Size = new System.Drawing.Size(1021, 456);
             this.bonesTable.TabIndex = 0;
             this.bonesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.BonesTableCellValueChanged);

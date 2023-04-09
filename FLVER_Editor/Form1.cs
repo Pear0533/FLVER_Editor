@@ -23,6 +23,8 @@ using PrimitiveType = Assimp.PrimitiveType;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 // ReSharper disable UnusedMember.Local
+// TODO: Investigate performance improvements for the viewer
+// TODO: Allow for hierarchal models to be opened/saved
 
 namespace FLVER_Editor
 {
@@ -101,6 +103,7 @@ namespace FLVER_Editor
             GloballyDisableDataTableColumnSorting();
             SetMaterialsTableView();
             SetDummyThickness();
+            SetAutoSaveInterval();
             SetAutoSaveInterval();
             SetAutoSaveEnabled();
             SetDummyIDsVisibility();
@@ -401,6 +404,7 @@ namespace FLVER_Editor
             if (vertexPosColorList.Count % 2 != 0) vertexPosColorList.Add(vertexPosColorList[vertexPosColorList.Count - 1]);
             for (int i = 0; i < bonePositionList.Count; ++i)
                 bonePositionList[i] = null;
+            // TODO: Investigate the maximum threshold on bones
             Transform3D[] bonesTransform = new Transform3D[flver.Bones.Count];
             for (int i = 0; i < flver.Bones.Count; ++i)
             {
@@ -473,27 +477,9 @@ namespace FLVER_Editor
             selectedMaterialMeshIndices.Clear();
         }
 
-        private void ResetModifierCheckboxes()
-        {
-            isSettingDefaultInfo = true;
-            mirrorXCheckbox.Checked = false;
-            mirrorYCheckbox.Checked = false;
-            mirrorZCheckbox.Checked = false;
-            flipUVsXCheckbox.Checked = false;
-            flipUVsYCheckbox.Checked = false;
-            flipUVsZCheckbox.Checked = false;
-            flipUVsWCheckbox.Checked = false;
-            reverseFacesetsCheckbox.Checked = false;
-            reverseNormalsCheckbox.Checked = false;
-            toggleBackfacesCheckbox.Checked = false;
-            flipYZAxisCheckbox.Checked = false;
-            isSettingDefaultInfo = false;
-        }
-
         private void DeselectAllSelectedThings()
         {
             isSettingDefaultInfo = true;
-            ResetModifierNumBoxValues();
             meshIsSelected = false;
             dummyIsSelected = false;
             meshIsHidden = false;
@@ -929,7 +915,7 @@ namespace FLVER_Editor
 
         private void EnableDisableExtraModifierOptions()
         {
-            // NOTE: Determine which properties are appropriate for dummies to make use of
+            // TODO: Determine which properties are appropriate for dummies to make use of
             reverseFacesetsCheckbox.Enabled = reverseNormalsCheckbox.Enabled = toggleBackfacesCheckbox.Enabled =
                 deleteFacesetsCheckbox.Enabled = uniformScaleCheckbox.Enabled = centerXButton.Enabled = centerYButton.Enabled =
                     centerZButton.Enabled = mirrorXCheckbox.Enabled = mirrorYCheckbox.Enabled = mirrorZCheckbox.Enabled =
@@ -963,7 +949,6 @@ namespace FLVER_Editor
                 isSettingDefaultInfo = true;
                 bool hasIndices = selectedDummyIndices.Count != 0 || selectedMeshIndices.Count > 0;
                 ResetModifierNumBoxValues();
-                ResetModifierCheckboxes();
                 meshModifiersContainer.Enabled = hasIndices;
                 if (hasIndices)
                 {
@@ -984,7 +969,6 @@ namespace FLVER_Editor
                 isSettingDefaultInfo = true;
                 bool hasIndices = selectedMeshIndices.Count != 0 || selectedDummyIndices.Count > 0;
                 ResetModifierNumBoxValues();
-                ResetModifierCheckboxes();
                 meshModifiersContainer.Enabled = hasIndices;
                 if (hasIndices)
                 {
@@ -1171,6 +1155,7 @@ namespace FLVER_Editor
             }
         }
 
+        // TODO: Make this function work on a percentage basis instead of the weird units it's using right now
         private static void ScaleThing(dynamic thing, float offset, IReadOnlyList<float> totals, int nbi, bool uniform, bool invert)
         {
             if (nbi >= 3 && nbi <= 5) nbi -= 3;
@@ -1248,6 +1233,7 @@ namespace FLVER_Editor
             return new[] { xSum / vertexCount, ySum / vertexCount, zSum / vertexCount };
         }
 
+        // TODO: Reflect the correct values when performing an undo/redo action
         private void ModifierNumBoxValueChanged(object sender, EventArgs e)
         {
             if (isSettingDefaultInfo) return;
@@ -2148,6 +2134,7 @@ namespace FLVER_Editor
             TopMost = false;
         }
 
+        // TODO: Investigate conflicts with detail overlay textures
         private void ApplyMATBINTexturesButtonClicked(object sender, EventArgs e)
         {
             if (matBinBndPath == null)
@@ -2209,6 +2196,7 @@ namespace FLVER_Editor
             WriteUserConfig();
         }
 
+        // TODO: Make mirroring to work from the center-point of selected mesh if the world origin option is deselected
         private void MirrorMesh(int nbi)
         {
             UpdateUndoState();
@@ -2275,6 +2263,7 @@ namespace FLVER_Editor
             if (!CheckAutoSaveInterval(autoSaveIntervalSelector.Text)) autoSaveIntervalSelector.Text = "";
         }
 
+        // TODO: Unrelated to this function: Use World Origin should be implemented in preferences
         private void AutoSaveIntervalSelectorKeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
@@ -2668,6 +2657,9 @@ namespace FLVER_Editor
             CenterMeshToWorld(2);
         }
 
+        // TODO: Determine the actual limit for the window size
+        // TODO: Investigate whether this is a reversible action
+        // TODO: Potentially needs fixing, make sure to test this feature
         private void FlipUVsOnAxis(int axisIndex)
         {
             if (isSettingDefaultInfo) return;
