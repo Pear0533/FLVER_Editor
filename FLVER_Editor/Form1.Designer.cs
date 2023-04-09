@@ -55,6 +55,7 @@
             this.multiSelectMenuTextbox = new System.Windows.Forms.ToolStripTextBox();
             this.meshTabPage = new System.Windows.Forms.TabPage();
             this.functionsGroupBox = new System.Windows.Forms.GroupBox();
+            this.resetAllMeshButton = new System.Windows.Forms.Button();
             this.solveAllMeshLODsButton = new System.Windows.Forms.Button();
             this.displayFemaleBodyButton = new System.Windows.Forms.Button();
             this.displayMaleBodyButton = new System.Windows.Forms.Button();
@@ -89,6 +90,10 @@
             this.noWindowCheckbox = new System.Windows.Forms.CheckBox();
             this.label18 = new System.Windows.Forms.Label();
             this.flipUVsWindowSizeNumBox = new System.Windows.Forms.NumericUpDown();
+            this.flipUVsWCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipUVsZCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipUVsYCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipUVsXCheckbox = new System.Windows.Forms.CheckBox();
             this.label17 = new System.Windows.Forms.Label();
             this.useWorldOriginCheckbox = new System.Windows.Forms.CheckBox();
             this.flipYZAxisCheckbox = new System.Windows.Forms.CheckBox();
@@ -191,10 +196,6 @@
             this.displayFemaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.solveAllMeshLODsTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.windowSizeTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.flipUVsWCheckbox = new System.Windows.Forms.CheckBox();
-            this.flipUVsZCheckbox = new System.Windows.Forms.CheckBox();
-            this.flipUVsYCheckbox = new System.Windows.Forms.CheckBox();
-            this.flipUVsXCheckbox = new System.Windows.Forms.CheckBox();
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -496,6 +497,7 @@
             // 
             // autoSaveIntervalSelector
             // 
+            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -574,6 +576,7 @@
             // 
             // multiSelectMenuTextbox
             // 
+            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -592,6 +595,7 @@
             // 
             this.functionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.functionsGroupBox.Controls.Add(this.resetAllMeshButton);
             this.functionsGroupBox.Controls.Add(this.solveAllMeshLODsButton);
             this.functionsGroupBox.Controls.Add(this.displayFemaleBodyButton);
             this.functionsGroupBox.Controls.Add(this.displayMaleBodyButton);
@@ -607,13 +611,27 @@
             this.functionsGroupBox.TabStop = false;
             this.functionsGroupBox.Text = "Functions";
             // 
+            // resetAllMeshButton
+            // 
+            this.resetAllMeshButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.reset_mesh_icon;
+            this.resetAllMeshButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.resetAllMeshButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.resetAllMeshButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.resetAllMeshButton.Location = new System.Drawing.Point(179, 16);
+            this.resetAllMeshButton.Name = "resetAllMeshButton";
+            this.resetAllMeshButton.Size = new System.Drawing.Size(40, 40);
+            this.resetAllMeshButton.TabIndex = 20;
+            this.solveAllMeshLODsTooltip.SetToolTip(this.resetAllMeshButton, "Reset All Mesh");
+            this.resetAllMeshButton.UseVisualStyleBackColor = true;
+            this.resetAllMeshButton.Click += new System.EventHandler(this.ResetAllMeshButton_Click);
+            // 
             // solveAllMeshLODsButton
             // 
             this.solveAllMeshLODsButton.BackgroundImage = global::FLVER_Editor.Properties.Resources.solve_all_mesh_lods_icon;
             this.solveAllMeshLODsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.solveAllMeshLODsButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
             this.solveAllMeshLODsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.solveAllMeshLODsButton.Location = new System.Drawing.Point(223, 16);
+            this.solveAllMeshLODsButton.Location = new System.Drawing.Point(265, 16);
             this.solveAllMeshLODsButton.Name = "solveAllMeshLODsButton";
             this.solveAllMeshLODsButton.Size = new System.Drawing.Size(40, 40);
             this.solveAllMeshLODsButton.TabIndex = 19;
@@ -627,7 +645,7 @@
             this.displayFemaleBodyButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.displayFemaleBodyButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
             this.displayFemaleBodyButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.displayFemaleBodyButton.Location = new System.Drawing.Point(311, 16);
+            this.displayFemaleBodyButton.Location = new System.Drawing.Point(351, 16);
             this.displayFemaleBodyButton.Name = "displayFemaleBodyButton";
             this.displayFemaleBodyButton.Size = new System.Drawing.Size(40, 40);
             this.displayFemaleBodyButton.TabIndex = 18;
@@ -641,7 +659,7 @@
             this.displayMaleBodyButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.displayMaleBodyButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
             this.displayMaleBodyButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.displayMaleBodyButton.Location = new System.Drawing.Point(267, 16);
+            this.displayMaleBodyButton.Location = new System.Drawing.Point(308, 16);
             this.displayMaleBodyButton.Name = "displayMaleBodyButton";
             this.displayMaleBodyButton.Size = new System.Drawing.Size(40, 40);
             this.displayMaleBodyButton.TabIndex = 17;
@@ -655,7 +673,7 @@
             this.setAllBBsMaxSizeButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.setAllBBsMaxSizeButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
             this.setAllBBsMaxSizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.setAllBBsMaxSizeButton.Location = new System.Drawing.Point(179, 16);
+            this.setAllBBsMaxSizeButton.Location = new System.Drawing.Point(222, 16);
             this.setAllBBsMaxSizeButton.Name = "setAllBBsMaxSizeButton";
             this.setAllBBsMaxSizeButton.Size = new System.Drawing.Size(40, 40);
             this.setAllBBsMaxSizeButton.TabIndex = 15;
@@ -1080,6 +1098,50 @@
             0,
             65536});
             this.flipUVsWindowSizeNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
+            // 
+            // flipUVsWCheckbox
+            // 
+            this.flipUVsWCheckbox.AutoSize = true;
+            this.flipUVsWCheckbox.Location = new System.Drawing.Point(157, 184);
+            this.flipUVsWCheckbox.Name = "flipUVsWCheckbox";
+            this.flipUVsWCheckbox.Size = new System.Drawing.Size(37, 17);
+            this.flipUVsWCheckbox.TabIndex = 75;
+            this.flipUVsWCheckbox.Text = "W";
+            this.flipUVsWCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsWCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsWCheckbox_CheckedChanged);
+            // 
+            // flipUVsZCheckbox
+            // 
+            this.flipUVsZCheckbox.AutoSize = true;
+            this.flipUVsZCheckbox.Location = new System.Drawing.Point(125, 184);
+            this.flipUVsZCheckbox.Name = "flipUVsZCheckbox";
+            this.flipUVsZCheckbox.Size = new System.Drawing.Size(33, 17);
+            this.flipUVsZCheckbox.TabIndex = 74;
+            this.flipUVsZCheckbox.Text = "Z";
+            this.flipUVsZCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsZCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsZCheckbox_CheckedChanged);
+            // 
+            // flipUVsYCheckbox
+            // 
+            this.flipUVsYCheckbox.AutoSize = true;
+            this.flipUVsYCheckbox.Location = new System.Drawing.Point(92, 184);
+            this.flipUVsYCheckbox.Name = "flipUVsYCheckbox";
+            this.flipUVsYCheckbox.Size = new System.Drawing.Size(33, 17);
+            this.flipUVsYCheckbox.TabIndex = 73;
+            this.flipUVsYCheckbox.Text = "Y";
+            this.flipUVsYCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsYCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsYCheckbox_CheckedChanged);
+            // 
+            // flipUVsXCheckbox
+            // 
+            this.flipUVsXCheckbox.AutoSize = true;
+            this.flipUVsXCheckbox.Location = new System.Drawing.Point(59, 184);
+            this.flipUVsXCheckbox.Name = "flipUVsXCheckbox";
+            this.flipUVsXCheckbox.Size = new System.Drawing.Size(33, 17);
+            this.flipUVsXCheckbox.TabIndex = 72;
+            this.flipUVsXCheckbox.Text = "X";
+            this.flipUVsXCheckbox.UseVisualStyleBackColor = true;
+            this.flipUVsXCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsXCheckbox_CheckedChanged);
             // 
             // label17
             // 
@@ -2113,50 +2175,6 @@
             this.meshTabDataTableSelector.TabIndex = 1;
             this.meshTabDataTableSelector.SelectedIndexChanged += new System.EventHandler(this.MeshTabDataTableSelector_SelectedIndexChanged);
             // 
-            // flipUVsWCheckbox
-            // 
-            this.flipUVsWCheckbox.AutoSize = true;
-            this.flipUVsWCheckbox.Location = new System.Drawing.Point(157, 184);
-            this.flipUVsWCheckbox.Name = "flipUVsWCheckbox";
-            this.flipUVsWCheckbox.Size = new System.Drawing.Size(37, 17);
-            this.flipUVsWCheckbox.TabIndex = 75;
-            this.flipUVsWCheckbox.Text = "W";
-            this.flipUVsWCheckbox.UseVisualStyleBackColor = true;
-            this.flipUVsWCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsWCheckbox_CheckedChanged);
-            // 
-            // flipUVsZCheckbox
-            // 
-            this.flipUVsZCheckbox.AutoSize = true;
-            this.flipUVsZCheckbox.Location = new System.Drawing.Point(125, 184);
-            this.flipUVsZCheckbox.Name = "flipUVsZCheckbox";
-            this.flipUVsZCheckbox.Size = new System.Drawing.Size(33, 17);
-            this.flipUVsZCheckbox.TabIndex = 74;
-            this.flipUVsZCheckbox.Text = "Z";
-            this.flipUVsZCheckbox.UseVisualStyleBackColor = true;
-            this.flipUVsZCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsZCheckbox_CheckedChanged);
-            // 
-            // flipUVsYCheckbox
-            // 
-            this.flipUVsYCheckbox.AutoSize = true;
-            this.flipUVsYCheckbox.Location = new System.Drawing.Point(92, 184);
-            this.flipUVsYCheckbox.Name = "flipUVsYCheckbox";
-            this.flipUVsYCheckbox.Size = new System.Drawing.Size(33, 17);
-            this.flipUVsYCheckbox.TabIndex = 73;
-            this.flipUVsYCheckbox.Text = "Y";
-            this.flipUVsYCheckbox.UseVisualStyleBackColor = true;
-            this.flipUVsYCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsYCheckbox_CheckedChanged);
-            // 
-            // flipUVsXCheckbox
-            // 
-            this.flipUVsXCheckbox.AutoSize = true;
-            this.flipUVsXCheckbox.Location = new System.Drawing.Point(59, 184);
-            this.flipUVsXCheckbox.Name = "flipUVsXCheckbox";
-            this.flipUVsXCheckbox.Size = new System.Drawing.Size(33, 17);
-            this.flipUVsXCheckbox.TabIndex = 72;
-            this.flipUVsXCheckbox.Text = "X";
-            this.flipUVsXCheckbox.UseVisualStyleBackColor = true;
-            this.flipUVsXCheckbox.CheckedChanged += new System.EventHandler(this.FlipUVsXCheckbox_CheckedChanged);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2413,5 +2431,6 @@
         private System.Windows.Forms.CheckBox flipUVsZCheckbox;
         private System.Windows.Forms.CheckBox flipUVsYCheckbox;
         private System.Windows.Forms.CheckBox flipUVsXCheckbox;
+        private System.Windows.Forms.Button resetAllMeshButton;
     }
 }

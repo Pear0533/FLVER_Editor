@@ -93,6 +93,16 @@ namespace FLVER_Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap reset_mesh_icon {
+            get {
+                object obj = ResourceManager.GetObject("reset_mesh_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap select_all_dummies_icon {
             get {
                 object obj = ResourceManager.GetObject("select_all_dummies_icon", resourceCulture);

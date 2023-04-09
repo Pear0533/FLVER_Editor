@@ -175,6 +175,7 @@
     <None Include="icons\solve_all_bbs_max_size_icon.png" />
     <None Include="icons\hide_all_mesh_icon.png" />
     <None Include="icons\solve_all_mesh_lods_icon.png" />
+    <None Include="icons\reset_mesh_icon.png" />
     <Content Include="icon_lSi_icon.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
