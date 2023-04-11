@@ -91,6 +91,7 @@ namespace FLVER_Editor
         private static bool dispMaleBody;
         private static bool dispFemaleBody;
         private static bool stopAutoInternalIndexOverride;
+        private static bool useWorldOrigin;
 
         public MainWindow()
         {
@@ -106,6 +107,7 @@ namespace FLVER_Editor
             SetAutoSaveInterval();
             SetAutoSaveEnabled();
             SetDummyIDsVisibility();
+            SetUseWorldOrigin();
             EnableDarkTheme();
             ImportBodyModels();
             tabWindow.SelectedTab = meshTabPage;
@@ -164,6 +166,13 @@ namespace FLVER_Editor
         public static void WriteUserConfig()
         {
             File.WriteAllText(userConfigJsonPath, JsonConvert.SerializeObject(userConfigJson, Formatting.Indented));
+        }
+
+        private void SetUseWorldOrigin()
+        {
+            string useWorldOriginStr = userConfigJson["UseWorldOrigin"]?.ToString();
+            if (useWorldOriginStr == null) return;
+            useWorldOrigin = bool.Parse(useWorldOriginStr);
         }
 
         private void SetAutoSaveEnabled()
@@ -918,7 +927,7 @@ namespace FLVER_Editor
             reverseFacesetsCheckbox.Enabled = reverseNormalsCheckbox.Enabled = toggleBackfacesCheckbox.Enabled =
                 deleteFacesetsCheckbox.Enabled = uniformScaleCheckbox.Enabled = centerXButton.Enabled = centerYButton.Enabled =
                     centerZButton.Enabled = mirrorXCheckbox.Enabled = mirrorYCheckbox.Enabled = mirrorZCheckbox.Enabled =
-                        useWorldOriginCheckbox.Enabled = flipYZAxisCheckbox.Enabled = selectedMeshIndices.Count != 0;
+                        flipYZAxisCheckbox.Enabled = selectedMeshIndices.Count != 0;
         }
 
         private static List<int> UpdateIndicesList(DataGridView dataTable, List<int> indices, int columnIndex, int rowIndex, ref bool selectedFlag)
@@ -1214,7 +1223,7 @@ namespace FLVER_Editor
 
         private float[] CalculateMeshTotals()
         {
-            if (useWorldOriginCheckbox.Checked) return new float[3];
+            if (useWorldOrigin) return new float[3];
             float vertexCount = 0, xSum = 0, ySum = 0, zSum = 0;
             foreach (int i in selectedMeshIndices)
             {
@@ -2198,12 +2207,12 @@ namespace FLVER_Editor
             float[] totals = CalculateMeshTotals();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
             {
-                v.Positions[0] = new System.Numerics.Vector3((v.Positions[0].X - (nbi == 0 && !useWorldOriginCheckbox.Checked ? totals[0] : 0)) * (nbi == 0 ? -1 : 1),
-                    (v.Positions[0].Y - (nbi == 1 && !useWorldOriginCheckbox.Checked ? totals[1] : 0)) * (nbi == 1 ? -1 : 1),
-                    (v.Positions[0].Z - (nbi == 2 && !useWorldOriginCheckbox.Checked ? totals[2] : 0)) * (nbi == 2 ? -1 : 1));
-                v.Positions[0] = new System.Numerics.Vector3(v.Positions[0].X + (nbi == 0 && !useWorldOriginCheckbox.Checked ? totals[0] : 0),
-                    v.Positions[0].Y + (nbi == 1 && !useWorldOriginCheckbox.Checked ? totals[1] : 0),
-                    v.Positions[0].Z + (nbi == 2 && !useWorldOriginCheckbox.Checked ? totals[2] : 0));
+                v.Positions[0] = new System.Numerics.Vector3((v.Positions[0].X - (nbi == 0 && !useWorldOrigin ? totals[0] : 0)) * (nbi == 0 ? -1 : 1),
+                    (v.Positions[0].Y - (nbi == 1 && !useWorldOrigin ? totals[1] : 0)) * (nbi == 1 ? -1 : 1),
+                    (v.Positions[0].Z - (nbi == 2 && !useWorldOrigin ? totals[2] : 0)) * (nbi == 2 ? -1 : 1));
+                v.Positions[0] = new System.Numerics.Vector3(v.Positions[0].X + (nbi == 0 && !useWorldOrigin ? totals[0] : 0),
+                    v.Positions[0].Y + (nbi == 1 && !useWorldOrigin ? totals[1] : 0),
+                    v.Positions[0].Z + (nbi == 2 && !useWorldOrigin ? totals[2] : 0));
                 v.Normals[0] = new Vector4(v.Normals[0].X * (nbi == 0 ? -1 : 1),
                     v.Normals[0].Y * (nbi == 1 ? -1 : 1), v.Normals[0].Z * (nbi == 2 ? -1 : 1), -1);
                 v.Tangents[0] = new Vector4(v.Tangents[0].X * (nbi == 0 ? -1 : 1),
@@ -2263,7 +2272,6 @@ namespace FLVER_Editor
             if (!CheckAutoSaveInterval(autoSaveIntervalSelector.Text)) autoSaveIntervalSelector.Text = "";
         }
 
-        // TODO: Unrelated to this function: Use World Origin should be implemented in preferences
         private void AutoSaveIntervalSelectorKeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode != Keys.Enter) return;
@@ -2835,6 +2843,14 @@ namespace FLVER_Editor
 
                 public Vector2 Unk14 { get; set; }
             }
+        }
+
+        private void ToggleUseWorldOriginToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            useWorldOrigin = !useWorldOrigin;
+            userConfigJson["UseWorldOrigin"] = useWorldOrigin;
+            WriteUserConfig();
+            ShowInformationDialog("Successfully toggled using the world origin for transformations!");
         }
     }
 }

@@ -8,11 +8,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ribbon = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -87,7 +87,6 @@
             this.label5 = new System.Windows.Forms.Label();
             this.dummyPresetsSelector = new System.Windows.Forms.ComboBox();
             this.meshModifiersContainer = new System.Windows.Forms.GroupBox();
-            this.useWorldOriginCheckbox = new System.Windows.Forms.CheckBox();
             this.flipYZAxisCheckbox = new System.Windows.Forms.CheckBox();
             this.label16 = new System.Windows.Forms.Label();
             this.centerZButton = new System.Windows.Forms.Button();
@@ -188,6 +187,7 @@
             this.displayFemaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.solveAllMeshLODsTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.windowSizeTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.toggleUseWorldOriginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -465,7 +465,8 @@
             this.toggleTextureRefreshToolStripMenuItem,
             this.toggleAutoSaveToolStripMenuItem,
             this.dummyThicknessToolStripMenuItem,
-            this.toggleDummyIDsVisibilityToolStripMenuItem});
+            this.toggleDummyIDsVisibilityToolStripMenuItem,
+            this.toggleUseWorldOriginToolStripMenuItem});
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
             this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(80, 22);
             this.preferencesToolStripMenuItem.Text = "Preferences";
@@ -793,8 +794,8 @@
             this.meshTable.Name = "meshTable";
             this.meshTable.RowHeadersVisible = false;
             this.meshTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle11;
             this.meshTable.Size = new System.Drawing.Size(492, 163);
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTable_CellContentClick);
@@ -912,8 +913,8 @@
             this.dummiesTable.Name = "dummiesTable";
             this.dummiesTable.RowHeadersVisible = false;
             this.dummiesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle12;
             this.dummiesTable.Size = new System.Drawing.Size(492, 171);
             this.dummiesTable.TabIndex = 12;
             this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTable_CellContentClick);
@@ -1004,7 +1005,6 @@
             // 
             // meshModifiersContainer
             // 
-            this.meshModifiersContainer.Controls.Add(this.useWorldOriginCheckbox);
             this.meshModifiersContainer.Controls.Add(this.flipYZAxisCheckbox);
             this.meshModifiersContainer.Controls.Add(this.label16);
             this.meshModifiersContainer.Controls.Add(this.centerZButton);
@@ -1039,16 +1039,6 @@
             this.meshModifiersContainer.TabIndex = 12;
             this.meshModifiersContainer.TabStop = false;
             this.meshModifiersContainer.Text = "Modifiers";
-            // 
-            // useWorldOriginCheckbox
-            // 
-            this.useWorldOriginCheckbox.AutoSize = true;
-            this.useWorldOriginCheckbox.Location = new System.Drawing.Point(175, 130);
-            this.useWorldOriginCheckbox.Name = "useWorldOriginCheckbox";
-            this.useWorldOriginCheckbox.Size = new System.Drawing.Size(106, 17);
-            this.useWorldOriginCheckbox.TabIndex = 70;
-            this.useWorldOriginCheckbox.Text = "Use World Origin";
-            this.useWorldOriginCheckbox.UseVisualStyleBackColor = true;
             // 
             // flipYZAxisCheckbox
             // 
@@ -1698,8 +1688,8 @@
             this.materialsTable.Name = "materialsTable";
             this.materialsTable.RowHeadersVisible = false;
             this.materialsTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle13;
             this.materialsTable.Size = new System.Drawing.Size(468, 394);
             this.materialsTable.TabIndex = 6;
             this.materialsTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableButtonClicked);
@@ -1851,8 +1841,8 @@
             this.texturesTable.Name = "texturesTable";
             this.texturesTable.RowHeadersVisible = false;
             this.texturesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle14;
             this.texturesTable.Size = new System.Drawing.Size(536, 394);
             this.texturesTable.TabIndex = 7;
             this.texturesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableButtonClicked);
@@ -1915,8 +1905,8 @@
             this.bonesTable.Name = "bonesTable";
             this.bonesTable.RowHeadersVisible = false;
             this.bonesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle15;
             this.bonesTable.Size = new System.Drawing.Size(1021, 456);
             this.bonesTable.TabIndex = 0;
             this.bonesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.BonesTableCellValueChanged);
@@ -2062,6 +2052,13 @@
             this.meshTabDataTableSelector.Size = new System.Drawing.Size(124, 21);
             this.meshTabDataTableSelector.TabIndex = 1;
             this.meshTabDataTableSelector.SelectedIndexChanged += new System.EventHandler(this.MeshTabDataTableSelector_SelectedIndexChanged);
+            // 
+            // toggleUseWorldOriginToolStripMenuItem
+            // 
+            this.toggleUseWorldOriginToolStripMenuItem.Name = "toggleUseWorldOriginToolStripMenuItem";
+            this.toggleUseWorldOriginToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.toggleUseWorldOriginToolStripMenuItem.Text = "Toggle Use World Origin";
+            this.toggleUseWorldOriginToolStripMenuItem.Click += new System.EventHandler(this.ToggleUseWorldOriginToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -2308,8 +2305,8 @@
         private System.Windows.Forms.Button centerYButton;
         private System.Windows.Forms.CheckBox flipYZAxisCheckbox;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.CheckBox useWorldOriginCheckbox;
         private System.Windows.Forms.ToolTip windowSizeTooltip;
         private System.Windows.Forms.Button resetAllMeshButton;
+        private System.Windows.Forms.ToolStripMenuItem toggleUseWorldOriginToolStripMenuItem;
     }
 }
