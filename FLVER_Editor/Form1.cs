@@ -1152,7 +1152,6 @@ namespace FLVER_Editor
             }
         }
 
-        // TODO: Make this function work on a percentage basis instead of the weird units it's using right now
         private static void ScaleThing(dynamic thing, float offset, IReadOnlyList<float> totals, int nbi, bool uniform, bool invert)
         {
             if (nbi >= 3 && nbi <= 5) nbi -= 3;
@@ -1202,7 +1201,7 @@ namespace FLVER_Editor
                 case 3:
                 case 4:
                 case 5:
-                    ScaleThing(thing, offset * 2, totals, nbi, uniformScaleCheckbox.Checked, false);
+                    ScaleThing(thing, offset, totals, nbi, uniformScaleCheckbox.Checked, false);
                     if (uniformScaleCheckbox.Checked && selectedMeshIndices.Count != 0) scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = newValue;
                     break;
                 case 6:
@@ -1240,7 +1239,7 @@ namespace FLVER_Editor
                 + meshModifiersNumBoxesContainer.GetColumn(numBox);
             float newNumVal = (float)(numBox == rotXNumBox || numBox == rotYNumBox || numBox == rotZNumBox ? ToRadians(numBox.Value) : numBox.Value);
             if (numBox == rotYNumBox && selectedMeshIndices.Count != 0) newNumVal = -newNumVal;
-            if (numBox == scaleXNumBox || numBox == scaleYNumBox || numBox == scaleZNumBox) newNumVal = (float)(numBox.Value / 300);
+            if (numBox == scaleXNumBox || numBox == scaleYNumBox || numBox == scaleZNumBox) newNumVal = (float)(numBox.Value / 100);
             float offset = newNumVal < prevNumVal ?
                 -Math.Abs(newNumVal - prevNumVal)
                 : Math.Abs(newNumVal - prevNumVal);
@@ -1258,7 +1257,7 @@ namespace FLVER_Editor
             NumericUpDown numBox = (NumericUpDown)sender;
             prevNumVal = (float)(numBox == rotXNumBox || numBox == rotYNumBox || numBox == rotZNumBox ? ToRadians(numBox.Value) : numBox.Value);
             if (numBox == rotYNumBox && selectedMeshIndices.Count != 0) prevNumVal = -prevNumVal;
-            if (numBox == scaleXNumBox || numBox == scaleYNumBox || numBox == scaleZNumBox) prevNumVal = (float)(numBox.Value / 300);
+            if (numBox == scaleXNumBox || numBox == scaleYNumBox || numBox == scaleZNumBox) prevNumVal = (float)(numBox.Value / 100);
         }
 
         private void MaterialsTableOkButtonClicked(object sender, MouseEventArgs e)
