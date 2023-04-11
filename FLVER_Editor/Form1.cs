@@ -102,6 +102,7 @@ namespace FLVER_Editor
             SetDefaultScreenPosition();
             GloballyDisableDataTableColumnSorting();
             SetMaterialsTableView();
+            SetTextureRefreshEnabled();
             SetDummyThickness();
             SetAutoSaveInterval();
             SetAutoSaveInterval();
@@ -148,6 +149,14 @@ namespace FLVER_Editor
         private void SetVersionString()
         {
             versionStr.Text += $@" {version}";
+        }
+
+
+        private void SetTextureRefreshEnabled()
+        {
+            string textureRefreshStr = userConfigJson["TextureRefreshing"]?.ToString();
+            if (textureRefreshStr == null) return;
+            textureRefreshEnabled = bool.Parse(textureRefreshStr);
         }
 
         private void SetDefaultScreenPosition()
@@ -2067,16 +2076,15 @@ namespace FLVER_Editor
 
         private void ToggleTextureRefreshButtonClicked(object sender, EventArgs e)
         {
+            textureRefreshEnabled = !textureRefreshEnabled;
+            userConfigJson["TextureRefreshing"] = textureRefreshEnabled;
+            WriteUserConfig();
             if (textureRefreshEnabled)
-            {
-                ShowInformationDialog("Texture refreshing is now disabled to help improve performance!");
-            }
-            else
             {
                 ShowInformationDialog("Texture refreshing is now enabled!");
                 viewer.RefreshTextures();
             }
-            textureRefreshEnabled = !textureRefreshEnabled;
+            else ShowInformationDialog("Texture refreshing is now disabled to help improve performance!");
         }
 
         private void MergePresets(bool materialPresetsFile)
