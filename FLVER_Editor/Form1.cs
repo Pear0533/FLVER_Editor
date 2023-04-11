@@ -2192,14 +2192,18 @@ namespace FLVER_Editor
             WriteUserConfig();
         }
 
-        // TODO: Make mirroring to work from the center-point of selected mesh if the world origin option is deselected
         private void MirrorMesh(int nbi)
         {
             UpdateUndoState();
+            float[] totals = CalculateMeshTotals();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
             {
-                v.Positions[0] = new System.Numerics.Vector3(v.Positions[0].X * (nbi == 0 ? -1 : 1),
-                    v.Positions[0].Y * (nbi == 1 ? -1 : 1), v.Positions[0].Z * (nbi == 2 ? -1 : 1));
+                v.Positions[0] = new System.Numerics.Vector3((v.Positions[0].X - (nbi == 0 && !useWorldOriginCheckbox.Checked ? totals[0] : 0)) * (nbi == 0 ? -1 : 1),
+                    (v.Positions[0].Y - (nbi == 1 && !useWorldOriginCheckbox.Checked ? totals[1] : 0)) * (nbi == 1 ? -1 : 1),
+                    (v.Positions[0].Z - (nbi == 2 && !useWorldOriginCheckbox.Checked ? totals[2] : 0)) * (nbi == 2 ? -1 : 1));
+                v.Positions[0] = new System.Numerics.Vector3(v.Positions[0].X + (nbi == 0 && !useWorldOriginCheckbox.Checked ? totals[0] : 0),
+                    v.Positions[0].Y + (nbi == 1 && !useWorldOriginCheckbox.Checked ? totals[1] : 0),
+                    v.Positions[0].Z + (nbi == 2 && !useWorldOriginCheckbox.Checked ? totals[2] : 0));
                 v.Normals[0] = new Vector4(v.Normals[0].X * (nbi == 0 ? -1 : 1),
                     v.Normals[0].Y * (nbi == 1 ? -1 : 1), v.Normals[0].Z * (nbi == 2 ? -1 : 1), -1);
                 v.Tangents[0] = new Vector4(v.Tangents[0].X * (nbi == 0 ? -1 : 1),
