@@ -1734,7 +1734,7 @@ namespace FLVER_Editor
             b.BoundingBoxMax = new System.Numerics.Vector3(maxX, maxY, maxZ);
         }
 
-        private void SolveAllBBsButtonClicked(object sender, MouseEventArgs e)
+        private void SolveAllBBs()
         {
             UpdateUndoState();
             flver.Header.BoundingBoxMin = new System.Numerics.Vector3();
@@ -1762,6 +1762,11 @@ namespace FLVER_Editor
             }
             ShowInformationDialog("Solved all bone and mesh bounding boxes!");
             UpdateMesh();
+        }
+
+        private void SolveAllBBsButtonClicked(object sender, MouseEventArgs e)
+        {
+            SolveAllBBs();
         }
 
         private void DummiesTableOKButtonClicked(object sender, MouseEventArgs e)
@@ -2098,7 +2103,7 @@ namespace FLVER_Editor
             MergePresets(false);
         }
 
-        private void SetAllBBsMaxSizeButtonClicked(object sender, EventArgs e)
+        private void SetAllBBsMaxSize()
         {
             UpdateUndoState();
             System.Numerics.Vector3 minVector = new System.Numerics.Vector3(0, 0, 0);
@@ -2112,6 +2117,11 @@ namespace FLVER_Editor
             }
             ShowInformationDialog("Set all mesh bounding boxes to maximum size!");
             UpdateMesh();
+        }
+
+        private void SetAllBBsMaxSizeButtonClicked(object sender, EventArgs e)
+        {
+            SetAllBBsMaxSize();
         }
 
         private void TabWindowDrawItem(object sender, DrawItemEventArgs e)
@@ -2321,6 +2331,27 @@ namespace FLVER_Editor
                 case true when e.Shift && e.KeyCode == Keys.D:
                     ModifyAllThings(dummiesTable, 4);
                     break;
+                case true when e.Shift && e.KeyCode == Keys.H:
+                    ModifyAllThings(meshTable, 4);
+                    break;
+                case true when e.Shift && e.KeyCode == Keys.B:
+                    SolveAllBBs();
+                    break;
+                case true when e.Shift && e.KeyCode == Keys.R:
+                    ResetAllMesh();
+                    break;
+                case true when e.Shift && e.KeyCode == Keys.A:
+                    SetAllBBsMaxSize();
+                    break;
+                case true when e.Shift && e.KeyCode == Keys.L:
+                    SolveAllMeshLODs();
+                    break;
+                case true when e.Shift && e.KeyCode == Keys.G:
+                    DisplayMaleBody();
+                    break;
+                case true when e.Shift && e.KeyCode == Keys.F:
+                    DisplayFemaleBody();
+                    break;
             }
         }
 
@@ -2502,16 +2533,26 @@ namespace FLVER_Editor
             ShowInformationDialog(dispBodyModel ? "Body model is now visible!" : "Body model is now hidden!");
         }
 
-        private void DisplayMaleBodyButton_Click(object sender, EventArgs e)
+        private static void DisplayMaleBody()
         {
             dispFemaleBody = false;
             ToggleBodyModelDisplay(ref dispMaleBody);
         }
 
-        private void DisplayFemaleBodyButton_Click(object sender, EventArgs e)
+        private void DisplayMaleBodyButton_Click(object sender, EventArgs e)
+        {
+            DisplayMaleBody();
+        }
+
+        private static void DisplayFemaleBody()
         {
             dispMaleBody = false;
             ToggleBodyModelDisplay(ref dispFemaleBody);
+        }
+
+        private void DisplayFemaleBodyButton_Click(object sender, EventArgs e)
+        {
+            DisplayFemaleBody();
         }
 
         private void MeshTable_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -2533,7 +2574,7 @@ namespace FLVER_Editor
             m.FaceSets.Add(fs);
         }
 
-        private void SolveAllMeshLODsButton_Click(object sender, EventArgs e)
+        private void SolveAllMeshLODs()
         {
             UpdateUndoState();
             foreach (FLVER.Mesh m in flver.Meshes)
@@ -2545,6 +2586,11 @@ namespace FLVER_Editor
                 AddNewMeshFaceset(m, FLVER.FaceSet.FSFlags.LodLevel2 | FLVER.FaceSet.FSFlags.Unk80000000);
             }
             ShowInformationDialog("Successfully solved all mesh LODs!");
+        }
+
+        private void SolveAllMeshLODsButton_Click(object sender, EventArgs e)
+        {
+            SolveAllMeshLODs();
         }
 
         private static int GetModelPartIDFromName(string name)
@@ -2665,7 +2711,7 @@ namespace FLVER_Editor
             CenterMeshToWorld(2);
         }
 
-        private void ResetAllMeshButton_Click(object sender, EventArgs e)
+        private void ResetAllMesh()
         {
             UpdateUndoState();
             int layoutCount = flver.BufferLayouts.Count;
@@ -2707,6 +2753,11 @@ namespace FLVER_Editor
                 m.FaceSets[0].IndexSize = 32;
             }
             ShowInformationDialog("Successfully reset all mesh!");
+        }
+
+        private void ResetAllMeshButton_Click(object sender, EventArgs e)
+        {
+            ResetAllMesh();
         }
 
         private enum TextureFormats

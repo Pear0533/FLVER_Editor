@@ -8,11 +8,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ribbon = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,6 +48,7 @@
             this.dummyThicknessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dummyThicknessSelector = new System.Windows.Forms.ToolStripComboBox();
             this.toggleDummyIDsVisibilityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toggleUseWorldOriginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.supportPearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.patreonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.payPalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -187,7 +188,6 @@
             this.displayFemaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.solveAllMeshLODsTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.windowSizeTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.toggleUseWorldOriginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -534,6 +534,13 @@
             this.toggleDummyIDsVisibilityToolStripMenuItem.Text = "Toggle Dummy IDs Visibility";
             this.toggleDummyIDsVisibilityToolStripMenuItem.Click += new System.EventHandler(this.ToggleDummyIDsVisibilityToolStripMenuItem_Click);
             // 
+            // toggleUseWorldOriginToolStripMenuItem
+            // 
+            this.toggleUseWorldOriginToolStripMenuItem.Name = "toggleUseWorldOriginToolStripMenuItem";
+            this.toggleUseWorldOriginToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
+            this.toggleUseWorldOriginToolStripMenuItem.Text = "Toggle Use World Origin";
+            this.toggleUseWorldOriginToolStripMenuItem.Click += new System.EventHandler(this.ToggleUseWorldOriginToolStripMenuItem_Click);
+            // 
             // supportPearToolStripMenuItem
             // 
             this.supportPearToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -611,7 +618,7 @@
             this.resetAllMeshButton.Name = "resetAllMeshButton";
             this.resetAllMeshButton.Size = new System.Drawing.Size(40, 40);
             this.resetAllMeshButton.TabIndex = 20;
-            this.solveAllMeshLODsTooltip.SetToolTip(this.resetAllMeshButton, "Reset All Mesh");
+            this.solveAllMeshLODsTooltip.SetToolTip(this.resetAllMeshButton, "Reset All Mesh (Ctrl+Shift+R)");
             this.resetAllMeshButton.UseVisualStyleBackColor = true;
             this.resetAllMeshButton.Click += new System.EventHandler(this.ResetAllMeshButton_Click);
             // 
@@ -625,7 +632,7 @@
             this.solveAllMeshLODsButton.Name = "solveAllMeshLODsButton";
             this.solveAllMeshLODsButton.Size = new System.Drawing.Size(40, 40);
             this.solveAllMeshLODsButton.TabIndex = 19;
-            this.solveAllMeshLODsTooltip.SetToolTip(this.solveAllMeshLODsButton, "Solve All Mesh LODs");
+            this.solveAllMeshLODsTooltip.SetToolTip(this.solveAllMeshLODsButton, "Solve All Mesh LODs (Ctrl+Shift+L)");
             this.solveAllMeshLODsButton.UseVisualStyleBackColor = true;
             this.solveAllMeshLODsButton.Click += new System.EventHandler(this.SolveAllMeshLODsButton_Click);
             // 
@@ -639,7 +646,7 @@
             this.displayFemaleBodyButton.Name = "displayFemaleBodyButton";
             this.displayFemaleBodyButton.Size = new System.Drawing.Size(40, 40);
             this.displayFemaleBodyButton.TabIndex = 18;
-            this.displayFemaleBodyTooltip.SetToolTip(this.displayFemaleBodyButton, "Display Female Body");
+            this.displayFemaleBodyTooltip.SetToolTip(this.displayFemaleBodyButton, "Display Female Body (Ctrl+Shift+F)");
             this.displayFemaleBodyButton.UseVisualStyleBackColor = true;
             this.displayFemaleBodyButton.Click += new System.EventHandler(this.DisplayFemaleBodyButton_Click);
             // 
@@ -653,7 +660,7 @@
             this.displayMaleBodyButton.Name = "displayMaleBodyButton";
             this.displayMaleBodyButton.Size = new System.Drawing.Size(40, 40);
             this.displayMaleBodyButton.TabIndex = 17;
-            this.displayMaleBodyTooltip.SetToolTip(this.displayMaleBodyButton, "Display Male Body");
+            this.displayMaleBodyTooltip.SetToolTip(this.displayMaleBodyButton, "Display Male Body (Ctrl+Shift+G)");
             this.displayMaleBodyButton.UseVisualStyleBackColor = true;
             this.displayMaleBodyButton.Click += new System.EventHandler(this.DisplayMaleBodyButton_Click);
             // 
@@ -667,7 +674,7 @@
             this.setAllBBsMaxSizeButton.Name = "setAllBBsMaxSizeButton";
             this.setAllBBsMaxSizeButton.Size = new System.Drawing.Size(40, 40);
             this.setAllBBsMaxSizeButton.TabIndex = 15;
-            this.setAllBBsMaxSizeButtonTooltip.SetToolTip(this.setAllBBsMaxSizeButton, "Set All Bounding Boxes Max Size");
+            this.setAllBBsMaxSizeButtonTooltip.SetToolTip(this.setAllBBsMaxSizeButton, "Set All Bounding Boxes Max Size (Ctrl+Shift+A)");
             this.setAllBBsMaxSizeButton.UseVisualStyleBackColor = true;
             this.setAllBBsMaxSizeButton.Click += new System.EventHandler(this.SetAllBBsMaxSizeButtonClicked);
             // 
@@ -681,7 +688,7 @@
             this.hideAllMeshesButton.Name = "hideAllMeshesButton";
             this.hideAllMeshesButton.Size = new System.Drawing.Size(40, 40);
             this.hideAllMeshesButton.TabIndex = 16;
-            this.hideAllMeshesButtonTooltip.SetToolTip(this.hideAllMeshesButton, "Hide All Mesh");
+            this.hideAllMeshesButtonTooltip.SetToolTip(this.hideAllMeshesButton, "Hide All Mesh (Ctrl+Shift+H)");
             this.hideAllMeshesButton.UseVisualStyleBackColor = true;
             this.hideAllMeshesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.HideAllMeshesButton_MouseClick);
             // 
@@ -723,7 +730,7 @@
             this.solveAllBBsButton.Name = "solveAllBBsButton";
             this.solveAllBBsButton.Size = new System.Drawing.Size(40, 40);
             this.solveAllBBsButton.TabIndex = 14;
-            this.solveAllBBsButtonTooltip.SetToolTip(this.solveAllBBsButton, "Solve All Bounding Boxes");
+            this.solveAllBBsButtonTooltip.SetToolTip(this.solveAllBBsButton, "Solve All Bounding Boxes (Ctrl+Shift+B)");
             this.solveAllBBsButton.UseVisualStyleBackColor = true;
             this.solveAllBBsButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SolveAllBBsButtonClicked);
             // 
@@ -794,8 +801,8 @@
             this.meshTable.Name = "meshTable";
             this.meshTable.RowHeadersVisible = false;
             this.meshTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.meshTable.Size = new System.Drawing.Size(492, 163);
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTable_CellContentClick);
@@ -913,8 +920,8 @@
             this.dummiesTable.Name = "dummiesTable";
             this.dummiesTable.RowHeadersVisible = false;
             this.dummiesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.dummiesTable.Size = new System.Drawing.Size(492, 171);
             this.dummiesTable.TabIndex = 12;
             this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTable_CellContentClick);
@@ -1688,8 +1695,8 @@
             this.materialsTable.Name = "materialsTable";
             this.materialsTable.RowHeadersVisible = false;
             this.materialsTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
             this.materialsTable.Size = new System.Drawing.Size(468, 394);
             this.materialsTable.TabIndex = 6;
             this.materialsTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableButtonClicked);
@@ -1841,8 +1848,8 @@
             this.texturesTable.Name = "texturesTable";
             this.texturesTable.RowHeadersVisible = false;
             this.texturesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.texturesTable.Size = new System.Drawing.Size(536, 394);
             this.texturesTable.TabIndex = 7;
             this.texturesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableButtonClicked);
@@ -1905,8 +1912,8 @@
             this.bonesTable.Name = "bonesTable";
             this.bonesTable.RowHeadersVisible = false;
             this.bonesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
             this.bonesTable.Size = new System.Drawing.Size(1021, 456);
             this.bonesTable.TabIndex = 0;
             this.bonesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.BonesTableCellValueChanged);
@@ -2052,13 +2059,6 @@
             this.meshTabDataTableSelector.Size = new System.Drawing.Size(124, 21);
             this.meshTabDataTableSelector.TabIndex = 1;
             this.meshTabDataTableSelector.SelectedIndexChanged += new System.EventHandler(this.MeshTabDataTableSelector_SelectedIndexChanged);
-            // 
-            // toggleUseWorldOriginToolStripMenuItem
-            // 
-            this.toggleUseWorldOriginToolStripMenuItem.Name = "toggleUseWorldOriginToolStripMenuItem";
-            this.toggleUseWorldOriginToolStripMenuItem.Size = new System.Drawing.Size(221, 22);
-            this.toggleUseWorldOriginToolStripMenuItem.Text = "Toggle Use World Origin";
-            this.toggleUseWorldOriginToolStripMenuItem.Click += new System.EventHandler(this.ToggleUseWorldOriginToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
