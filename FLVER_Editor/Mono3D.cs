@@ -145,6 +145,10 @@ namespace FLVER_Editor
                 MainWindow.userConfigJson["ViewerWindowHeight"] = f.Height;
                 MainWindow.WriteUserConfig();
             };
+            f.Closed += (s, e) =>
+            {
+                Environment.Exit(0);
+            };
         }
 
         private static void SnapBottom()
