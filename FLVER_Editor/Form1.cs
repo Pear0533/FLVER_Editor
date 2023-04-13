@@ -22,6 +22,7 @@ using PrimitiveType = Assimp.PrimitiveType;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 // ReSharper disable UnusedMember.Local
+// TODO: Fix dummy serialization for Elden Ring 1.09
 // TODO: Investigate performance improvements for the viewer
 // TODO: Allow for hierarchal models to be opened/saved
 
