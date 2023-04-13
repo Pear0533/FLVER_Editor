@@ -8,11 +8,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ribbon = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -188,6 +188,8 @@
             this.displayFemaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.solveAllMeshLODsTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.windowSizeTooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.vectorModeCheckbox = new System.Windows.Forms.CheckBox();
+            this.vectorModeTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -803,8 +805,8 @@
             this.meshTable.Name = "meshTable";
             this.meshTable.RowHeadersVisible = false;
             this.meshTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle6;
             this.meshTable.Size = new System.Drawing.Size(492, 163);
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTable_CellContentClick);
@@ -922,8 +924,8 @@
             this.dummiesTable.Name = "dummiesTable";
             this.dummiesTable.RowHeadersVisible = false;
             this.dummiesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle7;
             this.dummiesTable.Size = new System.Drawing.Size(492, 171);
             this.dummiesTable.TabIndex = 12;
             this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTable_CellContentClick);
@@ -1014,6 +1016,7 @@
             // 
             // meshModifiersContainer
             // 
+            this.meshModifiersContainer.Controls.Add(this.vectorModeCheckbox);
             this.meshModifiersContainer.Controls.Add(this.flipYZAxisCheckbox);
             this.meshModifiersContainer.Controls.Add(this.label16);
             this.meshModifiersContainer.Controls.Add(this.centerZButton);
@@ -1101,7 +1104,7 @@
             // 
             this.zAxisLabel.AutoSize = true;
             this.zAxisLabel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.zAxisLabel.Location = new System.Drawing.Point(258, 17);
+            this.zAxisLabel.Location = new System.Drawing.Point(274, 17);
             this.zAxisLabel.Name = "zAxisLabel";
             this.zAxisLabel.Size = new System.Drawing.Size(14, 13);
             this.zAxisLabel.TabIndex = 63;
@@ -1111,7 +1114,7 @@
             // 
             this.yAxisLabel.AutoSize = true;
             this.yAxisLabel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.yAxisLabel.Location = new System.Drawing.Point(178, 17);
+            this.yAxisLabel.Location = new System.Drawing.Point(194, 17);
             this.yAxisLabel.Name = "yAxisLabel";
             this.yAxisLabel.Size = new System.Drawing.Size(14, 13);
             this.yAxisLabel.TabIndex = 62;
@@ -1121,7 +1124,7 @@
             // 
             this.xAxisLabel.AutoSize = true;
             this.xAxisLabel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.xAxisLabel.Location = new System.Drawing.Point(98, 17);
+            this.xAxisLabel.Location = new System.Drawing.Point(114, 17);
             this.xAxisLabel.Name = "xAxisLabel";
             this.xAxisLabel.Size = new System.Drawing.Size(14, 13);
             this.xAxisLabel.TabIndex = 61;
@@ -1200,7 +1203,7 @@
             // uniformScaleCheckbox
             // 
             this.uniformScaleCheckbox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.uniformScaleCheckbox.Location = new System.Drawing.Point(49, 64);
+            this.uniformScaleCheckbox.Location = new System.Drawing.Point(44, 64);
             this.uniformScaleCheckbox.Name = "uniformScaleCheckbox";
             this.uniformScaleCheckbox.Size = new System.Drawing.Size(19, 24);
             this.uniformScaleCheckbox.TabIndex = 42;
@@ -1254,7 +1257,7 @@
             this.meshModifiersNumBoxesContainer.Controls.Add(this.scaleXNumBox, 0, 1);
             this.meshModifiersNumBoxesContainer.Controls.Add(this.transXNumBox, 0, 0);
             this.meshModifiersNumBoxesContainer.Controls.Add(this.transYNumBox, 1, 0);
-            this.meshModifiersNumBoxesContainer.Location = new System.Drawing.Point(70, 31);
+            this.meshModifiersNumBoxesContainer.Location = new System.Drawing.Point(86, 31);
             this.meshModifiersNumBoxesContainer.Name = "meshModifiersNumBoxesContainer";
             this.meshModifiersNumBoxesContainer.RowCount = 3;
             this.meshModifiersNumBoxesContainer.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -1697,8 +1700,8 @@
             this.materialsTable.Name = "materialsTable";
             this.materialsTable.RowHeadersVisible = false;
             this.materialsTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle8;
             this.materialsTable.Size = new System.Drawing.Size(468, 394);
             this.materialsTable.TabIndex = 6;
             this.materialsTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableButtonClicked);
@@ -1850,8 +1853,8 @@
             this.texturesTable.Name = "texturesTable";
             this.texturesTable.RowHeadersVisible = false;
             this.texturesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle9;
             this.texturesTable.Size = new System.Drawing.Size(536, 394);
             this.texturesTable.TabIndex = 7;
             this.texturesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableButtonClicked);
@@ -1914,8 +1917,8 @@
             this.bonesTable.Name = "bonesTable";
             this.bonesTable.RowHeadersVisible = false;
             this.bonesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle10;
             this.bonesTable.Size = new System.Drawing.Size(1021, 456);
             this.bonesTable.TabIndex = 0;
             this.bonesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.BonesTableCellValueChanged);
@@ -2061,6 +2064,18 @@
             this.meshTabDataTableSelector.Size = new System.Drawing.Size(124, 21);
             this.meshTabDataTableSelector.TabIndex = 1;
             this.meshTabDataTableSelector.SelectedIndexChanged += new System.EventHandler(this.MeshTabDataTableSelector_SelectedIndexChanged);
+            // 
+            // vectorModeCheckbox
+            // 
+            this.vectorModeCheckbox.Appearance = System.Windows.Forms.Appearance.Button;
+            this.vectorModeCheckbox.Location = new System.Drawing.Point(65, 64);
+            this.vectorModeCheckbox.Name = "vectorModeCheckbox";
+            this.vectorModeCheckbox.Size = new System.Drawing.Size(19, 24);
+            this.vectorModeCheckbox.TabIndex = 70;
+            this.vectorModeCheckbox.Text = "V";
+            this.vectorModeCheckbox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.vectorModeTooltip.SetToolTip(this.vectorModeCheckbox, "Vector Mode");
+            this.vectorModeCheckbox.UseVisualStyleBackColor = true;
             // 
             // MainWindow
             // 
@@ -2310,5 +2325,7 @@
         private System.Windows.Forms.ToolTip windowSizeTooltip;
         private System.Windows.Forms.Button resetAllMeshButton;
         private System.Windows.Forms.ToolStripMenuItem toggleUseWorldOriginToolStripMenuItem;
+        private System.Windows.Forms.CheckBox vectorModeCheckbox;
+        private System.Windows.Forms.ToolTip vectorModeTooltip;
     }
 }

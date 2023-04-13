@@ -152,7 +152,6 @@ namespace FLVER_Editor
             versionStr.Text += $@" {version}";
         }
 
-
         private void SetTextureRefreshEnabled()
         {
             string textureRefreshStr = userConfigJson["TextureRefreshing"]?.ToString();
@@ -933,11 +932,9 @@ namespace FLVER_Editor
 
         private void EnableDisableExtraModifierOptions()
         {
-            // TODO: Determine which properties are appropriate for dummies to make use of
             reverseFacesetsCheckbox.Enabled = reverseNormalsCheckbox.Enabled = toggleBackfacesCheckbox.Enabled =
-                deleteFacesetsCheckbox.Enabled = uniformScaleCheckbox.Enabled = centerXButton.Enabled = centerYButton.Enabled =
-                    centerZButton.Enabled = mirrorXCheckbox.Enabled = mirrorYCheckbox.Enabled = mirrorZCheckbox.Enabled =
-                        flipYZAxisCheckbox.Enabled = selectedMeshIndices.Count != 0;
+                deleteFacesetsCheckbox.Enabled = selectedMeshIndices.Count != 0;
+            vectorModeCheckbox.Enabled = selectedDummyIndices.Count != 0;
         }
 
         private static List<int> UpdateIndicesList(DataGridView dataTable, List<int> indices, int columnIndex, int rowIndex, ref bool selectedFlag)
@@ -1171,14 +1168,14 @@ namespace FLVER_Editor
             }
         }
 
-        private static void ScaleThing(dynamic thing, float offset, IReadOnlyList<float> totals, int nbi, bool uniform, bool invert)
+        private static void ScaleThing(dynamic thing, float offset, IReadOnlyList<float> totals, int nbi, bool uniform, bool invert, bool useVectorMode)
         {
             if (nbi >= 3 && nbi <= 5) nbi -= 3;
             switch (thing)
             {
                 case FLVER.Dummy d:
-                    if (selectedMeshIndices.Count != 0) d.Position = CreateScaleVector(d.Position.X, d.Position.Y, d.Position.Z, offset, totals, nbi, uniform, invert);
-                    else d.Forward = CreateTranslationVector(d.Forward.X, d.Forward.Y, d.Forward.Z, offset, nbi);
+                    if (useVectorMode) d.Forward = CreateTranslationVector(d.Forward.X, d.Forward.Y, d.Forward.Z, offset, nbi);
+                    else d.Position = CreateScaleVector(d.Position.X, d.Position.Y, d.Position.Z, offset, totals, nbi, uniform, invert);
                     break;
                 case FLVER.Vertex v:
                     v.Positions[0] = CreateScaleVector(v.Positions[0].X, v.Positions[0].Y, v.Positions[0].Z, offset, totals, nbi, uniform, invert);
@@ -1188,7 +1185,7 @@ namespace FLVER_Editor
             }
         }
 
-        private static void RotateThing(dynamic thing, float offset, IReadOnlyList<float> totals, int nbi)
+        private static void RotateThing(dynamic thing, float offset, IReadOnlyList<float> totals, int nbi, bool useVectorMode)
         {
             if (nbi >= 6 && nbi <= 8) nbi -= 6;
             float newX = nbi == 0 ? offset : 0;
@@ -1197,8 +1194,8 @@ namespace FLVER_Editor
             switch (thing)
             {
                 case FLVER.Dummy d:
-                    if (selectedMeshIndices.Count != 0) d.Position = CreateRotationVector(d.Position.X, d.Position.Y, d.Position.Z, 0, offset, totals, nbi);
-                    else d.Forward = Program.RotatePoint(d.Forward, newX, newZ, newY);
+                    if (useVectorMode) d.Forward = Program.RotatePoint(d.Forward, newX, newZ, newY);
+                    else d.Position = CreateRotationVector(d.Position.X, d.Position.Y, d.Position.Z, 0, offset, totals, nbi);
                     break;
                 case FLVER.Vertex v:
                     v.Positions[0] = CreateRotationVector(v.Positions[0].X, v.Positions[0].Y, v.Positions[0].Z, 0, offset, totals, nbi);
@@ -1220,22 +1217,30 @@ namespace FLVER_Editor
                 case 3:
                 case 4:
                 case 5:
-                    ScaleThing(thing, offset, totals, nbi, uniformScaleCheckbox.Checked, false);
+                    ScaleThing(thing, offset, totals, nbi, uniformScaleCheckbox.Checked, false, vectorModeCheckbox.Checked);
                     if (uniformScaleCheckbox.Checked && selectedMeshIndices.Count != 0) scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = newValue;
                     break;
                 case 6:
                 case 7:
                 case 8:
-                    RotateThing(thing, offset, totals, nbi);
+                    RotateThing(thing, offset, totals, nbi, vectorModeCheckbox.Checked);
                     break;
             }
         }
 
-        private float[] CalculateMeshTotals()
+        private static float[] CalculateMeshTotals()
         {
             if (useWorldOrigin) return new float[3];
             float vertexCount = 0, xSum = 0, ySum = 0, zSum = 0;
-            foreach (int i in selectedMeshIndices)
+            List<int> meshIndices = new List<int>();
+            bool shouldAffectAllMesh = selectedMeshIndices.Count == 0;
+            if (shouldAffectAllMesh)
+            {
+                for (int i = 0; i < flver.Meshes.Count; ++i)
+                    meshIndices.Add(i);
+            }
+            else meshIndices = selectedMeshIndices;
+            foreach (int i in meshIndices)
             {
                 foreach (FLVER.Vertex v in flver.Meshes[i].Vertices)
                 {
@@ -2226,22 +2231,33 @@ namespace FLVER_Editor
             WriteUserConfig();
         }
 
+        private static System.Numerics.Vector3 MirrorThing(System.Numerics.Vector3 v, int nbi, IReadOnlyList<float> totals)
+        {
+            v = new System.Numerics.Vector3((v.X - (nbi == 0 && !useWorldOrigin ? totals[0] : 0)) * (nbi == 0 ? -1 : 1),
+                (v.Y - (nbi == 1 && !useWorldOrigin ? totals[1] : 0)) * (nbi == 1 ? -1 : 1),
+                (v.Z - (nbi == 2 && !useWorldOrigin ? totals[2] : 0)) * (nbi == 2 ? -1 : 1));
+            v = new System.Numerics.Vector3(v.X + (nbi == 0 && !useWorldOrigin ? totals[0] : 0),
+                v.Y + (nbi == 1 && !useWorldOrigin ? totals[1] : 0),
+                v.Z + (nbi == 2 && !useWorldOrigin ? totals[2] : 0));
+            return v;
+        }
+
         private void MirrorMesh(int nbi)
         {
             UpdateUndoState();
             float[] totals = CalculateMeshTotals();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
             {
-                v.Positions[0] = new System.Numerics.Vector3((v.Positions[0].X - (nbi == 0 && !useWorldOrigin ? totals[0] : 0)) * (nbi == 0 ? -1 : 1),
-                    (v.Positions[0].Y - (nbi == 1 && !useWorldOrigin ? totals[1] : 0)) * (nbi == 1 ? -1 : 1),
-                    (v.Positions[0].Z - (nbi == 2 && !useWorldOrigin ? totals[2] : 0)) * (nbi == 2 ? -1 : 1));
-                v.Positions[0] = new System.Numerics.Vector3(v.Positions[0].X + (nbi == 0 && !useWorldOrigin ? totals[0] : 0),
-                    v.Positions[0].Y + (nbi == 1 && !useWorldOrigin ? totals[1] : 0),
-                    v.Positions[0].Z + (nbi == 2 && !useWorldOrigin ? totals[2] : 0));
+                v.Positions[0] = MirrorThing(v.Positions[0], nbi, totals);
                 v.Normals[0] = new Vector4(v.Normals[0].X * (nbi == 0 ? -1 : 1),
                     v.Normals[0].Y * (nbi == 1 ? -1 : 1), v.Normals[0].Z * (nbi == 2 ? -1 : 1), -1);
                 v.Tangents[0] = new Vector4(v.Tangents[0].X * (nbi == 0 ? -1 : 1),
                     v.Tangents[0].Y * (nbi == 1 ? -1 : 1), v.Tangents[0].Z * (nbi == 2 ? -1 : 1), 1);
+            }
+            foreach (FLVER.Dummy d in selectedDummyIndices.Select(i => flver.Dummies[i]))
+            {
+                if (vectorModeCheckbox.Checked) d.Forward = MirrorThing(d.Forward, nbi, totals);
+                else d.Position = MirrorThing(d.Position, nbi, totals);
             }
             ReverseFaceSets();
             UpdateMesh();
@@ -2775,6 +2791,14 @@ namespace FLVER_Editor
             ResetAllMesh();
         }
 
+        private void ToggleUseWorldOriginToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            useWorldOrigin = !useWorldOrigin;
+            userConfigJson["UseWorldOrigin"] = useWorldOrigin;
+            WriteUserConfig();
+            ShowInformationDialog("Successfully toggled using the world origin for transformations!");
+        }
+
         private enum TextureFormats
         {
             DXT1 = 0,
@@ -2909,14 +2933,6 @@ namespace FLVER_Editor
 
                 public Vector2 Unk14 { get; set; }
             }
-        }
-
-        private void ToggleUseWorldOriginToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            useWorldOrigin = !useWorldOrigin;
-            userConfigJson["UseWorldOrigin"] = useWorldOrigin;
-            WriteUserConfig();
-            ShowInformationDialog("Successfully toggled using the world origin for transformations!");
         }
     }
 }
