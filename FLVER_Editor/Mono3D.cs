@@ -145,9 +145,9 @@ namespace FLVER_Editor
                 MainWindow.userConfigJson["ViewerWindowHeight"] = f.Height;
                 MainWindow.WriteUserConfig();
             };
-            f.Closed += (s, e) =>
+            f.FormClosing += (s, e) =>
             {
-                Environment.Exit(0);
+                if (MainWindow.PromptToSaveFLVERFile(e)) Environment.Exit(0);
             };
         }
 

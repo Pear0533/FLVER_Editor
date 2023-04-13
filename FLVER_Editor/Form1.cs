@@ -1927,11 +1927,11 @@ namespace FLVER_Editor
             MergeFLVERFile();
         }
 
-        private void MainWindowClosing(object sender, FormClosingEventArgs e)
+        public static bool PromptToSaveFLVERFile(FormClosingEventArgs e)
         {
-            if (!IsMainWindowFocused()) return;
+            if (!IsMainWindowFocused()) return true;
             byte[] newFlverBytes = flver.Write();
-            if (newFlverBytes.SequenceEqual(currFlverBytes)) return;
+            if (newFlverBytes.SequenceEqual(currFlverBytes)) return true;
             DialogResult result = MessageBox.Show(@"Do you want to save changes to the FLVER before quitting?", @"Warning", MessageBoxButtons.YesNoCancel,
                 MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1, (MessageBoxOptions)0x40000);
             switch (result)
@@ -1941,8 +1941,14 @@ namespace FLVER_Editor
                     break;
                 case DialogResult.Cancel:
                     e.Cancel = true;
-                    break;
+                    return false;
             }
+            return true;
+        }
+
+        private void MainWindowClosing(object sender, FormClosingEventArgs e)
+        {
+            PromptToSaveFLVERFile(e);
         }
 
         private void AddDummyButtonClicked(object sender, MouseEventArgs e)
