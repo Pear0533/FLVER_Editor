@@ -935,6 +935,8 @@ namespace FLVER_Editor
             reverseFacesetsCheckbox.Enabled = reverseNormalsCheckbox.Enabled = toggleBackfacesCheckbox.Enabled =
                 deleteFacesetsCheckbox.Enabled = selectedMeshIndices.Count != 0;
             vectorModeCheckbox.Enabled = selectedDummyIndices.Count != 0;
+            uniformScaleCheckbox.Enabled = !vectorModeCheckbox.Checked;
+            if (!uniformScaleCheckbox.Enabled) uniformScaleCheckbox.Checked = false;
         }
 
         private static List<int> UpdateIndicesList(DataGridView dataTable, List<int> indices, int columnIndex, int rowIndex, ref bool selectedFlag)
@@ -1218,7 +1220,7 @@ namespace FLVER_Editor
                 case 4:
                 case 5:
                     ScaleThing(thing, offset, totals, nbi, uniformScaleCheckbox.Checked, false, vectorModeCheckbox.Checked);
-                    if (uniformScaleCheckbox.Checked && selectedMeshIndices.Count != 0) scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = newValue;
+                    if (uniformScaleCheckbox.Checked) scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = newValue;
                     break;
                 case 6:
                 case 7:
@@ -2933,6 +2935,11 @@ namespace FLVER_Editor
 
                 public Vector2 Unk14 { get; set; }
             }
+        }
+
+        private void VectorModeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            EnableDisableExtraModifierOptions();
         }
     }
 }
