@@ -93,6 +93,8 @@ namespace FLVER_Editor
         private static bool dispFemaleBody;
         private static bool stopAutoInternalIndexOverride;
         private static bool useWorldOrigin;
+        // TODO: This feature is temporary!
+        public static bool dupeMatOnMeshImport;
 
         public MainWindow()
         {
@@ -110,6 +112,7 @@ namespace FLVER_Editor
             SetAutoSaveEnabled();
             SetDummyIDsVisibility();
             SetUseWorldOrigin();
+            SetDupeMatOnMeshImport();
             EnableDarkTheme();
             ImportBodyModels();
             tabWindow.SelectedTab = meshTabPage;
@@ -177,11 +180,18 @@ namespace FLVER_Editor
             File.WriteAllText(userConfigJsonPath, JsonConvert.SerializeObject(userConfigJson, Formatting.Indented));
         }
 
-        private void SetUseWorldOrigin()
+        private static void SetUseWorldOrigin()
         {
             string useWorldOriginStr = userConfigJson["UseWorldOrigin"]?.ToString();
             if (useWorldOriginStr == null) return;
             useWorldOrigin = bool.Parse(useWorldOriginStr);
+        }
+
+        private static void SetDupeMatOnMeshImport()
+        {
+            string dupeMatOnMeshImportStr = userConfigJson["DupeMatOnMeshImport"]?.ToString();
+            if (dupeMatOnMeshImportStr == null) return;
+            dupeMatOnMeshImport = bool.Parse(dupeMatOnMeshImportStr);
         }
 
         private void SetAutoSaveEnabled()
@@ -2940,6 +2950,14 @@ namespace FLVER_Editor
 
                 public Vector2 Unk14 { get; set; }
             }
+        }
+
+        private void DupeMaterialsOnMeshImportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dupeMatOnMeshImport = !dupeMatOnMeshImport;
+            userConfigJson["DupeMatOnMeshImport"] = dupeMatOnMeshImport;
+            WriteUserConfig();
+            ShowInformationDialog("Successfully toggled duplicating materials on mesh import!");
         }
     }
 }

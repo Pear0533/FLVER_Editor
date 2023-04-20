@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Web.Script.Serialization;
 using Assimp;
 using SoulsFormats;
 using Vector3 = System.Numerics.Vector3;
@@ -12,9 +14,7 @@ namespace FLVER_Editor
     {
         public static bool ImportFBX(string modelFilePath, bool isLoadingMaleBody = false, bool isLoadingFemaleBody = false)
         {
-            try
-            {
-                FLVER targetFlver = isLoadingMaleBody ? MainWindow.maleBodyFlver : isLoadingFemaleBody ? MainWindow.femaleBodyFlver : flver;
+            FLVER targetFlver = isLoadingMaleBody ? MainWindow.maleBodyFlver : isLoadingFemaleBody ? MainWindow.femaleBodyFlver : flver;
                 var importer = new AssimpContext();
                 string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 string conversionTableStr = File.ReadAllText(assemblyPath + "\\boneConversion.ini");
@@ -53,12 +53,15 @@ namespace FLVER_Editor
                 int materialCount = targetFlver.Materials.Count;
                 if (materialCount > 0)
                 {
-                    foreach (Material mat in md.Materials)
+                    if (!MainWindow.dupeMatOnMeshImport)
                     {
-                        FLVER.Material newMaterial = GetBaseMaterial(mat.TextureDiffuse.FilePath, mat.TextureSpecular.FilePath, mat.TextureNormal.FilePath);
-                        newMaterial.Name = mat.Name;
-                        newMaterial.Unk18 = targetFlver.Materials[targetFlver.Materials.Count - 1].Unk18 + 1;
-                        targetFlver.Materials.Add(newMaterial);
+                        foreach (Material mat in md.Materials)
+                        {
+                            FLVER.Material newMaterial = GetBaseMaterial(mat.TextureDiffuse.FilePath, mat.TextureSpecular.FilePath, mat.TextureNormal.FilePath);
+                            newMaterial.Name = mat.Name;
+                            newMaterial.Unk18 = targetFlver.Materials[targetFlver.Materials.Count - 1].Unk18 + 1;
+                            targetFlver.Materials.Add(newMaterial);
+                        }
                     }
                 }
                 foreach (Mesh m in md.Meshes)
@@ -194,15 +197,20 @@ namespace FLVER_Editor
                     mn.MaterialIndex = materialCount + m.MaterialIndex;
                     targetFlver.Meshes.Add(mn);
                 }
+                // TODO: This feature is temporary!
+                if (MainWindow.dupeMatOnMeshImport)
+                {
+                    foreach (FLVER.Material mat in targetFlver.Materials.ToList())
+                    {
+                        FLVER.Material dupeMat = new JavaScriptSerializer().Deserialize<FLVER.Material>(new JavaScriptSerializer().Serialize(mat));
+                        dupeMat.Unk18 = targetFlver.Materials[targetFlver.Materials.Count - 1].Unk18 + 1;
+                        targetFlver.Materials.Add(dupeMat);
+                        targetFlver.Meshes[targetFlver.Materials.Count - 1].MaterialIndex = targetFlver.Materials.Count - 1;
+                    }
+                }
                 if (!isLoadingMaleBody && !isLoadingFemaleBody)
                     MainWindow.ShowInformationDialog("Successfully imported model into the current FLVER file!");
                 return true;
-            }
-            catch
-            {
-                MainWindow.ShowErrorDialog("An error occurred while attempting to import an external model file.");
-                return false;
-            }
         }
     }
 }
