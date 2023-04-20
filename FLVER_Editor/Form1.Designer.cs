@@ -88,6 +88,12 @@
             this.label5 = new System.Windows.Forms.Label();
             this.dummyPresetsSelector = new System.Windows.Forms.ComboBox();
             this.meshModifiersContainer = new System.Windows.Forms.GroupBox();
+            this.noWindowCheckbox = new System.Windows.Forms.CheckBox();
+            this.flipUVsWButton = new System.Windows.Forms.Button();
+            this.flipUVsZButton = new System.Windows.Forms.Button();
+            this.flipUVsYButton = new System.Windows.Forms.Button();
+            this.flipUVsXButton = new System.Windows.Forms.Button();
+            this.label17 = new System.Windows.Forms.Label();
             this.vectorModeCheckbox = new System.Windows.Forms.CheckBox();
             this.flipYZAxisCheckbox = new System.Windows.Forms.CheckBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -491,6 +497,7 @@
             // 
             // autoSaveIntervalSelector
             // 
+            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -576,6 +583,7 @@
             // 
             // multiSelectMenuTextbox
             // 
+            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -1014,6 +1022,12 @@
             // 
             // meshModifiersContainer
             // 
+            this.meshModifiersContainer.Controls.Add(this.noWindowCheckbox);
+            this.meshModifiersContainer.Controls.Add(this.flipUVsWButton);
+            this.meshModifiersContainer.Controls.Add(this.flipUVsZButton);
+            this.meshModifiersContainer.Controls.Add(this.flipUVsYButton);
+            this.meshModifiersContainer.Controls.Add(this.flipUVsXButton);
+            this.meshModifiersContainer.Controls.Add(this.label17);
             this.meshModifiersContainer.Controls.Add(this.vectorModeCheckbox);
             this.meshModifiersContainer.Controls.Add(this.flipYZAxisCheckbox);
             this.meshModifiersContainer.Controls.Add(this.label16);
@@ -1050,6 +1064,65 @@
             this.meshModifiersContainer.TabStop = false;
             this.meshModifiersContainer.Text = "Modifiers";
             // 
+            // noWindowCheckbox
+            // 
+            this.noWindowCheckbox.AutoSize = true;
+            this.noWindowCheckbox.Location = new System.Drawing.Point(158, 186);
+            this.noWindowCheckbox.Name = "noWindowCheckbox";
+            this.noWindowCheckbox.Size = new System.Drawing.Size(82, 17);
+            this.noWindowCheckbox.TabIndex = 76;
+            this.noWindowCheckbox.Text = "No Window";
+            this.noWindowCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // flipUVsWButton
+            // 
+            this.flipUVsWButton.Location = new System.Drawing.Point(131, 183);
+            this.flipUVsWButton.Name = "flipUVsWButton";
+            this.flipUVsWButton.Size = new System.Drawing.Size(20, 22);
+            this.flipUVsWButton.TabIndex = 75;
+            this.flipUVsWButton.Text = "W";
+            this.flipUVsWButton.UseVisualStyleBackColor = true;
+            this.flipUVsWButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FlipUVsWButton_MouseClick);
+            // 
+            // flipUVsZButton
+            // 
+            this.flipUVsZButton.Location = new System.Drawing.Point(107, 183);
+            this.flipUVsZButton.Name = "flipUVsZButton";
+            this.flipUVsZButton.Size = new System.Drawing.Size(20, 22);
+            this.flipUVsZButton.TabIndex = 74;
+            this.flipUVsZButton.Text = "Z";
+            this.flipUVsZButton.UseVisualStyleBackColor = true;
+            this.flipUVsZButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FlipUVsZButton_MouseClick);
+            // 
+            // flipUVsYButton
+            // 
+            this.flipUVsYButton.Location = new System.Drawing.Point(83, 183);
+            this.flipUVsYButton.Name = "flipUVsYButton";
+            this.flipUVsYButton.Size = new System.Drawing.Size(20, 22);
+            this.flipUVsYButton.TabIndex = 73;
+            this.flipUVsYButton.Text = "Y";
+            this.flipUVsYButton.UseVisualStyleBackColor = true;
+            this.flipUVsYButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FlipUVsYButton_MouseClick);
+            // 
+            // flipUVsXButton
+            // 
+            this.flipUVsXButton.Location = new System.Drawing.Point(59, 183);
+            this.flipUVsXButton.Name = "flipUVsXButton";
+            this.flipUVsXButton.Size = new System.Drawing.Size(20, 22);
+            this.flipUVsXButton.TabIndex = 72;
+            this.flipUVsXButton.Text = "X";
+            this.flipUVsXButton.UseVisualStyleBackColor = true;
+            this.flipUVsXButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FlipUVsXButton_MouseClick);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 187);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(49, 13);
+            this.label17.TabIndex = 71;
+            this.label17.Text = "Flip UVs:";
+            // 
             // vectorModeCheckbox
             // 
             this.vectorModeCheckbox.Appearance = System.Windows.Forms.Appearance.Button;
@@ -1066,7 +1139,7 @@
             // flipYZAxisCheckbox
             // 
             this.flipYZAxisCheckbox.AutoSize = true;
-            this.flipYZAxisCheckbox.Location = new System.Drawing.Point(9, 285);
+            this.flipYZAxisCheckbox.Location = new System.Drawing.Point(9, 313);
             this.flipYZAxisCheckbox.Name = "flipYZAxisCheckbox";
             this.flipYZAxisCheckbox.Size = new System.Drawing.Size(15, 14);
             this.flipYZAxisCheckbox.TabIndex = 69;
@@ -1076,7 +1149,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(25, 285);
+            this.label16.Location = new System.Drawing.Point(25, 313);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(62, 13);
             this.label16.TabIndex = 68;
@@ -1186,7 +1259,7 @@
             // deleteFacesetsCheckbox
             // 
             this.deleteFacesetsCheckbox.AutoSize = true;
-            this.deleteFacesetsCheckbox.Location = new System.Drawing.Point(9, 261);
+            this.deleteFacesetsCheckbox.Location = new System.Drawing.Point(9, 289);
             this.deleteFacesetsCheckbox.Name = "deleteFacesetsCheckbox";
             this.deleteFacesetsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.deleteFacesetsCheckbox.TabIndex = 45;
@@ -1195,7 +1268,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(25, 261);
+            this.label6.Location = new System.Drawing.Point(25, 289);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(108, 13);
             this.label6.TabIndex = 44;
@@ -1226,7 +1299,7 @@
             // reverseFacesetsCheckbox
             // 
             this.reverseFacesetsCheckbox.AutoSize = true;
-            this.reverseFacesetsCheckbox.Location = new System.Drawing.Point(9, 186);
+            this.reverseFacesetsCheckbox.Location = new System.Drawing.Point(9, 214);
             this.reverseFacesetsCheckbox.Name = "reverseFacesetsCheckbox";
             this.reverseFacesetsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.reverseFacesetsCheckbox.TabIndex = 39;
@@ -1236,7 +1309,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(25, 186);
+            this.label8.Location = new System.Drawing.Point(25, 214);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(93, 13);
             this.label8.TabIndex = 38;
@@ -1244,7 +1317,7 @@
             // 
             // deleteSelectedButton
             // 
-            this.deleteSelectedButton.Location = new System.Drawing.Point(8, 305);
+            this.deleteSelectedButton.Location = new System.Drawing.Point(8, 333);
             this.deleteSelectedButton.Name = "deleteSelectedButton";
             this.deleteSelectedButton.Size = new System.Drawing.Size(111, 22);
             this.deleteSelectedButton.TabIndex = 10;
@@ -1545,7 +1618,7 @@
             // toggleBackfacesCheckbox
             // 
             this.toggleBackfacesCheckbox.AutoSize = true;
-            this.toggleBackfacesCheckbox.Location = new System.Drawing.Point(9, 236);
+            this.toggleBackfacesCheckbox.Location = new System.Drawing.Point(9, 264);
             this.toggleBackfacesCheckbox.Name = "toggleBackfacesCheckbox";
             this.toggleBackfacesCheckbox.Size = new System.Drawing.Size(15, 14);
             this.toggleBackfacesCheckbox.TabIndex = 29;
@@ -1555,7 +1628,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(25, 236);
+            this.label11.Location = new System.Drawing.Point(25, 264);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(123, 13);
             this.label11.TabIndex = 28;
@@ -1564,7 +1637,7 @@
             // reverseNormalsCheckbox
             // 
             this.reverseNormalsCheckbox.AutoSize = true;
-            this.reverseNormalsCheckbox.Location = new System.Drawing.Point(9, 211);
+            this.reverseNormalsCheckbox.Location = new System.Drawing.Point(9, 239);
             this.reverseNormalsCheckbox.Name = "reverseNormalsCheckbox";
             this.reverseNormalsCheckbox.Size = new System.Drawing.Size(15, 14);
             this.reverseNormalsCheckbox.TabIndex = 27;
@@ -1574,7 +1647,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(25, 211);
+            this.label12.Location = new System.Drawing.Point(25, 239);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(88, 13);
             this.label12.TabIndex = 26;
@@ -2326,5 +2399,11 @@
         private System.Windows.Forms.ToolStripMenuItem toggleUseWorldOriginToolStripMenuItem;
         private System.Windows.Forms.CheckBox vectorModeCheckbox;
         private System.Windows.Forms.ToolTip vectorModeTooltip;
+        private System.Windows.Forms.CheckBox noWindowCheckbox;
+        private System.Windows.Forms.Button flipUVsWButton;
+        private System.Windows.Forms.Button flipUVsZButton;
+        private System.Windows.Forms.Button flipUVsYButton;
+        private System.Windows.Forms.Button flipUVsXButton;
+        private System.Windows.Forms.Label label17;
     }
 }

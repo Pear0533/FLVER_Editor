@@ -933,7 +933,8 @@ namespace FLVER_Editor
         private void EnableDisableExtraModifierOptions()
         {
             reverseFacesetsCheckbox.Enabled = reverseNormalsCheckbox.Enabled = toggleBackfacesCheckbox.Enabled =
-                deleteFacesetsCheckbox.Enabled = selectedMeshIndices.Count != 0;
+                deleteFacesetsCheckbox.Enabled = flipUVsXButton.Enabled = flipUVsYButton.Enabled = flipUVsZButton.Enabled =
+                    flipUVsWButton.Enabled = noWindowCheckbox.Enabled = selectedMeshIndices.Count != 0;
             vectorModeCheckbox.Enabled = selectedDummyIndices.Count != 0;
             uniformScaleCheckbox.Enabled = !vectorModeCheckbox.Checked;
             if (!uniformScaleCheckbox.Enabled) uniformScaleCheckbox.Checked = false;
@@ -2801,6 +2802,52 @@ namespace FLVER_Editor
             ShowInformationDialog("Successfully toggled using the world origin for transformations!");
         }
 
+        private void VectorModeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            EnableDisableExtraModifierOptions();
+        }
+
+        private void FlipUVsOnAxis(int axisIndex)
+        {
+            if (isSettingDefaultInfo) return;
+            UpdateUndoState();
+            foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
+            {
+                for (int i = 0; i < v.Tangents.Count; ++i)
+                {
+                    bool matchesWSize = noWindowCheckbox.Checked || v.UVs[0].X < 1.0 || v.UVs[0].Y < -1.0;
+                    if (!matchesWSize) continue;
+                    float flippedTanX = axisIndex == 0 ? -v.Tangents[i].X : v.Tangents[i].X;
+                    float flippedTanY = axisIndex == 1 ? -v.Tangents[i].Y : v.Tangents[i].Y;
+                    float flippedTanZ = axisIndex == 2 ? -v.Tangents[i].Z : v.Tangents[i].Z;
+                    float flippedTanW = axisIndex == 3 ? -v.Tangents[i].W : v.Tangents[i].W;
+                    v.Tangents[i] = new Vector4(flippedTanX, flippedTanY, flippedTanZ, flippedTanW);
+                }
+            }
+            ShowInformationDialog("Successfully flipped mesh UVs on the specified axis!");
+            UpdateMesh();
+        }
+
+        private void FlipUVsXButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            FlipUVsOnAxis(0);
+        }
+
+        private void FlipUVsYButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            FlipUVsOnAxis(1);
+        }
+
+        private void FlipUVsZButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            FlipUVsOnAxis(2);
+        }
+
+        private void FlipUVsWButton_MouseClick(object sender, MouseEventArgs e)
+        {
+            FlipUVsOnAxis(3);
+        }
+
         private enum TextureFormats
         {
             DXT1 = 0,
@@ -2935,11 +2982,6 @@ namespace FLVER_Editor
 
                 public Vector2 Unk14 { get; set; }
             }
-        }
-
-        private void VectorModeCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            EnableDisableExtraModifierOptions();
         }
     }
 }
