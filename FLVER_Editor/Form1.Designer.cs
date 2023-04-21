@@ -8,11 +8,11 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.ribbon = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -190,7 +190,7 @@
             this.solveAllMeshLODsTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.windowSizeTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.vectorModeTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.dupeMaterialsOnMeshImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -470,7 +470,7 @@
             this.dummyThicknessToolStripMenuItem,
             this.toggleDummyIDsVisibilityToolStripMenuItem,
             this.toggleUseWorldOriginToolStripMenuItem,
-            this.dupeMaterialsOnMeshImportToolStripMenuItem});
+            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem});
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
             this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(80, 22);
             this.preferencesToolStripMenuItem.Text = "Preferences";
@@ -478,7 +478,7 @@
             // toggleTextureRefreshToolStripMenuItem
             // 
             this.toggleTextureRefreshToolStripMenuItem.Name = "toggleTextureRefreshToolStripMenuItem";
-            this.toggleTextureRefreshToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.toggleTextureRefreshToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.toggleTextureRefreshToolStripMenuItem.Text = "Toggle Texture Refresh";
             this.toggleTextureRefreshToolStripMenuItem.Click += new System.EventHandler(this.ToggleTextureRefreshButtonClicked);
             // 
@@ -487,12 +487,13 @@
             this.toggleAutoSaveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.autoSaveIntervalSelector});
             this.toggleAutoSaveToolStripMenuItem.Name = "toggleAutoSaveToolStripMenuItem";
-            this.toggleAutoSaveToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.toggleAutoSaveToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.toggleAutoSaveToolStripMenuItem.Text = "Toggle AutoSave (Minutes)";
             this.toggleAutoSaveToolStripMenuItem.Click += new System.EventHandler(this.ToggleAutoSaveToolStripMenuItemClick);
             // 
             // autoSaveIntervalSelector
             // 
+            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -503,7 +504,7 @@
             this.dummyThicknessToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.dummyThicknessSelector});
             this.dummyThicknessToolStripMenuItem.Name = "dummyThicknessToolStripMenuItem";
-            this.dummyThicknessToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.dummyThicknessToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.dummyThicknessToolStripMenuItem.Text = "Dummy Thickness";
             // 
             // dummyThicknessSelector
@@ -534,14 +535,14 @@
             // toggleDummyIDsVisibilityToolStripMenuItem
             // 
             this.toggleDummyIDsVisibilityToolStripMenuItem.Name = "toggleDummyIDsVisibilityToolStripMenuItem";
-            this.toggleDummyIDsVisibilityToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.toggleDummyIDsVisibilityToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.toggleDummyIDsVisibilityToolStripMenuItem.Text = "Toggle Dummy IDs Visibility";
             this.toggleDummyIDsVisibilityToolStripMenuItem.Click += new System.EventHandler(this.ToggleDummyIDsVisibilityToolStripMenuItem_Click);
             // 
             // toggleUseWorldOriginToolStripMenuItem
             // 
             this.toggleUseWorldOriginToolStripMenuItem.Name = "toggleUseWorldOriginToolStripMenuItem";
-            this.toggleUseWorldOriginToolStripMenuItem.Size = new System.Drawing.Size(236, 22);
+            this.toggleUseWorldOriginToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
             this.toggleUseWorldOriginToolStripMenuItem.Text = "Toggle Use World Origin";
             this.toggleUseWorldOriginToolStripMenuItem.Click += new System.EventHandler(this.ToggleUseWorldOriginToolStripMenuItem_Click);
             // 
@@ -578,6 +579,7 @@
             // 
             // multiSelectMenuTextbox
             // 
+            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -805,8 +807,8 @@
             this.meshTable.Name = "meshTable";
             this.meshTable.RowHeadersVisible = false;
             this.meshTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.meshTable.Size = new System.Drawing.Size(492, 163);
             this.meshTable.TabIndex = 11;
             this.meshTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MeshTable_CellContentClick);
@@ -924,8 +926,8 @@
             this.dummiesTable.Name = "dummiesTable";
             this.dummiesTable.RowHeadersVisible = false;
             this.dummiesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.dummiesTable.Size = new System.Drawing.Size(492, 171);
             this.dummiesTable.TabIndex = 12;
             this.dummiesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DummiesTable_CellContentClick);
@@ -1713,8 +1715,8 @@
             this.materialsTable.Name = "materialsTable";
             this.materialsTable.RowHeadersVisible = false;
             this.materialsTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
             this.materialsTable.Size = new System.Drawing.Size(468, 394);
             this.materialsTable.TabIndex = 6;
             this.materialsTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.MaterialsTableButtonClicked);
@@ -1866,8 +1868,8 @@
             this.texturesTable.Name = "texturesTable";
             this.texturesTable.RowHeadersVisible = false;
             this.texturesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
             this.texturesTable.Size = new System.Drawing.Size(536, 394);
             this.texturesTable.TabIndex = 7;
             this.texturesTable.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.TexturesTableButtonClicked);
@@ -1930,8 +1932,8 @@
             this.bonesTable.Name = "bonesTable";
             this.bonesTable.RowHeadersVisible = false;
             this.bonesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
             this.bonesTable.Size = new System.Drawing.Size(1021, 456);
             this.bonesTable.TabIndex = 0;
             this.bonesTable.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.BonesTableCellValueChanged);
@@ -2078,12 +2080,12 @@
             this.meshTabDataTableSelector.TabIndex = 1;
             this.meshTabDataTableSelector.SelectedIndexChanged += new System.EventHandler(this.MeshTabDataTableSelector_SelectedIndexChanged);
             // 
-            // dupeMaterialsOnMeshImportToolStripMenuItem
+            // toggleDuplicateMaterialsOnMeshImportToolStripMenuItem
             // 
-            this.dupeMaterialsOnMeshImportToolStripMenuItem.Name = "dupeMaterialsOnMeshImportToolStripMenuItem";
-            this.dupeMaterialsOnMeshImportToolStripMenuItem.Size = new System.Drawing.Size(241, 22);
-            this.dupeMaterialsOnMeshImportToolStripMenuItem.Text = "Dupe Materials on Mesh Import";
-            this.dupeMaterialsOnMeshImportToolStripMenuItem.Click += new System.EventHandler(this.DupeMaterialsOnMeshImportToolStripMenuItem_Click);
+            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Name = "toggleDuplicateMaterialsOnMeshImportToolStripMenuItem";
+            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
+            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Text = "Toggle Duplicate Materials On Mesh Import";
+            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Click += new System.EventHandler(this.ToggleDuplicateMaterialsOnMeshImportToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -2335,6 +2337,6 @@
         private System.Windows.Forms.ToolStripMenuItem toggleUseWorldOriginToolStripMenuItem;
         private System.Windows.Forms.CheckBox vectorModeCheckbox;
         private System.Windows.Forms.ToolTip vectorModeTooltip;
-        private System.Windows.Forms.ToolStripMenuItem dupeMaterialsOnMeshImportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toggleDuplicateMaterialsOnMeshImportToolStripMenuItem;
     }
 }

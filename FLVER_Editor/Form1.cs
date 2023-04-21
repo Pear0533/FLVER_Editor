@@ -93,8 +93,7 @@ namespace FLVER_Editor
         private static bool dispFemaleBody;
         private static bool stopAutoInternalIndexOverride;
         private static bool useWorldOrigin;
-        // TODO: This feature is temporary!
-        public static bool dupeMatOnMeshImport;
+        public static bool toggleDuplicateMaterialsOnMeshImport;
 
         public MainWindow()
         {
@@ -191,7 +190,7 @@ namespace FLVER_Editor
         {
             string dupeMatOnMeshImportStr = userConfigJson["DupeMatOnMeshImport"]?.ToString();
             if (dupeMatOnMeshImportStr == null) return;
-            dupeMatOnMeshImport = bool.Parse(dupeMatOnMeshImportStr);
+            toggleDuplicateMaterialsOnMeshImport = bool.Parse(dupeMatOnMeshImportStr);
         }
 
         private void SetAutoSaveEnabled()
@@ -2952,12 +2951,13 @@ namespace FLVER_Editor
             }
         }
 
-        private void DupeMaterialsOnMeshImportToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ToggleDuplicateMaterialsOnMeshImportToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            dupeMatOnMeshImport = !dupeMatOnMeshImport;
-            userConfigJson["DupeMatOnMeshImport"] = dupeMatOnMeshImport;
+            toggleDuplicateMaterialsOnMeshImport = !toggleDuplicateMaterialsOnMeshImport;
+            userConfigJson["ToggleDuplicateMaterialsOnMeshImport"] = toggleDuplicateMaterialsOnMeshImport;
             WriteUserConfig();
-            ShowInformationDialog("Successfully toggled duplicating materials on mesh import!");
+            ShowInformationDialog(toggleDuplicateMaterialsOnMeshImport ? "Automatic duplication of materials on mesh import is now enabled!"
+                : "Automatic duplication of materials on mesh import is now disabled!");
         }
     }
 }

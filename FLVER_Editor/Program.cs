@@ -49,7 +49,7 @@ namespace FLVER_Editor
 
         private static int FindBoneIndexByName(FLVER flverFile, string name)
         {
-            for (var i = 0; i < flverFile.Bones.Count; ++i)
+            for (int i = 0; i < flverFile.Bones.Count; ++i)
                 if (flverFile.Bones[i].Name == name)
                     return i;
             return -1;
@@ -62,7 +62,7 @@ namespace FLVER_Editor
                 t.Path = newPath;
                 return;
             }
-            var newTexture = new FLVER.Texture { Type = typeName, Path = newPath, ScaleX = 1, ScaleY = 1, Unk10 = 1, Unk11 = true };
+            FLVER.Texture newTexture = new FLVER.Texture { Type = typeName, Path = newPath, ScaleX = 1, ScaleY = 1, Unk10 = 1, Unk11 = true };
             material.Textures.Add(newTexture);
         }
 
@@ -73,7 +73,7 @@ namespace FLVER_Editor
 
         public static FLVER.Material GetBaseMaterial(string albedoPath = null, string metallicPath = null, string normalPath = null)
         {
-            var baseMaterial = new FLVER.Material("", "C[AMSN]_e.mtd", 390)
+            FLVER.Material baseMaterial = new FLVER.Material("", "C[AMSN]_e.mtd", 390)
             {
                 GXBytes = new byte[]
                 {
