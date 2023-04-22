@@ -17,51 +17,144 @@ using Vector4 = System.Numerics.Vector4;
 
 namespace FLVER_Editor
 {
+    /// <summary>
+    /// Part of the program class
+    /// Contains some important tools
+    /// Might need to be sorted a bit more
+    /// </summary>
     internal static partial class Program
     {
-        public static Vector3 toXnaV3(System.Numerics.Vector3 v)
+        /// <summary>
+        /// Retrieves the default buffer layout object for a standard FLVER model file.
+        /// </summary>
+        /// <returns></returns>
+        public static FLVER2.BufferLayout GetDefaultBufferLayout()
         {
-            return new Vector3(v.X, v.Y, v.Z);
-        }
-
-        public static Vector3 toXnaV3XZY(System.Numerics.Vector3 v)
-        {
-            return new Vector3(v.X, v.Z, v.Y);
-        }
-
-        public static System.Numerics.Vector3 findBoneTrans(List<FLVER.Bone> b, int index, System.Numerics.Vector3 v = new System.Numerics.Vector3())
-        {
-            /* if (bonePosList[index] != null)
-             {
-                 return bonePosList[index];
-             }
-
-             if (b[index].ParentIndex == -1)
-             {
-                 v += b[index].Translation;
-                 return v;
-             }
-             Vector3 ans = findBoneTrans(b, b[index].ParentIndex, v);
-             bonePosList[index] = ans;
-             return ans;*/
-            if (bonePosList[index] != null)
+            return new FLVER2.BufferLayout
             {
-                return bonePosList[index].toNumV3();
-            }
-            if (b[index].ParentIndex == -1)
-            {
-                bonePosList[index] = new Vector3D(b[index].Translation);
-                return b[index].Translation;
-            }
-            System.Numerics.Vector3 ans = b[index].Translation + findBoneTrans(b, b[index].ParentIndex);
-            bonePosList[index] = new Vector3D(ans);
-            return ans;
+                new FLVER.LayoutMember(FLVER.LayoutType.Float3, FLVER.LayoutSemantic.Position),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Normal, 12),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Tangent, 16),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Tangent, 16, 1),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.BoneIndices, 24),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4C, FLVER.LayoutSemantic.BoneWeights, 28),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4C, FLVER.LayoutSemantic.VertexColor, 32, 1),
+                new FLVER.LayoutMember(FLVER.LayoutType.UVPair, FLVER.LayoutSemantic.UV, 36),
+            };
         }
 
         /// <summary>
-        ///     Deprecated, cannot solve tangent properly.
+        /// Converts VertexBoneIndices to an int array
+        /// Needed for some null checks
         /// </summary>
-        private static void importObj()
+        /// <param name="boneIndices">A VertexBoneIndices struct to convert</param>
+        /// <returns>A new int array from the contents of the VertexBoneIndices struct</returns>
+        public static int[] BoneIndicesToIntArray(FLVER.VertexBoneIndices boneIndices)
+        {
+            return new int[] { boneIndices[0], boneIndices[1], boneIndices[2], boneIndices[3] };
+        }
+
+        /// <summary>
+        /// Converts VertexBoneWeights to a float array
+        /// Needed for some null checks
+        /// </summary>
+        /// <param name="boneWeights">A VertexBoneWeights struct to convert</param>
+        /// <returns>A new float array from the contents of the VertexBoneWeights struct</returns>
+        public static float[] BoneWeightsToFloatArray(FLVER.VertexBoneWeights boneWeights)
+        {
+            return new float[] { boneWeights[0], boneWeights[1], boneWeights[2], boneWeights[3] };
+        }
+
+        /// <summary>
+        /// Converts a Xna Vector3 to a numerics Vector3
+        /// </summary>
+        /// <param name="vector3">An Xna Vector3</param>
+        /// <returns>A numerics Vector3</returns>
+        public static Vector3 XnaToNumericsVector3(System.Numerics.Vector3 vector3)
+        {
+            return new Vector3(vector3.X, vector3.Y, vector3.Z);
+        }
+
+        /// <summary>
+        /// Converts an Xna Vector3 to a numerics Vector3 while swapping Z and Y
+        /// </summary>
+        /// <param name="vector3">An Xna Vector3</param>
+        /// <returns>A numerics Vector3 with Z and Y swapped</returns>
+        public static Vector3 XnaToNumericsVector3XZY(System.Numerics.Vector3 vector3)
+        {
+            return new Vector3(vector3.X, vector3.Z, vector3.Y);
+        }
+
+        /// <summary>
+        /// Converts a numerics Vector3 to an Xna Vector3D
+        /// </summary>
+        /// <param name="vector3">A numerics Vector3</param>
+        /// <returns>An Xna Vector3</returns>
+        public static Vector3 NumericsToXnaVector3(System.Numerics.Vector3 vector3)
+        {
+            return new Vector3(vector3.X, vector3.Y, vector3.Z);
+        }
+
+        /// <summary>
+        /// Converts a numerics Vector3 to an Xna Vector3D while swapping Z and Y
+        /// </summary>
+        /// <param name="vector3">A numerics Vector3</param>
+        /// <returns>An Xna Vector3 with Z and Y swapped</returns>
+        public static Vector3 NumericsToXnaVector3XZY(System.Numerics.Vector3 vector3)
+        {
+            return new Vector3(vector3.X, vector3.Z, vector3.Y);
+        }
+
+        /// <summary>
+        /// Computes the transform a vertex should have from its bone and that bone's parent bones
+        /// </summary>
+        /// <param name="model">A FLVER model</param>
+        /// <param name="mesh">A mesh from the FLVER model</param>
+        /// <param name="vertex">A vertex from the mesh of the FromSoftware model</param>
+        /// <returns>A transform for vertex from its bone and that bone's parent bones</returns>
+        public static System.Numerics.Matrix4x4 ComputeTransform(FLVER2 model, FLVER2.Mesh mesh, FLVER.Vertex vertex)
+        {
+            if (mesh.Dynamic == 0)
+            {
+                int boneIndiceIndex = vertex.NormalW;
+
+                var bone = model.Bones[mesh.BoneIndices[boneIndiceIndex]];
+                System.Numerics.Matrix4x4 transform = bone.ComputeLocalTransform();
+                while (bone.ParentIndex != -1)
+                {
+                    bone = model.Bones[bone.ParentIndex];
+                    transform *= bone.ComputeLocalTransform();
+                }
+
+                return transform;
+            }
+            else
+            {
+                var transform = new System.Numerics.Matrix4x4();
+
+                for (var i = 0; i < vertex.BoneIndices.Length; i++)
+                {
+                    int boneIndiceIndex = vertex.BoneIndices[i];
+                    var bone = model.Bones[mesh.BoneIndices[boneIndiceIndex]];
+                    var boneTransform = bone.ComputeLocalTransform();
+                    while (bone.ParentIndex != -1)
+                    {
+                        bone = model.Bones[bone.ParentIndex];
+                        boneTransform *= bone.ComputeLocalTransform();
+                    }
+
+                    transform *= boneTransform;
+                }
+
+                return transform;
+            }
+        }
+
+        /// <summary>
+        /// Deprecated, cannot solve tangent properly.
+        /// (-- Note by WarpZephyr: Will be looking into later, the above comment is original FLVER Editor creator)
+        /// </summary>
+        private static void ImportObj()
         {
             var openFileDialog2 = new OpenFileDialog();
             var res = "";
@@ -81,7 +174,7 @@ namespace FLVER_Editor
             msp.Open(openFileDialog3.FileName);
             IObjLoader objLoader = objLoaderFactory.Create(msp);
             var fileStream = new FileStream(res, FileMode.Open);
-            LoadResult result = objLoader.Load(fileStream);
+            LoadResult objModel = objLoader.Load(fileStream);
 
             // ObjLoader.Loader.Data.Elements.Face f = result.Groups[0].Faces[0];
             // ObjLoader.Loader.Data.Elements.FaceVertex[] fv =getVertices(f);
@@ -95,176 +188,220 @@ namespace FLVER_Editor
 
             //Step 1 add a new buffer layout for my program:
             int layoutCount = flver.BufferLayouts.Count;
-            var newBL = new FLVER.BufferLayout();
-            newBL.Add(new FLVER.BufferLayout.Member(0, 0, FLVER.BufferLayout.MemberType.Float3, FLVER.BufferLayout.MemberSemantic.Position, 0));
-            newBL.Add(new FLVER.BufferLayout.Member(0, 12, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.Normal, 0));
-            newBL.Add(new FLVER.BufferLayout.Member(0, 16, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.Tangent, 0));
-            newBL.Add(new FLVER.BufferLayout.Member(0, 20, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.Tangent, 1));
-            newBL.Add(new FLVER.BufferLayout.Member(0, 24, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.BoneIndices, 0));
-            newBL.Add(new FLVER.BufferLayout.Member(0, 28, FLVER.BufferLayout.MemberType.Byte4C, FLVER.BufferLayout.MemberSemantic.BoneWeights, 0));
-            newBL.Add(new FLVER.BufferLayout.Member(0, 32, FLVER.BufferLayout.MemberType.Byte4C, FLVER.BufferLayout.MemberSemantic.VertexColor, 1));
-            newBL.Add(new FLVER.BufferLayout.Member(0, 36, FLVER.BufferLayout.MemberType.UVPair, FLVER.BufferLayout.MemberSemantic.UV, 0));
-            flver.BufferLayouts.Add(newBL);
+            var newBufferLayout = new FLVER2.BufferLayout
+            {
+                    new FLVER.LayoutMember(FLVER.LayoutType.Float3, FLVER.LayoutSemantic.Position, 0),
+                    new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Normal, 0),
+                    new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Tangent, 0),
+                    new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Tangent, 1),
+                    new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.BoneIndices, 0),
+                    new FLVER.LayoutMember(FLVER.LayoutType.Byte4C, FLVER.LayoutSemantic.BoneWeights, 0),
+                    new FLVER.LayoutMember(FLVER.LayoutType.Byte4C,FLVER.LayoutSemantic.VertexColor, 1),
+                    new FLVER.LayoutMember(FLVER.LayoutType.UVPair, FLVER.LayoutSemantic.UV, 0)
+            };
+
+            flver.BufferLayouts.Add(newBufferLayout);
             int materialCount = flver.Materials.Count;
-            var mn = new FLVER.Mesh();
-            mn.MaterialIndex = 0;
-            mn.BoneIndices = new List<int>();
-            mn.BoneIndices.Add(0);
-            mn.BoneIndices.Add(1);
-            mn.BoundingBoxMax = new System.Numerics.Vector3(1, 1, 1);
-            mn.BoundingBoxMin = new System.Numerics.Vector3(-1, -1, -1);
-            mn.BoundingBoxUnk = new System.Numerics.Vector3();
-            mn.Unk1 = 0;
-            mn.DefaultBoneIndex = 0;
-            mn.Dynamic = false;
-            mn.VertexBuffers = new List<FLVER.VertexBuffer>();
-            mn.VertexBuffers.Add(new FLVER.VertexBuffer(0, layoutCount, -1));
-            mn.Vertices = new List<FLVER.Vertex>();
-            // mn.Vertices.Add(generateVertex(new Vector3(1,0,0),new Vector3(0,0,0),new Vector3(0,0,0),new Vector3(0,1,0),new Vector3(1,0,0)));
-            //mn.Vertices.Add(generateVertex(new Vector3(0, 1, 0), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(1, 0, 0)));
-            //mn.Vertices.Add(generateVertex(new Vector3(0, 0, 1), new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(1, 0, 0)));
-            if (result.Groups.Count == 0)
+            var mesh = new FLVER2.Mesh
+            {
+                MaterialIndex = 0,
+                BoneIndices = new List<int> { 0, 1 },
+                DefaultBoneIndex = 0,
+                Dynamic = 0,
+                VertexBuffers = new List<FLVER2.VertexBuffer> { new FLVER2.VertexBuffer(layoutCount) },
+                Vertices = new List<FLVER.Vertex>()
+            };
+            mesh.BoundingBox.Max = new System.Numerics.Vector3(1, 1, 1);
+            mesh.BoundingBox.Min = new System.Numerics.Vector3(-1, -1, -1);
+            mesh.BoundingBox.Unk = new System.Numerics.Vector3();
+            //mesh.Unk1 = 0;
+            
+            if (objModel.Groups.Count == 0)
             {
                 MessageBox.Show("You imported nothing!");
                 return;
             }
+
+            var objNormals = objModel.Normals;
+
             MessageBox.Show("Vertice number:"
-                + result.Vertices.Count
+                + objModel.Vertices.Count
                 + "Texture V number:"
-                + result.Textures.Count
+                + objModel.Textures.Count
                 + "Normal number:"
-                + result.Normals.Count
+                + objNormals.Count
                 + "Face groups:"
-                + result.Groups[0].Faces.Count);
-            var vnlist = new VertexNormalList[result.Vertices.Count + 1];
-            for (var i = 0; i < vnlist.Length; i++)
+                + objModel.Groups[0].Faces.Count);
+            var vertexNormalList = new VertexNormalList[objModel.Vertices.Count + 1];
+            for (var i = 0; i < vertexNormalList.Length; i++)
             {
-                vnlist[i] = new VertexNormalList();
+                vertexNormalList[i] = new VertexNormalList();
             }
-            var faceIndexs = new List<uint>();
-            var textureIndexs = new uint[result.Vertices.Count + 1];
-            foreach (Group gr in result.Groups)
+            var faceIndices = new List<int>();
+            var textureIndices = new int[objModel.Vertices.Count + 1];
+            foreach (Group gr in objModel.Groups)
             {
                 foreach (Face faces in gr.Faces)
                 {
-                    FaceVertex[] vList = getVertices(faces);
-                    /*for (int i3 = 0; i3 < vList.Length - 2; i3++)
+                    FaceVertex[] objFaceVertexList = GetVertices(faces);
+                    
+                    var index = 0;
+                    if (objFaceVertexList.Length == 4)
                     {
-                        faceIndexs.Add((uint)(vList[i3].VertexIndex)-1);
-                        faceIndexs.Add((uint)(vList[i3+1].VertexIndex)-1);
-                        faceIndexs.Add((uint)(vList[i3+2].VertexIndex)-1);
-                    }*/
-                    if (vList.Length == 4)
-                    {
-                        faceIndexs.Add((uint)vList[0].VertexIndex - 1);
-                        faceIndexs.Add((uint)vList[2].VertexIndex - 1);
-                        faceIndexs.Add((uint)vList[1].VertexIndex - 1);
+                        faceIndices.Add(objFaceVertexList[0].VertexIndex - 1);
+                        faceIndices.Add(objFaceVertexList[2].VertexIndex - 1);
+                        faceIndices.Add(objFaceVertexList[1].VertexIndex - 1);
 
                         //record normal to help calculate vertex normals
-                        var helperI = 0;
-                        vnlist[(uint)vList[helperI].VertexIndex - 1].add(new Vector3D(result.Normals[vList[helperI].NormalIndex - 1].X,
-                            result.Normals[vList[helperI].NormalIndex - 1].Y, result.Normals[vList[helperI].NormalIndex - 1].Z));
-                        textureIndexs[vList[helperI].VertexIndex - 1] = (uint)vList[helperI].TextureIndex - 1;
-                        helperI = 2;
-                        vnlist[(uint)vList[helperI].VertexIndex - 1].add(new Vector3D(result.Normals[vList[helperI].NormalIndex - 1].X,
-                            result.Normals[vList[helperI].NormalIndex - 1].Y, result.Normals[vList[helperI].NormalIndex - 1].Z));
-                        textureIndexs[vList[helperI].VertexIndex - 1] = (uint)vList[helperI].TextureIndex - 1;
-                        helperI = 1;
-                        vnlist[(uint)vList[helperI].VertexIndex - 1].add(new Vector3D(result.Normals[vList[helperI].NormalIndex - 1].X,
-                            result.Normals[vList[helperI].NormalIndex - 1].Y, result.Normals[vList[helperI].NormalIndex - 1].Z));
-                        textureIndexs[vList[helperI].VertexIndex - 1] = (uint)vList[helperI].TextureIndex - 1;
-                        faceIndexs.Add((uint)vList[2].VertexIndex - 1);
-                        faceIndexs.Add((uint)vList[0].VertexIndex - 1);
-                        faceIndexs.Add((uint)vList[3].VertexIndex - 1);
-                        helperI = 2;
-                        vnlist[(uint)vList[helperI].VertexIndex - 1].add(new Vector3D(result.Normals[vList[helperI].NormalIndex - 1].X,
-                            result.Normals[vList[helperI].NormalIndex - 1].Y, result.Normals[vList[helperI].NormalIndex - 1].Z));
-                        textureIndexs[vList[helperI].VertexIndex - 1] = (uint)vList[helperI].TextureIndex - 1;
-                        helperI = 0;
-                        vnlist[(uint)vList[helperI].VertexIndex - 1].add(new Vector3D(result.Normals[vList[helperI].NormalIndex - 1].X,
-                            result.Normals[vList[helperI].NormalIndex].Y, result.Normals[vList[helperI].NormalIndex].Z));
-                        textureIndexs[vList[helperI].VertexIndex - 1] = (uint)vList[helperI].TextureIndex - 1;
-                        helperI = 3;
-                        vnlist[(uint)vList[helperI].VertexIndex - 1].add(new Vector3D(result.Normals[vList[helperI].NormalIndex].X,
-                            result.Normals[vList[helperI].NormalIndex].Y, result.Normals[vList[helperI].NormalIndex].Z));
-                        textureIndexs[vList[helperI].VertexIndex - 1] = (uint)vList[helperI].TextureIndex - 1;
+                        var x1 = objNormals[objFaceVertexList[index].NormalIndex - 1].X;
+                        var y1 = objNormals[objFaceVertexList[index].NormalIndex - 1].Y;
+                        var z1 = objNormals[objFaceVertexList[index].NormalIndex - 1].Z;
+                        vertexNormalList[objFaceVertexList[index].VertexIndex - 1].Add(new Vector3D(x1, y1, z1));
+                        textureIndices[objFaceVertexList[index].VertexIndex - 1] = objFaceVertexList[index].TextureIndex - 1;
+
+                        index = 2;
+                        var x2 = objNormals[objFaceVertexList[index].NormalIndex - 1].X;
+                        var y2 = objNormals[objFaceVertexList[index].NormalIndex - 1].Y;
+                        var z2 = objNormals[objFaceVertexList[index].NormalIndex - 1].Z;
+                        vertexNormalList[objFaceVertexList[index].VertexIndex - 1].Add(new Vector3D(x2, y2, z2));
+                        textureIndices[objFaceVertexList[index].VertexIndex - 1] = objFaceVertexList[index].TextureIndex - 1;
+
+                        index = 1;
+                        var x3 = objNormals[objFaceVertexList[index].NormalIndex - 1].X;
+                        var y3 = objNormals[objFaceVertexList[index].NormalIndex - 1].Y;
+                        var z3 = objNormals[objFaceVertexList[index].NormalIndex - 1].Z;
+                        vertexNormalList[objFaceVertexList[index].VertexIndex - 1].Add(new Vector3D(x3, y3, z3));
+                        textureIndices[objFaceVertexList[index].VertexIndex - 1] = objFaceVertexList[index].TextureIndex - 1;
+
+                        faceIndices.Add(objFaceVertexList[2].VertexIndex - 1);
+                        faceIndices.Add(objFaceVertexList[0].VertexIndex - 1);
+                        faceIndices.Add(objFaceVertexList[3].VertexIndex - 1);
+
+                        index = 2;
+                        var x4 = objNormals[objFaceVertexList[index].NormalIndex - 1].X;
+                        var y4 = objNormals[objFaceVertexList[index].NormalIndex - 1].Y;
+                        var z4 = objNormals[objFaceVertexList[index].NormalIndex - 1].Z;
+                        vertexNormalList[objFaceVertexList[index].VertexIndex - 1].Add(new Vector3D(x4, y4, z4));
+                        textureIndices[objFaceVertexList[index].VertexIndex - 1] = objFaceVertexList[index].TextureIndex - 1;
+
+                        index = 0;
+                        var x5 = objNormals[objFaceVertexList[index].NormalIndex - 1].X;
+                        var y5 = objNormals[objFaceVertexList[index].NormalIndex].Y;
+                        var z5 = objNormals[objFaceVertexList[index].NormalIndex].Z;
+                        vertexNormalList[objFaceVertexList[index].VertexIndex - 1].Add(new Vector3D(x5, y5, z5));
+                        textureIndices[objFaceVertexList[index].VertexIndex - 1] = objFaceVertexList[index].TextureIndex - 1;
+
+                        index = 3;
+                        vertexNormalList[objFaceVertexList[index].VertexIndex - 1].Add(new Vector3D(objNormals[objFaceVertexList[index].NormalIndex].X,
+                            objNormals[objFaceVertexList[index].NormalIndex].Y, objNormals[objFaceVertexList[index].NormalIndex].Z));
+                        textureIndices[objFaceVertexList[index].VertexIndex - 1] = (objFaceVertexList[index].TextureIndex - 1);
                     }
-                    else if (vList.Length == 3)
+                    else if (objFaceVertexList.Length == 3)
                     {
-                        faceIndexs.Add((uint)vList[0].VertexIndex - 1);
-                        faceIndexs.Add((uint)vList[2].VertexIndex - 1);
-                        faceIndexs.Add((uint)vList[1].VertexIndex - 1);
-                        var helperI = 2;
-                        vnlist[(uint)vList[helperI].VertexIndex - 1].add(new Vector3D(result.Normals[vList[helperI].NormalIndex - 1].X,
-                            result.Normals[vList[helperI].NormalIndex - 1].Y, result.Normals[vList[helperI].NormalIndex - 1].Z));
-                        textureIndexs[vList[helperI].VertexIndex - 1] = (uint)vList[helperI].TextureIndex - 1;
-                        helperI = 0;
-                        vnlist[(uint)vList[helperI].VertexIndex - 1].add(new Vector3D(result.Normals[vList[helperI].NormalIndex - 1].X,
-                            result.Normals[vList[helperI].NormalIndex - 1].Y, result.Normals[vList[helperI].NormalIndex - 1].Z));
-                        textureIndexs[vList[helperI].VertexIndex - 1] = (uint)vList[helperI].TextureIndex - 1;
-                        helperI = 1;
-                        vnlist[(uint)vList[helperI].VertexIndex - 1].add(new Vector3D(result.Normals[vList[helperI].NormalIndex - 1].X,
-                            result.Normals[vList[helperI].NormalIndex - 1].Y, result.Normals[vList[helperI].NormalIndex - 1].Z));
-                        textureIndexs[vList[helperI].VertexIndex - 1] = (uint)vList[helperI].TextureIndex - 1;
+                        faceIndices.Add(objFaceVertexList[0].VertexIndex - 1);
+                        faceIndices.Add(objFaceVertexList[2].VertexIndex - 1);
+                        faceIndices.Add(objFaceVertexList[1].VertexIndex - 1);
+
+                        index = 2;
+                        var x1 = objNormals[objFaceVertexList[index].NormalIndex - 1].X;
+                        var y1 = objNormals[objFaceVertexList[index].NormalIndex - 1].Y;
+                        var z1 = objNormals[objFaceVertexList[index].NormalIndex - 1].Z;
+                        vertexNormalList[objFaceVertexList[index].VertexIndex - 1].Add(new Vector3D(x1, y1, z1));
+                        textureIndices[objFaceVertexList[index].VertexIndex - 1] = objFaceVertexList[index].TextureIndex - 1;
+
+                        index = 0;
+                        var x2 = objNormals[objFaceVertexList[index].NormalIndex - 1].X;
+                        var y2 = objNormals[objFaceVertexList[index].NormalIndex - 1].Y;
+                        var z2 = objNormals[objFaceVertexList[index].NormalIndex - 1].Z;
+                        vertexNormalList[objFaceVertexList[index].VertexIndex - 1].Add(new Vector3D(x2, y2, z2));
+                        textureIndices[objFaceVertexList[index].VertexIndex - 1] = objFaceVertexList[index].TextureIndex - 1;
+
+                        index = 1;
+                        var x3 = objNormals[objFaceVertexList[index].NormalIndex - 1].X;
+                        var y3 = objNormals[objFaceVertexList[index].NormalIndex - 1].Y;
+                        var z3 = objNormals[objFaceVertexList[index].NormalIndex - 1].Z;
+                        vertexNormalList[objFaceVertexList[index].VertexIndex - 1].Add(new Vector3D(x3, y3, z3));
+                        textureIndices[objFaceVertexList[index].VertexIndex - 1] = objFaceVertexList[index].TextureIndex - 1;
                     }
                 }
             }
-            //mn.FaceSets[0].Vertices = new uint [3]{0,1,2 };
-            mn.FaceSets = new List<FLVER.FaceSet>();
-            //FLVER.Vertex myv = new FLVER.Vertex();
-            //myv.Colors = new List<FLVER.Vertex.Color>();
-            mn.FaceSets.Add(generateBasicFaceSet());
-            mn.FaceSets[0].Vertices = faceIndexs.ToArray();
+
+            mesh.FaceSets = new List<FLVER2.FaceSet>
+            {
+                GenerateBasicFaceSet()
+            };
+            mesh.FaceSets[0].Indices = faceIndices;
 
             //Set all the vertices.
-            for (var iv = 0; iv < result.Vertices.Count; iv++)
+            for (var i = 0; i < objModel.Vertices.Count; i++)
             {
-                Vertex v = result.Vertices[iv];
-                var uv1 = new System.Numerics.Vector3();
-                var uv2 = new System.Numerics.Vector3();
-                var normal = new System.Numerics.Vector3(0, 1, 0);
-                var tangent = new System.Numerics.Vector3(1, 0, 0);
-                if (result.Textures != null)
+                // Create new vertex data
+                Vertex objVertex = objModel.Vertices[i];
+                var newNormal = new System.Numerics.Vector3(0, 1, 0);
+                var newTangents = new List<System.Numerics.Vector3>
                 {
-                    if (iv < result.Textures.Count)
+                    new System.Numerics.Vector3(1, 0, 0)
+                };
+
+                var newUVs = new List<System.Numerics.Vector3> 
+                {
+                    new System.Numerics.Vector3(), new System.Numerics.Vector3()
+                };
+
+                // Prepare new vertex data
+                newNormal = vertexNormalList[i].CalculateAvgNormal().ToNumericsVector3();
+                newTangents[0] = RotatePoint(newNormal, 0, (float)Math.PI / 2, 0);
+
+                var newBiTangentRotation = RotatePoint(newNormal, 0, (float)Math.PI / 2, 0);
+                var newBiTangent = new Vector4(newBiTangentRotation.X, newBiTangentRotation.Y, newBiTangentRotation.Z, 0);
+
+                if (objModel.Textures != null)
+                {
+                    if (i < objModel.Textures.Count)
                     {
-                        Texture vm = result.Textures[(int)textureIndexs[iv]];
-                        uv1 = new System.Numerics.Vector3(vm.X, vm.Y, 0);
-                        uv2 = new System.Numerics.Vector3(vm.X, vm.Y, 0);
+                        Texture vm = objModel.Textures[textureIndices[i]];
+                        newUVs[0] = new System.Numerics.Vector3(vm.X, vm.Y, 0);
+                        newUVs[1] = new System.Numerics.Vector3(vm.X, vm.Y, 0);
                     }
                 }
-                normal = vnlist[iv].calculateAvgNormal().toNumV3();
-                tangent = RotatePoint(normal, 0, (float)Math.PI / 2, 0);
-                mn.Vertices.Add(generateVertex(new System.Numerics.Vector3(v.X, v.Y, v.Z), uv1, uv2, normal, tangent));
+
+                //
+                mesh.Vertices.Add(GenerateNewFlverVertexUsingNumericsTan(new System.Numerics.Vector3(objVertex.X, objVertex.Y, objVertex.Z), newNormal, newTangents, newBiTangent, newUVs));
             }
-            var matnew = new JavaScriptSerializer().Deserialize<FLVER.Material>(new JavaScriptSerializer().Serialize(flver.Materials[0]));
+            var matnew = new JavaScriptSerializer().Deserialize<FLVER2.Material>(new JavaScriptSerializer().Serialize(flver.Materials[0]));
             matnew.Name = res.Substring(res.LastIndexOf('\\') + 1);
             flver.Materials.Add(matnew);
-            mn.MaterialIndex = materialCount;
-            flver.Meshes.Add(mn);
+            mesh.MaterialIndex = materialCount;
+            flver.Meshes.Add(mesh);
             MessageBox.Show("Added a custom mesh! PLease click modify to save it!");
             MainWindow.UpdateMesh();
             //mn.Vertices.Add();
         }
 
-        private static void printNodeStruct(Node n, int depth = 0, string parent = null)
+        /// <summary>
+        /// Prints an Assimp node structure to the console with the depth specified
+        /// </summary>
+        /// <param name="node">The starting child node</param>
+        /// <param name="depth">The depth to go to in the node structure</param>
+        /// <param name="parent">The parent node of the chosen child node, optional</param>
+        private static void PrintNodeStruct(Node node, int depth = 0, string parent = null)
         {
-            if (n.ChildCount == 0)
+            if (node.ChildCount == 0)
             {
                 var pred = "";
                 for (var i = 0; i < depth; i++)
                 {
                     pred += "\t";
                 }
-                if (!n.Name.Contains("$AssimpFbx$"))
+                if (!node.Name.Contains("$AssimpFbx$"))
                 {
-                    if (!boneParentList.ContainsKey(n.Name))
-                        boneParentList.Add(n.Name, parent);
+                    if (!boneParentList.ContainsKey(node.Name))
+                        boneParentList.Add(node.Name, parent);
                     if (parent == null)
                     {
                         parent = "";
                     }
-                    Console.Write(pred + parent + "->" + n.Name + "\n");
+                    Console.Write(pred + parent + "->" + node.Name + "\n");
                 }
             }
             else
@@ -276,148 +413,344 @@ namespace FLVER_Editor
                 }
                 string nextParent = parent;
                 var increase = 0;
-                if (!n.Name.Contains("$AssimpFbx$"))
+                if (!node.Name.Contains("$AssimpFbx$"))
                 {
-                    nextParent = n.Name;
-                    if (!boneParentList.ContainsKey(n.Name))
-                        boneParentList.Add(n.Name, parent);
+                    nextParent = node.Name;
+                    if (!boneParentList.ContainsKey(node.Name))
+                        boneParentList.Add(node.Name, parent);
                     if (parent == null)
                     {
                         parent = "";
                     }
                     increase = 1;
-                    Console.Write(pred + parent + "->" + n.Name + "\n");
+                    Console.Write(pred + parent + "->" + node.Name + "\n");
                 }
-                foreach (Node nn in n.Children)
+                foreach (Node nn in node.Children)
                 {
-                    printNodeStruct(nn, depth + increase, nextParent);
+                    PrintNodeStruct(nn, depth + increase, nextParent);
                 }
             }
         }
 
-        private static Vector3D getMyV3D(Assimp.Vector3D v)
+        /// <summary>
+        /// Converts an Assimp Vector3D to a Vector3D type by FLVER Editor
+        /// </summary>
+        /// <param name="vector3D">An Assimp Vector3D</param>
+        /// <returns>A FLVER Editor Vector3D</returns>
+        private static Vector3D AssimpVector3DToFEVector3D(Assimp.Vector3D vector3D)
         {
-            return new Vector3D(v.X, v.Y, v.Z);
+            return new Vector3D(vector3D.X, vector3D.Y, vector3D.Z);
         }
 
-        public static FLVER.FaceSet generateBasicFaceSet()
+        /// <summary>
+        /// Converts an Xna Vector3 to a Vector3D type by FLVER Editor
+        /// </summary>
+        /// <param name="vector3">An Xna Vector3</param>
+        /// <returns>A FLVER Editor Vector3D</returns>
+        private static Vector3D ConvertXnaVector3ToInternalVector3D(Microsoft.Xna.Framework.Vector3 vector3)
         {
-            var ans = new FLVER.FaceSet();
-            ans.CullBackfaces = true;
-            ans.TriangleStrip = false;
-            ans.Unk06 = 1;
-            ans.Unk07 = 0;
-            ans.IndexSize = 16;
-            return ans;
+            return new Vector3D(vector3.X, vector3.Y, vector3.Z);
         }
 
-        public static FLVER.Vertex generateVertex(System.Numerics.Vector3 pos, System.Numerics.Vector3 uv1, System.Numerics.Vector3 uv2, System.Numerics.Vector3 normal,
-            System.Numerics.Vector3 tangets, int tangentW = -1)
+        /// <summary>
+        /// Generates a new basic FLVER2 FaceSet
+        /// </summary>
+        /// <returns></returns>
+        public static FLVER2.FaceSet GenerateBasicFaceSet()
         {
-            var ans = new FLVER.Vertex();
-            ans.Positions = new List<System.Numerics.Vector3>();
-            ans.Positions.Add(pos);
-            ans.BoneIndices = new int[4] { 0, 0, 0, 0 };
-            ans.BoneWeights = new float[4] { 1, 0, 0, 0 };
-            ans.UVs = new List<System.Numerics.Vector3>();
-            ans.UVs.Add(uv1);
-            ans.UVs.Add(uv2);
-            ans.Normals = new List<Vector4>();
-            ans.Normals.Add(new Vector4(normal.X, normal.Y, normal.Z, -1f));
-            ans.Tangents = new List<Vector4>();
-            ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangentW));
-            ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangentW));
-            ans.Colors = new List<FLVER.Vertex.Color>();
-            ans.Colors.Add(new FLVER.Vertex.Color(255, 255, 255, 255));
-            return ans;
+            var newFaceSet = new FLVER2.FaceSet
+            {
+                TriangleStrip = false,
+                CullBackfaces = true,
+                Unk06 = 1
+            };
+            return newFaceSet;
         }
 
-        public static FLVER.Vertex generateVertexV4(System.Numerics.Vector3 pos, System.Numerics.Vector3 uv1, System.Numerics.Vector3 uv2, Vector4 normal, Vector4 tangets, int tangentW = -1)
+        /// <summary>
+        /// Generates a new FLVER Vertex using an existing FLVER vertex
+        /// BoneIndices and BoneWeights will be created new all set to zero except for the first element of the BoneWeights
+        /// </summary>
+        /// <param name="vertex">A FLVER vertex</param>
+        /// <returns>A new flver vertex</returns>
+        public static FLVER.Vertex GenerateNewFlverVertex(FLVER.Vertex vertex)
         {
-            FLVER.Vertex ans = new FLVER.Vertex();
-            ans.Positions = new List<System.Numerics.Vector3>();
-            ans.Positions.Add(pos);
-            ans.BoneIndices = new int[4] { 0, 0, 0, 0 };
-            ans.BoneWeights = new float[4] { 1, 0, 0, 0 };
-            ans.UVs = new List<System.Numerics.Vector3>();
-            ans.UVs.Add(uv1);
-            ans.UVs.Add(uv2);
-            ans.Normals = new List<Vector4>();
-            ans.Normals.Add(new Vector4(normal.X, normal.Y, normal.Z, normal.W));
-            ans.Tangents = new List<Vector4>();
-            ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangets.W));
-            ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangets.W));
-            ans.Colors = new List<FLVER.Vertex.Color>();
-            ans.Colors.Add(new FLVER.Vertex.Color(255, 255, 255, 255));
-            return ans;
+            var newBoneIndices = new FLVER.VertexBoneIndices();
+            newBoneIndices[0] = 0;
+            newBoneIndices[1] = 0;
+            newBoneIndices[2] = 0;
+            newBoneIndices[3] = 0;
+
+            var newBoneWeights = new FLVER.VertexBoneWeights();
+            newBoneWeights[0] = 1;
+            newBoneWeights[1] = 0;
+            newBoneWeights[2] = 0;
+            newBoneWeights[3] = 0;
+
+            var newUVs = new List<System.Numerics.Vector3>();
+            foreach (var UV in vertex.UVs) newUVs.Add(new System.Numerics.Vector3(UV.X, UV.Y, UV.Z));
+
+            var newTangents = new List<Vector4>();
+            foreach (var tangent in vertex.Tangents) newTangents.Add(new Vector4(tangent.X, tangent.Y, tangent.Z, tangent.W));
+
+            var newColors = new List<FLVER.VertexColor>();
+            foreach (var color in vertex.Colors) newColors.Add(new FLVER.VertexColor(color.A, color.R, color.G, color.B));
+
+            FLVER.Vertex newVertex = new FLVER.Vertex
+            {
+                Position = new System.Numerics.Vector3(vertex.Position.X, vertex.Position.Y, vertex.Position.Z),
+                BoneIndices = newBoneIndices,
+                BoneWeights = newBoneWeights,
+                Normal = new System.Numerics.Vector3(vertex.Normal.X, vertex.Normal.Y, vertex.Normal.Z),
+                NormalW = vertex.NormalW,
+                UVs = newUVs,
+                Tangents = newTangents,
+                Bitangent = new Vector4(vertex.Bitangent.X, vertex.Bitangent.Y, vertex.Bitangent.Z, vertex.Bitangent.W),
+                Colors = newColors,
+            };
+
+            return newVertex;
         }
 
-        private static FLVER.Vertex generateVertexNew(System.Numerics.Vector3 pos, List<System.Numerics.Vector3> uvs, System.Numerics.Vector3 normal,
-            System.Numerics.Vector3 tangets, int tangentW = -1)
+        /// <summary>
+        /// Generates a new FLVER Vertex using System.Numerics parameters
+        /// BoneIndices and BoneWeights will be created new all set to zero except for the first element of the BoneWeights
+        /// Colors will be generated as a single color set to 255 for all values
+        /// NormalW can be set but will default to -1 if not set
+        /// </summary>
+        /// <param name="position">A Vector3 of the position of the vertex</param>
+        /// <param name="normal">A Vector3 of the normal of the vertex</param>
+        /// <param name="tangents">A list of Vector4 tangents, all tangents in the list will be added</param>
+        /// <param name="bitangent">A Vector4 representing the bitangent of the vertex</param>
+        /// <param name="UVs">A list of Vector3 representing UVs of the vertex, all UVs in the list will be added</param>
+        /// <param name="normalW">An int for the normalW of the vertex, will be -1 by default if not set</param>
+        /// <returns>A new flver vertex</returns>
+        public static FLVER.Vertex GenerateNewFlverVertexUsingNumerics(System.Numerics.Vector3 position, System.Numerics.Vector3 normal, List<Vector4> tangents, Vector4 bitangent, List<System.Numerics.Vector3> UVs, int normalW = -1)
         {
-            var ans = new FLVER.Vertex();
-            ans.Positions = new List<System.Numerics.Vector3>();
-            ans.Positions.Add(pos);
-            ans.BoneIndices = new int[4] { 0, 0, 0, 0 };
-            ans.BoneWeights = new float[4] { 1, 0, 0, 0 };
-            ans.UVs = new List<System.Numerics.Vector3>();
-            foreach (System.Numerics.Vector3 uv in uvs)
-                ans.UVs.Add(uv);
-            ans.Normals = new List<Vector4>();
-            ans.Normals.Add(new Vector4(normal.X, normal.Y, normal.Z, -1f));
-            ans.Tangents = new List<Vector4>();
-            ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangentW));
-            ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangentW));
-            ans.Colors = new List<FLVER.Vertex.Color>();
-            ans.Colors.Add(new FLVER.Vertex.Color(255, 255, 255, 255));
-            return ans;
+            var newBoneIndices = new FLVER.VertexBoneIndices();
+            newBoneIndices[0] = 0;
+            newBoneIndices[1] = 0;
+            newBoneIndices[2] = 0;
+            newBoneIndices[3] = 0;
+
+            var newBoneWeights = new FLVER.VertexBoneWeights();
+            newBoneWeights[0] = 1;
+            newBoneWeights[1] = 0;
+            newBoneWeights[2] = 0;
+            newBoneWeights[3] = 0;
+
+            var newUVs = new List<System.Numerics.Vector3>();
+            foreach (var UV in UVs) newUVs.Add(new System.Numerics.Vector3(UV.X, UV.Y, UV.Z));
+
+            var newTangents = new List<Vector4>
+            {
+                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, tangents[0].W),
+                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, tangents[0].W)
+            };
+
+            var newColors = new List<FLVER.VertexColor>
+            {
+                new FLVER.VertexColor(255, 255, 255, 255)
+            };
+
+            FLVER.Vertex newVertex = new FLVER.Vertex
+            {
+                Position = new System.Numerics.Vector3(position.X, position.Y, position.Z),
+                BoneIndices = newBoneIndices,
+                BoneWeights = newBoneWeights,
+                Normal = new System.Numerics.Vector3(normal.X, normal.Y, normal.Z),
+                NormalW = normalW,
+                UVs = newUVs,
+                Tangents = newTangents,
+                Bitangent = new Vector4(bitangent.X, bitangent.Y, bitangent.Z, bitangent.W),
+                Colors = newColors,
+            };
+            return newVertex;
         }
 
-        private static FLVER.Vertex generateVertex(System.Numerics.Vector3 pos, System.Numerics.Vector3 uv1, System.Numerics.Vector3 uv2, Vector4 normal, Vector4 tangets,
-            int tangentW = -1)
+        /// <summary>
+        /// Generates a new FLVER Vertex using Microsoft.Xna.Framework parameters
+        /// BoneIndices and BoneWeights will be created new all set to zero except for the first element of the BoneWeights
+        /// Colors will be generated as a single color set to 255 for all values
+        /// NormalW can be set but will default to -1 if not set
+        /// </summary>
+        /// <param name="position">An Xna Vector3 of the position of the vertex</param>
+        /// <param name="normal">An Xna Vector3 of the normal of the vertex</param>
+        /// <param name="tangents">A list of Xna Vector4 tangents, all tangents in the list will be added</param>
+        /// <param name="bitangent">An Xna Vector4 representing the bitangent of the vertex</param>
+        /// <param name="UVs">A list of Xna Vector3 representing UVs of the vertex, all UVs in the list will be added</param>
+        /// <param name="normalW">An int for the normalW of the vertex, will be -1 by default if not set</param>
+        /// <returns>A new flver vertex</returns>
+        public static FLVER.Vertex GenerateNewFlverVertexUsingXna(Vector3 position, Vector3 normal, List<Microsoft.Xna.Framework.Vector4> tangents, Microsoft.Xna.Framework.Vector4 bitangent, List<Vector3> UVs, int normalW = -1)
         {
-            var ans = new FLVER.Vertex();
-            ans.Positions = new List<System.Numerics.Vector3>();
-            ans.Positions.Add(pos);
-            ans.BoneIndices = new int[4] { 0, 0, 0, 0 };
-            ans.BoneWeights = new float[4] { 1, 0, 0, 0 };
-            ans.UVs = new List<System.Numerics.Vector3>();
-            ans.UVs.Add(uv1);
-            ans.UVs.Add(uv2);
-            ans.Normals = new List<Vector4>();
-            ans.Normals.Add(new Vector4(normal.X, normal.Y, normal.Z, normal.W));
-            ans.Tangents = new List<Vector4>();
-            ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangets.W));
-            ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangets.W));
-            ans.Colors = new List<FLVER.Vertex.Color>();
-            ans.Colors.Add(new FLVER.Vertex.Color(255, 255, 255, 255));
-            return ans;
+            var newBoneIndices = new FLVER.VertexBoneIndices();
+            newBoneIndices[0] = 0;
+            newBoneIndices[1] = 0;
+            newBoneIndices[2] = 0;
+            newBoneIndices[3] = 0;
+
+            var newBoneWeights = new FLVER.VertexBoneWeights();
+            newBoneWeights[0] = 1;
+            newBoneWeights[1] = 0;
+            newBoneWeights[2] = 0;
+            newBoneWeights[3] = 0;
+
+            var newUVs = new List<System.Numerics.Vector3>();
+            foreach (var UV in UVs) newUVs.Add(new System.Numerics.Vector3(UV.X, UV.Y, UV.Z));
+
+            var newTangents = new List<Vector4>
+            {
+                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, tangents[0].W),
+                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, tangents[0].W)
+            };
+
+            var newColors = new List<FLVER.VertexColor>
+            {
+                new FLVER.VertexColor(255, 255, 255, 255)
+            };
+
+            FLVER.Vertex newVertex = new FLVER.Vertex
+            {
+                Position = new System.Numerics.Vector3(position.X, position.Y, position.Z),
+                BoneIndices = newBoneIndices,
+                BoneWeights = newBoneWeights,
+                Normal = new System.Numerics.Vector3(normal.X, normal.Y, normal.Z),
+                NormalW = normalW,
+                UVs = newUVs,
+                Tangents = newTangents,
+                Bitangent = new Vector4(bitangent.X, bitangent.Y, bitangent.Z, bitangent.W),
+                Colors = newColors,
+            };
+
+            return newVertex;
         }
 
-        private static FLVER.Vertex generateVertex2tan(System.Numerics.Vector3 pos, System.Numerics.Vector3 uv1, System.Numerics.Vector3 uv2, System.Numerics.Vector3 normal,
-            System.Numerics.Vector3 tangets, System.Numerics.Vector3 tangets2, int tangentW = -1)
+        /// <summary>
+        /// Generates a new FLVER Vertex using System.Numerics parameters
+        /// BoneIndices and BoneWeights will be created new all set to zero except for the first element of the BoneWeights
+        /// Colors will be generated as a single color set to 255 for all values
+        /// NormalW can be set but will default to -1 if not set
+        /// </summary>
+        /// <param name="position">A Vector3 of the position of the vertex</param>
+        /// <param name="normal">A Vector3 of the normal of the vertex</param>
+        /// <param name="tangents">A list of Vector3 tangents, all tangents in the list will be added</param>
+        /// <param name="bitangent">A Vector4 representing the bitangent of the vertex</param>
+        /// <param name="UVs">A list of Vector3 representing UVs of the vertex, all UVs in the list will be added</param>
+        /// <param name="tangentW">An int for the tangent W of the vertex, will be -1 by default if not set</param>
+        /// <param name="normalW">An int for the normalW of the vertex, will be -1 by default if not set</param>
+        /// <returns>A new flver vertex</returns>
+        public static FLVER.Vertex GenerateNewFlverVertexUsingNumericsTan(System.Numerics.Vector3 position, System.Numerics.Vector3 normal, List<System.Numerics.Vector3> tangents, Vector4 bitangent, List<System.Numerics.Vector3> UVs, int tangentW = -1, int normalW = -1)
         {
-            var ans = new FLVER.Vertex();
-            ans.Positions = new List<System.Numerics.Vector3>();
-            ans.Positions.Add(pos);
-            ans.BoneIndices = new int[4] { 0, 0, 0, 0 };
-            ans.BoneWeights = new float[4] { 1, 0, 0, 0 };
-            ans.UVs = new List<System.Numerics.Vector3>();
-            ans.UVs.Add(uv1);
-            ans.UVs.Add(uv2);
-            ans.Normals = new List<Vector4>();
-            ans.Normals.Add(new Vector4(normal.X, normal.Y, normal.Z, -1f));
-            ans.Tangents = new List<Vector4>();
-            ans.Tangents.Add(new Vector4(tangets.X, tangets.Y, tangets.Z, tangentW));
-            ans.Tangents.Add(new Vector4(tangets2.X, tangets2.Y, tangets2.Z, tangentW));
-            ans.Colors = new List<FLVER.Vertex.Color>();
-            ans.Colors.Add(new FLVER.Vertex.Color(255, 255, 255, 255));
-            return ans;
+            var newBoneIndices = new FLVER.VertexBoneIndices();
+            newBoneIndices[0] = 0;
+            newBoneIndices[1] = 0;
+            newBoneIndices[2] = 0;
+            newBoneIndices[3] = 0;
+
+            var newBoneWeights = new FLVER.VertexBoneWeights();
+            newBoneWeights[0] = 1;
+            newBoneWeights[1] = 0;
+            newBoneWeights[2] = 0;
+            newBoneWeights[3] = 0;
+
+            var newUVs = new List<System.Numerics.Vector3>();
+            foreach (var UV in UVs) newUVs.Add(new System.Numerics.Vector3(UV.X, UV.Y, UV.Z));
+
+            var newTangents = new List<Vector4>
+            {
+                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, tangentW),
+                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, tangentW)
+            };
+
+            var newColors = new List<FLVER.VertexColor>
+            {
+                new FLVER.VertexColor(255, 255, 255, 255)
+            };
+
+            FLVER.Vertex newVertex = new FLVER.Vertex
+            {
+                Position = new System.Numerics.Vector3(position.X, position.Y, position.Z),
+                BoneIndices = newBoneIndices,
+                BoneWeights = newBoneWeights,
+                Normal = new System.Numerics.Vector3(normal.X, normal.Y, normal.Z),
+                NormalW = normalW,
+                UVs = newUVs,
+                Tangents = newTangents,
+                Bitangent = new Vector4(bitangent.X, bitangent.Y, bitangent.Z, bitangent.W),
+                Colors = newColors,
+            };
+            return newVertex;
+        }
+
+        /// <summary>
+        /// Generates a new FLVER Vertex using Microsoft.Xna.Framework parameters
+        /// BoneIndices and BoneWeights will be created new all set to zero except for the first element of the BoneWeights
+        /// Colors will be generated as a single color set to 255 for all values
+        /// NormalW can be set but will default to -1 if not set
+        /// </summary>
+        /// <param name="position">An Xna Vector3 of the position of the vertex</param>
+        /// <param name="normal">An Xna Vector3 of the normal of the vertex</param>
+        /// <param name="tangents">A list of Xna Vector4 tangents, all tangents in the list will be added</param>
+        /// <param name="bitangent">An Xna Vector4 representing the bitangent of the vertex</param>
+        /// <param name="UVs">A list of Xna Vector3 representing UVs of the vertex, all UVs in the list will be added</param>
+        /// <param name="normalW">An int for the normalW of the vertex, will be -1 by default if not set</param>
+        /// <param name="tangentW">An int for the tangent W of the vertex, will be -1 by default if not set</param>
+        /// <returns>A new flver vertex</returns>
+        public static FLVER.Vertex GenerateNewFlverVertexUsingXnaTan(Vector3 position, Vector3 normal, List<Vector3> tangents, Microsoft.Xna.Framework.Vector4 bitangent, List<Vector3> UVs, int tangentW = -1, int normalW = -1)
+        {
+            var newBoneIndices = new FLVER.VertexBoneIndices();
+            newBoneIndices[0] = 0;
+            newBoneIndices[1] = 0;
+            newBoneIndices[2] = 0;
+            newBoneIndices[3] = 0;
+
+            var newBoneWeights = new FLVER.VertexBoneWeights();
+            newBoneWeights[0] = 1;
+            newBoneWeights[1] = 0;
+            newBoneWeights[2] = 0;
+            newBoneWeights[3] = 0;
+
+            var newUVs = new List<System.Numerics.Vector3>();
+            foreach (var UV in UVs) newUVs.Add(new System.Numerics.Vector3(UV.X, UV.Y, UV.Z));
+
+            var newTangents = new List<Vector4>
+            {
+                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, tangentW),
+                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, tangentW)
+            };
+
+            var newColors = new List<FLVER.VertexColor>
+            {
+                new FLVER.VertexColor(255, 255, 255, 255)
+            };
+
+            FLVER.Vertex newVertex = new FLVER.Vertex
+            {
+                Position = new System.Numerics.Vector3(position.X, position.Y, position.Z),
+                BoneIndices = newBoneIndices,
+                BoneWeights = newBoneWeights,
+                Normal = new System.Numerics.Vector3(normal.X, normal.Y, normal.Z),
+                NormalW = normalW,
+                UVs = newUVs,
+                Tangents = newTangents,
+                Bitangent = new Vector4(bitangent.X, bitangent.Y, bitangent.Z, bitangent.W),
+                Colors = newColors,
+            };
+
+            return newVertex;
         }
 
         /*************** Basic Tools section *****************/
 
-        public static System.Numerics.Vector3 RotatePoint(System.Numerics.Vector3 p, float pitch, float roll, float yaw)
+        /// <summary>
+        /// Rotate a numerics Vector3 point
+        /// </summary>
+        /// <param name="point">The numerics Vector3 point to rotate</param>
+        /// <param name="pitch">The pitch to rotate by as a float</param>
+        /// <param name="roll">The roll to rotate by as a float</param>
+        /// <param name="yaw">The yaw to rotate by as a float</param>
+        /// <returns>A rotated numerics Vector3</returns>
+        public static System.Numerics.Vector3 RotatePoint(System.Numerics.Vector3 point, float pitch, float roll, float yaw)
         {
             var ans = new System.Numerics.Vector3(0, 0, 0);
             double cosa = Math.Cos(yaw);
@@ -435,18 +768,26 @@ namespace FLVER_Editor
             double Azx = -sinb;
             double Azy = cosb * sinc;
             double Azz = cosb * cosc;
-            float px = p.X;
-            float py = p.Y;
-            float pz = p.Z;
+            float px = point.X;
+            float py = point.Y;
+            float pz = point.Z;
             ans.X = (float)(Axx * px + Axy * py + Axz * pz);
             ans.Y = (float)(Ayx * px + Ayy * py + Ayz * pz);
             ans.Z = (float)(Azx * px + Azy * py + Azz * pz);
             return ans;
         }
 
-        public static Vector4 RotatePoint(Vector4 p, float pitch, float roll, float yaw)
+        /// <summary>
+        /// Rotate a numerics Vector4 point
+        /// </summary>
+        /// <param name="point">The numerics Vector4 point to rotate</param>
+        /// <param name="pitch">The pitch to rotate by as a float</param>
+        /// <param name="roll">The roll to rotate by as a float</param>
+        /// <param name="yaw">The yaw to rotate by as a float</param>
+        /// <returns>A rotated numerics Vector4</returns>
+        public static Vector4 RotatePoint(Vector4 point, float pitch, float roll, float yaw)
         {
-            var ans = new Vector4(0, 0, 0, p.W);
+            var ans = new Vector4(0, 0, 0, point.W);
             double cosa = Math.Cos(yaw);
             double sina = Math.Sin(yaw);
             double cosb = Math.Cos(pitch);
@@ -462,104 +803,118 @@ namespace FLVER_Editor
             double Azx = -sinb;
             double Azy = cosb * sinc;
             double Azz = cosb * cosc;
-            float px = p.X;
-            float py = p.Y;
-            float pz = p.Z;
+            float px = point.X;
+            float py = point.Y;
+            float pz = point.Z;
             ans.X = (float)(Axx * px + Axy * py + Axz * pz);
             ans.Y = (float)(Ayx * px + Ayy * py + Ayz * pz);
             ans.Z = (float)(Azx * px + Azy * py + Azz * pz);
             return ans;
         }
 
-        public static System.Numerics.Vector3 RotateLine(System.Numerics.Vector3 p, System.Numerics.Vector3 org, System.Numerics.Vector3 direction, double theta)
+        /// <summary>
+        /// Rotate a line on a shape with numerics Vector3 points
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="org"></param>
+        /// <param name="direction"></param>
+        /// <param name="theta"></param>
+        /// <returns></returns>
+        public static System.Numerics.Vector3 RotateLine(System.Numerics.Vector3 point, System.Numerics.Vector3 org, System.Numerics.Vector3 direction, double theta)
         {
-            double x = p.X;
-            double y = p.Y;
-            double z = p.Z;
+            double x = point.X;
+            double y = point.Y;
+            double z = point.Z;
+
             double a = org.X;
             double b = org.Y;
             double c = org.Z;
+
             double nu = direction.X / direction.Length();
             double nv = direction.Y / direction.Length();
             double nw = direction.Z / direction.Length();
+
             var rP = new double[3];
             rP[0] = (a * (nv * nv + nw * nw) - nu * (b * nv + c * nw - nu * x - nv * y - nw * z)) * (1 - Math.Cos(theta))
-                + x * Math.Cos(theta)
-                + (-c * nv + b * nw - nw * y + nv * z) * Math.Sin(theta);
+                    + x * Math.Cos(theta)
+                    + (-c * nv + b * nw - nw * y + nv * z) * Math.Sin(theta);
+
             rP[1] = (b * (nu * nu + nw * nw) - nv * (a * nu + c * nw - nu * x - nv * y - nw * z)) * (1 - Math.Cos(theta))
-                + y * Math.Cos(theta)
-                + (c * nu - a * nw + nw * x - nu * z) * Math.Sin(theta);
+                    + y * Math.Cos(theta)
+                    + (c * nu - a * nw + nw * x - nu * z) * Math.Sin(theta);
+
             rP[2] = (c * (nu * nu + nv * nv) - nw * (a * nu + b * nv - nu * x - nv * y - nw * z)) * (1 - Math.Cos(theta))
-                + z * Math.Cos(theta)
-                + (-b * nu + a * nv - nv * x + nu * y) * Math.Sin(theta);
+                    + z * Math.Cos(theta)
+                    + (-b * nu + a * nv - nv * x + nu * y) * Math.Sin(theta);
+
             var ans = new System.Numerics.Vector3((float)rP[0], (float)rP[1], (float)rP[2]);
             return ans;
         }
 
-        public static Vector3 crossPorduct(Vector3 a, Vector3 b)
+        /// <summary>
+        /// Computes the Dot Product of two Xna Vector3s
+        /// </summary>
+        /// <param name="vector1">The first Xna Vector3</param>
+        /// <param name="vector2">The second Xna Vector3</param>
+        /// <returns>The Dot Product of the Xna Vector3s as an Xna Vector3</returns>
+        public static float XnaDotProduct(Vector3 vector1, Vector3 vector2)
         {
-            float x1 = a.X;
-            float y1 = a.Y;
-            float z1 = a.Z;
-            float x2 = b.X;
-            float y2 = b.Y;
-            float z2 = b.Z;
-            return new Vector3(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2);
-        }
-
-        public static float dotProduct(Vector3 a, Vector3 b)
-        {
-            float x1 = a.X;
-            float y1 = a.Y;
-            float z1 = a.Z;
-            float x2 = b.X;
-            float y2 = b.Y;
-            float z2 = b.Z;
+            float x1 = vector1.X;
+            float y1 = vector1.Y;
+            float z1 = vector1.Z;
+            float x2 = vector2.X;
+            float y2 = vector2.Y;
+            float z2 = vector2.Z;
             return x1 * x2 + y1 * y2 + z1 * z2;
         }
 
+        /// <summary>
+        /// Computes the Cross Product of two Xna Vector3s
+        /// </summary>
+        /// <param name="vector1">The first Xna Vector3</param>
+        /// <param name="vector2">The second Xna Vector3</param>
+        /// <returns>The Cross Product of the Xna Vector3s as an Xna Vector3</returns>
+        public static Vector3 XnaCrossProduct(Vector3 vector1, Vector3 vector2)
+        {
+            float x1 = vector1.X;
+            float y1 = vector1.Y;
+            float z1 = vector1.Z;
+            float x2 = vector2.X;
+            float y2 = vector2.Y;
+            float z2 = vector2.Z;
+            return new Vector3(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2);
+        }
+
+        /// <summary>
+        /// Swaps a sekiro model with a Dark Souls or BloodBorne model
+        /// </summary>
         public static void ModelSwapModule()
         {
-            OpenFileDialog openFileDialog1;
-            openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.InitialDirectory = Directory.GetCurrentDirectory();
-            openFileDialog1.Title = "Choose template seikiro model file.";
-            //openFileDialog1.ShowDialog();
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            OpenFileDialog openSeikiroModelDonorDialog;
+            openSeikiroModelDonorDialog = new OpenFileDialog
             {
-                Console.WriteLine(openFileDialog1.FileName);
-                //openFileDialog1.
-            }
-            else
+                InitialDirectory = Directory.GetCurrentDirectory(),
+                Title = "Choose template seikiro model file."
+            };
+            if (openSeikiroModelDonorDialog.ShowDialog() == DialogResult.OK) Console.WriteLine(openSeikiroModelDonorDialog.FileName);
+            else return;
+            FLVER2 seikiroDonorModel = FLVER2.Read(openSeikiroModelDonorDialog.FileName);
+
+            var openReplacementModelDialog = new OpenFileDialog
             {
-                return;
-            }
-            FLVER b = FLVER.Read(openFileDialog1.FileName);
-            var openFileDialog2 = new OpenFileDialog();
-            openFileDialog2.InitialDirectory = Directory.GetCurrentDirectory();
-            openFileDialog2.Title = "Choose source DS/BB model file.";
-            //openFileDialog1.ShowDialog();
-            if (openFileDialog2.ShowDialog() == DialogResult.OK)
-            {
-                Console.WriteLine(openFileDialog2.FileName);
-                //openFileDialog1.
-            }
-            else
-            {
-                return;
-            }
-            FLVER src = FLVER.Read(openFileDialog2.FileName);
-            Console.WriteLine(b.Header);
-            Console.WriteLine("Seikiro unk is:" + b.SekiroUnk);
+                InitialDirectory = Directory.GetCurrentDirectory(),
+                Title = "Choose source DS/BB model file."
+            };
+            if (openReplacementModelDialog.ShowDialog() == DialogResult.OK) Console.WriteLine(openSeikiroModelDonorDialog.FileName);
+            else return;
+            FLVER2 replacementModel = FLVER2.Read(openReplacementModelDialog.FileName);
+
+            Console.WriteLine(seikiroDonorModel.Header);
+            Console.WriteLine("Seikiro unk is:" + seikiroDonorModel.SekiroUnk);
             Console.WriteLine("Material:");
-            foreach (FLVER.Material m in b.Materials)
-            {
-                Console.WriteLine(m.Name);
-            }
-            foreach (FLVER.Mesh m in b.Meshes)
-            {
-                Console.WriteLine("Mesh#" + m.MaterialIndex);
-            }
+
+            foreach (FLVER2.Material material in seikiroDonorModel.Materials) Console.WriteLine(material.Name);
+            foreach (FLVER2.Mesh material in seikiroDonorModel.Meshes) Console.WriteLine("Mesh#" + material.MaterialIndex);
 
             //* new
             //b.Header.BigEndian = src.Header.BigEndian;
@@ -571,122 +926,106 @@ namespace FLVER_Editor
             //Unit: in meter(?)
 
             //For Moonlight sword -> threaded cane, Y+0.5f
-            var f = new Form();
-            var l = new Label();
-            l.Text = "x,y,z offset? Y= weapon length axis,Y+=Closer to hand";
-            l.Size = new Size(150, 15);
-            l.Location = new Point(10, 20);
-            f.Controls.Add(l);
-            var t = new TextBox();
-            t.Size = new Size(70, 15);
-            t.Location = new Point(10, 60);
-            t.Text = "0";
-            f.Controls.Add(t);
-            var t2 = new TextBox();
-            t2.Size = new Size(70, 15);
-            t2.Location = new Point(10, 100);
-            t2.Text = "0";
-            f.Controls.Add(t2);
-            var t3 = new TextBox();
-            t3.Size = new Size(70, 15);
-            t3.Location = new Point(10, 140);
-            t3.Text = "0";
-            f.Controls.Add(t3);
-            var cb1 = new CheckBox();
-            cb1.Size = new Size(70, 15);
-            cb1.Location = new Point(10, 160);
-            cb1.Text = "Copy Material";
-            f.Controls.Add(cb1);
-            var cb2 = new CheckBox();
-            cb2.Size = new Size(150, 15);
-            cb2.Location = new Point(10, 180);
-            cb2.Text = "Copy Bones";
-            f.Controls.Add(cb2);
-            var cb3 = new CheckBox();
-            cb3.Size = new Size(150, 15);
-            cb3.Location = new Point(10, 200);
-            cb3.Text = "Copy Dummy";
-            f.Controls.Add(cb3);
-            var cb4 = new CheckBox();
-            cb4.Size = new Size(350, 15);
-            cb4.Location = new Point(10, 220);
-            cb4.Text = "All vertex weight to first bone";
-            f.Controls.Add(cb4);
-            f.ShowDialog();
-            float x = float.Parse(t.Text);
-            float y = float.Parse(t2.Text);
-            float z = float.Parse(t3.Text);
-            b.Meshes = src.Meshes;
-            if (cb1.Checked)
-                b.Materials = src.Materials;
-            if (cb2.Checked)
-                b.Bones = src.Bones;
-            if (cb3.Checked)
-                b.Dummies = src.Dummies;
-            if (cb4.Checked)
+            var form = new Form();
+
+
+            var label = Forms.MakeLabel(new Size(150, 15), new Point(10, 20), "x,y,z offset? Y= weapon length axis,Y+=Closer to hand");
+            form.Controls.Add(label);
+
+            var textbox1 = Forms.MakeTextBox(new Size(70, 15), new Point(10, 60), "0");
+            var textbox2 = Forms.MakeTextBox(new Size(70, 15), new Point(10, 100), "0");
+            var textbox3 = Forms.MakeTextBox(new Size(70, 15), new Point(10, 140), "0");
+            form.Controls.Add(textbox1);
+            form.Controls.Add(textbox2);
+            form.Controls.Add(textbox3);
+
+            var copyMaterial = Forms.MakeCheckBox(new Size(70, 15), new Point(10, 160), "Copy Material");
+            var copyBones = Forms.MakeCheckBox(new Size(150, 15), new Point(10, 180), "Copy Bones");
+            var copyDummy = Forms.MakeCheckBox(new Size(150, 15), new Point(10, 200), "Copy Dummy");
+            var weightToFirstBone = Forms.MakeCheckBox(new Size(), new Point(10, 220), "All vertex weight to first bone");
+            form.Controls.Add(copyMaterial);
+            form.Controls.Add(copyBones);
+            form.Controls.Add(copyDummy);
+            form.Controls.Add(weightToFirstBone);
+
+            form.ShowDialog();
+            float x = float.Parse(textbox1.Text);
+            float y = float.Parse(textbox2.Text);
+            float z = float.Parse(textbox3.Text);
+
+            seikiroDonorModel.Meshes = replacementModel.Meshes;
+            if (copyMaterial.Checked)  seikiroDonorModel.Materials = replacementModel.Materials;
+            if (copyBones.Checked)     seikiroDonorModel.Bones = replacementModel.Bones;
+            if (copyDummy.Checked)     seikiroDonorModel.Dummies = replacementModel.Dummies;
+            if (weightToFirstBone.Checked)
             {
-                for (var i = 0; i < b.Meshes.Count; i++)
+                for (var i = 0; i < seikiroDonorModel.Meshes.Count; i++)
                 {
-                    b.Meshes[i].BoneIndices = new List<int>();
-                    b.Meshes[i].BoneIndices.Add(0);
-                    b.Meshes[i].BoneIndices.Add(1);
-                    b.Meshes[i].DefaultBoneIndex = 1;
-                    foreach (FLVER.Vertex v in b.Meshes[i].Vertices)
+                    seikiroDonorModel.Meshes[i].BoneIndices = new List<int>{0, 1};
+                    seikiroDonorModel.Meshes[i].DefaultBoneIndex = 1;
+                    foreach (FLVER.Vertex vertex in seikiroDonorModel.Meshes[i].Vertices)
                     {
-                        for (var j = 0; j < v.Positions.Count; j++)
+                        if (BoneWeightsToFloatArray(vertex.BoneWeights) == null) continue;
+
+                        vertex.Position = new System.Numerics.Vector3(0, 0, 0);
+                        for (var k = 0; k < vertex.BoneWeights.Length; k++)
                         {
-                            if (v.BoneWeights == null)
-                            {
-                                continue;
-                            }
-                            v.Positions[j] = new System.Numerics.Vector3(0, 0, 0);
-                            for (var k = 0; k < v.BoneWeights.Length; k++)
-                            {
-                                v.BoneWeights[k] = 0;
-                                v.BoneIndices[k] = 0;
-                            }
-                            v.BoneIndices[0] = 1;
-                            v.BoneWeights[0] = 1;
+                            vertex.BoneWeights[k] = 0;
+                            vertex.BoneIndices[k] = 0;
                         }
+                        vertex.BoneIndices[0] = 1;
+                        vertex.BoneWeights[0] = 1;
                     }
-                    //flver.Meshes[i].Vertices = new List<FLVER.Vertex>();
+                    //flver2.Meshes[i].Vertices = new List<FLVER.Vertex>();
                 }
             }
-            foreach (FLVER.Mesh m in b.Meshes)
+            foreach (FLVER2.Mesh mesh in seikiroDonorModel.Meshes)
             {
-                foreach (FLVER.Vertex v in m.Vertices)
+                foreach (FLVER.Vertex vertex in mesh.Vertices)
                 {
-                    for (var i = 0; i < v.Positions.Count; i++)
-                    {
-                        v.Positions[i] = new System.Numerics.Vector3(v.Positions[i].X + x, v.Positions[i].Y + y, v.Positions[i].Z + z);
-                    }
+                    vertex.Position = new System.Numerics.Vector3(vertex.Position.X + x, vertex.Position.Y + y, vertex.Position.Z + z);
                 }
             }
-            b.Write(openFileDialog1.FileName + "n");
+            seikiroDonorModel.Write(openSeikiroModelDonorDialog.FileName + "n");
             MessageBox.Show("Swap completed!", "Info");
             //Console.WriteLine("End reading");
             //Application.Exit();
         }
 
-        private static FaceVertex[] getVertices(Face f)
+        /// <summary>
+        /// Gets face vertices from an ObjLoader face
+        /// </summary>
+        /// <param name="face">An ObjLoader face</param>
+        /// <returns>An ObjLoader face vertex array</returns>
+        private static FaceVertex[] GetVertices(Face face)
         {
-            var ans = new FaceVertex[f.Count];
-            for (var i = 0; i < f.Count; i++)
+            var ans = new FaceVertex[face.Count];
+            for (var i = 0; i < face.Count; i++)
             {
-                ans[i] = f[i];
+                ans[i] = face[i];
             }
             return ans;
         }
 
-        public static void exportJson(string content, string fileName = "export.json", string endMessage = "")
+        /// <summary>
+        /// Export data from a single string to JSON
+        /// I honestly would have used a string array for this :fatcat:
+        /// </summary>
+        /// <param name="content">The string to export to JSON</param>
+        /// <param name="fileName">The name of the resulting JSON file, "export.json" by default</param>
+        /// <param name="endMessage">A string containing a message to show in a MessageBox to the user after the export has finished</param>
+        public static void ExportJson(string content, string fileName = "export.json", string endMessage = "")
         {
-            var openFileDialog2 = new SaveFileDialog();
-            openFileDialog2.FileName = fileName;
-            if (openFileDialog2.ShowDialog() == DialogResult.OK)
+            var saveDialog = new SaveFileDialog
+            {
+                FileName = fileName
+            };
+
+            if (saveDialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    var sw = new StreamWriter(openFileDialog2.FileName);
+                    var sw = new StreamWriter(saveDialog.FileName);
                     sw.Write(content);
                     sw.Close();
                     MessageBox.Show(endMessage, "Info");
@@ -698,6 +1037,11 @@ namespace FLVER_Editor
             }
         }
 
+        /// <summary>
+        /// Formats a JSON string into a more readable string
+        /// </summary>
+        /// <param name="jsonString">A</param>
+        /// <returns>A string</returns>
         public static string FormatOutput(string jsonString)
         {
             var stringBuilder = new StringBuilder();
@@ -762,23 +1106,34 @@ namespace FLVER_Editor
             return stringBuilder.ToString();
         }
 
+        /// <summary>
+        /// A class for containing a vertex normal list so that an average can be calculated
+        /// </summary>
         private class VertexNormalList
         {
             public readonly List<Vector3D> normals = new List<Vector3D>();
 
-            public Vector3D calculateAvgNormal()
+            /// <summary>
+            /// Calculate the average of all the normals added to the normals list
+            /// </summary>
+            /// <returns>An FE Vector3D normal that is the average of all the normals in the normals list</returns>
+            public Vector3D CalculateAvgNormal()
             {
-                var ans = new Vector3D();
-                foreach (Vector3D n in normals)
+                var normalAverage = new Vector3D();
+                foreach (Vector3D normal in normals)
                 {
-                    ans = ans + n;
+                    normalAverage += normal;
                 }
-                return ans.normalize();
+                return normalAverage.Normalize();
             }
 
-            public void add(Vector3D a)
+            /// <summary>
+            /// Adds to the normals list of the VertexNormalList class
+            /// </summary>
+            /// <param name="normal">A FE Vector3D normal to add to the list</param>
+            public void Add(Vector3D normal)
             {
-                normals.Add(a);
+                normals.Add(normal);
             }
         }
     }

@@ -17,7 +17,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SoulsFormats;
 using Color = System.Drawing.Color;
-using Matrix4x4 = System.Numerics.Matrix4x4;
 using PrimitiveType = Assimp.PrimitiveType;
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 
@@ -42,14 +41,14 @@ namespace FLVER_Editor
         private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
         private const string baseMaterialDictKey = "Base Material";
         public static List<string> arguments;
-        public static FLVER flver;
-        public static List<FLVER> undoFlverList = new List<FLVER>();
-        public static List<FLVER> redoFlverList = new List<FLVER>();
+        public static FLVER2 flver;
+        public static List<FLVER2> undoFlverList = new List<FLVER2>();
+        public static List<FLVER2> redoFlverList = new List<FLVER2>();
         public static int currUndoFlverListIndex = -1;
         public static int currRedoFlverListIndex = -1;
         public static int undoRedoStackLimit = 25;
-        public static FLVER maleBodyFlver = new FLVER();
-        public static FLVER femaleBodyFlver = new FLVER();
+        public static FLVER2 maleBodyFlver = new FLVER2();
+        public static FLVER2 femaleBodyFlver = new FLVER2();
         private static byte[] currFlverBytes;
         private static BND4 flverBnd;
         private static BND4 matBinBnd;
@@ -70,6 +69,7 @@ namespace FLVER_Editor
         private static Dictionary<object, object> dummyPresets;
         public static RotationOrder rotOrder = RotationOrder.YZX;
         public static readonly string rootFolderPath = Path.GetDirectoryName(Application.ExecutablePath);
+        public static readonly string resourceFolderPath = $"{rootFolderPath}\\Resources";
         private static readonly string materialPresetsFilePath = $"{rootFolderPath}/mpresets.json";
         private static readonly string dummyPresetsFilePath = $"{rootFolderPath}/dpresets.json";
         private static readonly string userConfigJsonPath = $"{rootFolderPath}/userconfig.json";
@@ -135,7 +135,7 @@ namespace FLVER_Editor
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
 
-        private static void ApplyBodyModelMaterial(FLVER bodyFlver)
+        private static void ApplyBodyModelMaterial(FLVER2 bodyFlver)
         {
             bodyFlver.Materials.Add(Program.GetBaseMaterial());
             bodyFlver.Meshes[0].MaterialIndex = 0;
@@ -143,8 +143,8 @@ namespace FLVER_Editor
 
         private static void ImportBodyModels()
         {
-            Program.ImportFBX($"{rootFolderPath}\\malebody.obj", true);
-            Program.ImportFBX($"{rootFolderPath}\\femalebody.obj", false, true);
+            Program.ImportFBX($"{resourceFolderPath}\\models\\malebody.obj", true);
+            Program.ImportFBX($"{resourceFolderPath}\\models\\femalebody.obj", false, true);
             ApplyBodyModelMaterial(maleBodyFlver);
             ApplyBodyModelMaterial(femaleBodyFlver);
         }
@@ -154,7 +154,7 @@ namespace FLVER_Editor
             versionStr.Text += $@" {version}";
         }
 
-        private void SetTextureRefreshEnabled()
+        private static void SetTextureRefreshEnabled()
         {
             string textureRefreshStr = userConfigJson["TextureRefreshing"]?.ToString();
             if (textureRefreshStr == null) return;
@@ -303,17 +303,6 @@ namespace FLVER_Editor
             ChangeTheme(this, ColorTranslator.FromHtml("#323232"), ColorTranslator.FromHtml("#d9d9d9"));
         }
 
-        private static Vector3 ConvertSysNumToXnaVector3(System.Numerics.Vector3 v) { return new Vector3(v.X, v.Y, v.Z); }
-
-        private static Vector3 ConvertSysNumToXnaVector3Flipped(System.Numerics.Vector3 v) { return new Vector3(v.X, v.Z, v.Y); }
-
-        private static Vector3 VectorCrossProduct(Vector3 v1, Vector3 v2)
-        {
-            return new Vector3(v1.Y * v2.Z - v1.Z * v2.Y, v1.Z * v2.X - v1.X * v2.Z, v1.X * v2.Y - v1.Y * v2.X);
-        }
-
-        private static float VectorDotProduct(Vector3 v1, Vector3 v2) { return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z; }
-
         public static void UpdateMesh()
         {
             if (dispMaleBody) flver.Meshes.Add(maleBodyFlver.Meshes[0]);
@@ -342,23 +331,21 @@ namespace FLVER_Editor
                     colorLine.A = 125;
                     vertexPosColorList.AddRange(new[]
                     {
-                        new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[0].Positions[0]), colorLine),
-                        new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[1].Positions[0]), colorLine),
-                        new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[0].Positions[0]), colorLine),
-                        new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[2].Positions[0]), colorLine),
-                        new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[1].Positions[0]), colorLine),
-                        new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[2].Positions[0]), colorLine)
+                        new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[0].Position), colorLine),
+                        new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[1].Position), colorLine),
+                        new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[0].Position), colorLine),
+                        new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[2].Position), colorLine),
+                        new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[1].Position), colorLine),
+                        new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[2].Position), colorLine)
                     });
                     Microsoft.Xna.Framework.Color faceSetColor = new Microsoft.Xna.Framework.Color();
-                    Vector3 vectorA
-                        = ConvertSysNumToXnaVector3(vertexArr[1].Positions[0]) - ConvertSysNumToXnaVector3(vertexArr[0].Positions[0]);
-                    Vector3 vectorB
-                        = ConvertSysNumToXnaVector3(vertexArr[2].Positions[0]) - ConvertSysNumToXnaVector3(vertexArr[0].Positions[0]);
-                    Vector3 normalVector = VectorCrossProduct(vectorA, vectorB);
+                    Vector3 vectorA = Program.XnaToNumericsVector3(vertexArr[1].Position) - Program.XnaToNumericsVector3(vertexArr[0].Position);
+                    Vector3 vectorB = Program.XnaToNumericsVector3(vertexArr[2].Position) - Program.XnaToNumericsVector3(vertexArr[0].Position);
+                    Vector3 normalVector = Program.XnaCrossProduct(vectorA, vectorB);
                     normalVector.Normalize();
                     Vector3 lightVector = new Vector3(viewer.lightX, viewer.lightY, viewer.lightZ);
                     lightVector.Normalize();
-                    int faceSetColorVal = 125 + (int)(125 * VectorDotProduct(normalVector, lightVector));
+                    int faceSetColorVal = 125 + (int)(125 * Program.XnaDotProduct(normalVector, lightVector));
                     faceSetColorVal = faceSetColorVal > 255 ? 255 : faceSetColorVal < 0 ? 0 : viewer.flatShading ? 255 : faceSetColorVal;
                     faceSetColor.R = faceSetColor.G = faceSetColor.B = (byte)faceSetColorVal;
                     faceSetColor.A = 255;
@@ -374,50 +361,50 @@ namespace FLVER_Editor
                     faceSetPosColorList.AddRange(
                         new[]
                         {
-                            new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[0].Positions[0]), faceSetColor),
-                            new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[2].Positions[0]), faceSetColor),
-                            new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[1].Positions[0]), faceSetColor),
-                            new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[0].Positions[0]), faceSetColor),
-                            new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[2].Positions[0]), faceSetColor),
-                            new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[1].Positions[0]), faceSetColor)
+                            new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[0].Position), faceSetColor),
+                            new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[2].Position), faceSetColor),
+                            new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[1].Position), faceSetColor),
+                            new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[0].Position), faceSetColor),
+                            new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[2].Position), faceSetColor),
+                            new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[1].Position), faceSetColor)
                         });
                     faceSetPosColorTexList.AddRange(
                         new[]
                         {
-                            new VertexPositionColorTexture(ConvertSysNumToXnaVector3Flipped(vertexArr[0].Positions[0]), faceSetColor,
+                            new VertexPositionColorTexture(Program.XnaToNumericsVector3XZY(vertexArr[0].Position), faceSetColor,
                                 new Microsoft.Xna.Framework.Vector2(vertexArr[0].UVs[0].X, vertexArr[0].UVs[0].Y)),
-                            new VertexPositionColorTexture(ConvertSysNumToXnaVector3Flipped(vertexArr[2].Positions[0]), faceSetColor,
+                            new VertexPositionColorTexture(Program.XnaToNumericsVector3XZY(vertexArr[2].Position), faceSetColor,
                                 new Microsoft.Xna.Framework.Vector2(vertexArr[2].UVs[0].X, vertexArr[2].UVs[0].Y)),
-                            new VertexPositionColorTexture(ConvertSysNumToXnaVector3Flipped(vertexArr[1].Positions[0]), faceSetColor,
+                            new VertexPositionColorTexture(Program.XnaToNumericsVector3XZY(vertexArr[1].Position), faceSetColor,
                                 new Microsoft.Xna.Framework.Vector2(vertexArr[1].UVs[0].X, vertexArr[1].UVs[0].Y))
                         });
                     if (!renderBackFaces) continue;
                     faceSetPosColorList.AddRange(
                         new[]
                         {
-                            new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[0].Positions[0]), faceSetColor),
-                            new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[1].Positions[0]), faceSetColor),
-                            new VertexPositionColor(ConvertSysNumToXnaVector3Flipped(vertexArr[2].Positions[0]), faceSetColor)
+                            new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[0].Position), faceSetColor),
+                            new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[1].Position), faceSetColor),
+                            new VertexPositionColor(Program.XnaToNumericsVector3XZY(vertexArr[2].Position), faceSetColor)
                         });
                     faceSetPosColorTexList.AddRange(
                         new[]
                         {
-                            new VertexPositionColorTexture(ConvertSysNumToXnaVector3Flipped(vertexArr[0].Positions[0]), faceSetColor,
+                            new VertexPositionColorTexture(Program.XnaToNumericsVector3XZY(vertexArr[0].Position), faceSetColor,
                                 new Microsoft.Xna.Framework.Vector2(vertexArr[0].UVs[0].X, vertexArr[0].UVs[0].Y)),
-                            new VertexPositionColorTexture(ConvertSysNumToXnaVector3Flipped(vertexArr[1].Positions[0]), faceSetColor,
+                            new VertexPositionColorTexture(Program.XnaToNumericsVector3XZY(vertexArr[1].Position), faceSetColor,
                                 new Microsoft.Xna.Framework.Vector2(vertexArr[1].UVs[0].X, vertexArr[1].UVs[0].Y)),
-                            new VertexPositionColorTexture(ConvertSysNumToXnaVector3Flipped(vertexArr[2].Positions[0]), faceSetColor,
+                            new VertexPositionColorTexture(Program.XnaToNumericsVector3XZY(vertexArr[2].Position), faceSetColor,
                                 new Microsoft.Xna.Framework.Vector2(vertexArr[2].UVs[0].X, vertexArr[2].UVs[0].Y))
                         });
                 }
                 for (int j = 0; j < flver.Meshes[i].Vertices.Count; ++j)
                 {
                     Program.vertices.Add(flver.Meshes[i].Vertices[j]);
-                    Program.verticesInfo.Add(new VertexInfo { meshIndex = i, vertexIndex = (uint)j });
+                    Program.verticesInfo.Add(new VertexInfo { meshIndex = i, vertexIndex = j });
                 }
-                FLVER.Material currMaterial = flver.Materials.ElementAtOrDefault(flver.Meshes[i].MaterialIndex);
+                FLVER2.Material currMaterial = flver.Materials.ElementAtOrDefault(flver.Meshes[i].MaterialIndex);
                 if (currMaterial == null) continue;
-                List<FLVER.Texture> texList = currMaterial.Textures;
+                List<FLVER2.Texture> texList = currMaterial.Textures;
                 if (texList.Count <= 0) continue;
                 VertexTexMap vertexTexMap = new VertexTexMap
                 {
@@ -616,7 +603,7 @@ namespace FLVER_Editor
             }
             for (int i = 0; i < flver.Materials.Count; ++i)
             {
-                FLVER.Material material = flver.Materials[i];
+                FLVER2.Material material = flver.Materials[i];
                 DataGridViewRow row = new DataGridViewRow();
                 if (!stopAutoInternalIndexOverride) material.Unk18 = i;
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i }, new DataGridViewTextBoxCell { Value = material.Name },
@@ -630,7 +617,7 @@ namespace FLVER_Editor
             }
             for (int i = 0; i < flver.Meshes.Count; ++i)
             {
-                FLVER.Mesh mesh = flver.Meshes[i];
+                FLVER2.Mesh mesh = flver.Meshes[i];
                 if (mesh.MaterialIndex < 0) mesh.MaterialIndex = 0;
                 DataGridViewRow row = new DataGridViewRow();
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i },
@@ -654,7 +641,7 @@ namespace FLVER_Editor
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i },
                     new DataGridViewTextBoxCell { Value = dummy.ReferenceID },
                     new DataGridViewTextBoxCell { Value = dummy.AttachBoneIndex },
-                    new DataGridViewTextBoxCell { Value = dummy.DummyBoneIndex });
+                    new DataGridViewTextBoxCell { Value = dummy.ParentBoneIndex });
                 row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
                 row.Cells.Add(new DataGridViewButtonCell { Value = dummiesTable.Columns[5].HeaderText });
                 dummiesTable.Rows.Add(row);
@@ -697,7 +684,7 @@ namespace FLVER_Editor
             return filePath.Contains(".flv") || filePath.Contains(".flver");
         }
 
-        private FLVER ReadFLVERFromDCXPath(string filePath, bool setMainFlverArchiveType, bool setBinderIndex, bool wantsTpf)
+        private FLVER2 ReadFLVERFromDCXPath(string filePath, bool setMainFlverArchiveType, bool setBinderIndex, bool wantsTpf)
         {
             List<BinderFile> flverFiles = new List<BinderFile>();
             BND4 newFlverBnd = null;
@@ -736,15 +723,15 @@ namespace FLVER_Editor
                     }
                     binderIndex++;
                 }
-                if (flverFiles.Count == 1) return FLVER.Read(flverFiles[0].Bytes);
+                if (flverFiles.Count == 1) return FLVER2.Read(flverFiles[0].Bytes);
                 if (flverFiles.Count > 1)
                 {
                     int selectedFlverIndex = ShowSelectorDialog("Pick a FLVER", flverFiles);
-                    if (!setBinderIndex || selectedFlverIndex == -1) return selectedFlverIndex == -1 ? null : FLVER.Read(flverFiles[selectedFlverIndex].Bytes);
+                    if (!setBinderIndex || selectedFlverIndex == -1) return selectedFlverIndex == -1 ? null : FLVER2.Read(flverFiles[selectedFlverIndex].Bytes);
                     int binderWiseSelectedFlverIndex = flverBnd.Files.FindIndex(i =>
                         i.Name.IndexOf(flverFiles[selectedFlverIndex].Name, StringComparison.OrdinalIgnoreCase) != -1);
                     currFlverFileBinderIndex = binderWiseSelectedFlverIndex;
-                    return FLVER.Read(flverFiles[selectedFlverIndex].Bytes);
+                    return FLVER2.Read(flverFiles[selectedFlverIndex].Bytes);
                 }
             }
             ShowInformationDialog("No FLVER files were found in the DCX archive.");
@@ -771,12 +758,12 @@ namespace FLVER_Editor
             Program.filePath = flverFilePath;
             if (IsFLVERPath(flverFilePath))
             {
-                flver = FLVER.Read(flverFilePath);
+                flver = FLVER2.Read(flverFilePath);
                 Program.flver = flver;
             }
             else
             {
-                FLVER newFlver = ReadFLVERFromDCXPath(flverFilePath, true, true, true);
+                FLVER2 newFlver = ReadFLVERFromDCXPath(flverFilePath, true, true, true);
                 if (newFlver == null) return false;
                 flver = newFlver;
                 Program.flver = flver;
@@ -807,7 +794,7 @@ namespace FLVER_Editor
             texturesTable.Rows.Clear();
             for (int i = 0; i < flver.Materials[selectedMaterialIndex].Textures.Count; ++i)
             {
-                FLVER.Material material = flver.Materials[selectedMaterialIndex];
+                FLVER2.Material material = flver.Materials[selectedMaterialIndex];
                 DataGridViewRow row = new DataGridViewRow();
                 row.Cells.AddRange(new DataGridViewTextBoxCell { Value = material.Textures[i].Type },
                     new DataGridViewTextBoxCell { Value = material.Textures[i].Path });
@@ -849,7 +836,7 @@ namespace FLVER_Editor
                     ClearViewerMaterialHighlight();
                     if (unhighlighted)
                     {
-                        foreach (FLVER.Mesh mesh in flver.Meshes.Where(mesh => mesh.MaterialIndex == e.RowIndex))
+                        foreach (FLVER2.Mesh mesh in flver.Meshes.Where(mesh => mesh.MaterialIndex == e.RowIndex))
                             selectedMaterialMeshIndices.Add(flver.Meshes.IndexOf(mesh));
                     }
                     UpdateMesh();
@@ -904,7 +891,7 @@ namespace FLVER_Editor
                 formatByte = (byte)Enum.Parse(typeof(TextureFormats), dds.header10.dxgiFormat.ToString());
             }
             catch { }
-            TPF.Texture texture = new TPF.Texture(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, 0, File.ReadAllBytes(textureFilePath));
+            TPF.Texture texture = new TPF.Texture(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, File.ReadAllBytes(textureFilePath));
             int existingTextureIndex = Program.tpf.Textures.FindIndex(i => i.Name == texture.Name);
             if (existingTextureIndex != -1)
             {
@@ -1059,7 +1046,8 @@ namespace FLVER_Editor
             int boneIndex = ShowSelectorDialog("Pick a Bone", flver.Bones);
             if (boneIndex == -1) return;
             List<FLVER.Vertex> unweightedVerts = flver.Meshes[meshIndex].Vertices.Where(v =>
-                v.BoneIndices != null && !v.BoneIndices.Contains(boneIndex) && v.BoneWeights != null && v.BoneWeights.All(i => i == 0)).ToList();
+                Program.BoneIndicesToIntArray(v.BoneIndices) != null && !Program.BoneIndicesToIntArray(v.BoneIndices).Contains(boneIndex)
+                && Program.BoneWeightsToFloatArray(v.BoneWeights) != null && Program.BoneWeightsToFloatArray(v.BoneWeights).All(i => i == 0)).ToList();
             if (!unweightedVerts.Any())
             {
                 ShowInformationDialog("Found no unweighted vertices to apply default weights to.");
@@ -1069,7 +1057,13 @@ namespace FLVER_Editor
             foreach (FLVER.Vertex v in unweightedVerts)
             {
                 v.BoneIndices[0] = boneIndex;
-                v.BoneWeights = new float[] { 1, 0, 0, 0 };
+                v.BoneWeights = new FLVER.VertexBoneWeights
+                {
+                    [0] = 1,
+                    [1] = 0,
+                    [2] = 0,
+                    [3] = 0
+                };
             }
             ShowInformationDialog("Successfully applied mesh simple skin!");
         }
@@ -1113,15 +1107,13 @@ namespace FLVER_Editor
                     {
                         Position = flver.Dummies[rowIndex].Position,
                         Forward = flver.Dummies[rowIndex].Forward,
-                        ReferenceID = flver.Dummies[rowIndex].ReferenceID,
-                        AttachBoneIndex = flver.Dummies[rowIndex].AttachBoneIndex,
-                        DummyBoneIndex = flver.Dummies[rowIndex].DummyBoneIndex,
                         Upward = flver.Dummies[rowIndex].Upward,
-                        Unk0C = flver.Dummies[rowIndex].Unk0C,
-                        Unk0D = flver.Dummies[rowIndex].Unk0D,
-                        Unk0E = flver.Dummies[rowIndex].Unk0E,
+                        ReferenceID = flver.Dummies[rowIndex].ReferenceID,
+                        ParentBoneIndex = flver.Dummies[rowIndex].ParentBoneIndex,
+                        AttachBoneIndex = flver.Dummies[rowIndex].AttachBoneIndex,
+                        Color = flver.Dummies[rowIndex].Color,
                         Flag1 = flver.Dummies[rowIndex].Flag1,
-                        Flag2 = flver.Dummies[rowIndex].Flag2,
+                        UseUpwardVector = flver.Dummies[rowIndex].UseUpwardVector,
                         Unk30 = flver.Dummies[rowIndex].Unk30,
                         Unk34 = flver.Dummies[rowIndex].Unk34
                     };
@@ -1174,7 +1166,7 @@ namespace FLVER_Editor
                     d.Position = CreateTranslationVector(d.Position.X, d.Position.Y, d.Position.Z, offset, nbi);
                     break;
                 case FLVER.Vertex v:
-                    v.Positions[0] = CreateTranslationVector(v.Positions[0].X, v.Positions[0].Y, v.Positions[0].Z, offset, nbi);
+                    v.Position = CreateTranslationVector(v.Position.X, v.Position.Y, v.Position.Z, offset, nbi);
                     break;
             }
         }
@@ -1189,9 +1181,9 @@ namespace FLVER_Editor
                     else d.Position = CreateScaleVector(d.Position.X, d.Position.Y, d.Position.Z, offset, totals, nbi, uniform, invert);
                     break;
                 case FLVER.Vertex v:
-                    v.Positions[0] = CreateScaleVector(v.Positions[0].X, v.Positions[0].Y, v.Positions[0].Z, offset, totals, nbi, uniform, invert);
-                    v.Normals[0] = new Vector4(v.Normals[0].X, v.Normals[0].Y, invert && nbi != 2 ? -v.Normals[0].Z : v.Normals[0].Z, v.Normals[0].W);
-                    v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Y, invert && nbi != 2 ? -v.Normals[0].Z : v.Normals[0].Z, v.Tangents[0].W);
+                    v.Position = CreateScaleVector(v.Position.X, v.Position.Y, v.Position.Z, offset, totals, nbi, uniform, invert);
+                    v.Normal = new System.Numerics.Vector3(v.Normal.X, v.Normal.Y, invert && nbi != 2 ? -v.Normal.Z : v.Normal.Z);
+                    v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Y, invert && nbi != 2 ? -v.Normal.Z : v.Normal.Z, v.Tangents[0].W);
                     break;
             }
         }
@@ -1209,8 +1201,8 @@ namespace FLVER_Editor
                     else d.Position = CreateRotationVector(d.Position.X, d.Position.Y, d.Position.Z, 0, offset, totals, nbi);
                     break;
                 case FLVER.Vertex v:
-                    v.Positions[0] = CreateRotationVector(v.Positions[0].X, v.Positions[0].Y, v.Positions[0].Z, 0, offset, totals, nbi);
-                    v.Normals[0] = CreateRotationVector(v.Normals[0].X, v.Normals[0].Y, v.Normals[0].Z, v.Normals[0].W, offset, new float[3], nbi);
+                    v.Position = CreateRotationVector(v.Position.X, v.Position.Y, v.Position.Z, 0, offset, totals, nbi);
+                    v.Normal = CreateRotationVector(v.Normal.X, v.Normal.Y, v.Normal.Z, 0, offset, new float[3], nbi);
                     v.Tangents[0] = CreateRotationVector(v.Tangents[0].X, v.Tangents[0].Y, v.Tangents[0].Z, v.Tangents[0].W, offset, new float[3], nbi);
                     break;
             }
@@ -1255,9 +1247,9 @@ namespace FLVER_Editor
             {
                 foreach (FLVER.Vertex v in flver.Meshes[i].Vertices)
                 {
-                    xSum += v.Positions[0].X;
-                    ySum += v.Positions[0].Y;
-                    zSum += v.Positions[0].Z;
+                    xSum += v.Position.X;
+                    ySum += v.Position.Y;
+                    zSum += v.Position.Z;
                 }
                 vertexCount += flver.Meshes[i].Vertices.Count;
             }
@@ -1304,7 +1296,7 @@ namespace FLVER_Editor
                 {
                     if (!(bool)row.Cells[mtApplyPresetCbIndex].Value) continue;
                     string prevName = flver.Materials[row.Index].Name;
-                    flver.Materials[row.Index] = new JavaScriptSerializer().Deserialize<FLVER.Material>(
+                    flver.Materials[row.Index] = new JavaScriptSerializer().Deserialize<FLVER2.Material>(
                         new JavaScriptSerializer().Serialize(materialPresets.Values.ToArray()[materialPresetsSelector.SelectedIndex]));
                     flver.Materials[row.Index].Name = prevName;
                 }
@@ -1312,7 +1304,7 @@ namespace FLVER_Editor
                 {
                     if (!(bool)materialsTable.Rows[i].Cells[mtDeleteCbIndex].Value || flver.Materials.Count <= 1) continue;
                     flver.Materials.RemoveAt(i);
-                    foreach (FLVER.Mesh mesh in flver.Meshes.Where(mesh => mesh.MaterialIndex > 0))
+                    foreach (FLVER2.Mesh mesh in flver.Meshes.Where(mesh => mesh.MaterialIndex > 0))
                         mesh.MaterialIndex--;
                 }
                 ClearViewerMaterialHighlight();
@@ -1377,9 +1369,9 @@ namespace FLVER_Editor
                 if (!(bool)meshTable.Rows[i].Cells[3].Value) continue;
                 if (deleteFacesetsCheckbox.Checked)
                 {
-                    foreach (FLVER.FaceSet fs in flver.Meshes[i].FaceSets)
-                        for (int j = 0; j < fs.Vertices.Length; ++j)
-                            fs.Vertices[j] = 1;
+                    foreach (FLVER2.FaceSet fs in flver.Meshes[i].FaceSets)
+                        for (int j = 0; j < fs.Indices.Count; ++j)
+                            fs.Indices[j] = 1;
                 }
                 else
                 {
@@ -1631,21 +1623,18 @@ namespace FLVER_Editor
                     int newBoneWeight = int.Parse(boneWeightValue);
                     foreach (FLVER.Vertex v in flver.Meshes[e.RowIndex].Vertices)
                     {
-                        for (int i = 0; i < v.Positions.Count; ++i)
+                        if (Program.BoneWeightsToFloatArray(v.BoneWeights) == null)
                         {
-                            if (v.BoneWeights == null)
-                            {
-                                v.BoneWeights = new float[4];
-                                v.BoneIndices = new int[4];
-                            }
-                            for (int j = 0; j < v.BoneWeights.Length; ++j)
-                                v.BoneWeights[j] = 0;
-                            v.BoneIndices[0] = newBoneWeight;
-                            v.BoneWeights[0] = 1;
+                            v.BoneWeights = new FLVER.VertexBoneWeights();
+                            v.BoneIndices = new FLVER.VertexBoneIndices();
                         }
+                        for (int j = 0; j < v.BoneWeights.Length; ++j)
+                            v.BoneWeights[j] = 0;
+                        v.BoneIndices[0] = newBoneWeight;
+                        v.BoneWeights[0] = 1;
                     }
                     if (!flver.Meshes[e.RowIndex].BoneIndices.Contains(newBoneWeight)) flver.Meshes[e.RowIndex].BoneIndices.Add(newBoneWeight);
-                    flver.Meshes[e.RowIndex].Dynamic = true;
+                    flver.Meshes[e.RowIndex].Dynamic = 1;
                 }
             }
             catch { }
@@ -1656,10 +1645,10 @@ namespace FLVER_Editor
         private void ReverseFaceSets()
         {
             UpdateUndoState();
-            foreach (FLVER.FaceSet fs in selectedMeshIndices.SelectMany(i => flver.Meshes[i].FaceSets))
+            foreach (FLVER2.FaceSet fs in selectedMeshIndices.SelectMany(i => flver.Meshes[i].FaceSets))
             {
-                for (int j = 0; j < fs.Vertices.Length; j += 3)
-                    (fs.Vertices[j + 1], fs.Vertices[j + 2]) = (fs.Vertices[j + 2], fs.Vertices[j + 1]);
+                for (int j = 0; j < fs.Indices.Count; j += 3)
+                    (fs.Indices[j + 1], fs.Indices[j + 2]) = (fs.Indices[j + 2], fs.Indices[j + 1]);
             }
             UpdateMesh();
         }
@@ -1676,8 +1665,7 @@ namespace FLVER_Editor
             UpdateUndoState();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
             {
-                for (int j = 0; j < v.Normals.Count; ++j)
-                    v.Normals[j] = new Vector4(-v.Normals[j].X, -v.Normals[j].Y, -v.Normals[j].Z, v.Normals[j].W);
+                v.Normal = new System.Numerics.Vector3(-v.Normal.X, -v.Normal.Y, -v.Normal.Z);
                 for (int j = 0; j < v.Tangents.Count; ++j)
                     v.Tangents[j] = new Vector4(-v.Tangents[j].X, -v.Tangents[j].Y, -v.Tangents[j].Z, v.Tangents[j].W);
             }
@@ -1688,12 +1676,12 @@ namespace FLVER_Editor
         private void ToggleBackFacesCheckboxChanged(object sender, EventArgs e)
         {
             if (isSettingDefaultInfo) return;
-            foreach (FLVER.FaceSet fs in selectedMeshIndices.SelectMany(i => flver.Meshes[i].FaceSets))
+            foreach (FLVER2.FaceSet fs in selectedMeshIndices.SelectMany(i => flver.Meshes[i].FaceSets))
                 fs.CullBackfaces = !fs.CullBackfaces;
             ShowInformationDialog("Mesh backfaces have been toggled!");
         }
 
-        private static void UpdateHeaderBoundingBox(FLVER.FLVERHeader header, System.Numerics.Vector3 vertexPos)
+        private static void UpdateHeaderBoundingBox(FLVER2.FLVERHeader header, System.Numerics.Vector3 vertexPos)
         {
             float minX = Math.Min(header.BoundingBoxMin.X, vertexPos.X);
             float minY = Math.Min(header.BoundingBoxMin.Y, vertexPos.Y);
@@ -1705,25 +1693,25 @@ namespace FLVER_Editor
             header.BoundingBoxMax = new System.Numerics.Vector3(maxX, maxY, maxZ);
         }
 
-        private static void UpdateMeshBoundingBox(FLVER.Mesh mesh, System.Numerics.Vector3 vertexPos)
+        private static void UpdateMeshBoundingBox(FLVER2.Mesh mesh, System.Numerics.Vector3 vertexPos)
         {
-            float minX = Math.Min(mesh.BoundingBoxMin.X, vertexPos.X);
-            float minY = Math.Min(mesh.BoundingBoxMin.Y, vertexPos.Y);
-            float minZ = Math.Min(mesh.BoundingBoxMin.Z, vertexPos.Z);
-            float maxX = Math.Max(mesh.BoundingBoxMax.X, vertexPos.X);
-            float maxY = Math.Max(mesh.BoundingBoxMax.Y, vertexPos.Y);
-            float maxZ = Math.Max(mesh.BoundingBoxMax.Z, vertexPos.Z);
-            mesh.BoundingBoxMin = new System.Numerics.Vector3(minX, minY, minZ);
-            mesh.BoundingBoxMax = new System.Numerics.Vector3(maxX, maxY, maxZ);
+            float minX = Math.Min(mesh.BoundingBox.Min.X, vertexPos.X);
+            float minY = Math.Min(mesh.BoundingBox.Min.Y, vertexPos.Y);
+            float minZ = Math.Min(mesh.BoundingBox.Min.Z, vertexPos.Z);
+            float maxX = Math.Max(mesh.BoundingBox.Max.X, vertexPos.X);
+            float maxY = Math.Max(mesh.BoundingBox.Max.Y, vertexPos.Y);
+            float maxZ = Math.Max(mesh.BoundingBox.Max.Z, vertexPos.Z);
+            mesh.BoundingBox.Min = new System.Numerics.Vector3(minX, minY, minZ);
+            mesh.BoundingBox.Max = new System.Numerics.Vector3(maxX, maxY, maxZ);
         }
 
-        private static Matrix4x4 GetNMatrix(FLVER.Bone b)
+        private static System.Numerics.Matrix4x4 GetNMatrix(FLVER.Bone b)
         {
-            return Matrix4x4.CreateScale(b.Scale)
-                * Matrix4x4.CreateRotationX(b.Rotation.X)
-                * Matrix4x4.CreateRotationZ(b.Rotation.Z)
-                * Matrix4x4.CreateRotationY(b.Rotation.Y)
-                * Matrix4x4.CreateTranslation(b.Translation);
+            return System.Numerics.Matrix4x4.CreateScale(b.Scale)
+                * System.Numerics.Matrix4x4.CreateRotationX(b.Rotation.X)
+                * System.Numerics.Matrix4x4.CreateRotationZ(b.Rotation.Z)
+                * System.Numerics.Matrix4x4.CreateRotationY(b.Rotation.Y)
+                * System.Numerics.Matrix4x4.CreateTranslation(b.Translation);
         }
 
         private static FLVER.Bone GetParent(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones)
@@ -1732,13 +1720,13 @@ namespace FLVER_Editor
             return null;
         }
 
-        private static Matrix4x4 GetAbsoluteNMatrix(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones)
+        private static System.Numerics.Matrix4x4 GetAbsoluteNMatrix(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones)
         {
-            Matrix4x4 result = Matrix4x4.Identity;
+            System.Numerics.Matrix4x4 result = System.Numerics.Matrix4x4.Identity;
             FLVER.Bone parentBone = b;
             while (parentBone != null)
             {
-                Matrix4x4 m = GetNMatrix(parentBone);
+                System.Numerics.Matrix4x4 m = GetNMatrix(parentBone);
                 result *= m;
                 parentBone = GetParent(parentBone, bones);
             }
@@ -1747,8 +1735,8 @@ namespace FLVER_Editor
 
         private static void UpdateBonesBoundingBox(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones, System.Numerics.Vector3 vertexPos)
         {
-            Matrix4x4 boneAbsoluteMatrix = GetAbsoluteNMatrix(b, bones);
-            if (!Matrix4x4.Invert(boneAbsoluteMatrix, out Matrix4x4 invertedBoneMatrix)) return;
+            System.Numerics.Matrix4x4 boneAbsoluteMatrix = GetAbsoluteNMatrix(b, bones);
+            if (!System.Numerics.Matrix4x4.Invert(boneAbsoluteMatrix, out System.Numerics.Matrix4x4 invertedBoneMatrix)) return;
             System.Numerics.Vector3 posForBBox = System.Numerics.Vector3.Transform(vertexPos, invertedBoneMatrix);
             float minX = Math.Min(b.BoundingBoxMin.X, posForBBox.X);
             float minY = Math.Min(b.BoundingBoxMin.Y, posForBBox.Y);
@@ -1770,19 +1758,19 @@ namespace FLVER_Editor
                 bone.BoundingBoxMin = new System.Numerics.Vector3();
                 bone.BoundingBoxMax = new System.Numerics.Vector3();
             }
-            foreach (FLVER.Mesh mesh in flver.Meshes)
+            foreach (FLVER2.Mesh mesh in flver.Meshes)
             {
                 foreach (FLVER.Vertex vertex in mesh.Vertices)
                 {
-                    UpdateHeaderBoundingBox(flver.Header, vertex.Positions[0]);
-                    UpdateMeshBoundingBox(mesh, vertex.Positions[0]);
-                    if (vertex.BoneIndices == null) continue;
-                    foreach (int boneIndex in vertex.BoneIndices)
+                    UpdateHeaderBoundingBox(flver.Header, vertex.Position);
+                    UpdateMeshBoundingBox(mesh, vertex.Position);
+                    if (Program.BoneIndicesToIntArray(vertex.BoneIndices) == null) continue;
+                    foreach (int boneIndex in Program.BoneIndicesToIntArray(vertex.BoneIndices))
                     {
                         bool boneDoesNotExist = false;
                         if (boneIndex >= 0 && boneIndex < flver.Bones.Count) flver.Bones[boneIndex].Unk3C = 0;
                         else boneDoesNotExist = true;
-                        if (!boneDoesNotExist) UpdateBonesBoundingBox(flver.Bones[boneIndex], flver.Bones, vertex.Positions[0]);
+                        if (!boneDoesNotExist) UpdateBonesBoundingBox(flver.Bones[boneIndex], flver.Bones, vertex.Position);
                     }
                 }
             }
@@ -1822,22 +1810,22 @@ namespace FLVER_Editor
             try
             {
                 Scene scene = new Scene { RootNode = new Node() };
-                foreach (FLVER.Material m in flver.Materials)
+                foreach (FLVER2.Material m in flver.Materials)
                     scene.Materials.Add(new Material { Name = m.Name });
                 for (int i = 0; i < flver.Meshes.Count; ++i)
                 {
-                    FLVER.Mesh m = flver.Meshes[i];
+                    FLVER2.Mesh m = flver.Meshes[i];
                     Mesh newMesh = new Mesh("Mesh_M" + i, PrimitiveType.Triangle);
                     foreach (FLVER.Vertex v in m.Vertices)
                     {
-                        newMesh.Vertices.Add(new Assimp.Vector3D(v.Positions[0].X, v.Positions[0].Y, v.Positions[0].Z));
-                        newMesh.Normals.Add(new Assimp.Vector3D(v.Normals[0].X, v.Normals[0].Y, v.Normals[0].Z));
+                        newMesh.Vertices.Add(new Assimp.Vector3D(v.Position.X, v.Position.Y, v.Position.Z));
+                        newMesh.Normals.Add(new Assimp.Vector3D(v.Normal.X, v.Normal.Y, v.Normal.Z));
                         newMesh.Tangents.Add(new Assimp.Vector3D(v.Tangents[0].X, v.Tangents[0].Y, v.Tangents[0].Z));
                         for (int j = 0; j < v.UVs.Count; ++j)
                             newMesh.TextureCoordinateChannels[j].Add(new Assimp.Vector3D(v.UVs[j].X, 1 - v.UVs[j].Y, 0));
                     }
-                    foreach (uint[] arr in m.FaceSets.SelectMany(fs => fs.GetFaces()))
-                        newMesh.Faces.Add(new Face(new[] { (int)arr[0], (int)arr[1], (int)arr[2] }));
+                    foreach (FLVER2.FaceSet faceSet in m.FaceSets)
+                        newMesh.Faces.Add(new Face(new[] { faceSet.Indices[0], faceSet.Indices[1], faceSet.Indices[2] }));
                     newMesh.MaterialIndex = m.MaterialIndex;
                     scene.Meshes.Add(newMesh);
                     Node nodeBase = new Node { Name = "M_" + i + "_" + flver.Materials[m.MaterialIndex].Name };
@@ -1895,7 +1883,7 @@ namespace FLVER_Editor
             try
             {
                 UpdateUndoState();
-                FLVER newFlver = IsFLVERPath(newFlverFilePath) ? FLVER.Read(newFlverFilePath) :
+                FLVER2 newFlver = IsFLVERPath(newFlverFilePath) ? FLVER2.Read(newFlverFilePath) :
                     ReadFLVERFromDCXPath(newFlverFilePath, false, false, false);
                 if (newFlver == null) return;
                 int materialOffset = flver.Materials.Count;
@@ -1911,12 +1899,12 @@ namespace FLVER_Editor
                         break;
                     }
                 }
-                foreach (FLVER.Mesh m in newFlver.Meshes)
+                foreach (FLVER2.Mesh m in newFlver.Meshes)
                 {
                     m.MaterialIndex += materialOffset;
-                    foreach (FLVER.VertexBuffer vb in m.VertexBuffers)
+                    foreach (FLVER2.VertexBuffer vb in m.VertexBuffers)
                         vb.LayoutIndex += layoutOffset;
-                    foreach (FLVER.Vertex v in m.Vertices.Where(v => v.BoneIndices != null))
+                    foreach (FLVER.Vertex v in m.Vertices.Where(v => Program.BoneIndicesToIntArray(v.BoneIndices) != null))
                     {
                         for (int i = 0; i < v.BoneIndices.Length; ++i)
                         {
@@ -2001,7 +1989,7 @@ namespace FLVER_Editor
                             flver.Dummies[e.RowIndex].AttachBoneIndex = parsed;
                             break;
                         case 3:
-                            flver.Dummies[e.RowIndex].DummyBoneIndex = parsed;
+                            flver.Dummies[e.RowIndex].ParentBoneIndex = parsed;
                             break;
                     }
                 }
@@ -2027,7 +2015,7 @@ namespace FLVER_Editor
                         flver.Bones = JsonConvert.DeserializeObject<List<FLVER.Bone>>(jsonText);
                         break;
                     case 1:
-                        flver.Materials = JsonConvert.DeserializeObject<List<FLVER.Material>>(jsonText);
+                        flver.Materials = JsonConvert.DeserializeObject<List<FLVER2.Material>>(jsonText);
                         break;
                 }
                 DeselectAllSelectedThings();
@@ -2141,10 +2129,10 @@ namespace FLVER_Editor
             System.Numerics.Vector3 maxVector = new System.Numerics.Vector3(999, 999, 999);
             flver.Header.BoundingBoxMin = maxVector;
             flver.Header.BoundingBoxMax = minVector;
-            foreach (FLVER.Mesh mesh in from mesh in flver.Meshes from vertex in mesh.Vertices select mesh)
+            foreach (FLVER2.Mesh mesh in from mesh in flver.Meshes from vertex in mesh.Vertices select mesh)
             {
-                mesh.BoundingBoxMin = maxVector;
-                mesh.BoundingBoxMax = minVector;
+                mesh.BoundingBox.Min = maxVector;
+                mesh.BoundingBox.Max = minVector;
             }
             ShowInformationDialog("Set all mesh bounding boxes to maximum size!");
             UpdateMesh();
@@ -2218,7 +2206,7 @@ namespace FLVER_Editor
                 if (matBin.Samplers.Any(sampler => sampler.Path != ""))
                 {
                     flver.Materials[selectedMaterialIndex].Textures.Clear();
-                    foreach (FLVER.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER.Texture { Type = sampler.Type, Path = sampler.Path }))
+                    foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
                         flver.Materials[selectedMaterialIndex].Textures.Add(newTexture);
                 }
                 break;
@@ -2259,9 +2247,9 @@ namespace FLVER_Editor
             float[] totals = CalculateMeshTotals();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
             {
-                v.Positions[0] = MirrorThing(v.Positions[0], nbi, totals);
-                v.Normals[0] = new Vector4(v.Normals[0].X * (nbi == 0 ? -1 : 1),
-                    v.Normals[0].Y * (nbi == 1 ? -1 : 1), v.Normals[0].Z * (nbi == 2 ? -1 : 1), -1);
+                v.Position = MirrorThing(v.Position, nbi, totals);
+                v.Normal = new System.Numerics.Vector3(v.Normal.X * (nbi == 0 ? -1 : 1),
+                    v.Normal.Y * (nbi == 1 ? -1 : 1), v.Normal.Z * (nbi == 2 ? -1 : 1));
                 v.Tangents[0] = new Vector4(v.Tangents[0].X * (nbi == 0 ? -1 : 1),
                     v.Tangents[0].Y * (nbi == 1 ? -1 : 1), v.Tangents[0].Z * (nbi == 2 ? -1 : 1), 1);
             }
@@ -2607,25 +2595,24 @@ namespace FLVER_Editor
             DummiesTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
         }
 
-        private static void AddNewMeshFaceset(FLVER.Mesh m, FLVER.FaceSet.FSFlags flags)
+        private static void AddNewMeshFaceset(FLVER2.Mesh m, FLVER2.FaceSet.FSFlags flags)
         {
-            FLVER.FaceSet fs = Program.generateBasicFaceSet();
+            FLVER2.FaceSet fs = Program.GenerateBasicFaceSet();
             fs.Flags = flags;
-            fs.IndexSize = m.FaceSets[0].IndexSize;
-            fs.Vertices = (uint[])m.FaceSets[0].Vertices.Clone();
+            fs.Indices = new List<int>(m.FaceSets[0].Indices.ToArray());
             m.FaceSets.Add(fs);
         }
 
         private void SolveAllMeshLODs()
         {
             UpdateUndoState();
-            foreach (FLVER.Mesh m in flver.Meshes)
+            foreach (FLVER2.Mesh m in flver.Meshes)
             {
-                AddNewMeshFaceset(m, FLVER.FaceSet.FSFlags.LodLevel1);
-                AddNewMeshFaceset(m, FLVER.FaceSet.FSFlags.LodLevel2);
-                AddNewMeshFaceset(m, FLVER.FaceSet.FSFlags.Unk80000000);
-                AddNewMeshFaceset(m, FLVER.FaceSet.FSFlags.LodLevel1 | FLVER.FaceSet.FSFlags.Unk80000000);
-                AddNewMeshFaceset(m, FLVER.FaceSet.FSFlags.LodLevel2 | FLVER.FaceSet.FSFlags.Unk80000000);
+                AddNewMeshFaceset(m, FLVER2.FaceSet.FSFlags.LodLevel1);
+                AddNewMeshFaceset(m, FLVER2.FaceSet.FSFlags.LodLevel2);
+                AddNewMeshFaceset(m, FLVER2.FaceSet.FSFlags.MotionBlur);
+                AddNewMeshFaceset(m, FLVER2.FaceSet.FSFlags.LodLevel1 | FLVER2.FaceSet.FSFlags.MotionBlur);
+                AddNewMeshFaceset(m, FLVER2.FaceSet.FSFlags.LodLevel2 | FLVER2.FaceSet.FSFlags.MotionBlur);
             }
             ShowInformationDialog("Successfully solved all mesh LODs!");
         }
@@ -2662,7 +2649,7 @@ namespace FLVER_Editor
                 redoToolStripMenuItem.Enabled = false;
             }
             undoToolStripMenuItem.Enabled = true;
-            undoFlverList.Add(FLVER.Read(flver.Write()));
+            undoFlverList.Add(FLVER2.Read(flver.Write()));
             currUndoFlverListIndex++;
             if (currUndoFlverListIndex <= undoRedoStackLimit) return;
             undoFlverList.RemoveAt(0);
@@ -2672,7 +2659,7 @@ namespace FLVER_Editor
         private void UpdateRedoState()
         {
             redoToolStripMenuItem.Enabled = true;
-            redoFlverList.Add(FLVER.Read(flver.Write()));
+            redoFlverList.Add(FLVER2.Read(flver.Write()));
             currRedoFlverListIndex++;
         }
 
@@ -2680,7 +2667,7 @@ namespace FLVER_Editor
         {
             if (currUndoFlverListIndex < 0) return;
             UpdateRedoState();
-            flver = FLVER.Read(undoFlverList[currUndoFlverListIndex].Write());
+            flver = FLVER2.Read(undoFlverList[currUndoFlverListIndex].Write());
             undoFlverList.RemoveAt(currUndoFlverListIndex);
             currUndoFlverListIndex--;
             UpdateUI();
@@ -2693,7 +2680,7 @@ namespace FLVER_Editor
         {
             if (currRedoFlverListIndex < 0) return;
             UpdateUndoState(false);
-            flver = FLVER.Read(redoFlverList[currRedoFlverListIndex].Write());
+            flver = FLVER2.Read(redoFlverList[currRedoFlverListIndex].Write());
             redoFlverList.RemoveAt(currRedoFlverListIndex);
             currRedoFlverListIndex--;
             UpdateUI();
@@ -2717,8 +2704,8 @@ namespace FLVER_Editor
             UpdateUndoState();
             foreach (FLVER.Vertex v in selectedMeshIndices.SelectMany(i => flver.Meshes[i].Vertices))
             {
-                v.Positions[0] = new System.Numerics.Vector3(v.Positions[0].X, v.Positions[0].Z, v.Positions[0].Y);
-                v.Normals[0] = new Vector4(v.Normals[0].X, v.Normals[0].Z, v.Normals[0].Y, -1);
+                v.Position = new System.Numerics.Vector3(v.Position.X, v.Position.Z, v.Position.Y);
+                v.Normal = new System.Numerics.Vector3(v.Normal.X, v.Normal.Z, v.Normal.Y);
                 v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Z, v.Tangents[0].Y, 1);
             }
             foreach (FLVER.Dummy d in selectedDummyIndices.Select(i => flver.Dummies[i]))
@@ -2756,43 +2743,38 @@ namespace FLVER_Editor
         private void ResetAllMesh()
         {
             UpdateUndoState();
-            int layoutCount = flver.BufferLayouts.Count;
-            FLVER.BufferLayout newBL = new FLVER.BufferLayout
+            FLVER2.BufferLayout newBL = new FLVER2.BufferLayout
             {
-                new FLVER.BufferLayout.Member(0, 0, FLVER.BufferLayout.MemberType.Float3, FLVER.BufferLayout.MemberSemantic.Position, 0),
-                new FLVER.BufferLayout.Member(0, 12, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.Normal, 0),
-                new FLVER.BufferLayout.Member(0, 16, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.Tangent, 0),
-                new FLVER.BufferLayout.Member(0, 20, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.Tangent, 1),
-                new FLVER.BufferLayout.Member(0, 24, FLVER.BufferLayout.MemberType.Byte4B, FLVER.BufferLayout.MemberSemantic.BoneIndices, 0),
-                new FLVER.BufferLayout.Member(0, 28, FLVER.BufferLayout.MemberType.Byte4C, FLVER.BufferLayout.MemberSemantic.BoneWeights, 0),
-                new FLVER.BufferLayout.Member(0, 32, FLVER.BufferLayout.MemberType.Byte4C, FLVER.BufferLayout.MemberSemantic.VertexColor, 1),
-                new FLVER.BufferLayout.Member(0, 36, FLVER.BufferLayout.MemberType.UVPair, FLVER.BufferLayout.MemberSemantic.UV, 0)
+                new FLVER.LayoutMember(FLVER.LayoutType.Float3, FLVER.LayoutSemantic.Position),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Normal, 12),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Tangent, 16),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Tangent, 16, 1),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.BoneIndices, 24),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4C, FLVER.LayoutSemantic.BoneWeights, 28),
+                new FLVER.LayoutMember(FLVER.LayoutType.Byte4C, FLVER.LayoutSemantic.VertexColor, 32, 1),
+                new FLVER.LayoutMember(FLVER.LayoutType.UVPair, FLVER.LayoutSemantic.UV, 36),
             };
             flver.BufferLayouts.Add(newBL);
-            foreach (FLVER.Mesh m in flver.Meshes)
+            foreach (FLVER2.Mesh m in flver.Meshes)
             {
-                m.BoundingBoxMax = new System.Numerics.Vector3(1, 1, 1);
-                m.BoundingBoxMin = new System.Numerics.Vector3(-1, -1, -1);
-                m.BoundingBoxUnk = new System.Numerics.Vector3();
-                m.Unk1 = 0;
+                m.BoundingBox.Max = new System.Numerics.Vector3(1, 1, 1);
+                m.BoundingBox.Min = new System.Numerics.Vector3(-1, -1, -1);
+                m.BoundingBox.Unk = new System.Numerics.Vector3();
                 m.DefaultBoneIndex = 0;
-                m.Dynamic = true;
-                m.VertexBuffers = new List<FLVER.VertexBuffer> { new FLVER.VertexBuffer(0, layoutCount, -1) };
-                uint[] varray = m.FaceSets[0].Vertices;
-                m.FaceSets = new List<FLVER.FaceSet>();
+                m.Dynamic = 1;
+                m.VertexBuffers = new List<FLVER2.VertexBuffer>();
+                int[] varray = m.FaceSets[0].Indices.ToArray();
+                m.FaceSets = new List<FLVER2.FaceSet>();
                 for (int i = 0; i < m.Vertices.Count; i++)
                 {
                     FLVER.Vertex vit = m.Vertices[i];
-                    m.Vertices[i] = Program.generateVertexV4(new System.Numerics.Vector3(vit.Positions[0].X, vit.Positions[0].Y, vit.Positions[0].Z), vit.UVs[0], vit.UVs[0],
-                        vit.Normals[0], vit.Tangents[0], 1);
+                    m.Vertices[i] = Program.GenerateNewFlverVertexUsingNumerics(new System.Numerics.Vector3(vit.Position.X, vit.Position.Y, vit.Position.Z), vit.Normal, vit.Tangents, vit.Bitangent, vit.UVs, 1);
                     m.Vertices[i].BoneIndices = vit.BoneIndices;
                     m.Vertices[i].BoneWeights = vit.BoneWeights;
                 }
-                m.FaceSets.Add(Program.generateBasicFaceSet());
-                m.FaceSets[0].Vertices = varray;
+                m.FaceSets.Add(Program.GenerateBasicFaceSet());
+                m.FaceSets[0].Indices = varray.ToList();
                 m.FaceSets[0].CullBackfaces = false;
-                if (m.FaceSets[0].Vertices.Length <= 65534) continue;
-                m.FaceSets[0].IndexSize = 32;
             }
             ShowInformationDialog("Successfully reset all mesh!");
         }

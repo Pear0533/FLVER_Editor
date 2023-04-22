@@ -33,13 +33,13 @@ namespace FLVER_Editor
         public Vector3D[] getGlobalVlist()
         {
             var ans = new Vector3D[vlist.Length];
-            var transMatrix = new Matrix3D();
+            var transMatrix = new Matrix4x4();
             {
-                var rs = Matrix3D.generateScaleMatrix(scale);
-                var rx = Matrix3D.generateRotXMatrix(rotation.X);
-                var ry = Matrix3D.generateRotYMatrix(rotation.Y);
-                var rz = Matrix3D.generateRotZMatrix(rotation.Z);
-                var pos = Matrix3D.generateTranslationMatrix(position.X, position.Y, position.Z);
+                var rs = Matrix4x4.GenerateScaleMatrix4x4(scale);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(position.X, position.Y, position.Z);
                 if (rotOrder == RotationOrder.XYZ)
                 {
                     transMatrix = pos * (rx * (ry * (rz * rs)));
@@ -69,11 +69,11 @@ namespace FLVER_Editor
             parentT = parent;
             while (parentT != null)
             {
-                var rx = Matrix3D.generateRotXMatrix(parentT.rotation.X);
-                var ry = Matrix3D.generateRotYMatrix(parentT.rotation.Y);
-                var rz = Matrix3D.generateRotZMatrix(parentT.rotation.Z);
-                var pos = Matrix3D.generateTranslationMatrix(parentT.position.X, parentT.position.Y, parentT.position.Z);
-                transMatrix = Matrix3D.generateScaleMatrix(scale.X, scale.Y, scale.Z) * transMatrix;
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentT.rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentT.rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentT.rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentT.position.X, parentT.position.Y, parentT.position.Z);
+                transMatrix = Matrix4x4.GenerateScaleMatrix4x4(scale.X, scale.Y, scale.Z) * transMatrix;
                 if (rotOrder == RotationOrder.XYZ)
                 {
                     transMatrix = pos * (rx * (ry * (rz * transMatrix)));
@@ -107,10 +107,10 @@ namespace FLVER_Editor
             }
             for (var i = 0; i < vlist.Length; i++)
             {
-                ans[i] = vlist[i].clone();
+                ans[i] = vlist[i].Clone();
 
                 // Console.WriteLine("Old X " + ans[i].X + " Y " + ans[i].Y + " Z " + ans[i].Z);
-                ans[i] = Matrix3D.matrixTimesVector3D(transMatrix, ans[i]);
+                ans[i] = Matrix4x4.Matrix4x4TimesVector3D(transMatrix, ans[i]);
                 // Console.WriteLine("New X " + ans[i].X + " Y " + ans[i].Y + " Z " + ans[i].Z);
             }
             return ans;
@@ -120,13 +120,13 @@ namespace FLVER_Editor
         {
             var ans = new Vector3D();
             var org = new Vector3D();
-            var transMatrix = new Matrix3D();
+            var transMatrix = new Matrix4x4();
             {
-                var rs = Matrix3D.generateScaleMatrix(scale.X, scale.Y, scale.Z);
-                var rx = Matrix3D.generateRotXMatrix(rotation.X);
-                var ry = Matrix3D.generateRotYMatrix(rotation.Y);
-                var rz = Matrix3D.generateRotZMatrix(rotation.Z);
-                var pos = Matrix3D.generateTranslationMatrix(position.X, position.Y, position.Z);
+                var rs = Matrix4x4.GenerateScaleMatrix4x4(scale.X, scale.Y, scale.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(position.X, position.Y, position.Z);
                 if (rotOrder == RotationOrder.XYZ)
                 {
                     transMatrix = pos * (rx * (ry * (rz * rs)));
@@ -156,11 +156,11 @@ namespace FLVER_Editor
             parentT = parent;
             while (parentT != null)
             {
-                var rx = Matrix3D.generateRotXMatrix(parentT.rotation.X);
-                var ry = Matrix3D.generateRotYMatrix(parentT.rotation.Y);
-                var rz = Matrix3D.generateRotZMatrix(parentT.rotation.Z);
-                var pos = Matrix3D.generateTranslationMatrix(parentT.position.X, parentT.position.Y, parentT.position.Z);
-                transMatrix = Matrix3D.generateScaleMatrix(parentT.scale.X, parentT.scale.Y, parentT.scale.Z) * transMatrix;
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentT.rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentT.rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentT.rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentT.position.X, parentT.position.Y, parentT.position.Z);
+                transMatrix = Matrix4x4.GenerateScaleMatrix4x4(parentT.scale.X, parentT.scale.Y, parentT.scale.Z) * transMatrix;
                 if (rotOrder == RotationOrder.XYZ)
                 {
                     transMatrix = pos * (rx * (ry * (rz * transMatrix)));
@@ -194,7 +194,7 @@ namespace FLVER_Editor
             }
 
             //ans= org.clone();
-            ans = Matrix3D.matrixTimesVector3D(transMatrix, org);
+            ans = Matrix4x4.Matrix4x4TimesVector3D(transMatrix, org);
             return ans;
         }
 
@@ -253,12 +253,12 @@ namespace FLVER_Editor
                 v.Y *= factor;
                 v.Z *= factor;
             }
-            var transMatrix = new Matrix3D();
+            var transMatrix = new Matrix4x4();
             {
-                var rx = Matrix3D.generateRotXMatrix(rotation.X);
-                var ry = Matrix3D.generateRotYMatrix(rotation.Y);
-                var rz = Matrix3D.generateRotZMatrix(rotation.Z);
-                var pos = Matrix3D.generateTranslationMatrix(position.X, position.Y, position.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(position.X, position.Y, position.Z);
 
                 //   transMatrix = pos * (rx * (ry * rz));
                 //transMatrix = pos * (rx );
@@ -291,16 +291,16 @@ namespace FLVER_Editor
             parentT = parent;
             while (parentT != null)
             {
-                var rx = Matrix3D.generateRotXMatrix(parentT.rotation.X);
-                var ry = Matrix3D.generateRotYMatrix(parentT.rotation.Y);
-                var rz = Matrix3D.generateRotZMatrix(parentT.rotation.Z);
-                var pos = Matrix3D.generateTranslationMatrix(parentT.position.X, parentT.position.Y, parentT.position.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentT.rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentT.rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentT.rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentT.position.X, parentT.position.Y, parentT.position.Z);
                 transMatrix = pos * (rx * (ry * (rz * transMatrix)));
                 parentT = parent.parent;
             }
             for (var i = 0; i < ans.Length; i++)
             {
-                ans[i] = Matrix3D.matrixTimesVector3D(transMatrix, ans[i]);
+                ans[i] = Matrix4x4.Matrix4x4TimesVector3D(transMatrix, ans[i]);
             }
             return ans;
         }
@@ -353,12 +353,12 @@ namespace FLVER_Editor
                 v.Y *= factor;
                 v.Z *= factor;
             }
-            var transMatrix = new Matrix3D();
+            var transMatrix = new Matrix4x4();
             {
-                var rx = Matrix3D.generateRotXMatrix(rotation.X);
-                var ry = Matrix3D.generateRotYMatrix(rotation.Y);
-                var rz = Matrix3D.generateRotZMatrix(rotation.Z);
-                var pos = Matrix3D.generateTranslationMatrix(position.X, position.Y, position.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(position.X, position.Y, position.Z);
 
                 //   transMatrix = pos * (rx * (ry * rz));
                 //  transMatrix = pos * (rx * (ry * rz));
@@ -391,16 +391,16 @@ namespace FLVER_Editor
             parentT = parent;
             while (parentT != null)
             {
-                var rx = Matrix3D.generateRotXMatrix(parentT.rotation.X);
-                var ry = Matrix3D.generateRotYMatrix(parentT.rotation.Y);
-                var rz = Matrix3D.generateRotZMatrix(parentT.rotation.Z);
-                var pos = Matrix3D.generateTranslationMatrix(parentT.position.X, parentT.position.Y, parentT.position.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentT.rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentT.rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentT.rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentT.position.X, parentT.position.Y, parentT.position.Z);
                 transMatrix = pos * (rx * (ry * (rz * transMatrix)));
                 parentT = parent.parent;
             }
             for (var i = 0; i < ans.Length; i++)
             {
-                ans[i] = Matrix3D.matrixTimesVector3D(transMatrix, ans[i]);
+                ans[i] = Matrix4x4.Matrix4x4TimesVector3D(transMatrix, ans[i]);
             }
             return ans;
         }
@@ -454,12 +454,12 @@ namespace FLVER_Editor
                 v.Y *= factor;
                 v.Z *= factor;
             }
-            var transMatrix = new Matrix3D();
+            var transMatrix = new Matrix4x4();
             {
-                var rx = Matrix3D.generateRotXMatrix(rotation.X);
-                var ry = Matrix3D.generateRotYMatrix(rotation.Y);
-                var rz = Matrix3D.generateRotZMatrix(rotation.Z);
-                var pos = Matrix3D.generateTranslationMatrix(position.X, position.Y, position.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(position.X, position.Y, position.Z);
 
                 //   transMatrix = pos * (rx * (ry * rz));
                 //transMatrix = pos * (rx * ry);
@@ -492,16 +492,16 @@ namespace FLVER_Editor
             parentT = parent;
             while (parentT != null)
             {
-                var rx = Matrix3D.generateRotXMatrix(parentT.rotation.X);
-                var ry = Matrix3D.generateRotYMatrix(parentT.rotation.Y);
-                var rz = Matrix3D.generateRotZMatrix(parentT.rotation.Z);
-                var pos = Matrix3D.generateTranslationMatrix(parentT.position.X, parentT.position.Y, parentT.position.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentT.rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentT.rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentT.rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentT.position.X, parentT.position.Y, parentT.position.Z);
                 transMatrix = pos * (rx * (ry * (rz * transMatrix)));
                 parentT = parent.parent;
             }
             for (var i = 0; i < ans.Length; i++)
             {
-                ans[i] = Matrix3D.matrixTimesVector3D(transMatrix, ans[i]);
+                ans[i] = Matrix4x4.Matrix4x4TimesVector3D(transMatrix, ans[i]);
             }
             return ans;
         }

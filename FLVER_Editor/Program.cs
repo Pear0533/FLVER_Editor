@@ -11,15 +11,14 @@ namespace FLVER_Editor
     public class VertexInfo
     {
         public int meshIndex;
-        public uint vertexIndex;
+        public int vertexIndex;
     }
 
     internal static partial class Program
     {
-        public static FLVER flver;
+        public static FLVER2 flver;
         public static TPF tpf = null;
         public static List<VertexInfo> verticesInfo = new List<VertexInfo>();
-        public static Vector3D[] bonePosList = new Vector3D[1000];
         public static Dictionary<string, string> boneParentList;
         public static List<FLVER.Vertex> vertices = new List<FLVER.Vertex>();
         public static string filePath = "";
@@ -47,22 +46,24 @@ namespace FLVER_Editor
             window.ShowDialog();
         }
 
-        private static int FindBoneIndexByName(FLVER flverFile, string name)
+        private static int FindBoneIndexByName(FLVER2 flverFile, string name)
         {
-            for (int i = 0; i < flverFile.Bones.Count; ++i)
+            for (var i = 0; i < flverFile.Bones.Count; ++i)
                 if (flverFile.Bones[i].Name == name)
                     return i;
             return -1;
         }
 
-        public static void SetMaterialPath(FLVER.Material material, string typeName, string newPath)
+        public static void SetMaterialPath(FLVER2.Material material, string typeName, string newPath)
         {
-            foreach (FLVER.Texture t in material.Textures.Where(t => t.Type == typeName))
+            foreach (FLVER2.Texture t in material.Textures.Where(t => t.Type == typeName))
             {
                 t.Path = newPath;
                 return;
             }
-            FLVER.Texture newTexture = new FLVER.Texture { Type = typeName, Path = newPath, ScaleX = 1, ScaleY = 1, Unk10 = 1, Unk11 = true };
+            var scale = new Vector2(1.0f, 1.0f);
+
+            var newTexture = new FLVER2.Texture { Type = typeName, Path = newPath, Scale = scale, Unk10 = 1, Unk11 = true };
             material.Textures.Add(newTexture);
         }
 
@@ -71,78 +72,9 @@ namespace FLVER_Editor
             return string.Concat(path.Split(Path.GetInvalidPathChars()));
         }
 
-        public static FLVER.Material GetBaseMaterial(string albedoPath = null, string metallicPath = null, string normalPath = null)
+        public static FLVER2.Material GetBaseMaterial(string albedoPath = null, string metallicPath = null, string normalPath = null)
         {
-            FLVER.Material baseMaterial = new FLVER.Material("", "C[AMSN]_e.mtd", 390)
-            {
-                GXBytes = new byte[]
-                {
-                    71,
-                    88,
-                    48,
-                    48,
-                    102,
-                    0,
-                    0,
-                    0,
-                    52,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    255,
-                    255,
-                    255,
-                    255,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    255,
-                    255,
-                    255,
-                    127,
-                    100,
-                    0,
-                    0,
-                    0,
-                    12,
-                    0,
-                    0,
-                    0
-                }
-            };
+            var baseMaterial = new FLVER2.Material("", "C[AMSN]_e.mtd", 390);
             SetMaterialPath(baseMaterial, "C_AMSN__snp_Texture2D_2_AlbedoMap_0",
                 albedoPath != null ? Path.GetFileNameWithoutExtension(FilterInvalidPathChars(albedoPath)) + ".tif" : "");
             SetMaterialPath(baseMaterial, "C_AMSN__snp_Texture2D_0_MetallicMap_0",
