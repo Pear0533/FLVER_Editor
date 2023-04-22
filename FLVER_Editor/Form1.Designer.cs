@@ -49,6 +49,7 @@
             this.dummyThicknessSelector = new System.Windows.Forms.ToolStripComboBox();
             this.toggleDummyIDsVisibilityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toggleUseWorldOriginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.supportPearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.patreonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.payPalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -166,31 +167,10 @@
             this.copyrightStr = new System.Windows.Forms.Label();
             this.versionStr = new System.Windows.Forms.Label();
             this.autoSaveTimer = new System.Windows.Forms.Timer(this.components);
-            this.selectAllMeshButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.selectAllDummiesButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.solveAllBBsButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.setAllBBsMaxSizeButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.hideAllMeshesButtonTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.uniformScaleTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.searchBox = new System.Windows.Forms.TextBox();
             this.searchBoxStr = new System.Windows.Forms.Label();
             this.meshTabDataTableSelector = new System.Windows.Forms.ComboBox();
-            this.presetsBoxTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.xLeftRightTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.xHorizontalTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.xSwivelTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.yUpDownTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.yVerticalTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.yRollTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.zInOutTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.zThicknessTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.zCartwheelTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.displayMaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.displayFemaleBodyTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.solveAllMeshLODsTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.windowSizeTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.vectorModeTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.displayToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ribbon.SuspendLayout();
             this.multiSelectMenu.SuspendLayout();
             this.meshTabPage.SuspendLayout();
@@ -493,7 +473,6 @@
             // 
             // autoSaveIntervalSelector
             // 
-            this.autoSaveIntervalSelector.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.autoSaveIntervalSelector.Name = "autoSaveIntervalSelector";
             this.autoSaveIntervalSelector.Size = new System.Drawing.Size(100, 23);
             this.autoSaveIntervalSelector.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AutoSaveIntervalSelectorKeyDown);
@@ -546,6 +525,13 @@
             this.toggleUseWorldOriginToolStripMenuItem.Text = "Toggle Use World Origin";
             this.toggleUseWorldOriginToolStripMenuItem.Click += new System.EventHandler(this.ToggleUseWorldOriginToolStripMenuItem_Click);
             // 
+            // toggleDuplicateMaterialsOnMeshImportToolStripMenuItem
+            // 
+            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Name = "toggleDuplicateMaterialsOnMeshImportToolStripMenuItem";
+            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
+            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Text = "Toggle Duplicate Materials On Mesh Import";
+            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Click += new System.EventHandler(this.ToggleDuplicateMaterialsOnMeshImportToolStripMenuItem_Click);
+            // 
             // supportPearToolStripMenuItem
             // 
             this.supportPearToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -579,7 +565,6 @@
             // 
             // multiSelectMenuTextbox
             // 
-            this.multiSelectMenuTextbox.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.multiSelectMenuTextbox.Name = "multiSelectMenuTextbox";
             this.multiSelectMenuTextbox.Size = new System.Drawing.Size(100, 23);
             // 
@@ -624,7 +609,7 @@
             this.resetAllMeshButton.Name = "resetAllMeshButton";
             this.resetAllMeshButton.Size = new System.Drawing.Size(40, 40);
             this.resetAllMeshButton.TabIndex = 20;
-            this.solveAllMeshLODsTooltip.SetToolTip(this.resetAllMeshButton, "Reset All Mesh (Ctrl+Shift+R)");
+            this.displayToolTip.SetToolTip(this.resetAllMeshButton, "Reset All Mesh (Ctrl+Shift+R)");
             this.resetAllMeshButton.UseVisualStyleBackColor = true;
             this.resetAllMeshButton.Click += new System.EventHandler(this.ResetAllMeshButton_Click);
             // 
@@ -638,7 +623,7 @@
             this.solveAllMeshLODsButton.Name = "solveAllMeshLODsButton";
             this.solveAllMeshLODsButton.Size = new System.Drawing.Size(40, 40);
             this.solveAllMeshLODsButton.TabIndex = 19;
-            this.solveAllMeshLODsTooltip.SetToolTip(this.solveAllMeshLODsButton, "Solve All Mesh LODs (Ctrl+Shift+L)");
+            this.displayToolTip.SetToolTip(this.solveAllMeshLODsButton, "Solve All Mesh LODs (Ctrl+Shift+L)");
             this.solveAllMeshLODsButton.UseVisualStyleBackColor = true;
             this.solveAllMeshLODsButton.Click += new System.EventHandler(this.SolveAllMeshLODsButton_Click);
             // 
@@ -652,7 +637,7 @@
             this.displayFemaleBodyButton.Name = "displayFemaleBodyButton";
             this.displayFemaleBodyButton.Size = new System.Drawing.Size(40, 40);
             this.displayFemaleBodyButton.TabIndex = 18;
-            this.displayFemaleBodyTooltip.SetToolTip(this.displayFemaleBodyButton, "Display Female Body (Ctrl+Shift+F)");
+            this.displayToolTip.SetToolTip(this.displayFemaleBodyButton, "Display Female Body (Ctrl+Shift+F)");
             this.displayFemaleBodyButton.UseVisualStyleBackColor = true;
             this.displayFemaleBodyButton.Click += new System.EventHandler(this.DisplayFemaleBodyButton_Click);
             // 
@@ -666,7 +651,7 @@
             this.displayMaleBodyButton.Name = "displayMaleBodyButton";
             this.displayMaleBodyButton.Size = new System.Drawing.Size(40, 40);
             this.displayMaleBodyButton.TabIndex = 17;
-            this.displayMaleBodyTooltip.SetToolTip(this.displayMaleBodyButton, "Display Male Body (Ctrl+Shift+G)");
+            this.displayToolTip.SetToolTip(this.displayMaleBodyButton, "Display Male Body (Ctrl+Shift+G)");
             this.displayMaleBodyButton.UseVisualStyleBackColor = true;
             this.displayMaleBodyButton.Click += new System.EventHandler(this.DisplayMaleBodyButton_Click);
             // 
@@ -680,7 +665,7 @@
             this.setAllBBsMaxSizeButton.Name = "setAllBBsMaxSizeButton";
             this.setAllBBsMaxSizeButton.Size = new System.Drawing.Size(40, 40);
             this.setAllBBsMaxSizeButton.TabIndex = 15;
-            this.setAllBBsMaxSizeButtonTooltip.SetToolTip(this.setAllBBsMaxSizeButton, "Set All Bounding Boxes Max Size (Ctrl+Shift+A)");
+            this.displayToolTip.SetToolTip(this.setAllBBsMaxSizeButton, "Set All Bounding Boxes Max Size (Ctrl+Shift+A)");
             this.setAllBBsMaxSizeButton.UseVisualStyleBackColor = true;
             this.setAllBBsMaxSizeButton.Click += new System.EventHandler(this.SetAllBBsMaxSizeButtonClicked);
             // 
@@ -694,7 +679,7 @@
             this.hideAllMeshesButton.Name = "hideAllMeshesButton";
             this.hideAllMeshesButton.Size = new System.Drawing.Size(40, 40);
             this.hideAllMeshesButton.TabIndex = 16;
-            this.hideAllMeshesButtonTooltip.SetToolTip(this.hideAllMeshesButton, "Hide All Mesh (Ctrl+Shift+H)");
+            this.displayToolTip.SetToolTip(this.hideAllMeshesButton, "Hide All Mesh (Ctrl+Shift+H)");
             this.hideAllMeshesButton.UseVisualStyleBackColor = true;
             this.hideAllMeshesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.HideAllMeshesButton_MouseClick);
             // 
@@ -708,7 +693,7 @@
             this.selectAllMeshesButton.Name = "selectAllMeshesButton";
             this.selectAllMeshesButton.Size = new System.Drawing.Size(40, 40);
             this.selectAllMeshesButton.TabIndex = 9;
-            this.selectAllMeshButtonTooltip.SetToolTip(this.selectAllMeshesButton, "Select All Mesh (Ctrl+Shift+M)");
+            this.displayToolTip.SetToolTip(this.selectAllMeshesButton, "Select All Mesh (Ctrl+Shift+M)");
             this.selectAllMeshesButton.UseVisualStyleBackColor = true;
             this.selectAllMeshesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllMeshesButtonClicked);
             // 
@@ -722,7 +707,7 @@
             this.selectAllDummiesButton.Name = "selectAllDummiesButton";
             this.selectAllDummiesButton.Size = new System.Drawing.Size(40, 40);
             this.selectAllDummiesButton.TabIndex = 13;
-            this.selectAllDummiesButtonTooltip.SetToolTip(this.selectAllDummiesButton, "Select All Dummies (Ctrl+Shift+D)");
+            this.displayToolTip.SetToolTip(this.selectAllDummiesButton, "Select All Dummies (Ctrl+Shift+D)");
             this.selectAllDummiesButton.UseVisualStyleBackColor = true;
             this.selectAllDummiesButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SelectAllDummiesButtonClicked);
             // 
@@ -736,7 +721,7 @@
             this.solveAllBBsButton.Name = "solveAllBBsButton";
             this.solveAllBBsButton.Size = new System.Drawing.Size(40, 40);
             this.solveAllBBsButton.TabIndex = 14;
-            this.solveAllBBsButtonTooltip.SetToolTip(this.solveAllBBsButton, "Solve All Bounding Boxes (Ctrl+Shift+B)");
+            this.displayToolTip.SetToolTip(this.solveAllBBsButton, "Solve All Bounding Boxes (Ctrl+Shift+B)");
             this.solveAllBBsButton.UseVisualStyleBackColor = true;
             this.solveAllBBsButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.SolveAllBBsButtonClicked);
             // 
@@ -1013,7 +998,6 @@
             this.dummyPresetsSelector.Name = "dummyPresetsSelector";
             this.dummyPresetsSelector.Size = new System.Drawing.Size(121, 21);
             this.dummyPresetsSelector.TabIndex = 15;
-            this.presetsBoxTooltip.SetToolTip(this.dummyPresetsSelector, "Right-click the selector with a preset loaded to delete it");
             this.dummyPresetsSelector.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DummyPresetsSelector_MouseDown);
             // 
             // meshModifiersContainer
@@ -1063,7 +1047,7 @@
             this.vectorModeCheckbox.TabIndex = 70;
             this.vectorModeCheckbox.Text = "V";
             this.vectorModeCheckbox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.vectorModeTooltip.SetToolTip(this.vectorModeCheckbox, "Vector Mode");
+            this.displayToolTip.SetToolTip(this.vectorModeCheckbox, "Vector Mode");
             this.vectorModeCheckbox.UseVisualStyleBackColor = true;
             this.vectorModeCheckbox.CheckedChanged += new System.EventHandler(this.VectorModeCheckbox_CheckedChanged);
             // 
@@ -1224,7 +1208,7 @@
             this.uniformScaleCheckbox.TabIndex = 42;
             this.uniformScaleCheckbox.Text = "U";
             this.uniformScaleCheckbox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.uniformScaleTooltip.SetToolTip(this.uniformScaleCheckbox, "Uniform Scale");
+            this.displayToolTip.SetToolTip(this.uniformScaleCheckbox, "Uniform Scale");
             this.uniformScaleCheckbox.UseVisualStyleBackColor = true;
             // 
             // reverseFacesetsCheckbox
@@ -1309,7 +1293,7 @@
             this.rotZNumBox.Name = "rotZNumBox";
             this.rotZNumBox.Size = new System.Drawing.Size(73, 24);
             this.rotZNumBox.TabIndex = 13;
-            this.zCartwheelTooltip.SetToolTip(this.rotZNumBox, "Z (Cartwheel)");
+            this.displayToolTip.SetToolTip(this.rotZNumBox, "Z (Cartwheel)");
             this.rotZNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.rotZNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.rotZNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1338,7 +1322,7 @@
             this.scaleZNumBox.Name = "scaleZNumBox";
             this.scaleZNumBox.Size = new System.Drawing.Size(73, 24);
             this.scaleZNumBox.TabIndex = 13;
-            this.zThicknessTooltip.SetToolTip(this.scaleZNumBox, "Z (Thickness)");
+            this.displayToolTip.SetToolTip(this.scaleZNumBox, "Z (Thickness)");
             this.scaleZNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.scaleZNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.scaleZNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1367,7 +1351,7 @@
             this.rotYNumBox.Name = "rotYNumBox";
             this.rotYNumBox.Size = new System.Drawing.Size(73, 24);
             this.rotYNumBox.TabIndex = 12;
-            this.yRollTooltip.SetToolTip(this.rotYNumBox, "Y (Roll)");
+            this.displayToolTip.SetToolTip(this.rotYNumBox, "Y (Roll)");
             this.rotYNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.rotYNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.rotYNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1396,7 +1380,7 @@
             this.transZNumBox.Name = "transZNumBox";
             this.transZNumBox.Size = new System.Drawing.Size(73, 24);
             this.transZNumBox.TabIndex = 13;
-            this.zInOutTooltip.SetToolTip(this.transZNumBox, "Z (In/Out)");
+            this.displayToolTip.SetToolTip(this.transZNumBox, "Z (In/Out)");
             this.transZNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.transZNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.transZNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1425,7 +1409,7 @@
             this.rotXNumBox.Name = "rotXNumBox";
             this.rotXNumBox.Size = new System.Drawing.Size(73, 24);
             this.rotXNumBox.TabIndex = 11;
-            this.xSwivelTooltip.SetToolTip(this.rotXNumBox, "X (Swivel)");
+            this.displayToolTip.SetToolTip(this.rotXNumBox, "X (Swivel)");
             this.rotXNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.rotXNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.rotXNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1454,7 +1438,7 @@
             this.scaleYNumBox.Name = "scaleYNumBox";
             this.scaleYNumBox.Size = new System.Drawing.Size(73, 24);
             this.scaleYNumBox.TabIndex = 12;
-            this.yVerticalTooltip.SetToolTip(this.scaleYNumBox, "Y (Vertical)");
+            this.displayToolTip.SetToolTip(this.scaleYNumBox, "Y (Vertical)");
             this.scaleYNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.scaleYNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.scaleYNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1483,7 +1467,7 @@
             this.scaleXNumBox.Name = "scaleXNumBox";
             this.scaleXNumBox.Size = new System.Drawing.Size(73, 24);
             this.scaleXNumBox.TabIndex = 11;
-            this.xHorizontalTooltip.SetToolTip(this.scaleXNumBox, "X (Horizontal)");
+            this.displayToolTip.SetToolTip(this.scaleXNumBox, "X (Horizontal)");
             this.scaleXNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.scaleXNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.scaleXNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1512,7 +1496,7 @@
             this.transXNumBox.Name = "transXNumBox";
             this.transXNumBox.Size = new System.Drawing.Size(73, 24);
             this.transXNumBox.TabIndex = 11;
-            this.xLeftRightTooltip.SetToolTip(this.transXNumBox, "X (Left/Right)");
+            this.displayToolTip.SetToolTip(this.transXNumBox, "X (Left/Right)");
             this.transXNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.transXNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.transXNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1541,7 +1525,7 @@
             this.transYNumBox.Name = "transYNumBox";
             this.transYNumBox.Size = new System.Drawing.Size(73, 24);
             this.transYNumBox.TabIndex = 12;
-            this.yUpDownTooltip.SetToolTip(this.transYNumBox, "Y (Up/Down)");
+            this.displayToolTip.SetToolTip(this.transYNumBox, "Y (Up/Down)");
             this.transYNumBox.ValueChanged += new System.EventHandler(this.ModifierNumBoxValueChanged);
             this.transYNumBox.Enter += new System.EventHandler(this.ModifierNumBoxFocused);
             this.transYNumBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModifierNumBoxEnterPressed);
@@ -1823,7 +1807,7 @@
             this.materialPresetsSelector.Name = "materialPresetsSelector";
             this.materialPresetsSelector.Size = new System.Drawing.Size(185, 21);
             this.materialPresetsSelector.TabIndex = 2;
-            this.presetsBoxTooltip.SetToolTip(this.materialPresetsSelector, "Right-click the selector with a preset loaded to delete it");
+            this.displayToolTip.SetToolTip(this.materialPresetsSelector, "Right-click the selector with a preset loaded to delete it");
             this.materialPresetsSelector.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MaterialPresetsSelector_MouseDown);
             // 
             // label10
@@ -2080,13 +2064,6 @@
             this.meshTabDataTableSelector.TabIndex = 1;
             this.meshTabDataTableSelector.SelectedIndexChanged += new System.EventHandler(this.MeshTabDataTableSelector_SelectedIndexChanged);
             // 
-            // toggleDuplicateMaterialsOnMeshImportToolStripMenuItem
-            // 
-            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Name = "toggleDuplicateMaterialsOnMeshImportToolStripMenuItem";
-            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
-            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Text = "Toggle Duplicate Materials On Mesh Import";
-            this.toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Click += new System.EventHandler(this.ToggleDuplicateMaterialsOnMeshImportToolStripMenuItem_Click);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2267,12 +2244,7 @@
         private System.Windows.Forms.Button selectAllDummiesButton;
         private System.Windows.Forms.Button solveAllBBsButton;
         private System.Windows.Forms.Button setAllBBsMaxSizeButton;
-        private System.Windows.Forms.ToolTip selectAllMeshButtonTooltip;
-        private System.Windows.Forms.ToolTip selectAllDummiesButtonTooltip;
-        private System.Windows.Forms.ToolTip solveAllBBsButtonTooltip;
-        private System.Windows.Forms.ToolTip setAllBBsMaxSizeButtonTooltip;
         private System.Windows.Forms.Button hideAllMeshesButton;
-        private System.Windows.Forms.ToolTip hideAllMeshesButtonTooltip;
         private System.Windows.Forms.GroupBox functionsGroupBox;
         private System.Windows.Forms.ToolStripMenuItem supportPearToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem patreonToolStripMenuItem;
@@ -2280,7 +2252,6 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.ToolTip uniformScaleTooltip;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewButtonColumn Column3;
@@ -2290,16 +2261,6 @@
         private System.Windows.Forms.TextBox searchBox;
         private System.Windows.Forms.Label searchBoxStr;
         private System.Windows.Forms.ComboBox meshTabDataTableSelector;
-        private System.Windows.Forms.ToolTip presetsBoxTooltip;
-        private System.Windows.Forms.ToolTip zCartwheelTooltip;
-        private System.Windows.Forms.ToolTip zThicknessTooltip;
-        private System.Windows.Forms.ToolTip yRollTooltip;
-        private System.Windows.Forms.ToolTip zInOutTooltip;
-        private System.Windows.Forms.ToolTip xSwivelTooltip;
-        private System.Windows.Forms.ToolTip yVerticalTooltip;
-        private System.Windows.Forms.ToolTip xHorizontalTooltip;
-        private System.Windows.Forms.ToolTip xLeftRightTooltip;
-        private System.Windows.Forms.ToolTip yUpDownTooltip;
         private System.Windows.Forms.Label xAxisLabel;
         private System.Windows.Forms.Label zAxisLabel;
         private System.Windows.Forms.Label yAxisLabel;
@@ -2309,8 +2270,6 @@
         private System.Windows.Forms.ToolStripMenuItem mergeToolStripMenuItem2;
         private System.Windows.Forms.Button displayMaleBodyButton;
         private System.Windows.Forms.Button displayFemaleBodyButton;
-        private System.Windows.Forms.ToolTip displayMaleBodyTooltip;
-        private System.Windows.Forms.ToolTip displayFemaleBodyTooltip;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column19;
@@ -2323,7 +2282,6 @@
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column7;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Column8;
         private System.Windows.Forms.Button solveAllMeshLODsButton;
-        private System.Windows.Forms.ToolTip solveAllMeshLODsTooltip;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
@@ -2332,11 +2290,10 @@
         private System.Windows.Forms.Button centerYButton;
         private System.Windows.Forms.CheckBox flipYZAxisCheckbox;
         private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.ToolTip windowSizeTooltip;
         private System.Windows.Forms.Button resetAllMeshButton;
         private System.Windows.Forms.ToolStripMenuItem toggleUseWorldOriginToolStripMenuItem;
         private System.Windows.Forms.CheckBox vectorModeCheckbox;
-        private System.Windows.Forms.ToolTip vectorModeTooltip;
         private System.Windows.Forms.ToolStripMenuItem toggleDuplicateMaterialsOnMeshImportToolStripMenuItem;
+        private System.Windows.Forms.ToolTip displayToolTip;
     }
 }
