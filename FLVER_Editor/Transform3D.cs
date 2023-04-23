@@ -3,7 +3,7 @@
 namespace FLVER_Editor
 
 {
-    //we use -> order, the reverse order of MAYA expression, the front one tis the parent
+    //we use -> order, the reverse order of MAYA expression, the front one tis the Parent
     public enum RotationOrder
     {
         XYZ,
@@ -16,181 +16,180 @@ namespace FLVER_Editor
 
     internal class Transform3D
     {
-        public string name = "";
+        public string Name = "";
 
-        public Transform3D parent = null;
-        public Vector3D position = new Vector3D();
+        public Transform3D Parent = null;
+        public Vector3D Position = new Vector3D();
 
-        //rotation unit: degree
-        public Vector3D rotation = new Vector3D();
+        //Rotation unit: degree
+        public Vector3D Rotation = new Vector3D();
 
-        public RotationOrder rotOrder = RotationOrder.YZX;
+        public RotationOrder RotationOrder = RotationOrder.YZX;
 
-        public Vector3D scale = new Vector3D(1, 1, 1);
+        public Vector3D Scale = new Vector3D(1, 1, 1);
 
-        public Vector3D[] vlist;
+        public Vector3D[] VectorList;
 
-        public Vector3D[] getGlobalVlist()
+        public Vector3D[] GetGlobalVectorList()
         {
-            var ans = new Vector3D[vlist.Length];
-            var transMatrix = new Matrix4x4();
+            var ans = new Vector3D[VectorList.Length];
+            var transformMatrix = new Matrix4x4();
             {
-                var rs = Matrix4x4.GenerateScaleMatrix4x4(scale);
-                var rx = Matrix4x4.GenerateRotationXMatrix4x4(rotation.X);
-                var ry = Matrix4x4.GenerateRotationYMatrix4x4(rotation.Y);
-                var rz = Matrix4x4.GenerateRotationZMatrix4x4(rotation.Z);
-                var pos = Matrix4x4.GenerateTranslationMatrix4x4(position.X, position.Y, position.Z);
-                if (rotOrder == RotationOrder.XYZ)
+                var rs = Matrix4x4.GenerateScaleMatrix4x4(Scale);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(Rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(Rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(Rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(Position.X, Position.Y, Position.Z);
+                if (RotationOrder == RotationOrder.XYZ)
                 {
-                    transMatrix = pos * (rx * (ry * (rz * rs)));
+                    transformMatrix = pos * (rx * (ry * (rz * rs)));
                 }
-                if (rotOrder == RotationOrder.XZY)
+                if (RotationOrder == RotationOrder.XZY)
                 {
-                    transMatrix = pos * (rx * (rz * (ry * rs)));
+                    transformMatrix = pos * (rx * (rz * (ry * rs)));
                 }
-                if (rotOrder == RotationOrder.YXZ)
+                if (RotationOrder == RotationOrder.YXZ)
                 {
-                    transMatrix = pos * (ry * (rx * (rz * rs)));
+                    transformMatrix = pos * (ry * (rx * (rz * rs)));
                 }
-                if (rotOrder == RotationOrder.YZX)
+                if (RotationOrder == RotationOrder.YZX)
                 {
-                    transMatrix = pos * (ry * (rz * (rx * rs)));
+                    transformMatrix = pos * (ry * (rz * (rx * rs)));
                 }
-                if (rotOrder == RotationOrder.ZXY)
+                if (RotationOrder == RotationOrder.ZXY)
                 {
-                    transMatrix = pos * (rz * (rx * (ry * rs)));
+                    transformMatrix = pos * (rz * (rx * (ry * rs)));
                 }
-                if (rotOrder == RotationOrder.ZYX)
+                if (RotationOrder == RotationOrder.ZYX)
                 {
-                    transMatrix = pos * (rz * (ry * (rx * rs)));
+                    transformMatrix = pos * (rz * (ry * (rx * rs)));
                 }
             }
-            Transform3D parentT = null;
-            parentT = parent;
-            while (parentT != null)
+            Transform3D parentTransform = Parent;
+            while (parentTransform != null)
             {
-                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentT.rotation.X);
-                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentT.rotation.Y);
-                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentT.rotation.Z);
-                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentT.position.X, parentT.position.Y, parentT.position.Z);
-                transMatrix = Matrix4x4.GenerateScaleMatrix4x4(scale.X, scale.Y, scale.Z) * transMatrix;
-                if (rotOrder == RotationOrder.XYZ)
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentTransform.Rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentTransform.Rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentTransform.Rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentTransform.Position.X, parentTransform.Position.Y, parentTransform.Position.Z);
+                transformMatrix = Matrix4x4.GenerateScaleMatrix4x4(Scale.X, Scale.Y, Scale.Z) * transformMatrix;
+                if (RotationOrder == RotationOrder.XYZ)
                 {
-                    transMatrix = pos * (rx * (ry * (rz * transMatrix)));
+                    transformMatrix = pos * (rx * (ry * (rz * transformMatrix)));
                 }
-                if (rotOrder == RotationOrder.XZY)
+                if (RotationOrder == RotationOrder.XZY)
                 {
-                    transMatrix = pos * (rx * (rz * (ry * transMatrix)));
+                    transformMatrix = pos * (rx * (rz * (ry * transformMatrix)));
                 }
-                if (rotOrder == RotationOrder.YXZ)
+                if (RotationOrder == RotationOrder.YXZ)
                 {
-                    transMatrix = pos * (ry * (rx * (rz * transMatrix)));
+                    transformMatrix = pos * (ry * (rx * (rz * transformMatrix)));
                 }
-                if (rotOrder == RotationOrder.YZX)
+                if (RotationOrder == RotationOrder.YZX)
                 {
-                    transMatrix = pos * (ry * (rz * (rx * transMatrix)));
+                    transformMatrix = pos * (ry * (rz * (rx * transformMatrix)));
                 }
-                if (rotOrder == RotationOrder.ZXY)
+                if (RotationOrder == RotationOrder.ZXY)
                 {
-                    transMatrix = pos * (rz * (rx * (ry * transMatrix)));
+                    transformMatrix = pos * (rz * (rx * (ry * transformMatrix)));
                 }
-                if (rotOrder == RotationOrder.ZYX)
+                if (RotationOrder == RotationOrder.ZYX)
                 {
-                    transMatrix = pos * (rz * (ry * (rx * transMatrix)));
+                    transformMatrix = pos * (rz * (ry * (rx * transformMatrix)));
                 }
-                if (parent.parent == null)
+                if (Parent.Parent == null)
                 {
                     break;
                 }
-                // transMatrix = pos * (rx * (ry * (rz * transMatrix)));
-                parentT = parentT.parent;
+                // transformMatrix = pos * (rx * (ry * (rz * transformMatrix)));
+                parentTransform = parentTransform.Parent;
             }
-            for (var i = 0; i < vlist.Length; i++)
+            for (var i = 0; i < VectorList.Length; i++)
             {
-                ans[i] = vlist[i].Clone();
+                ans[i] = VectorList[i].Clone();
 
                 // Console.WriteLine("Old X " + ans[i].X + " Y " + ans[i].Y + " Z " + ans[i].Z);
-                ans[i] = Matrix4x4.Matrix4x4TimesVector3D(transMatrix, ans[i]);
+                ans[i] = Matrix4x4.Matrix4x4TimesVector3D(transformMatrix, ans[i]);
                 // Console.WriteLine("New X " + ans[i].X + " Y " + ans[i].Y + " Z " + ans[i].Z);
             }
             return ans;
         }
 
-        public Vector3D getGlobalOrigin()
+        public Vector3D GetGlobalOrigin()
         {
             var ans = new Vector3D();
             var org = new Vector3D();
             var transMatrix = new Matrix4x4();
             {
-                var rs = Matrix4x4.GenerateScaleMatrix4x4(scale.X, scale.Y, scale.Z);
-                var rx = Matrix4x4.GenerateRotationXMatrix4x4(rotation.X);
-                var ry = Matrix4x4.GenerateRotationYMatrix4x4(rotation.Y);
-                var rz = Matrix4x4.GenerateRotationZMatrix4x4(rotation.Z);
-                var pos = Matrix4x4.GenerateTranslationMatrix4x4(position.X, position.Y, position.Z);
-                if (rotOrder == RotationOrder.XYZ)
+                var rs = Matrix4x4.GenerateScaleMatrix4x4(Scale.X, Scale.Y, Scale.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(Rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(Rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(Rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(Position.X, Position.Y, Position.Z);
+                if (RotationOrder == RotationOrder.XYZ)
                 {
                     transMatrix = pos * (rx * (ry * (rz * rs)));
                 }
-                if (rotOrder == RotationOrder.XZY)
+                if (RotationOrder == RotationOrder.XZY)
                 {
                     transMatrix = pos * (rx * (rz * (ry * rs)));
                 }
-                if (rotOrder == RotationOrder.YXZ)
+                if (RotationOrder == RotationOrder.YXZ)
                 {
                     transMatrix = pos * (ry * (rx * (rz * rs)));
                 }
-                if (rotOrder == RotationOrder.YZX)
+                if (RotationOrder == RotationOrder.YZX)
                 {
                     transMatrix = pos * (ry * (rz * (rx * rs)));
                 }
-                if (rotOrder == RotationOrder.ZXY)
+                if (RotationOrder == RotationOrder.ZXY)
                 {
                     transMatrix = pos * (rz * (rx * (ry * rs)));
                 }
-                if (rotOrder == RotationOrder.ZYX)
+                if (RotationOrder == RotationOrder.ZYX)
                 {
                     transMatrix = pos * (rz * (ry * (rx * rs)));
                 }
             }
-            Transform3D parentT = null;
-            parentT = parent;
-            while (parentT != null)
+            Transform3D parentTransform = null;
+            parentTransform = Parent;
+            while (parentTransform != null)
             {
-                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentT.rotation.X);
-                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentT.rotation.Y);
-                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentT.rotation.Z);
-                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentT.position.X, parentT.position.Y, parentT.position.Z);
-                transMatrix = Matrix4x4.GenerateScaleMatrix4x4(parentT.scale.X, parentT.scale.Y, parentT.scale.Z) * transMatrix;
-                if (rotOrder == RotationOrder.XYZ)
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentTransform.Rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentTransform.Rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentTransform.Rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentTransform.Position.X, parentTransform.Position.Y, parentTransform.Position.Z);
+                transMatrix = Matrix4x4.GenerateScaleMatrix4x4(parentTransform.Scale.X, parentTransform.Scale.Y, parentTransform.Scale.Z) * transMatrix;
+                if (RotationOrder == RotationOrder.XYZ)
                 {
                     transMatrix = pos * (rx * (ry * (rz * transMatrix)));
                 }
-                if (rotOrder == RotationOrder.XZY)
+                if (RotationOrder == RotationOrder.XZY)
                 {
                     transMatrix = pos * (rx * (rz * (ry * transMatrix)));
                 }
-                if (rotOrder == RotationOrder.YXZ)
+                if (RotationOrder == RotationOrder.YXZ)
                 {
                     transMatrix = pos * (ry * (rx * (rz * transMatrix)));
                 }
-                if (rotOrder == RotationOrder.YZX)
+                if (RotationOrder == RotationOrder.YZX)
                 {
                     transMatrix = pos * (ry * (rz * (rx * transMatrix)));
                 }
-                if (rotOrder == RotationOrder.ZXY)
+                if (RotationOrder == RotationOrder.ZXY)
                 {
                     transMatrix = pos * (rz * (rx * (ry * transMatrix)));
                 }
-                if (rotOrder == RotationOrder.ZYX)
+                if (RotationOrder == RotationOrder.ZYX)
                 {
                     transMatrix = pos * (rz * (ry * (rx * transMatrix)));
                 }
-                if (parent.parent == null)
+                if (Parent.Parent == null)
                 {
                     break;
                 }
-                // transMatrix = pos * (rx * (ry * (rz * transMatrix)));
-                parentT = parentT.parent;
+                // transformMatrix = pos * (rx * (ry * (rz * transformMatrix)));
+                parentTransform = parentTransform.Parent;
             }
 
             //ans= org.clone();
@@ -198,14 +197,14 @@ namespace FLVER_Editor
             return ans;
         }
 
-        public void setRotationInRad(Vector3D v3d)
+        public void SetRotationInRadians(Vector3D vector)
         {
-            rotation.X = (float)(v3d.X / Math.PI * 180);
-            rotation.Y = (float)(v3d.Y / Math.PI * 180);
-            rotation.Z = (float)(v3d.Z / Math.PI * 180);
+            Rotation.X = (float)(vector.X / Math.PI * 180);
+            Rotation.Y = (float)(vector.Y / Math.PI * 180);
+            Rotation.Z = (float)(vector.Z / Math.PI * 180);
         }
 
-        public Vector3D[] getRotCircleX()
+        public Vector3D[] GetRotationCircleX()
         {
             var ans = new Vector3D[8];
 
@@ -223,27 +222,27 @@ namespace FLVER_Editor
             ans[6] = new Vector3D(0, 0, -2);
             ans[7] = new Vector3D(0, 1.5f, -1.5f);
             var factor = 1f;
-            if (rotOrder == RotationOrder.XYZ)
+            if (RotationOrder == RotationOrder.XYZ)
             {
                 factor = 1;
             }
-            if (rotOrder == RotationOrder.XZY)
+            if (RotationOrder == RotationOrder.XZY)
             {
                 factor = 1;
             }
-            if (rotOrder == RotationOrder.YXZ)
+            if (RotationOrder == RotationOrder.YXZ)
             {
                 factor = 0.85f;
             }
-            if (rotOrder == RotationOrder.YZX)
+            if (RotationOrder == RotationOrder.YZX)
             {
                 factor = 0.7f;
             }
-            if (rotOrder == RotationOrder.ZXY)
+            if (RotationOrder == RotationOrder.ZXY)
             {
                 factor = 0.85f;
             }
-            if (rotOrder == RotationOrder.ZYX)
+            if (RotationOrder == RotationOrder.ZYX)
             {
                 factor = 0.7f;
             }
@@ -253,59 +252,59 @@ namespace FLVER_Editor
                 v.Y *= factor;
                 v.Z *= factor;
             }
-            var transMatrix = new Matrix4x4();
+            var transformMatrix = new Matrix4x4();
             {
-                var rx = Matrix4x4.GenerateRotationXMatrix4x4(rotation.X);
-                var ry = Matrix4x4.GenerateRotationYMatrix4x4(rotation.Y);
-                var rz = Matrix4x4.GenerateRotationZMatrix4x4(rotation.Z);
-                var pos = Matrix4x4.GenerateTranslationMatrix4x4(position.X, position.Y, position.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(Rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(Rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(Rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(Position.X, Position.Y, Position.Z);
 
-                //   transMatrix = pos * (rx * (ry * rz));
-                //transMatrix = pos * (rx );
-                if (rotOrder == RotationOrder.XYZ)
+                //   transformMatrix = pos * (rx * (ry * rz));
+                //transformMatrix = pos * (rx );
+                if (RotationOrder == RotationOrder.XYZ)
                 {
-                    transMatrix = pos * rx;
+                    transformMatrix = pos * rx;
                 }
-                if (rotOrder == RotationOrder.XZY)
+                if (RotationOrder == RotationOrder.XZY)
                 {
-                    transMatrix = pos * rx;
+                    transformMatrix = pos * rx;
                 }
-                if (rotOrder == RotationOrder.YXZ)
+                if (RotationOrder == RotationOrder.YXZ)
                 {
-                    transMatrix = pos * (ry * rx);
+                    transformMatrix = pos * (ry * rx);
                 }
-                if (rotOrder == RotationOrder.YZX)
+                if (RotationOrder == RotationOrder.YZX)
                 {
-                    transMatrix = pos * (ry * (rz * rx));
+                    transformMatrix = pos * (ry * (rz * rx));
                 }
-                if (rotOrder == RotationOrder.ZXY)
+                if (RotationOrder == RotationOrder.ZXY)
                 {
-                    transMatrix = pos * (rz * rx);
+                    transformMatrix = pos * (rz * rx);
                 }
-                if (rotOrder == RotationOrder.ZYX)
+                if (RotationOrder == RotationOrder.ZYX)
                 {
-                    transMatrix = pos * (rz * (ry * rx));
+                    transformMatrix = pos * (rz * (ry * rx));
                 }
             }
-            Transform3D parentT = null;
-            parentT = parent;
-            while (parentT != null)
+            Transform3D parentTransform = null;
+            parentTransform = Parent;
+            while (parentTransform != null)
             {
-                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentT.rotation.X);
-                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentT.rotation.Y);
-                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentT.rotation.Z);
-                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentT.position.X, parentT.position.Y, parentT.position.Z);
-                transMatrix = pos * (rx * (ry * (rz * transMatrix)));
-                parentT = parent.parent;
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentTransform.Rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentTransform.Rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentTransform.Rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentTransform.Position.X, parentTransform.Position.Y, parentTransform.Position.Z);
+                transformMatrix = pos * (rx * (ry * (rz * transformMatrix)));
+                parentTransform = Parent.Parent;
             }
             for (var i = 0; i < ans.Length; i++)
             {
-                ans[i] = Matrix4x4.Matrix4x4TimesVector3D(transMatrix, ans[i]);
+                ans[i] = Matrix4x4.Matrix4x4TimesVector3D(transformMatrix, ans[i]);
             }
             return ans;
         }
 
-        public Vector3D[] getRotCircleZ()
+        public Vector3D[] GetRotationCircleZ()
         {
             var ans = new Vector3D[8];
 
@@ -323,27 +322,27 @@ namespace FLVER_Editor
             ans[6] = new Vector3D(0, -2, 0);
             ans[7] = new Vector3D(1.5f, -1.5f, 0);
             float factor = 1;
-            if (rotOrder == RotationOrder.XYZ)
+            if (RotationOrder == RotationOrder.XYZ)
             {
                 factor = 0.7f;
             }
-            if (rotOrder == RotationOrder.XZY)
+            if (RotationOrder == RotationOrder.XZY)
             {
                 factor = 0.85f;
             }
-            if (rotOrder == RotationOrder.YXZ)
+            if (RotationOrder == RotationOrder.YXZ)
             {
                 factor = 0.7f;
             }
-            if (rotOrder == RotationOrder.YZX)
+            if (RotationOrder == RotationOrder.YZX)
             {
                 factor = 0.85f;
             }
-            if (rotOrder == RotationOrder.ZXY)
+            if (RotationOrder == RotationOrder.ZXY)
             {
                 factor = 1f;
             }
-            if (rotOrder == RotationOrder.ZYX)
+            if (RotationOrder == RotationOrder.ZYX)
             {
                 factor = 1f;
             }
@@ -355,48 +354,47 @@ namespace FLVER_Editor
             }
             var transMatrix = new Matrix4x4();
             {
-                var rx = Matrix4x4.GenerateRotationXMatrix4x4(rotation.X);
-                var ry = Matrix4x4.GenerateRotationYMatrix4x4(rotation.Y);
-                var rz = Matrix4x4.GenerateRotationZMatrix4x4(rotation.Z);
-                var pos = Matrix4x4.GenerateTranslationMatrix4x4(position.X, position.Y, position.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(Rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(Rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(Rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(Position.X, Position.Y, Position.Z);
 
-                //   transMatrix = pos * (rx * (ry * rz));
-                //  transMatrix = pos * (rx * (ry * rz));
-                if (rotOrder == RotationOrder.XYZ)
+                //   transformMatrix = pos * (rx * (ry * rz));
+                //  transformMatrix = pos * (rx * (ry * rz));
+                if (RotationOrder == RotationOrder.XYZ)
                 {
                     transMatrix = pos * (rx * (ry * rz));
                 }
-                if (rotOrder == RotationOrder.XZY)
+                if (RotationOrder == RotationOrder.XZY)
                 {
                     transMatrix = pos * (rx * rz);
                 }
-                if (rotOrder == RotationOrder.YXZ)
+                if (RotationOrder == RotationOrder.YXZ)
                 {
                     transMatrix = pos * (ry * (rx * rz));
                 }
-                if (rotOrder == RotationOrder.YZX)
+                if (RotationOrder == RotationOrder.YZX)
                 {
                     transMatrix = pos * (ry * rz);
                 }
-                if (rotOrder == RotationOrder.ZXY)
+                if (RotationOrder == RotationOrder.ZXY)
                 {
                     transMatrix = pos * rz;
                 }
-                if (rotOrder == RotationOrder.ZYX)
+                if (RotationOrder == RotationOrder.ZYX)
                 {
                     transMatrix = pos * rz;
                 }
             }
-            Transform3D parentT = null;
-            parentT = parent;
-            while (parentT != null)
+            Transform3D parentTransform = Parent;
+            while (parentTransform != null)
             {
-                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentT.rotation.X);
-                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentT.rotation.Y);
-                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentT.rotation.Z);
-                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentT.position.X, parentT.position.Y, parentT.position.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentTransform.Rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentTransform.Rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentTransform.Rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentTransform.Position.X, parentTransform.Position.Y, parentTransform.Position.Z);
                 transMatrix = pos * (rx * (ry * (rz * transMatrix)));
-                parentT = parent.parent;
+                parentTransform = Parent.Parent;
             }
             for (var i = 0; i < ans.Length; i++)
             {
@@ -405,7 +403,7 @@ namespace FLVER_Editor
             return ans;
         }
 
-        public Vector3D[] getRotCircleY()
+        public Vector3D[] GetRotationCircleY()
         {
             var ans = new Vector3D[8];
 
@@ -424,27 +422,27 @@ namespace FLVER_Editor
             ans[6] = new Vector3D(0, 0, -2);
             ans[7] = new Vector3D(1.5f, 0, -1.5f);
             float factor = 1;
-            if (rotOrder == RotationOrder.XYZ)
+            if (RotationOrder == RotationOrder.XYZ)
             {
                 factor = 0.85f;
             }
-            if (rotOrder == RotationOrder.XZY)
+            if (RotationOrder == RotationOrder.XZY)
             {
                 factor = 0.7f;
             }
-            if (rotOrder == RotationOrder.YXZ)
+            if (RotationOrder == RotationOrder.YXZ)
             {
                 factor = 1f;
             }
-            if (rotOrder == RotationOrder.YZX)
+            if (RotationOrder == RotationOrder.YZX)
             {
                 factor = 1f;
             }
-            if (rotOrder == RotationOrder.ZXY)
+            if (RotationOrder == RotationOrder.ZXY)
             {
                 factor = 0.7f;
             }
-            if (rotOrder == RotationOrder.ZYX)
+            if (RotationOrder == RotationOrder.ZYX)
             {
                 factor = 0.85f;
             }
@@ -454,54 +452,53 @@ namespace FLVER_Editor
                 v.Y *= factor;
                 v.Z *= factor;
             }
-            var transMatrix = new Matrix4x4();
+            var transformMatrix = new Matrix4x4();
             {
-                var rx = Matrix4x4.GenerateRotationXMatrix4x4(rotation.X);
-                var ry = Matrix4x4.GenerateRotationYMatrix4x4(rotation.Y);
-                var rz = Matrix4x4.GenerateRotationZMatrix4x4(rotation.Z);
-                var pos = Matrix4x4.GenerateTranslationMatrix4x4(position.X, position.Y, position.Z);
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(Rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(Rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(Rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(Position.X, Position.Y, Position.Z);
 
-                //   transMatrix = pos * (rx * (ry * rz));
-                //transMatrix = pos * (rx * ry);
-                if (rotOrder == RotationOrder.XYZ)
+                //   transformMatrix = pos * (rx * (ry * rz));
+                //transformMatrix = pos * (rx * ry);
+                if (RotationOrder == RotationOrder.XYZ)
                 {
-                    transMatrix = pos * (rx * ry);
+                    transformMatrix = pos * (rx * ry);
                 }
-                if (rotOrder == RotationOrder.XZY)
+                if (RotationOrder == RotationOrder.XZY)
                 {
-                    transMatrix = pos * (rx * (rz * ry));
+                    transformMatrix = pos * (rx * (rz * ry));
                 }
-                if (rotOrder == RotationOrder.YXZ)
+                if (RotationOrder == RotationOrder.YXZ)
                 {
-                    transMatrix = pos * ry;
+                    transformMatrix = pos * ry;
                 }
-                if (rotOrder == RotationOrder.YZX)
+                if (RotationOrder == RotationOrder.YZX)
                 {
-                    transMatrix = pos * ry;
+                    transformMatrix = pos * ry;
                 }
-                if (rotOrder == RotationOrder.ZXY)
+                if (RotationOrder == RotationOrder.ZXY)
                 {
-                    transMatrix = pos * (rz * (rx * ry));
+                    transformMatrix = pos * (rz * (rx * ry));
                 }
-                if (rotOrder == RotationOrder.ZYX)
+                if (RotationOrder == RotationOrder.ZYX)
                 {
-                    transMatrix = pos * (rz * ry);
+                    transformMatrix = pos * (rz * ry);
                 }
             }
-            Transform3D parentT = null;
-            parentT = parent;
-            while (parentT != null)
+            Transform3D parentTransform = Parent;
+            while (parentTransform != null)
             {
-                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentT.rotation.X);
-                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentT.rotation.Y);
-                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentT.rotation.Z);
-                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentT.position.X, parentT.position.Y, parentT.position.Z);
-                transMatrix = pos * (rx * (ry * (rz * transMatrix)));
-                parentT = parent.parent;
+                var rx = Matrix4x4.GenerateRotationXMatrix4x4(parentTransform.Rotation.X);
+                var ry = Matrix4x4.GenerateRotationYMatrix4x4(parentTransform.Rotation.Y);
+                var rz = Matrix4x4.GenerateRotationZMatrix4x4(parentTransform.Rotation.Z);
+                var pos = Matrix4x4.GenerateTranslationMatrix4x4(parentTransform.Position.X, parentTransform.Position.Y, parentTransform.Position.Z);
+                transformMatrix = pos * (rx * (ry * (rz * transformMatrix)));
+                parentTransform = Parent.Parent;
             }
             for (var i = 0; i < ans.Length; i++)
             {
-                ans[i] = Matrix4x4.Matrix4x4TimesVector3D(transMatrix, ans[i]);
+                ans[i] = Matrix4x4.Matrix4x4TimesVector3D(transformMatrix, ans[i]);
             }
             return ans;
         }

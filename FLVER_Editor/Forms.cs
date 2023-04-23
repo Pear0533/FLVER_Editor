@@ -9,53 +9,66 @@ namespace FLVER_Editor
     public static class Forms
     {
         /// <summary>
-        /// Creates a input dialog box to be used
+        /// Shows an information dialog
         /// </summary>
-        /// <param name="input">A string to be displayed in the input dialog box</param>
-        /// <returns></returns>
-        public static DialogResult ShowInputDialog(ref string input)
+        /// <param name="str">The message to show in the dialog</param>
+        public static void ShowInformationDialog(string str)
         {
-            var size = new Size(200, 70);
-            var inputBox = new Form
+            MessageBox.Show(str, @"Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Shows an error dialog
+        /// </summary>
+        /// <param name="str">The message to show in the dialog</param>
+        public static void ShowErrorDialog(string str)
+        {
+            MessageBox.Show(str, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        /// <summary>
+        /// Shows a question dialog
+        /// </summary>
+        /// <param name="str">The message to show in the dialog</param>
+        /// <returns>True or false depending on whether or not the user pressed yes or no</returns>
+        public static DialogResult ShowQuestionDialog(string str)
+        {
+            return MessageBox.Show(str, @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        }
+
+        /// <summary>
+        /// Shows an input dialog
+        /// </summary>
+        /// <param name="text">The message to show in the dialog</param>
+        /// <param name="caption">The caption to give this dialog</param>
+        /// <returns>What the user inputted</returns>
+        public static string ShowInputDialog(string text, string caption)
+        {
+            var prompt = new Form
             {
+                Width = 240,
+                Height = 125,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
-                ClientSize = size,
-                Text = "Name"
+                Text = caption,
+                StartPosition = FormStartPosition.CenterScreen,
+                MaximizeBox = false
             };
 
-            var textBox = new TextBox
-            {
-                Size = new Size(size.Width - 10, 23),
-                Location = new Point(5, 5),
-                Text = input
-            };
-            inputBox.Controls.Add(textBox);
+            var textLabel = new Label { Left = 8, Top = 8, Width = 200, Text = text };
+            var textBox = new TextBox { Left = 10, Top = 28, Width = 200 };
 
-            var okButton = new Button
-            {
-                DialogResult = DialogResult.OK,
-                Name = "okButton",
-                Size = new Size(75, 23),
-                Text = "&OK",
-                Location = new Point(size.Width - 80 - 80, 39)
-            };
-            inputBox.Controls.Add(okButton);
+            var cancelButton = new Button { Text = @"Cancel", Left = 9, Width = 100, Top = 55, DialogResult = DialogResult.Cancel };
+            cancelButton.Click += (sender, e) => { prompt.Close(); };
+            var confirmation = new Button { Text = @"OK", Left = 112, Width = 100, Top = 55, DialogResult = DialogResult.OK };
+            confirmation.Click += (sender, e) => { prompt.Close(); };
 
-            var cancelButton = new Button
-            {
-                DialogResult = DialogResult.Cancel,
-                Name = "cancelButton",
-                Size = new Size(75, 23),
-                Text = "&Cancel",
-                Location = new Point(size.Width - 80, 39)
-            };
-            inputBox.Controls.Add(cancelButton);
+            prompt.Controls.Add(textBox);
+            prompt.Controls.Add(cancelButton);
+            prompt.Controls.Add(confirmation);
+            prompt.Controls.Add(textLabel);
+            prompt.AcceptButton = confirmation;
 
-            inputBox.AcceptButton = okButton;
-            inputBox.CancelButton = cancelButton;
-            DialogResult result = inputBox.ShowDialog();
-            input = textBox.Text;
-            return result;
+            return prompt.ShowDialog() == DialogResult.OK ? textBox.Text : "";
         }
 
         /// <summary>
