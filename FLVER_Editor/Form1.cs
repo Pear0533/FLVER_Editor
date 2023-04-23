@@ -2618,11 +2618,6 @@ namespace FLVER_Editor
                     FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel2
                 };
 
-                var noneFaceSet = m.FaceSets.Find(fs => fs.Flags == FLVER2.FaceSet.FSFlags.None);
-
-                if (noneFaceSet == null)
-                    throw new InvalidDataException($"Mesh with material index {m.MaterialIndex} is missing basic faceset");
-
                 foreach (FLVER2.FaceSet.FSFlags flag in faceSetFlags)
                 {
                     var faceSets = m.FaceSets.Where(fs => fs.Flags == flag).ToList();
@@ -2637,6 +2632,7 @@ namespace FLVER_Editor
                     }
                     else if (faceSets.Count < 1)
                     {
+                        // Missing faceset, add it
                         AddNewMeshFaceset(m, flag);
                     }
                 }
