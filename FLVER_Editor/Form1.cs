@@ -2599,7 +2599,7 @@ namespace FLVER_Editor
         {
             FLVER2.FaceSet fs = Program.GenerateBasicFaceSet();
             fs.Flags = flags;
-            fs.Indices = new List<int>(m.FaceSets[0].Indices.ToArray());
+            fs.Indices = m.FaceSets[0].Indices;
             m.FaceSets.Add(fs);
         }
 
@@ -2608,13 +2608,37 @@ namespace FLVER_Editor
             UpdateUndoState();
             foreach (FLVER2.Mesh m in flver.Meshes)
             {
-                AddNewMeshFaceset(m, FLVER2.FaceSet.FSFlags.LodLevel1);
-                AddNewMeshFaceset(m, FLVER2.FaceSet.FSFlags.LodLevel2);
-                AddNewMeshFaceset(m, FLVER2.FaceSet.FSFlags.MotionBlur);
-                AddNewMeshFaceset(m, FLVER2.FaceSet.FSFlags.LodLevel1 | FLVER2.FaceSet.FSFlags.MotionBlur);
-                AddNewMeshFaceset(m, FLVER2.FaceSet.FSFlags.LodLevel2 | FLVER2.FaceSet.FSFlags.MotionBlur);
+                FLVER2.FaceSet.FSFlags[] faceSetFlags =
+                {
+                    FLVER2.FaceSet.FSFlags.None,
+                    FLVER2.FaceSet.FSFlags.LodLevel1,
+                    FLVER2.FaceSet.FSFlags.LodLevel2,
+                    FLVER2.FaceSet.FSFlags.MotionBlur,
+                    FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel1,
+                    FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel2
+                };
+
+                foreach (FLVER2.FaceSet.FSFlags flag in faceSetFlags)
+                {
+                    var faceSets = m.FaceSets.Where(fs => fs.Flags == flag).ToList();
+                    if (faceSets.Count > 1)
+                    {
+                        // Too many facesets, trim some to fix previously caused breakage
+                        // int i = 1 to skip the first one
+                        for (int i = 1; i < faceSets.Count; i++)
+                        {
+                            m.FaceSets.Remove(faceSets[i]);
+                        }
+                    }
+                    else if (faceSets.Count < 1)
+                    {
+                        // Missing faceset, add it
+                        AddNewMeshFaceset(m, flag);
+                    }
+                }
             }
-            ShowInformationDialog("Successfully solved all mesh LODs!");
+
+            ShowInformationDialog("Created missing LODs from existing mesh data!");
         }
 
         private void SolveAllMeshLODsButton_Click(object sender, EventArgs e)
