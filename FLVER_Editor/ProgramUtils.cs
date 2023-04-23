@@ -461,8 +461,7 @@ namespace FLVER_Editor
             var newFaceSet = new FLVER2.FaceSet
             {
                 TriangleStrip = false,
-                CullBackfaces = true,
-                Unk06 = 1
+                CullBackfaces = false
             };
             return newFaceSet;
         }
