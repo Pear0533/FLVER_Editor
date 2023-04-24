@@ -2617,19 +2617,24 @@ namespace FLVER_Editor
             };
             foreach (FLVER2.Mesh m in flver.Meshes)
             {
-                List<FLVER2.FaceSet> faceSets = new List<FLVER2.FaceSet>();
-                foreach (FLVER2.FaceSet.FSFlags faceSetFlag in faceSetFlags)
+                foreach (FLVER2.FaceSet.FSFlags flag in faceSetFlags)
                 {
-                    faceSets.Add(new FLVER2.FaceSet
+                    List<FLVER2.FaceSet> faceSets = m.FaceSets.Where(fs => fs.Flags == flag).ToList();
+                    if (faceSets.Count > 1)
                     {
-                        Indices = m.FaceSets[0].Indices,
-                        CullBackfaces = false,
-                        Flags = faceSetFlag,
-                        TriangleStrip = false
-                    });
+                        // Too many facesets, trim some to fix previously caused breakage
+                        // int i = 1 to skip the first one
+                        for (int i = 1; i < faceSets.Count; i++)
+                        {
+                            m.FaceSets.Remove(faceSets[i]);
+                        }
+                    }
+                    else if (faceSets.Count < 1)
+                    {
+                        // Missing faceset, add it
+                        AddNewMeshFaceset(m, flag);
+                    }
                 }
-                m.FaceSets.Clear();
-                m.FaceSets.AddRange(faceSets);
             }
             ShowInformationDialog("Created missing LODs from existing mesh data!");
         }
