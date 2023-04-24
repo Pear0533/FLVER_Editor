@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
+using System.Web.Script.Serialization;
 using Assimp;
 using SoulsFormats;
 
@@ -53,10 +54,19 @@ namespace FLVER_Editor
                 int materialCount = targetFlver.Materials.Count;
                 if (materialCount > 0)
                 {
-                    foreach (Material mat in scene.Materials)
+                    for (int i = 0; i < scene.Materials.Count; ++i)
                     {
-                        FLVER2.Material newMaterial = GetBaseMaterial(mat.TextureDiffuse.FilePath, mat.TextureSpecular.FilePath, mat.TextureNormal.FilePath);
-                        newMaterial.Name = mat.Name;
+                        Material material = scene.Materials[i];
+                        FLVER2.Material newMaterial;
+                        if (MainWindow.toggleDuplicateMaterialsOnMeshImport)
+                        {
+                            newMaterial = new JavaScriptSerializer().Deserialize<FLVER2.Material>(new JavaScriptSerializer().Serialize(targetFlver.Materials[i]));
+                        }
+                        else
+                        {
+                            newMaterial = GetBaseMaterial(material.TextureDiffuse.FilePath, material.TextureSpecular.FilePath, material.TextureNormal.FilePath);
+                            newMaterial.Name = material.Name;
+                        }
                         newMaterial.Unk18 = targetFlver.Materials[targetFlver.Materials.Count - 1].Unk18 + 1;
                         targetFlver.Materials.Add(newMaterial);
                     }

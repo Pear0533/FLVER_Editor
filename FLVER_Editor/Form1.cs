@@ -2606,38 +2606,31 @@ namespace FLVER_Editor
         private void SolveAllMeshLODs()
         {
             UpdateUndoState();
+            FLVER2.FaceSet.FSFlags[] faceSetFlags =
+            {
+                FLVER2.FaceSet.FSFlags.None,
+                FLVER2.FaceSet.FSFlags.LodLevel1,
+                FLVER2.FaceSet.FSFlags.LodLevel2,
+                FLVER2.FaceSet.FSFlags.MotionBlur,
+                FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel1,
+                FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel2
+            };
             foreach (FLVER2.Mesh m in flver.Meshes)
             {
-                FLVER2.FaceSet.FSFlags[] faceSetFlags =
+                List<FLVER2.FaceSet> faceSets = new List<FLVER2.FaceSet>();
+                foreach (FLVER2.FaceSet.FSFlags faceSetFlag in faceSetFlags)
                 {
-                    FLVER2.FaceSet.FSFlags.None,
-                    FLVER2.FaceSet.FSFlags.LodLevel1,
-                    FLVER2.FaceSet.FSFlags.LodLevel2,
-                    FLVER2.FaceSet.FSFlags.MotionBlur,
-                    FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel1,
-                    FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel2
-                };
-
-                foreach (FLVER2.FaceSet.FSFlags flag in faceSetFlags)
-                {
-                    var faceSets = m.FaceSets.Where(fs => fs.Flags == flag).ToList();
-                    if (faceSets.Count > 1)
+                    faceSets.Add(new FLVER2.FaceSet
                     {
-                        // Too many facesets, trim some to fix previously caused breakage
-                        // int i = 1 to skip the first one
-                        for (int i = 1; i < faceSets.Count; i++)
-                        {
-                            m.FaceSets.Remove(faceSets[i]);
-                        }
-                    }
-                    else if (faceSets.Count < 1)
-                    {
-                        // Missing faceset, add it
-                        AddNewMeshFaceset(m, flag);
-                    }
+                        Indices = m.FaceSets[0].Indices,
+                        CullBackfaces = false,
+                        Flags = faceSetFlag,
+                        TriangleStrip = false
+                    });
                 }
+                m.FaceSets.Clear();
+                m.FaceSets.AddRange(faceSets);
             }
-
             ShowInformationDialog("Created missing LODs from existing mesh data!");
         }
 
@@ -2960,7 +2953,7 @@ namespace FLVER_Editor
         private void ToggleDuplicateMaterialsOnMeshImportToolStripMenuItem_Click(object sender, EventArgs e)
         {
             toggleDuplicateMaterialsOnMeshImport = !toggleDuplicateMaterialsOnMeshImport;
-            userConfigJson["ToggleDuplicateMaterialsOnMeshImport"] = toggleDuplicateMaterialsOnMeshImport;
+            userConfigJson["DupeMatOnMeshImport"] = toggleDuplicateMaterialsOnMeshImport;
             WriteUserConfig();
             ShowInformationDialog(toggleDuplicateMaterialsOnMeshImport ? "Automatic duplication of materials on mesh import is now enabled!"
                 : "Automatic duplication of materials on mesh import is now disabled!");
