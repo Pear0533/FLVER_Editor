@@ -1038,9 +1038,12 @@ namespace FLVER_Editor
                 pass.Apply();
                 graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines, 0, 3);
             }
-            DrawScreenText("X", lines[0].Position, viewMatrix, projection);
-            DrawScreenText("Z", lines[2].Position, viewMatrix, projection);
-            DrawScreenText("Y", lines[5].Position, viewMatrix, projection);
+            string xAxisLabel = Math.Abs(Math.Abs(viewMatrix.M13) - viewMatrix.M13) > 0.0 ? "X" : "-X";
+            const string yAxisLabel = "Y";
+            string zAxisLabel = Math.Abs(Math.Abs(viewMatrix.M11) - viewMatrix.M11) > 0.0 ? "Z" : "-Z";
+            DrawScreenText(xAxisLabel, lines[0].Position, viewMatrix, projection);
+            DrawScreenText(zAxisLabel, lines[2].Position, viewMatrix, projection);
+            DrawScreenText(yAxisLabel, lines[5].Position, viewMatrix, projection);
             if (!MainWindow.areDummyIdsVisible) return;
             foreach (FLVER.Dummy d in MainWindow.flver.Dummies)
                 DrawScreenText(d.ReferenceID.ToString(), d.Position, viewMatrix, projection);

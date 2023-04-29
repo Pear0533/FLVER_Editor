@@ -2595,11 +2595,11 @@ namespace FLVER_Editor
             DummiesTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
         }
 
-        private static void AddNewMeshFaceset(FLVER2.Mesh m, FLVER2.FaceSet.FSFlags flags)
+        private static void AddNewMeshFaceset(FLVER2.Mesh m, FLVER2.FaceSet.FSFlags flags, List<int> vertexIndices)
         {
             FLVER2.FaceSet fs = Program.GenerateBasicFaceSet();
             fs.Flags = flags;
-            fs.Indices = m.FaceSets[0].Indices;
+            fs.Indices = vertexIndices;
             m.FaceSets.Add(fs);
         }
 
@@ -2615,26 +2615,15 @@ namespace FLVER_Editor
                 FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel1,
                 FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel2
             };
-            foreach (FLVER2.Mesh m in flver.Meshes)
+            foreach (FLVER2.Mesh m in selectedMeshIndices.Select(i => flver.Meshes[i]))
             {
+                List<int> vertexIndices = m.FaceSets[0].Indices;
+                // TODO: Remove this, if it doesn't work properly
+                for (int i = 0; i < vertexIndices.Count; i += 3)
+                    (vertexIndices[i + 1], vertexIndices[i + 2]) = (vertexIndices[i + 2], vertexIndices[i + 1]);
+                m.FaceSets.Clear();
                 foreach (FLVER2.FaceSet.FSFlags flag in faceSetFlags)
-                {
-                    List<FLVER2.FaceSet> faceSets = m.FaceSets.Where(fs => fs.Flags == flag).ToList();
-                    if (faceSets.Count > 1)
-                    {
-                        // Too many facesets, trim some to fix previously caused breakage
-                        // int i = 1 to skip the first one
-                        for (int i = 1; i < faceSets.Count; i++)
-                        {
-                            m.FaceSets.Remove(faceSets[i]);
-                        }
-                    }
-                    else if (faceSets.Count < 1)
-                    {
-                        // Missing faceset, add it
-                        AddNewMeshFaceset(m, flag);
-                    }
-                }
+                    AddNewMeshFaceset(m, flag, vertexIndices);
             }
             ShowInformationDialog("Created missing LODs from existing mesh data!");
         }
