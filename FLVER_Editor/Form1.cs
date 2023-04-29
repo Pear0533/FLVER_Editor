@@ -36,7 +36,7 @@ namespace FLVER_Editor
         private const int mtDeleteCbIndex = 10;
         private const string imageFilesFilter = "DDS File (*.dds)|*.dds";
         private const string jsonFileFilter = @"JSON File (*.json)|*.json";
-        private const string version = "1.90";
+        private const string version = "1.91";
         private const string patreonSupportUri = "https://www.patreon.com/theonlypear";
         private const string paypalSupportUri = "https://paypal.me/realcucumberlettuce3";
         private const string baseMaterialDictKey = "Base Material";
@@ -2618,9 +2618,6 @@ namespace FLVER_Editor
             foreach (FLVER2.Mesh m in selectedMeshIndices.Select(i => flver.Meshes[i]))
             {
                 List<int> vertexIndices = m.FaceSets[0].Indices;
-                // TODO: Remove this, if it doesn't work properly
-                for (int i = 0; i < vertexIndices.Count; i += 3)
-                    (vertexIndices[i + 1], vertexIndices[i + 2]) = (vertexIndices[i + 2], vertexIndices[i + 1]);
                 m.FaceSets.Clear();
                 foreach (FLVER2.FaceSet.FSFlags flag in faceSetFlags)
                     AddNewMeshFaceset(m, flag, vertexIndices);
