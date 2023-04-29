@@ -10,304 +10,368 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
-using System.Xml.Serialization;
 using Assimp;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SoulsFormats;
-using Color = System.Drawing.Color;
 using PrimitiveType = Assimp.PrimitiveType;
-using Vector3 = Microsoft.Xna.Framework.Vector3;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
-// ReSharper disable UnusedMember.Local
-// TODO: Fix dummy serialization for Elden Ring 1.09.1
-// TODO: Investigate performance improvements for the viewer
 // TODO: Allow for hierarchal models to be opened/saved
 
 namespace FLVER_Editor
 {
     public partial class MainWindow : Form
     {
+        /// <summary>
+        ///     Index of the edit button column in the Materials table.
+        /// </summary>
         private const int MaterialEditButtonIndex = 6;
+
+        /// <summary>
+        ///     Index of the viewer highlight button column in the Materials table.
+        /// </summary>
         private const int MaterialViewerHighlightButtonIndex = 7;
+
+        /// <summary>
+        ///     Index of the add material preset button column in the Materials table.
+        /// </summary>
         private const int MaterialAddPresetCbIndex = 8;
+
+        /// <summary>
+        ///     Index of the apply material preset button column in the Materials table.
+        /// </summary>
         private const int MaterialApplyPresetCbIndex = 9;
+
+        /// <summary>
+        ///     Index of the delete material button column in the Materials table.
+        /// </summary>
         private const int MaterialDeleteCbIndex = 10;
 
         /// <summary>
-        /// The file filter for opening image files.
+        ///     The file filter for opening image files.
         /// </summary>
         private const string ImageFilesFilter = "DDS File (*.dds)|*.dds";
 
         /// <summary>
-        /// The file filter for opening JSON files.
+        ///     The file filter for opening JSON files.
         /// </summary>
         private const string JsonFileFilter = @"JSON File (*.json)|*.json";
 
         /// <summary>
-        /// The current version of the program.
+        ///     The current version of the program.
         /// </summary>
-        private const string Version = "1.90";
+        private const string Version = "1.91";
 
         /// <summary>
-        /// The patreon support link for Pear.
+        ///     The patreon support link for Pear.
         /// </summary>
         private const string PatreonSupportUri = "https://www.patreon.com/theonlypear";
 
         /// <summary>
-        /// The paypal support link for Pear.
+        ///     The paypal support link for Pear.
         /// </summary>
         private const string PaypalSupportUri = "https://paypal.me/realcucumberlettuce3";
 
         /// <summary>
-        /// The base material dict key used when loading presets from the material presets file.
+        ///     The base material dict key used when loading presets from the material presets file.
         /// </summary>
         private const string BaseMaterialDictKey = "Base Material";
 
         /// <summary>
-        /// A list of file paths to models so the FLVER open method can be used with drag drop.
+        ///     A list of file paths to models so the FLVER open method can be used with drag drop.
         /// </summary>
         public static List<string> Arguments;
 
         /// <summary>
-        /// The currently loaded FLVER2 model.
+        ///     The currently loaded FLVER2 model.
         /// </summary>
         public static FLVER2 Flver;
 
         /// <summary>
-        /// A list of undos for FLVER2 edits.
+        ///     A list of undos for FLVER2 edits.
         /// </summary>
         public static List<FLVER2> UndoFlverList = new List<FLVER2>();
 
         /// <summary>
-        /// A list of redos for FLVER2 edits.
+        ///     A list of redos for FLVER2 edits.
         /// </summary>
         public static List<FLVER2> RedoFlverList = new List<FLVER2>();
 
         /// <summary>
-        /// The current FLVER2 undo list index, used to see what to undo.
+        ///     The current FLVER2 undo list index, used to see what to undo.
         /// </summary>
         public static int CurrentUndoFlverListIndex = -1;
 
         /// <summary>
-        /// The current FLVER2 redo list index, used to see what to redo.
+        ///     The current FLVER2 redo list index, used to see what to redo.
         /// </summary>
         public static int CurrentRedoFlverListIndex = -1;
 
         /// <summary>
-        /// The limit of how far back and ahead undos and redos go.
+        ///     The limit of how far back and ahead undos and redos go.
         /// </summary>
         public static int UndoRedoStackLimit = 25;
 
         /// <summary>
-        /// A default male body FLVER2 model.
+        ///     A default male body FLVER2 model.
         /// </summary>
         public static FLVER2 MaleBodyFlver = new FLVER2();
 
         /// <summary>
-        /// A default female body FLVER2 model.
+        ///     A default female body FLVER2 model.
         /// </summary>
         public static FLVER2 FemaleBodyFlver = new FLVER2();
 
         /// <summary>
-        /// The byte data of the currently loaded FLVER2 model, used to see if changes were made and saving is needed.
+        ///     The byte data of the currently loaded FLVER2 model, used to see if changes were made and saving is needed.
         /// </summary>
         private static byte[] CurrentFlverBytes;
 
         /// <summary>
-        /// The current BND4 the loaded FLVER2 model file is in if applicable.
+        ///     The current BND4 the loaded FLVER2 model file is in if applicable.
         /// </summary>
         private static BND4 FlverBnd;
 
         /// <summary>
-        /// The current BND4 the loaded MatBins are in if applicable.
+        ///     The current BND4 the loaded MatBins are in if applicable.
         /// </summary>
         private static BND4 MatBinBnd;
 
         /// <summary>
-        /// The path to the first loaded FLVER2 file in Arguments.
+        ///     The path to the first loaded FLVER2 file in Arguments.
         /// </summary>
         private static string FlverFilePath;
 
         /// <summary>
-        /// The path to the loaded MatBins' BND4 if applicable.
+        ///     The path to the loaded MatBins' BND4 if applicable.
         /// </summary>
         private static string MatBinBndPath;
 
         /// <summary>
-        /// The compression type of the archive the loaded FLVER2 is in if applicable.
+        ///     The compression type of the archive the loaded FLVER2 is in if applicable.
         /// </summary>
         private static DCX.Type FlverCompressionType;
 
         /// <summary>
-        /// The BinderFile index of the current FLVER2 file if it is inside of a Binder.
+        ///     The BinderFile index of the current FLVER2 file if it is inside of a Binder.
         /// </summary>
         private static int CurrentFlverFileBinderIndex = -1;
+
+        /// <summary>
+        ///     Determines how thick the dummy point markers appear in the viewer window.
+        /// </summary>
         private static int DummyThickness = 5;
 
         /// <summary>
-        /// The viewer window showing the loaded model.
+        ///     The viewer window showing the loaded model.
         /// </summary>
         private static Mono3D Viewer;
 
         /// <summary>
-        /// The Tab Window's current background color.
+        ///     The Tab Window's current background color.
         /// </summary>
         private static Color TabWindowBackColor = DefaultBackColor;
 
         /// <summary>
-        /// The Tab Window's current foreground color.
+        ///     The Tab Window's current foreground color.
         /// </summary>
         private static Color TabWindowForeColor = DefaultForeColor;
 
         /// <summary>
-        /// The indices of the currently selected meshes.
+        ///     The indices of the currently selected meshes.
         /// </summary>
         private static List<int> SelectedMeshIndices = new List<int>();
 
         /// <summary>
-        /// The indices of the currently selected dummies.
+        ///     The indices of the currently selected dummies.
         /// </summary>
         private static List<int> SelectedDummyIndices = new List<int>();
 
         /// <summary>
-        /// The indices of currently hidden meshes.
+        ///     The indices of currently hidden meshes.
         /// </summary>
         private static List<int> HiddenMeshIndices = new List<int>();
 
         /// <summary>
-        /// The indices of the meshes of the currently selected materials.
+        ///     The indices of the meshes of the currently selected materials.
         /// </summary>
         private static readonly List<int> SelectedMaterialMeshIndices = new List<int>();
+
+        /// <summary>
+        ///     The 3D positions of all bones contained within the FLVER model.
+        /// </summary>
         private static readonly List<Vector3D> BonePositionList = new List<Vector3D>();
 
         /// <summary>
-        /// The currently loaded material presets.
+        ///     The currently loaded material presets.
         /// </summary>
         private static Dictionary<object, object> MaterialPresets;
 
         /// <summary>
-        /// The currently loaded dummy presets.
+        ///     The currently loaded dummy presets.
         /// </summary>
         private static Dictionary<object, object> DummyPresets;
+
+        /// <summary>
+        ///     Determines the order of the axes used for performing 3D rotations.
+        /// </summary>
         public static RotationOrder RotationOrder = RotationOrder.YZX;
 
         /// <summary>
-        /// The root folder path where the exe of this program is running.
+        ///     The root folder path where the exe of this program is running.
         /// </summary>
         public static readonly string RootFolderPath = Environment.CurrentDirectory;
 
         /// <summary>
-        /// The Resources folder path.
+        ///     The Resources folder path.
         /// </summary>
         public static readonly string ResourceFolderPath = $"{RootFolderPath}\\Resources";
 
         /// <summary>
-        /// The model folder path in Resources containing obj models that are imported.
+        ///     The model folder path in Resources containing obj models that are imported.
         /// </summary>
         public static readonly string ModelResourcePath = $"{ResourceFolderPath}\\model";
 
         /// <summary>
-        /// The bone folder path in Resources containing bone name conversion mappings.
+        ///     The bone folder path in Resources containing bone name conversion mappings.
         /// </summary>
         public static readonly string BoneResourcePath = $"{ResourceFolderPath}\\bone";
 
         /// <summary>
-        /// The material folder path in Resources containing material presets and materials later.
+        ///     The material folder path in Resources containing material presets and materials later.
         /// </summary>
         public static readonly string MaterialResourcePath = $"{ResourceFolderPath}\\material";
 
         /// <summary>
-        /// The dummy folder path in Resources containing dummy presets.
+        ///     The dummy folder path in Resources containing dummy presets.
         /// </summary>
         public static readonly string DummyResourcePath = $"{ResourceFolderPath}\\dummy";
 
         /// <summary>
-        /// The example folder path in Resources containing example models for the user to check out.
-        /// </summary>
-        public static readonly string ExampleResourcePath = $"{ResourceFolderPath}\\example";
-
-        /// <summary>
-        /// The image folder path in Resources containing images used by the program.
+        ///     The image folder path in Resources containing images used by the program.
         /// </summary>
         public static readonly string ImageResourcePath = $"{ResourceFolderPath}\\image";
 
         /// <summary>
-        /// The icon folder path in Resources containing icons used by the program.
-        /// </summary>
-        public static readonly string IconResourcePath = $"{ResourceFolderPath}\\icon";
-
-        /// <summary>
-        /// The material presets file path in Resources.
+        ///     The material presets file path in Resources.
         /// </summary>
         private static readonly string MaterialPresetsFilePath = $"{MaterialResourcePath}\\materialpresets.json";
 
         /// <summary>
-        /// The dummy presets file path in Resources.
+        ///     The dummy presets file path in Resources.
         /// </summary>
         private static readonly string DummyPresetsFilePath = $"{DummyResourcePath}\\dummypresets.json";
 
         /// <summary>
-        /// The user config file path in the root program directory.
+        ///     The user config file path in the root program directory.
         /// </summary>
         private static readonly string UserConfigJsonPath = $"{RootFolderPath}\\userconfig.json";
 
         /// <summary>
-        /// The user config.
+        ///     The user config.
         /// </summary>
         public static JObject UserConfigJson = new JObject();
 
         /// <summary>
-        /// The current materials table splitter distance, used to save splitter distance in the user config.
+        ///     The current materials table splitter distance, used to save splitter distance in the user config.
         /// </summary>
         private static int CurrentMaterialsTableSplitDistance;
 
         /// <summary>
-        /// The current interval at which to auto save user progress.
+        ///     The current interval at which to auto save user progress.
         /// </summary>
         private static string CurrentAutoSaveInterval;
 
         /// <summary>
-        /// Whether or not a mesh is selected currently.
+        ///     Whether or not a mesh is selected currently.
         /// </summary>
         private static bool MeshIsSelected;
 
         /// <summary>
-        /// Whether or not a dummy is selected currently.
+        ///     Whether or not a dummy is selected currently.
         /// </summary>
         private static bool DummyIsSelected;
 
         /// <summary>
-        /// Whether or not meshes are hidden.
+        ///     Whether or not meshes are hidden.
         /// </summary>
         private static bool MeshIsHidden;
 
         /// <summary>
-        /// A condition used to block certain methods from being used when necessary.
+        ///     A condition used to block certain methods from being used when necessary.
         /// </summary>
         private static bool IsSettingDefaultInfo = true;
 
         /// <summary>
-        /// Whether or not to refresh textures, a user config setting to improve performance for users if disabled.
+        ///     Whether or not to refresh textures, a user config setting to improve performance for users if disabled.
         /// </summary>
         public static bool TextureRefreshEnabled = true;
 
         /// <summary>
-        /// The selected material index.
+        ///     The selected material index.
         /// </summary>
         private static int SelectedMaterialIndex = -1;
+
+        /// <summary>
+        /// Holds the previously stored value of the most recently changed Modifiers panel transformation number box.
+        /// </summary>
         private static float PrevNumVal;
+
+        /// <summary>
+        /// Determines if the viewer window is currently snapped to the main window.
+        /// </summary>
         public static bool IsSnapped;
+
+        /// <summary>
+        /// Determines if the viewer window is only snapped to the right edge of the main window.
+        /// </summary>
         public static bool IsSnappedRight = false;
+
+        /// <summary>
+        /// Determines if the viewer window is only snapped to the bottom edge of the main window.
+        /// </summary>
         public static bool IsSnappedBottom = false;
+
+        /// <summary>
+        /// Determines if the viewer window is only snapped to the left edge of the main window.
+        /// </summary>
         public static bool IsSnappedLeft = false;
+
+        /// <summary>
+        /// Determines if the viewer window is only snapped to the top edge of the main window.
+        /// </summary>
         public static bool IsSnappedTop = false;
+
+        /// <summary>
+        /// Determines if reference IDs are displayed in the viewer for all dummy points.
+        /// </summary>
         public static bool AreDummyIdsVisible = true;
+
+        /// <summary>
+        /// Determines if the default male body reference model is displayed in the viewer.
+        /// </summary>
         private static bool DisplayMaleBody;
+
+        /// <summary>
+        /// Determines if the default female body reference model is displayed in the viewer.
+        /// </summary>
         private static bool DisplayFemaleBody;
+
+        /// <summary>
+        /// Determines if the internal indices for all materials should not be automatically corrected.
+        /// </summary>
         private static bool StopAutoInternalIndexOverride;
+
+        /// <summary>
+        /// Determines if the world origin point should be used for all mesh and dummy transformations.
+        /// </summary>
         private static bool UseWorldOrigin;
+
+        /// <summary>
+        /// Changes whether newly imported materials are duplicated from pre-existing ones or not.
+        /// </summary>
         public static bool ToggleDuplicateMaterialsOnMeshImport;
 
         public MainWindow()
@@ -352,7 +416,7 @@ namespace FLVER_Editor
 
         private static void ApplyBodyModelMaterial(FLVER2 bodyFlver)
         {
-            bodyFlver.Materials.Add(Generate.GenerateBaseMaterial());
+            bodyFlver.Materials.Add(Generators.GenerateBaseMaterial());
             bodyFlver.Meshes[0].MaterialIndex = 0;
         }
 
@@ -554,11 +618,13 @@ namespace FLVER_Editor
                         new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), colorLine)
                     });
                     Microsoft.Xna.Framework.Color faceSetColor = new Microsoft.Xna.Framework.Color();
-                    Vector3 vectorA = Util3D.NumericsVector3ToXnaVector3(vertexArr[1].Position) - Util3D.NumericsVector3ToXnaVector3(vertexArr[0].Position);
-                    Vector3 vectorB = Util3D.NumericsVector3ToXnaVector3(vertexArr[2].Position) - Util3D.NumericsVector3ToXnaVector3(vertexArr[0].Position);
-                    Vector3 normalVector = Program.XnaCrossProduct(vectorA, vectorB);
+                    Microsoft.Xna.Framework.Vector3 vectorA = Util3D.NumericsVector3ToXnaVector3(vertexArr[1].Position)
+                        - Util3D.NumericsVector3ToXnaVector3(vertexArr[0].Position);
+                    Microsoft.Xna.Framework.Vector3 vectorB = Util3D.NumericsVector3ToXnaVector3(vertexArr[2].Position)
+                        - Util3D.NumericsVector3ToXnaVector3(vertexArr[0].Position);
+                    Microsoft.Xna.Framework.Vector3 normalVector = Program.XnaCrossProduct(vectorA, vectorB);
                     normalVector.Normalize();
-                    Vector3 lightVector = new Vector3(Viewer.lightX, Viewer.lightY, Viewer.lightZ);
+                    Microsoft.Xna.Framework.Vector3 lightVector = new Microsoft.Xna.Framework.Vector3(Viewer.lightX, Viewer.lightY, Viewer.lightZ);
                     lightVector.Normalize();
                     int faceSetColorVal = 125 + (int)(125 * Program.XnaDotProduct(normalVector, lightVector));
                     faceSetColorVal = faceSetColorVal > 255 ? 255 : faceSetColorVal < 0 ? 0 : Viewer.flatShading ? 255 : faceSetColorVal;
@@ -587,11 +653,11 @@ namespace FLVER_Editor
                         new[]
                         {
                             new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[0].Position), faceSetColor,
-                                new Microsoft.Xna.Framework.Vector2(vertexArr[0].UVs[0].X, vertexArr[0].UVs[0].Y)),
+                                new Vector2(vertexArr[0].UVs[0].X, vertexArr[0].UVs[0].Y)),
                             new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), faceSetColor,
-                                new Microsoft.Xna.Framework.Vector2(vertexArr[2].UVs[0].X, vertexArr[2].UVs[0].Y)),
+                                new Vector2(vertexArr[2].UVs[0].X, vertexArr[2].UVs[0].Y)),
                             new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[1].Position), faceSetColor,
-                                new Microsoft.Xna.Framework.Vector2(vertexArr[1].UVs[0].X, vertexArr[1].UVs[0].Y))
+                                new Vector2(vertexArr[1].UVs[0].X, vertexArr[1].UVs[0].Y))
                         });
                     if (!renderBackFaces) continue;
                     faceSetPosColorList.AddRange(
@@ -605,11 +671,11 @@ namespace FLVER_Editor
                         new[]
                         {
                             new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[0].Position), faceSetColor,
-                                new Microsoft.Xna.Framework.Vector2(vertexArr[0].UVs[0].X, vertexArr[0].UVs[0].Y)),
+                                new Vector2(vertexArr[0].UVs[0].X, vertexArr[0].UVs[0].Y)),
                             new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[1].Position), faceSetColor,
-                                new Microsoft.Xna.Framework.Vector2(vertexArr[1].UVs[0].X, vertexArr[1].UVs[0].Y)),
+                                new Vector2(vertexArr[1].UVs[0].X, vertexArr[1].UVs[0].Y)),
                             new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), faceSetColor,
-                                new Microsoft.Xna.Framework.Vector2(vertexArr[2].UVs[0].X, vertexArr[2].UVs[0].Y))
+                                new Vector2(vertexArr[2].UVs[0].X, vertexArr[2].UVs[0].Y))
                         });
                 }
                 for (int j = 0; j < Flver.Meshes[i].Vertices.Count; ++j)
@@ -644,13 +710,13 @@ namespace FLVER_Editor
                 Vector3D absolutePos = bonesTransform[i].GetGlobalOrigin();
                 if (bonesTransform[Flver.Bones[i].ParentIndex] == null) continue;
                 Vector3D parentPos = bonesTransform[Flver.Bones[i].ParentIndex].GetGlobalOrigin();
-                vertexPosColorList.Add(new VertexPositionColor(new Vector3(parentPos.X - 0.005f, parentPos.Z - 0.005f, parentPos.Y),
+                vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(parentPos.X - 0.005f, parentPos.Z - 0.005f, parentPos.Y),
                     Microsoft.Xna.Framework.Color.Purple));
-                vertexPosColorList.Add(new VertexPositionColor(new Vector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
+                vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
                     Microsoft.Xna.Framework.Color.Purple));
-                vertexPosColorList.Add(new VertexPositionColor(new Vector3(parentPos.X + 0.005f, parentPos.Z + 0.005f, parentPos.Y),
+                vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(parentPos.X + 0.005f, parentPos.Z + 0.005f, parentPos.Y),
                     Microsoft.Xna.Framework.Color.Purple));
-                vertexPosColorList.Add(new VertexPositionColor(new Vector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
+                vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
                     Microsoft.Xna.Framework.Color.Purple));
             }
             for (int i = 0; i < Flver.Dummies.Count; ++i)
@@ -664,12 +730,12 @@ namespace FLVER_Editor
                 {
                     vertexPosColorList.AddRange(new[]
                     {
-                        new VertexPositionColor(new Vector3(dummy.Position.X - 0.025f, dummy.Position.Z, baseDummyYPos), dummyColor),
-                        new VertexPositionColor(new Vector3(dummy.Position.X + 0.025f, dummy.Position.Z, baseDummyYPos), dummyColor),
-                        new VertexPositionColor(new Vector3(dummy.Position.X, dummy.Position.Z - 0.025f, baseDummyYPos), dummyColor),
-                        new VertexPositionColor(new Vector3(dummy.Position.X, dummy.Position.Z + 0.025f, baseDummyYPos), dummyColor),
-                        new VertexPositionColor(new Vector3(dummy.Position.X, dummy.Position.Z, baseDummyYPos), Microsoft.Xna.Framework.Color.Green),
-                        new VertexPositionColor(new Vector3(dummy.Position.X + dummy.Forward.X, dummy.Position.Z + dummy.Forward.Z,
+                        new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X - 0.025f, dummy.Position.Z, baseDummyYPos), dummyColor),
+                        new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X + 0.025f, dummy.Position.Z, baseDummyYPos), dummyColor),
+                        new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X, dummy.Position.Z - 0.025f, baseDummyYPos), dummyColor),
+                        new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X, dummy.Position.Z + 0.025f, baseDummyYPos), dummyColor),
+                        new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X, dummy.Position.Z, baseDummyYPos), Microsoft.Xna.Framework.Color.Green),
+                        new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X + dummy.Forward.X, dummy.Position.Z + dummy.Forward.Z,
                                 baseDummyYPos + dummy.Forward.Y),
                             Microsoft.Xna.Framework.Color.Green)
                     });
@@ -678,19 +744,21 @@ namespace FLVER_Editor
             }
             if (Program.UseCheckingPoint)
             {
-                System.Numerics.Vector3 checkingPoint = Program.CheckingPoint;
-                System.Numerics.Vector3 checkingPointNormal = Program.CheckingPointNormal;
-                vertexPosColorList.Add(new VertexPositionColor(new Vector3(checkingPoint.X - 0.05f, checkingPoint.Z - 0.05f, checkingPoint.Y),
+                Vector3 checkingPoint = Program.CheckingPoint;
+                Vector3 checkingPointNormal = Program.CheckingPointNormal;
+                vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(checkingPoint.X - 0.05f, checkingPoint.Z - 0.05f, checkingPoint.Y),
                     Microsoft.Xna.Framework.Color.AntiqueWhite));
-                vertexPosColorList.Add(new VertexPositionColor(new Vector3(checkingPoint.X + 0.05f, checkingPoint.Z + 0.05f, checkingPoint.Y),
+                vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(checkingPoint.X + 0.05f, checkingPoint.Z + 0.05f, checkingPoint.Y),
                     Microsoft.Xna.Framework.Color.AntiqueWhite));
-                vertexPosColorList.Add(new VertexPositionColor(new Vector3(checkingPoint.X - 0.05f, checkingPoint.Z + 0.05f, checkingPoint.Y),
+                vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(checkingPoint.X - 0.05f, checkingPoint.Z + 0.05f, checkingPoint.Y),
                     Microsoft.Xna.Framework.Color.AntiqueWhite));
-                vertexPosColorList.Add(new VertexPositionColor(new Vector3(checkingPoint.X + 0.05f, checkingPoint.Z - 0.05f, checkingPoint.Y),
+                vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(checkingPoint.X + 0.05f, checkingPoint.Z - 0.05f, checkingPoint.Y),
                     Microsoft.Xna.Framework.Color.AntiqueWhite));
-                vertexPosColorList.Add(new VertexPositionColor(new Vector3(checkingPoint.X, checkingPoint.Z, checkingPoint.Y), Microsoft.Xna.Framework.Color.Blue));
+                vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(checkingPoint.X, checkingPoint.Z, checkingPoint.Y),
+                    Microsoft.Xna.Framework.Color.Blue));
                 vertexPosColorList.Add(new VertexPositionColor(
-                    new Vector3(checkingPoint.X + 0.2f * checkingPointNormal.X, checkingPoint.Z + 0.2f * checkingPointNormal.Z, checkingPoint.Y + 0.2f * checkingPointNormal.Y),
+                    new Microsoft.Xna.Framework.Vector3(checkingPoint.X + 0.2f * checkingPointNormal.X, checkingPoint.Z + 0.2f * checkingPointNormal.Z,
+                        checkingPoint.Y + 0.2f * checkingPointNormal.Y),
                     Microsoft.Xna.Framework.Color.Blue));
             }
             Viewer.vertices = vertexPosColorList.ToArray();
@@ -743,7 +811,7 @@ namespace FLVER_Editor
             try
             {
                 dict = new JavaScriptSerializer().Deserialize<Dictionary<object, object>>(File.ReadAllText(filePath));
-                if (dict == MaterialPresets && !dict.ContainsKey(BaseMaterialDictKey)) dict.Add(BaseMaterialDictKey, Generate.GenerateBaseMaterial());
+                if (dict == MaterialPresets && !dict.ContainsKey(BaseMaterialDictKey)) dict.Add(BaseMaterialDictKey, Generators.GenerateBaseMaterial());
                 selector.Items.AddRange(dict.Keys.ToArray());
             }
             catch
@@ -1103,7 +1171,7 @@ namespace FLVER_Editor
             byte formatByte = 107;
             try
             {
-                formatByte = (byte)Enum.Parse(typeof(TextureFormats), dds.header10.dxgiFormat.ToString());
+                formatByte = (byte)Enum.Parse(typeof(Program.TextureFormats), dds.header10.dxgiFormat.ToString());
             }
             catch { }
             TPF.Texture texture = new TPF.Texture(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, File.ReadAllBytes(textureFilePath));
@@ -1261,8 +1329,10 @@ namespace FLVER_Editor
             int boneIndex = ShowSelectorDialog("Pick a Bone", Flver.Bones);
             if (boneIndex == -1) return;
             List<FLVER.Vertex> unweightedVerts = Flver.Meshes[meshIndex].Vertices.Where(v =>
-                Util3D.BoneIndicesToIntArray(v.BoneIndices) != null && !Util3D.BoneIndicesToIntArray(v.BoneIndices).Contains(boneIndex)
-                && Util3D.BoneWeightsToFloatArray(v.BoneWeights) != null && Util3D.BoneWeightsToFloatArray(v.BoneWeights).All(i => i == 0)).ToList();
+                Util3D.BoneIndicesToIntArray(v.BoneIndices) != null
+                && !Util3D.BoneIndicesToIntArray(v.BoneIndices).Contains(boneIndex)
+                && Util3D.BoneWeightsToFloatArray(v.BoneWeights) != null
+                && Util3D.BoneWeightsToFloatArray(v.BoneWeights).All(i => i == 0)).ToList();
             if (!unweightedVerts.Any())
             {
                 ShowInformationDialog("Found no unweighted vertices to apply default weights to.");
@@ -1345,12 +1415,12 @@ namespace FLVER_Editor
             DummiesTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
         }
 
-        private static System.Numerics.Vector3 CreateTranslationVector(float x, float y, float z, float offset, int nbi)
+        private static Vector3 CreateTranslationVector(float x, float y, float z, float offset, int nbi)
         {
-            return new System.Numerics.Vector3(x + (nbi == 0 ? offset : 0), y + (nbi == 1 ? offset : 0), z + (nbi == 2 ? offset : 0));
+            return new Vector3(x + (nbi == 0 ? offset : 0), y + (nbi == 1 ? offset : 0), z + (nbi == 2 ? offset : 0));
         }
 
-        private static System.Numerics.Vector3 CreateScaleVector(float x, float y, float z, float offset, IReadOnlyList<float> totals, int nbi, bool uniform, bool invert)
+        private static Vector3 CreateScaleVector(float x, float y, float z, float offset, IReadOnlyList<float> totals, int nbi, bool uniform, bool invert)
         {
             float scalar = offset < 0 && !invert ? -(offset - 1) : invert ? offset - 1 : offset + 1;
             float newX = nbi == 0 || uniform ? x - totals[0] : x;
@@ -1359,7 +1429,7 @@ namespace FLVER_Editor
             newX = nbi == 0 || uniform ? (offset < 0 && !invert ? newX / scalar : newX * scalar) + totals[0] : x;
             newY = nbi == 1 || uniform ? (offset < 0 && !invert ? newY / scalar : newY * scalar) + totals[1] : y;
             newZ = nbi == 2 || uniform ? (offset < 0 && !invert ? newZ / scalar : newZ * scalar) + totals[2] : z;
-            return new System.Numerics.Vector3(newX, newY, newZ);
+            return new Vector3(newX, newY, newZ);
         }
 
         private static dynamic CreateRotationVector(float x, float y, float z, float w, float offset, IReadOnlyList<float> totals, int nbi)
@@ -1367,9 +1437,9 @@ namespace FLVER_Editor
             float newX = nbi == 1 ? offset : 0;
             float newY = nbi == 0 ? offset : 0;
             float newZ = nbi == 2 ? offset : 0;
-            System.Numerics.Vector3 vector = new System.Numerics.Vector3(x - totals[0], y - totals[1], z - totals[2]);
+            Vector3 vector = new Vector3(x - totals[0], y - totals[1], z - totals[2]);
             vector = Program.RotatePoint(vector, newY, newX, newZ);
-            return w == 0 ? (dynamic)new System.Numerics.Vector3(vector.X + totals[0], vector.Y + totals[1], vector.Z + totals[2]) :
+            return w == 0 ? (dynamic)new Vector3(vector.X + totals[0], vector.Y + totals[1], vector.Z + totals[2]) :
                 new Vector4(vector.X + totals[0], vector.Y + totals[1], vector.Z + totals[2], w);
         }
 
@@ -1397,7 +1467,7 @@ namespace FLVER_Editor
                     break;
                 case FLVER.Vertex v:
                     v.Position = CreateScaleVector(v.Position.X, v.Position.Y, v.Position.Z, offset, totals, nbi, uniform, invert);
-                    v.Normal = new System.Numerics.Vector3(v.Normal.X, v.Normal.Y, invert && nbi != 2 ? -v.Normal.Z : v.Normal.Z);
+                    v.Normal = new Vector3(v.Normal.X, v.Normal.Y, invert && nbi != 2 ? -v.Normal.Z : v.Normal.Z);
                     v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Y, invert && nbi != 2 ? -v.Normal.Z : v.Normal.Z, v.Tangents[0].W);
                     break;
             }
@@ -1698,7 +1768,7 @@ namespace FLVER_Editor
                         case 7:
                         case 8:
                             string[] comp = bonesTableValue.Split(',');
-                            System.Numerics.Vector3 vector = new System.Numerics.Vector3(float.Parse(comp[0]), float.Parse(comp[1]), float.Parse(comp[2]));
+                            Vector3 vector = new Vector3(float.Parse(comp[0]), float.Parse(comp[1]), float.Parse(comp[2]));
                             Flver.Bones[e.RowIndex].Translation = e.ColumnIndex == 4 ? vector : Flver.Bones[e.RowIndex].Translation;
                             Flver.Bones[e.RowIndex].Scale = e.ColumnIndex == 5 ? vector : Flver.Bones[e.RowIndex].Scale;
                             Flver.Bones[e.RowIndex].Rotation = e.ColumnIndex == 6 ? vector : Flver.Bones[e.RowIndex].Rotation;
@@ -1880,7 +1950,7 @@ namespace FLVER_Editor
             UpdateUndoState();
             foreach (FLVER.Vertex v in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices))
             {
-                v.Normal = new System.Numerics.Vector3(-v.Normal.X, -v.Normal.Y, -v.Normal.Z);
+                v.Normal = new Vector3(-v.Normal.X, -v.Normal.Y, -v.Normal.Z);
                 for (int j = 0; j < v.Tangents.Count; ++j)
                     v.Tangents[j] = new Vector4(-v.Tangents[j].X, -v.Tangents[j].Y, -v.Tangents[j].Z, v.Tangents[j].W);
             }
@@ -1896,7 +1966,7 @@ namespace FLVER_Editor
             ShowInformationDialog("Mesh backfaces have been toggled!");
         }
 
-        private static void UpdateHeaderBoundingBox(FLVER2.FLVERHeader header, System.Numerics.Vector3 vertexPos)
+        private static void UpdateHeaderBoundingBox(FLVER2.FLVERHeader header, Vector3 vertexPos)
         {
             float minX = Math.Min(header.BoundingBoxMin.X, vertexPos.X);
             float minY = Math.Min(header.BoundingBoxMin.Y, vertexPos.Y);
@@ -1904,11 +1974,11 @@ namespace FLVER_Editor
             float maxX = Math.Max(header.BoundingBoxMax.X, vertexPos.X);
             float maxY = Math.Max(header.BoundingBoxMax.Y, vertexPos.Y);
             float maxZ = Math.Max(header.BoundingBoxMax.Z, vertexPos.Z);
-            header.BoundingBoxMin = new System.Numerics.Vector3(minX, minY, minZ);
-            header.BoundingBoxMax = new System.Numerics.Vector3(maxX, maxY, maxZ);
+            header.BoundingBoxMin = new Vector3(minX, minY, minZ);
+            header.BoundingBoxMax = new Vector3(maxX, maxY, maxZ);
         }
 
-        private static void UpdateMeshBoundingBox(FLVER2.Mesh mesh, System.Numerics.Vector3 vertexPos)
+        private static void UpdateMeshBoundingBox(FLVER2.Mesh mesh, Vector3 vertexPos)
         {
             float minX = Math.Min(mesh.BoundingBox.Min.X, vertexPos.X);
             float minY = Math.Min(mesh.BoundingBox.Min.Y, vertexPos.Y);
@@ -1916,8 +1986,8 @@ namespace FLVER_Editor
             float maxX = Math.Max(mesh.BoundingBox.Max.X, vertexPos.X);
             float maxY = Math.Max(mesh.BoundingBox.Max.Y, vertexPos.Y);
             float maxZ = Math.Max(mesh.BoundingBox.Max.Z, vertexPos.Z);
-            mesh.BoundingBox.Min = new System.Numerics.Vector3(minX, minY, minZ);
-            mesh.BoundingBox.Max = new System.Numerics.Vector3(maxX, maxY, maxZ);
+            mesh.BoundingBox.Min = new Vector3(minX, minY, minZ);
+            mesh.BoundingBox.Max = new Vector3(maxX, maxY, maxZ);
         }
 
         private static System.Numerics.Matrix4x4 GetNMatrix(FLVER.Bone b)
@@ -1948,30 +2018,30 @@ namespace FLVER_Editor
             return result;
         }
 
-        private static void UpdateBonesBoundingBox(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones, System.Numerics.Vector3 vertexPos)
+        private static void UpdateBonesBoundingBox(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones, Vector3 vertexPos)
         {
             System.Numerics.Matrix4x4 boneAbsoluteMatrix = GetAbsoluteNMatrix(b, bones);
             if (!System.Numerics.Matrix4x4.Invert(boneAbsoluteMatrix, out System.Numerics.Matrix4x4 invertedBoneMatrix)) return;
-            System.Numerics.Vector3 posForBBox = System.Numerics.Vector3.Transform(vertexPos, invertedBoneMatrix);
+            Vector3 posForBBox = Vector3.Transform(vertexPos, invertedBoneMatrix);
             float minX = Math.Min(b.BoundingBoxMin.X, posForBBox.X);
             float minY = Math.Min(b.BoundingBoxMin.Y, posForBBox.Y);
             float minZ = Math.Min(b.BoundingBoxMin.Z, posForBBox.Z);
             float maxX = Math.Max(b.BoundingBoxMax.X, posForBBox.X);
             float maxY = Math.Max(b.BoundingBoxMax.Y, posForBBox.Y);
             float maxZ = Math.Max(b.BoundingBoxMax.Z, posForBBox.Z);
-            b.BoundingBoxMin = new System.Numerics.Vector3(minX, minY, minZ);
-            b.BoundingBoxMax = new System.Numerics.Vector3(maxX, maxY, maxZ);
+            b.BoundingBoxMin = new Vector3(minX, minY, minZ);
+            b.BoundingBoxMax = new Vector3(maxX, maxY, maxZ);
         }
 
         private void SolveAllBBs()
         {
             UpdateUndoState();
-            Flver.Header.BoundingBoxMin = new System.Numerics.Vector3();
-            Flver.Header.BoundingBoxMax = new System.Numerics.Vector3();
+            Flver.Header.BoundingBoxMin = new Vector3();
+            Flver.Header.BoundingBoxMax = new Vector3();
             foreach (FLVER.Bone bone in Flver.Bones)
             {
-                bone.BoundingBoxMin = new System.Numerics.Vector3();
-                bone.BoundingBoxMax = new System.Numerics.Vector3();
+                bone.BoundingBoxMin = new Vector3();
+                bone.BoundingBoxMax = new Vector3();
             }
             foreach (FLVER2.Mesh mesh in Flver.Meshes)
             {
@@ -2062,12 +2132,6 @@ namespace FLVER_Editor
             ExportFLVERAsDAE();
         }
 
-        private string PromptImportModel()
-        {
-            OpenFileDialog dialog = new OpenFileDialog { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
-            return dialog.ShowDialog() != DialogResult.OK ? "" : dialog.FileName;
-        }
-
         private void ImportFLVERFile(bool prompt, string filePath)
         {
             UpdateUndoState();
@@ -2078,6 +2142,7 @@ namespace FLVER_Editor
                 if (!Importer.ImportAssimp(Program.Flver, dialog.FileName)) return;
             }
             else if (!Importer.ImportAssimp(Program.Flver, filePath)) return;
+            ShowInformationDialog("Successfully imported model into the current FLVER file!");
             UpdateUndoState();
             Flver = Program.Flver;
             DeselectAllSelectedThings();
@@ -2176,7 +2241,7 @@ namespace FLVER_Editor
             UpdateUndoState();
             FLVER.Dummy newDummy = new FLVER.Dummy
             {
-                Position = Flver.Dummies.Count > 0 ? Flver.Dummies[Flver.Dummies.Count - 1].Position : new System.Numerics.Vector3(0, 0, 0),
+                Position = Flver.Dummies.Count > 0 ? Flver.Dummies[Flver.Dummies.Count - 1].Position : new Vector3(0, 0, 0),
                 ReferenceID = -1
             };
             Flver.Dummies.Add(newDummy);
@@ -2340,8 +2405,8 @@ namespace FLVER_Editor
         private void SetAllBBsMaxSize()
         {
             UpdateUndoState();
-            System.Numerics.Vector3 minVector = new System.Numerics.Vector3(0, 0, 0);
-            System.Numerics.Vector3 maxVector = new System.Numerics.Vector3(999, 999, 999);
+            Vector3 minVector = new Vector3(0, 0, 0);
+            Vector3 maxVector = new Vector3(999, 999, 999);
             Flver.Header.BoundingBoxMin = maxVector;
             Flver.Header.BoundingBoxMax = minVector;
             foreach (FLVER2.Mesh mesh in from mesh in Flver.Meshes from vertex in mesh.Vertices select mesh)
@@ -2445,12 +2510,12 @@ namespace FLVER_Editor
             WriteUserConfig();
         }
 
-        private static System.Numerics.Vector3 MirrorThing(System.Numerics.Vector3 v, int nbi, IReadOnlyList<float> totals)
+        private static Vector3 MirrorThing(Vector3 v, int nbi, IReadOnlyList<float> totals)
         {
-            v = new System.Numerics.Vector3((v.X - (nbi == 0 && !UseWorldOrigin ? totals[0] : 0)) * (nbi == 0 ? -1 : 1),
+            v = new Vector3((v.X - (nbi == 0 && !UseWorldOrigin ? totals[0] : 0)) * (nbi == 0 ? -1 : 1),
                 (v.Y - (nbi == 1 && !UseWorldOrigin ? totals[1] : 0)) * (nbi == 1 ? -1 : 1),
                 (v.Z - (nbi == 2 && !UseWorldOrigin ? totals[2] : 0)) * (nbi == 2 ? -1 : 1));
-            v = new System.Numerics.Vector3(v.X + (nbi == 0 && !UseWorldOrigin ? totals[0] : 0),
+            v = new Vector3(v.X + (nbi == 0 && !UseWorldOrigin ? totals[0] : 0),
                 v.Y + (nbi == 1 && !UseWorldOrigin ? totals[1] : 0),
                 v.Z + (nbi == 2 && !UseWorldOrigin ? totals[2] : 0));
             return v;
@@ -2463,7 +2528,7 @@ namespace FLVER_Editor
             foreach (FLVER.Vertex v in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices))
             {
                 v.Position = MirrorThing(v.Position, nbi, totals);
-                v.Normal = new System.Numerics.Vector3(v.Normal.X * (nbi == 0 ? -1 : 1),
+                v.Normal = new Vector3(v.Normal.X * (nbi == 0 ? -1 : 1),
                     v.Normal.Y * (nbi == 1 ? -1 : 1), v.Normal.Z * (nbi == 2 ? -1 : 1));
                 v.Tangents[0] = new Vector4(v.Tangents[0].X * (nbi == 0 ? -1 : 1),
                     v.Tangents[0].Y * (nbi == 1 ? -1 : 1), v.Tangents[0].Z * (nbi == 2 ? -1 : 1), 1);
@@ -2812,7 +2877,7 @@ namespace FLVER_Editor
 
         private static void AddNewMeshFaceset(FLVER2.Mesh m, FLVER2.FaceSet.FSFlags flags, List<int> vertexIndices)
         {
-            FLVER2.FaceSet fs = Generate.GenerateBasicFaceSet();
+            FLVER2.FaceSet fs = Generators.GenerateBasicFaceSet();
             fs.Flags = flags;
             fs.Indices = vertexIndices;
             m.FaceSets.Add(fs);
@@ -2927,12 +2992,12 @@ namespace FLVER_Editor
             UpdateUndoState();
             foreach (FLVER.Vertex v in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices))
             {
-                v.Position = new System.Numerics.Vector3(v.Position.X, v.Position.Z, v.Position.Y);
-                v.Normal = new System.Numerics.Vector3(v.Normal.X, v.Normal.Z, v.Normal.Y);
+                v.Position = new Vector3(v.Position.X, v.Position.Z, v.Position.Y);
+                v.Normal = new Vector3(v.Normal.X, v.Normal.Z, v.Normal.Y);
                 v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Z, v.Tangents[0].Y, 1);
             }
             foreach (FLVER.Dummy d in SelectedDummyIndices.Select(i => Flver.Dummies[i]))
-                d.Position = new System.Numerics.Vector3(d.Position.X, d.Position.Z, d.Position.Y);
+                d.Position = new Vector3(d.Position.X, d.Position.Z, d.Position.Y);
             UpdateMesh();
             ShowInformationDialog("Successfully flipped the YZ axis!");
         }
@@ -2966,36 +3031,25 @@ namespace FLVER_Editor
         private void ResetAllMesh()
         {
             UpdateUndoState();
-            FLVER2.BufferLayout newBL = new FLVER2.BufferLayout
-            {
-                new FLVER.LayoutMember(FLVER.LayoutType.Float3, FLVER.LayoutSemantic.Position),
-                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Normal, 12),
-                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Tangent, 16),
-                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.Tangent, 16, 1),
-                new FLVER.LayoutMember(FLVER.LayoutType.Byte4B, FLVER.LayoutSemantic.BoneIndices, 24),
-                new FLVER.LayoutMember(FLVER.LayoutType.Byte4C, FLVER.LayoutSemantic.BoneWeights, 28),
-                new FLVER.LayoutMember(FLVER.LayoutType.Byte4C, FLVER.LayoutSemantic.VertexColor, 32, 1),
-                new FLVER.LayoutMember(FLVER.LayoutType.UVPair, FLVER.LayoutSemantic.UV, 36),
-            };
-            Flver.BufferLayouts.Add(newBL);
+            Flver.BufferLayouts.Add(Generators.GenerateDefaultBufferLayout());
             foreach (FLVER2.Mesh m in Flver.Meshes)
             {
-                m.BoundingBox.Max = new System.Numerics.Vector3(1, 1, 1);
-                m.BoundingBox.Min = new System.Numerics.Vector3(-1, -1, -1);
-                m.BoundingBox.Unk = new System.Numerics.Vector3();
+                m.BoundingBox.Max = new Vector3(1, 1, 1);
+                m.BoundingBox.Min = new Vector3(-1, -1, -1);
+                m.BoundingBox.Unk = new Vector3();
                 m.DefaultBoneIndex = 0;
                 m.Dynamic = 1;
-                m.VertexBuffers = new List<FLVER2.VertexBuffer>();
                 int[] varray = m.FaceSets[0].Indices.ToArray();
                 m.FaceSets = new List<FLVER2.FaceSet>();
                 for (int i = 0; i < m.Vertices.Count; i++)
                 {
                     FLVER.Vertex vit = m.Vertices[i];
-                    m.Vertices[i] = Generate.GenerateNewFlverVertexUsingNumerics(new System.Numerics.Vector3(vit.Position.X, vit.Position.Y, vit.Position.Z), vit.Normal, vit.Tangents, vit.Bitangent, vit.UVs, 1);
+                    m.Vertices[i] = Generators.GenerateNewFlverVertexUsingNumerics(new Vector3(vit.Position.X, vit.Position.Y, vit.Position.Z), vit.Normal, vit.Tangents,
+                        vit.Bitangent, vit.UVs, 1);
                     m.Vertices[i].BoneIndices = vit.BoneIndices;
                     m.Vertices[i].BoneWeights = vit.BoneWeights;
                 }
-                m.FaceSets.Add(Generate.GenerateBasicFaceSet());
+                m.FaceSets.Add(Generators.GenerateBasicFaceSet());
                 m.FaceSets[0].Indices = varray.ToList();
                 m.FaceSets[0].CullBackfaces = false;
             }
@@ -3018,15 +3072,6 @@ namespace FLVER_Editor
         private void VectorModeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             EnableDisableExtraModifierOptions();
-        }
-
-        private enum TextureFormats
-        {
-            DXT1 = 0,
-            BC7_UNORM = 107,
-            ATI1 = 103,
-            ATI2 = 104,
-            ATI3 = 103
         }
 
         private void ToggleDuplicateMaterialsOnMeshImportToolStripMenuItem_Click(object sender, EventArgs e)

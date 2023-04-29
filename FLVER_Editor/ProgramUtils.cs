@@ -2,41 +2,43 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Numerics;
 using System.Text;
-using System.Web.Script.Serialization;
 using System.Windows.Forms;
-using Assimp;
-using Microsoft.Xna.Framework;
 using ObjLoader.Loader.Data.Elements;
-using ObjLoader.Loader.Data.VertexData;
-using ObjLoader.Loader.Loaders;
 using SoulsFormats;
-using Face = ObjLoader.Loader.Data.Elements.Face;
-using Point = System.Drawing.Point;
-using Vector4 = System.Numerics.Vector4;
 
 namespace FLVER_Editor
 {
     /// <summary>
-    /// Part of the program class
-    /// Contains some important tools
-    /// Might need to be sorted a bit more
+    ///     Part of the program class
+    ///     Contains some important tools
+    ///     Might need to be sorted a bit more
     /// </summary>
     internal static partial class Program
     {
+        public enum TextureFormats
+        {
+            DXT1 = 0,
+            BC7_UNORM = 107,
+            ATI1 = 103,
+            ATI2 = 104,
+            ATI3 = 103
+        }
+
         /*************** Basic Tools section *****************/
 
         /// <summary>
-        /// Rotate a numerics Vector3 point
+        ///     Rotate a numerics Vector3 point
         /// </summary>
         /// <param name="point">The numerics Vector3 point to rotate</param>
         /// <param name="pitch">The pitch to rotate by as a float</param>
         /// <param name="roll">The roll to rotate by as a float</param>
         /// <param name="yaw">The yaw to rotate by as a float</param>
         /// <returns>A rotated numerics Vector3</returns>
-        public static System.Numerics.Vector3 RotatePoint(System.Numerics.Vector3 point, float pitch, float roll, float yaw)
+        public static Vector3 RotatePoint(Vector3 point, float pitch, float roll, float yaw)
         {
-            var ans = new System.Numerics.Vector3(0, 0, 0);
+            Vector3 ans = new Vector3(0, 0, 0);
             double cosa = Math.Cos(yaw);
             double sina = Math.Sin(yaw);
             double cosb = Math.Cos(pitch);
@@ -62,7 +64,7 @@ namespace FLVER_Editor
         }
 
         /// <summary>
-        /// Rotate a numerics Vector4 point
+        ///     Rotate a numerics Vector4 point
         /// </summary>
         /// <param name="point">The numerics Vector4 point to rotate</param>
         /// <param name="pitch">The pitch to rotate by as a float</param>
@@ -71,7 +73,7 @@ namespace FLVER_Editor
         /// <returns>A rotated numerics Vector4</returns>
         public static Vector4 RotatePoint(Vector4 point, float pitch, float roll, float yaw)
         {
-            var ans = new Vector4(0, 0, 0, point.W);
+            Vector4 ans = new Vector4(0, 0, 0, point.W);
             double cosa = Math.Cos(yaw);
             double sina = Math.Sin(yaw);
             double cosb = Math.Cos(pitch);
@@ -97,51 +99,45 @@ namespace FLVER_Editor
         }
 
         /// <summary>
-        /// Rotate a line on a shape with numerics Vector3 points
+        ///     Rotate a line on a shape with numerics Vector3 points
         /// </summary>
         /// <param name="point"></param>
         /// <param name="org"></param>
         /// <param name="direction"></param>
         /// <param name="theta"></param>
         /// <returns></returns>
-        public static System.Numerics.Vector3 RotateLine(System.Numerics.Vector3 point, System.Numerics.Vector3 org, System.Numerics.Vector3 direction, double theta)
+        public static Vector3 RotateLine(Vector3 point, Vector3 org, Vector3 direction, double theta)
         {
             double x = point.X;
             double y = point.Y;
             double z = point.Z;
-
             double a = org.X;
             double b = org.Y;
             double c = org.Z;
-
             double nu = direction.X / direction.Length();
             double nv = direction.Y / direction.Length();
             double nw = direction.Z / direction.Length();
-
-            var rP = new double[3];
+            double[] rP = new double[3];
             rP[0] = (a * (nv * nv + nw * nw) - nu * (b * nv + c * nw - nu * x - nv * y - nw * z)) * (1 - Math.Cos(theta))
-                    + x * Math.Cos(theta)
-                    + (-c * nv + b * nw - nw * y + nv * z) * Math.Sin(theta);
-
+                + x * Math.Cos(theta)
+                + (-c * nv + b * nw - nw * y + nv * z) * Math.Sin(theta);
             rP[1] = (b * (nu * nu + nw * nw) - nv * (a * nu + c * nw - nu * x - nv * y - nw * z)) * (1 - Math.Cos(theta))
-                    + y * Math.Cos(theta)
-                    + (c * nu - a * nw + nw * x - nu * z) * Math.Sin(theta);
-
+                + y * Math.Cos(theta)
+                + (c * nu - a * nw + nw * x - nu * z) * Math.Sin(theta);
             rP[2] = (c * (nu * nu + nv * nv) - nw * (a * nu + b * nv - nu * x - nv * y - nw * z)) * (1 - Math.Cos(theta))
-                    + z * Math.Cos(theta)
-                    + (-b * nu + a * nv - nv * x + nu * y) * Math.Sin(theta);
-
-            var ans = new System.Numerics.Vector3((float)rP[0], (float)rP[1], (float)rP[2]);
+                + z * Math.Cos(theta)
+                + (-b * nu + a * nv - nv * x + nu * y) * Math.Sin(theta);
+            Vector3 ans = new Vector3((float)rP[0], (float)rP[1], (float)rP[2]);
             return ans;
         }
 
         /// <summary>
-        /// Computes the Dot Product of two Xna Vector3s
+        ///     Computes the Dot Product of two Xna Vector3s
         /// </summary>
         /// <param name="vector1">The first Xna Vector3</param>
         /// <param name="vector2">The second Xna Vector3</param>
         /// <returns>The Dot Product of the Xna Vector3s as an Xna Vector3</returns>
-        public static float XnaDotProduct(Vector3 vector1, Vector3 vector2)
+        public static float XnaDotProduct(Microsoft.Xna.Framework.Vector3 vector1, Microsoft.Xna.Framework.Vector3 vector2)
         {
             float x1 = vector1.X;
             float y1 = vector1.Y;
@@ -153,12 +149,12 @@ namespace FLVER_Editor
         }
 
         /// <summary>
-        /// Computes the Cross Product of two Xna Vector3s
+        ///     Computes the Cross Product of two Xna Vector3s
         /// </summary>
         /// <param name="vector1">The first Xna Vector3</param>
         /// <param name="vector2">The second Xna Vector3</param>
         /// <returns>The Cross Product of the Xna Vector3s as an Xna Vector3</returns>
-        public static Vector3 XnaCrossProduct(Vector3 vector1, Vector3 vector2)
+        public static Microsoft.Xna.Framework.Vector3 XnaCrossProduct(Microsoft.Xna.Framework.Vector3 vector1, Microsoft.Xna.Framework.Vector3 vector2)
         {
             float x1 = vector1.X;
             float y1 = vector1.Y;
@@ -166,11 +162,11 @@ namespace FLVER_Editor
             float x2 = vector2.X;
             float y2 = vector2.Y;
             float z2 = vector2.Z;
-            return new Vector3(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2);
+            return new Microsoft.Xna.Framework.Vector3(y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2);
         }
 
         /// <summary>
-        /// Swaps a sekiro model with a Dark Souls or BloodBorne model
+        ///     Swaps a sekiro model with a Dark Souls or BloodBorne model
         /// </summary>
         public static void ModelSwapModule()
         {
@@ -183,8 +179,7 @@ namespace FLVER_Editor
             if (openSeikiroModelDonorDialog.ShowDialog() == DialogResult.OK) Console.WriteLine(openSeikiroModelDonorDialog.FileName);
             else return;
             FLVER2 seikiroDonorModel = FLVER2.Read(openSeikiroModelDonorDialog.FileName);
-
-            var openReplacementModelDialog = new OpenFileDialog
+            OpenFileDialog openReplacementModelDialog = new OpenFileDialog
             {
                 InitialDirectory = Directory.GetCurrentDirectory(),
                 Title = "Choose source DS/BB model file."
@@ -192,11 +187,9 @@ namespace FLVER_Editor
             if (openReplacementModelDialog.ShowDialog() == DialogResult.OK) Console.WriteLine(openSeikiroModelDonorDialog.FileName);
             else return;
             FLVER2 replacementModel = FLVER2.Read(openReplacementModelDialog.FileName);
-
             Console.WriteLine(seikiroDonorModel.Header);
             Console.WriteLine("Seikiro unk is:" + seikiroDonorModel.SekiroUnk);
             Console.WriteLine("Material:");
-
             foreach (FLVER2.Material material in seikiroDonorModel.Materials) Console.WriteLine(material.Name);
             foreach (FLVER2.Mesh material in seikiroDonorModel.Meshes) Console.WriteLine("Mesh#" + material.MaterialIndex);
 
@@ -210,49 +203,42 @@ namespace FLVER_Editor
             //Unit: in meter(?)
 
             //For Moonlight sword -> threaded cane, Y+0.5f
-            var form = new Form();
-
-
-            var label = Forms.MakeLabel(new Size(150, 15), new Point(10, 20), "x,y,z offset? Y= weapon length axis,Y+=Closer to hand");
+            Form form = new Form();
+            Label label = Forms.MakeLabel(new Size(150, 15), new Point(10, 20), "x,y,z offset? Y= weapon length axis,Y+=Closer to hand");
             form.Controls.Add(label);
-
-            var textbox1 = Forms.MakeTextBox(new Size(70, 15), new Point(10, 60), "0");
-            var textbox2 = Forms.MakeTextBox(new Size(70, 15), new Point(10, 100), "0");
-            var textbox3 = Forms.MakeTextBox(new Size(70, 15), new Point(10, 140), "0");
+            TextBox textbox1 = Forms.MakeTextBox(new Size(70, 15), new Point(10, 60), "0");
+            TextBox textbox2 = Forms.MakeTextBox(new Size(70, 15), new Point(10, 100), "0");
+            TextBox textbox3 = Forms.MakeTextBox(new Size(70, 15), new Point(10, 140), "0");
             form.Controls.Add(textbox1);
             form.Controls.Add(textbox2);
             form.Controls.Add(textbox3);
-
-            var copyMaterial = Forms.MakeCheckBox(new Size(70, 15), new Point(10, 160), "Copy Material");
-            var copyBones = Forms.MakeCheckBox(new Size(150, 15), new Point(10, 180), "Copy Bones");
-            var copyDummy = Forms.MakeCheckBox(new Size(150, 15), new Point(10, 200), "Copy Dummy");
-            var weightToFirstBone = Forms.MakeCheckBox(new Size(), new Point(10, 220), "All vertex weight to first bone");
+            CheckBox copyMaterial = Forms.MakeCheckBox(new Size(70, 15), new Point(10, 160), "Copy Material");
+            CheckBox copyBones = Forms.MakeCheckBox(new Size(150, 15), new Point(10, 180), "Copy Bones");
+            CheckBox copyDummy = Forms.MakeCheckBox(new Size(150, 15), new Point(10, 200), "Copy Dummy");
+            CheckBox weightToFirstBone = Forms.MakeCheckBox(new Size(), new Point(10, 220), "All vertex weight to first bone");
             form.Controls.Add(copyMaterial);
             form.Controls.Add(copyBones);
             form.Controls.Add(copyDummy);
             form.Controls.Add(weightToFirstBone);
-
             form.ShowDialog();
             float x = float.Parse(textbox1.Text);
             float y = float.Parse(textbox2.Text);
             float z = float.Parse(textbox3.Text);
-
             seikiroDonorModel.Meshes = replacementModel.Meshes;
-            if (copyMaterial.Checked)  seikiroDonorModel.Materials = replacementModel.Materials;
-            if (copyBones.Checked)     seikiroDonorModel.Bones = replacementModel.Bones;
-            if (copyDummy.Checked)     seikiroDonorModel.Dummies = replacementModel.Dummies;
+            if (copyMaterial.Checked) seikiroDonorModel.Materials = replacementModel.Materials;
+            if (copyBones.Checked) seikiroDonorModel.Bones = replacementModel.Bones;
+            if (copyDummy.Checked) seikiroDonorModel.Dummies = replacementModel.Dummies;
             if (weightToFirstBone.Checked)
             {
-                for (var i = 0; i < seikiroDonorModel.Meshes.Count; i++)
+                for (int i = 0; i < seikiroDonorModel.Meshes.Count; i++)
                 {
-                    seikiroDonorModel.Meshes[i].BoneIndices = new List<int>{0, 1};
+                    seikiroDonorModel.Meshes[i].BoneIndices = new List<int> { 0, 1 };
                     seikiroDonorModel.Meshes[i].DefaultBoneIndex = 1;
                     foreach (FLVER.Vertex vertex in seikiroDonorModel.Meshes[i].Vertices)
                     {
                         if (Util3D.BoneWeightsToFloatArray(vertex.BoneWeights) == null) continue;
-
-                        vertex.Position = new System.Numerics.Vector3(0, 0, 0);
-                        for (var k = 0; k < vertex.BoneWeights.Length; k++)
+                        vertex.Position = new Vector3(0, 0, 0);
+                        for (int k = 0; k < vertex.BoneWeights.Length; k++)
                         {
                             vertex.BoneWeights[k] = 0;
                             vertex.BoneIndices[k] = 0;
@@ -267,7 +253,7 @@ namespace FLVER_Editor
             {
                 foreach (FLVER.Vertex vertex in mesh.Vertices)
                 {
-                    vertex.Position = new System.Numerics.Vector3(vertex.Position.X + x, vertex.Position.Y + y, vertex.Position.Z + z);
+                    vertex.Position = new Vector3(vertex.Position.X + x, vertex.Position.Y + y, vertex.Position.Z + z);
                 }
             }
             seikiroDonorModel.Write(openSeikiroModelDonorDialog.FileName + "n");
@@ -277,14 +263,14 @@ namespace FLVER_Editor
         }
 
         /// <summary>
-        /// Gets face vertices from an ObjLoader face
+        ///     Gets face vertices from an ObjLoader face
         /// </summary>
         /// <param name="face">An ObjLoader face</param>
         /// <returns>An ObjLoader face vertex array</returns>
         private static FaceVertex[] GetVertices(Face face)
         {
-            var ans = new FaceVertex[face.Count];
-            for (var i = 0; i < face.Count; i++)
+            FaceVertex[] ans = new FaceVertex[face.Count];
+            for (int i = 0; i < face.Count; i++)
             {
                 ans[i] = face[i];
             }
@@ -292,24 +278,26 @@ namespace FLVER_Editor
         }
 
         /// <summary>
-        /// Export data from a single string to JSON
-        /// I honestly would have used a string array for this :fatcat:
+        ///     Export data from a single string to JSON
+        ///     I honestly would have used a string array for this :fatcat:
         /// </summary>
         /// <param name="content">The string to export to JSON</param>
         /// <param name="fileName">The name of the resulting JSON file, "export.json" by default</param>
-        /// <param name="endMessage">A string containing a message to show in a MessageBox to the user after the export has finished</param>
+        /// <param name="endMessage">
+        ///     A string containing a message to show in a MessageBox to the user after the export has
+        ///     finished
+        /// </param>
         public static void ExportJson(string content, string fileName = "export.json", string endMessage = "")
         {
-            var saveDialog = new SaveFileDialog
+            SaveFileDialog saveDialog = new SaveFileDialog
             {
                 FileName = fileName
             };
-
             if (saveDialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
-                    var sw = new StreamWriter(saveDialog.FileName);
+                    StreamWriter sw = new StreamWriter(saveDialog.FileName);
                     sw.Write(content);
                     sw.Close();
                     MessageBox.Show(endMessage, "Info");
@@ -322,16 +310,16 @@ namespace FLVER_Editor
         }
 
         /// <summary>
-        /// Formats a JSON string into a more readable string
+        ///     Formats a JSON string into a more readable string
         /// </summary>
         /// <param name="jsonString">A</param>
         /// <returns>A string</returns>
         public static string FormatOutput(string jsonString)
         {
-            var stringBuilder = new StringBuilder();
-            var escaping = false;
-            var inQuotes = false;
-            var indentation = 0;
+            StringBuilder stringBuilder = new StringBuilder();
+            bool escaping = false;
+            bool inQuotes = false;
+            int indentation = 0;
             foreach (char character in jsonString)
             {
                 if (escaping)
@@ -391,19 +379,19 @@ namespace FLVER_Editor
         }
 
         /// <summary>
-        /// A class for containing a vertex normal list so that an average can be calculated
+        ///     A class for containing a vertex normal list so that an average can be calculated
         /// </summary>
         public class VertexNormalList
         {
             public readonly List<Vector3D> normals = new List<Vector3D>();
 
             /// <summary>
-            /// Calculate the average of all the normals added to the normals list
+            ///     Calculate the average of all the normals added to the normals list
             /// </summary>
             /// <returns>An FE Vector3D normal that is the average of all the normals in the normals list</returns>
             public Vector3D CalculateAvgNormal()
             {
-                var normalAverage = new Vector3D();
+                Vector3D normalAverage = new Vector3D();
                 foreach (Vector3D normal in normals)
                 {
                     normalAverage += normal;
@@ -412,7 +400,7 @@ namespace FLVER_Editor
             }
 
             /// <summary>
-            /// Adds to the normals list of the VertexNormalList class
+            ///     Adds to the normals list of the VertexNormalList class
             /// </summary>
             /// <param name="normal">A FE Vector3D normal to add to the list</param>
             public void Add(Vector3D normal)

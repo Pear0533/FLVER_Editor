@@ -350,11 +350,11 @@ namespace FLVER_Editor
                 return;
             }
             RefreshTextures();
-            using (Stream stream = TitleContainer.OpenStream($"singleColor.png"))
+            using (Stream stream = new FileStream($"{MainWindow.ImageResourcePath}\\singleColor.png", FileMode.Open))
             {
                 testTexture = Texture2D.FromStream(GraphicsDevice, stream);
             }
-            var bgFileStream = new FileStream($"{MainWindow.RootFolderPath}\\bg.png", FileMode.Open);
+            var bgFileStream = new FileStream($"{MainWindow.ImageResourcePath}\\bg.png", FileMode.Open);
             bgTexture = Texture2D.FromStream(GraphicsDevice, bgFileStream);
             bgFileStream.Close();
             viewerFont = Content.Load<SpriteFont>("Segoe UI");
@@ -1044,8 +1044,8 @@ namespace FLVER_Editor
             DrawScreenText(xAxisLabel, lines[0].Position, viewMatrix, projection);
             DrawScreenText(zAxisLabel, lines[2].Position, viewMatrix, projection);
             DrawScreenText(yAxisLabel, lines[5].Position, viewMatrix, projection);
-            if (!MainWindow.areDummyIdsVisible) return;
-            foreach (FLVER.Dummy d in MainWindow.flver.Dummies)
+            if (!MainWindow.AreDummyIdsVisible) return;
+            foreach (FLVER.Dummy d in MainWindow.Flver.Dummies)
                 DrawScreenText(d.ReferenceID.ToString(), d.Position, viewMatrix, projection);
         }
 

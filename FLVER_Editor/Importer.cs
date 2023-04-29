@@ -30,7 +30,7 @@ namespace FLVER_Editor
 
                 // Take count of layouts, then add a new bufferlayout for imported FBX data.
                 int layoutCount = flver.BufferLayouts.Count;
-                flver.BufferLayouts.Add(Generate.GenerateDefaultBufferLayout());
+                flver.BufferLayouts.Add(Generators.GenerateDefaultBufferLayout());
 
                 // Take count of materials, then add imported FBX data to the chosen FLVER.
                 int materialCount = flver.Materials.Count;
@@ -58,7 +58,7 @@ namespace FLVER_Editor
             // Add the material data from each Assimp material to the chosen FLVER as new materials.
             foreach (Material assimpMaterial in scene.Materials)
             {
-                FLVER2.Material newMaterial = Generate.GenerateBaseMaterial(assimpMaterial.TextureDiffuse.FilePath, assimpMaterial.TextureSpecular.FilePath, assimpMaterial.TextureNormal.FilePath);
+                FLVER2.Material newMaterial = Generators.GenerateBaseMaterial(assimpMaterial.TextureDiffuse.FilePath, assimpMaterial.TextureSpecular.FilePath, assimpMaterial.TextureNormal.FilePath);
                 newMaterial.Name = assimpMaterial.Name;
                 newMaterial.Unk18 = flver.Materials[flver.Materials.Count - 1].Unk18 + 1;
                 flver.Materials.Add(newMaterial);
@@ -120,7 +120,7 @@ namespace FLVER_Editor
                 return;
 
             // Generate bone Name conversion table to convert known bone names.
-            var boneNameConversionTable = Generate.GenerateBoneNameConversionTable();
+            var boneNameConversionTable = Generators.GenerateBoneNameConversionTable();
 
             // Create bone index and weight lists for each vertex in the assimp mesh.
             for (int i = 0; i < assimpMesh.VertexCount; i++)
@@ -208,7 +208,7 @@ namespace FLVER_Editor
                 // Add Assimp vertex positional data and convert tangents into a list for compatibility, then generate new FLVER vertex.
                 var newPosition = new Vector3(assimpVertex.X, assimpVertex.Y, assimpVertex.Z);
                 var newTangents = new List<Vector3> { tangent.ToNumericsVector3() };
-                FLVER.Vertex vertex = Generate.GenerateNewFlverVertexUsingNumericsTan(newPosition, normal.ToNumericsVector3(), newTangents, bitangent.ToNumericsVector4(), newUVs, 1);
+                FLVER.Vertex vertex = Generators.GenerateNewFlverVertexUsingNumericsTan(newPosition, normal.ToNumericsVector3(), newTangents, bitangent.ToNumericsVector4(), newUVs, 1);
 
                 // If the current Assimp mesh has bones add vertex bone indices and bone weights to new vertex, then add the new FLVER vertex to the new FLVER mesh.
                 if (assimpMesh.HasBones)
@@ -253,7 +253,7 @@ namespace FLVER_Editor
 
             newMesh.FaceSets = new List<FLVER2.FaceSet>
             {
-                Generate.GenerateBasicFaceSet()
+                Generators.GenerateBasicFaceSet()
             };
 
             newMesh.FaceSets[0].Indices = faceIndices;
@@ -543,7 +543,7 @@ namespace FLVER_Editor
 
             mesh.FaceSets = new List<FLVER2.FaceSet>
             {
-                Generate.GenerateBasicFaceSet()
+                Generators.GenerateBasicFaceSet()
             };
             mesh.FaceSets[0].Indices = faceIndices;
 
@@ -581,7 +581,7 @@ namespace FLVER_Editor
                 }
 
                 //
-                mesh.Vertices.Add(Generate.GenerateNewFlverVertexUsingNumericsTan(new System.Numerics.Vector3(objVertex.X, objVertex.Y, objVertex.Z), newNormal, newTangents, newBiTangent, newUVs));
+                mesh.Vertices.Add(Generators.GenerateNewFlverVertexUsingNumericsTan(new System.Numerics.Vector3(objVertex.X, objVertex.Y, objVertex.Z), newNormal, newTangents, newBiTangent, newUVs));
             }
             var matnew = new JavaScriptSerializer().Deserialize<FLVER2.Material>(new JavaScriptSerializer().Serialize(flver2.Materials[0]));
             matnew.Name = res.Substring(res.LastIndexOf('\\') + 1);

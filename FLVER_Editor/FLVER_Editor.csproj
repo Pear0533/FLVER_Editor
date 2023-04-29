@@ -51,11 +51,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>icon_lSi_icon.ico</ApplicationIcon>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="CjClutter.ObjLoader.Loader">
       <HintPath>lib\ObjLoader\CjClutter.ObjLoader.Loader.dll</HintPath>
@@ -100,7 +98,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms.cs" />
-    <Compile Include="Generate.cs" />
+    <Compile Include="Generators.cs" />
     <Compile Include="Importer.cs" />
     <Compile Include="IniParser.cs" />
     <Compile Include="MATBIN.cs" />
@@ -127,20 +125,15 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="app.manifest">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="boneConversion.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="boxobj.mtl">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Content\Segoe UI.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\dummy\dummypresets.json" />
-    <None Include="Resources\material\materialpresets.json" />
+    <None Include="Resources\dummy\dummypresets.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\material\materialpresets.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -182,78 +175,33 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="bg.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="Resources\dummy\dummyInfo.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="icons\select_all_mesh_icon.png" />
-    <None Include="icons\select_all_dummies_icon.png" />
-    <None Include="icons\solve_all_bbs_icon.png" />
-    <None Include="icons\solve_all_bbs_max_size_icon.png" />
-    <None Include="icons\hide_all_mesh_icon.png" />
-    <None Include="icons\solve_all_mesh_lods_icon.png" />
-    <None Include="icons\reset_mesh_icon.png" />
-    <Content Include="icon_lSi_icon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Note.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="icon.ico" />
     <Content Include="oo2core_6_win64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\icon\display_female_body_icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\icon\display_female_body_icon_purple.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\icon\display_male_body_icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\icon\hide_all_mesh_icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\icon\ICON.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\icon\select_all_dummies_icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\icon\select_all_mesh_icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\icon\solve_all_bbs_icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\icon\solve_all_bbs_max_size_icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\icon\solve_all_mesh_lods_icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Resources\icon\display_female_body_icon.png" />
+    <Content Include="Resources\icon\display_female_body_icon_purple.png" />
+    <Content Include="Resources\icon\display_male_body_icon.png" />
+    <Content Include="Resources\icon\hide_all_mesh_icon.png" />
+    <Content Include="Resources\icon\ICON.png" />
+    <None Include="Resources\icon\reset_mesh_icon.png" />
+    <Content Include="Resources\icon\select_all_dummies_icon.png" />
+    <Content Include="Resources\icon\select_all_mesh_icon.png" />
+    <Content Include="Resources\icon\solve_all_bbs_icon.png" />
+    <Content Include="Resources\icon\solve_all_bbs_max_size_icon.png" />
+    <Content Include="Resources\icon\solve_all_mesh_lods_icon.png" />
     <Content Include="Resources\image\bg.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="singleColor.png">
+    <Content Include="Resources\image\singleColor.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="SoulsFormats.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SoulsFormats.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SoulsFormats.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="SoulsFormats.dll" />
+    <Content Include="SoulsFormats.pdb" />
+    <Content Include="SoulsFormats.xml" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

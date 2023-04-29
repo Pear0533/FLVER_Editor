@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("FLVER Editor")]
-[assembly: AssemblyCopyright("© Pear, 2022 All rights reserved.")]
+[assembly: AssemblyCopyright("© Pear, 2023 All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
