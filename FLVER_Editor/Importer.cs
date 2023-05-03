@@ -158,7 +158,7 @@ namespace FLVER_Editor
                             tangent = new Vector3D(Program.XnaCrossProduct(new Vector3D(m.Normals[i]).Normalize().ToXnaVector3(), normal.ToXnaVector3())).Normalize();
                     }
                     FLVER.Vertex v = Generators.GenerateNewFlverVertexUsingNumerics(new Vector3(vit.X, vit.Y, vit.Z), normal.ToNumericsVector3(),
-                        new List<Vector4> { tangent.ToNumericsVector4() }, new Vector4(), new List<Vector3> { uv1.ToNumericsVector3(), uv2.ToNumericsVector3() }, 1);
+                        new List<Vector4> { tangent.ToNumericsVector4() }, new Vector4(), new List<Vector3> { uv1.ToNumericsVector3(), uv2.ToNumericsVector3() });
                     if (m.HasBones)
                     {
                         for (int j = 0; j < verticesBoneIndices[i].Count && j < 4; j++)

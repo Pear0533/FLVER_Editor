@@ -178,8 +178,8 @@ namespace FLVER_Editor
             foreach (Vector3 UV in UVs) newUVs.Add(new Vector3(UV.X, UV.Y, UV.Z));
             List<Vector4> newTangents = new List<Vector4>
             {
-                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, tangents[0].W),
-                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, tangents[0].W)
+                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, 1),
+                new Vector4(tangents[0].X, tangents[0].Y, tangents[0].Z, 1)
             };
             List<FLVER.VertexColor> newColors = new List<FLVER.VertexColor>
             {
