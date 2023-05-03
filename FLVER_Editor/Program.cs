@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
@@ -19,7 +18,7 @@ namespace FLVER_Editor
         public static FLVER2 Flver;
         public static TPF Tpf = null;
         public static List<VertexInfo> VerticesInfo = new List<VertexInfo>();
-        public static Dictionary<string, string> BoneParentList;
+        public static Dictionary<string, string> BoneParentList = new Dictionary<string, string>();
         public static List<FLVER.Vertex> Vertices = new List<FLVER.Vertex>();
         public static string FilePath = "";
         public static Vector3 CheckingPoint;
