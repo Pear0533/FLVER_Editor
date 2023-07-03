@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": "net7.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    "net7.0": {
+      "FbxDataExtractor/1.0.0": {
+        "runtime": {
+          "FbxDataExtractor.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FbxDataExtractor/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
