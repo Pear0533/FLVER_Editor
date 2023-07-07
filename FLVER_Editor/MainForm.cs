@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Windows.Forms;
 using Assimp;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
@@ -399,7 +392,6 @@ public partial class MainWindow : Form
         SetAutoSaveInterval();
         SetAutoSaveEnabled();
         SetDummyIDsVisibility();
-        SetUseWorldOrigin();
         SetDupeMatOnMeshImport();
         EnableDarkTheme();
         tabWindow.SelectedTab = meshTabPage;
@@ -463,13 +455,6 @@ public partial class MainWindow : Form
     public static void WriteUserConfig()
     {
         File.WriteAllText(UserConfigJsonPath, JsonConvert.SerializeObject(UserConfigJson, Formatting.Indented));
-    }
-
-    private static void SetUseWorldOrigin()
-    {
-        string useWorldOriginStr = UserConfigJson["UseWorldOrigin"]?.ToString();
-        if (useWorldOriginStr == null) return;
-        UseWorldOrigin = bool.Parse(useWorldOriginStr);
     }
 
     private static void SetDupeMatOnMeshImport()
@@ -3146,14 +3131,6 @@ public partial class MainWindow : Form
         ResetAllMesh();
     }
 
-    private void ToggleUseWorldOriginToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-        UseWorldOrigin = !UseWorldOrigin;
-        UserConfigJson["UseWorldOrigin"] = UseWorldOrigin;
-        WriteUserConfig();
-        ShowInformationDialog("Successfully toggled using the world origin for transformations!");
-    }
-
     private void VectorModeCheckbox_CheckedChanged(object sender, EventArgs e)
     {
         EnableDisableExtraModifierOptions();
@@ -3187,5 +3164,10 @@ public partial class MainWindow : Form
     private void ImportNewCtrlIToolStripMenuItem_Click(object sender, EventArgs e)
     {
         ImportFLVERFile(true, "");
+    }
+
+    private void UseWorldOriginCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+        UseWorldOrigin = useWorldOriginCheckbox.Checked;
     }
 }
