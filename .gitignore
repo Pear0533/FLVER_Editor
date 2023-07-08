@@ -361,3 +361,11 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/FLVER_Editor/zlib-mt.lib
+/FLVER_Editor/zlib-md.lib
+/FLVER_Editor/libxml2-mt.lib
+/FLVER_Editor/libxml2-md.lib
+/FLVER_Editor/libfbxsdk.lib
+/FLVER_Editor/libfbxsdk.dll
+/FLVER_Editor/libfbxsdk-mt.lib
+/FLVER_Editor/libfbxsdk-md.lib
