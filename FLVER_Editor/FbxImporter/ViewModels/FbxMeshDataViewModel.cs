@@ -94,7 +94,7 @@ public class FbxMeshDataViewModel
             PadVertex(newVertex, bufferLayouts);
             newMesh.Vertices.Add(newVertex);
         }
-        if (!options.MirrorX)
+        if (!options.MirrorX && !options.MirrorZ)
         {
             FlipFaceSet();
         }
