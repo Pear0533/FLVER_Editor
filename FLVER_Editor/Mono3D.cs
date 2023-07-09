@@ -312,7 +312,7 @@ namespace FLVER_Editor
             base.Initialize();
         }
 
-        private void ReadTPFTextureEntries(TPF? tpf)
+        private void ReadTPFTextureEntries(TPF tpf)
         {
             foreach (TPF.Texture t in tpf.Textures)
             {

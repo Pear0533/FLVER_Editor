@@ -1172,8 +1172,8 @@ public partial class MainWindow : Form
 
     private static void InjectTextureIntoTPF(string textureFilePath)
     {
-        Tpf ??= new TPF();
-        BinderFile? flverBndTpfEntry = FlverBnd.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
+        if (Tpf == null) Tpf = new TPF();
+        BinderFile flverBndTpfEntry = FlverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
         byte[] ddsBytes = File.ReadAllBytes(textureFilePath);
         DDS dds = new(ddsBytes);
         byte formatByte = 107;
