@@ -28,15 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            importOptionsGroupBox = new System.Windows.Forms.GroupBox();
-            meshSelectorGroupBox = new System.Windows.Forms.GroupBox();
-            modifyAllMeshesCheckbox = new System.Windows.Forms.CheckBox();
+            importOptionsGroupBox = new GroupBox();
+            meshSelectorGroupBox = new GroupBox();
+            modifyAllMeshesCheckbox = new CheckBox();
             meshSelector = new EasyCompletionComboBox();
-            skinnedMeshCheckbox = new System.Windows.Forms.CheckBox();
-            mtdSelectorGroupBox = new System.Windows.Forms.GroupBox();
+            skinnedMeshCheckbox = new CheckBox();
+            mtdSelectorGroupBox = new GroupBox();
             mtdSelector = new EasyCompletionComboBox();
-            createDefaultBoneCheckbox = new System.Windows.Forms.CheckBox();
-            mirrorXCheckbox = new System.Windows.Forms.CheckBox();
+            createDefaultBoneCheckbox = new CheckBox();
+            mirrorXCheckbox = new CheckBox();
+            mirrorZCheckbox = new CheckBox();
             importOptionsGroupBox.SuspendLayout();
             meshSelectorGroupBox.SuspendLayout();
             mtdSelectorGroupBox.SuspendLayout();
@@ -44,26 +45,27 @@
             // 
             // importOptionsGroupBox
             // 
-            importOptionsGroupBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            importOptionsGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             importOptionsGroupBox.Controls.Add(meshSelectorGroupBox);
-            importOptionsGroupBox.Location = new System.Drawing.Point(9, 6);
+            importOptionsGroupBox.Location = new Point(9, 6);
             importOptionsGroupBox.Name = "importOptionsGroupBox";
-            importOptionsGroupBox.Size = new System.Drawing.Size(540, 163);
+            importOptionsGroupBox.Size = new Size(540, 163);
             importOptionsGroupBox.TabIndex = 1;
             importOptionsGroupBox.TabStop = false;
             importOptionsGroupBox.Text = "Import Options";
             // 
             // meshSelectorGroupBox
             // 
+            meshSelectorGroupBox.Controls.Add(mirrorZCheckbox);
             meshSelectorGroupBox.Controls.Add(modifyAllMeshesCheckbox);
             meshSelectorGroupBox.Controls.Add(meshSelector);
             meshSelectorGroupBox.Controls.Add(skinnedMeshCheckbox);
             meshSelectorGroupBox.Controls.Add(mtdSelectorGroupBox);
             meshSelectorGroupBox.Controls.Add(createDefaultBoneCheckbox);
             meshSelectorGroupBox.Controls.Add(mirrorXCheckbox);
-            meshSelectorGroupBox.Location = new System.Drawing.Point(6, 21);
+            meshSelectorGroupBox.Location = new Point(6, 21);
             meshSelectorGroupBox.Name = "meshSelectorGroupBox";
-            meshSelectorGroupBox.Size = new System.Drawing.Size(528, 136);
+            meshSelectorGroupBox.Size = new Size(528, 136);
             meshSelectorGroupBox.TabIndex = 5;
             meshSelectorGroupBox.TabStop = false;
             meshSelectorGroupBox.Text = "Mesh Selector";
@@ -71,9 +73,9 @@
             // modifyAllMeshesCheckbox
             // 
             modifyAllMeshesCheckbox.AutoSize = true;
-            modifyAllMeshesCheckbox.Location = new System.Drawing.Point(398, 24);
+            modifyAllMeshesCheckbox.Location = new Point(398, 24);
             modifyAllMeshesCheckbox.Name = "modifyAllMeshesCheckbox";
-            modifyAllMeshesCheckbox.Size = new System.Drawing.Size(124, 19);
+            modifyAllMeshesCheckbox.Size = new Size(124, 19);
             modifyAllMeshesCheckbox.TabIndex = 2;
             modifyAllMeshesCheckbox.Text = "Modify All Meshes";
             modifyAllMeshesCheckbox.UseVisualStyleBackColor = true;
@@ -81,28 +83,28 @@
             // meshSelector
             // 
             meshSelector.FormattingEnabled = true;
-            meshSelector.Location = new System.Drawing.Point(6, 22);
+            meshSelector.Location = new Point(6, 22);
             meshSelector.Name = "meshSelector";
-            meshSelector.Size = new System.Drawing.Size(384, 23);
+            meshSelector.Size = new Size(384, 23);
             meshSelector.TabIndex = 0;
             // 
             // skinnedMeshCheckbox
             // 
             skinnedMeshCheckbox.AutoSize = true;
-            skinnedMeshCheckbox.Location = new System.Drawing.Point(259, 110);
+            skinnedMeshCheckbox.Location = new Point(292, 110);
             skinnedMeshCheckbox.Name = "skinnedMeshCheckbox";
-            skinnedMeshCheckbox.Size = new System.Drawing.Size(100, 19);
+            skinnedMeshCheckbox.Size = new Size(100, 19);
             skinnedMeshCheckbox.TabIndex = 4;
             skinnedMeshCheckbox.Text = "Skinned Mesh";
             skinnedMeshCheckbox.UseVisualStyleBackColor = true;
             // 
             // mtdSelectorGroupBox
             // 
-            mtdSelectorGroupBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            mtdSelectorGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             mtdSelectorGroupBox.Controls.Add(mtdSelector);
-            mtdSelectorGroupBox.Location = new System.Drawing.Point(6, 51);
+            mtdSelectorGroupBox.Location = new Point(6, 51);
             mtdSelectorGroupBox.Name = "mtdSelectorGroupBox";
-            mtdSelectorGroupBox.Size = new System.Drawing.Size(516, 54);
+            mtdSelectorGroupBox.Size = new Size(516, 54);
             mtdSelectorGroupBox.TabIndex = 3;
             mtdSelectorGroupBox.TabStop = false;
             mtdSelectorGroupBox.Text = "MTD Selector";
@@ -110,17 +112,17 @@
             // mtdSelector
             // 
             mtdSelector.FormattingEnabled = true;
-            mtdSelector.Location = new System.Drawing.Point(6, 22);
+            mtdSelector.Location = new Point(6, 22);
             mtdSelector.Name = "mtdSelector";
-            mtdSelector.Size = new System.Drawing.Size(504, 23);
+            mtdSelector.Size = new Size(504, 23);
             mtdSelector.TabIndex = 1;
             // 
             // createDefaultBoneCheckbox
             // 
             createDefaultBoneCheckbox.AutoSize = true;
-            createDefaultBoneCheckbox.Location = new System.Drawing.Point(7, 110);
+            createDefaultBoneCheckbox.Location = new Point(7, 110);
             createDefaultBoneCheckbox.Name = "createDefaultBoneCheckbox";
-            createDefaultBoneCheckbox.Size = new System.Drawing.Size(131, 19);
+            createDefaultBoneCheckbox.Size = new Size(131, 19);
             createDefaultBoneCheckbox.TabIndex = 0;
             createDefaultBoneCheckbox.Text = "Create Default Bone";
             createDefaultBoneCheckbox.UseVisualStyleBackColor = true;
@@ -128,12 +130,22 @@
             // mirrorXCheckbox
             // 
             mirrorXCheckbox.AutoSize = true;
-            mirrorXCheckbox.Location = new System.Drawing.Point(142, 110);
+            mirrorXCheckbox.Location = new Point(142, 110);
             mirrorXCheckbox.Name = "mirrorXCheckbox";
-            mirrorXCheckbox.Size = new System.Drawing.Size(113, 19);
+            mirrorXCheckbox.Size = new Size(69, 19);
             mirrorXCheckbox.TabIndex = 1;
-            mirrorXCheckbox.Text = "Mirror on X-Axis";
+            mirrorXCheckbox.Text = "Mirror X";
             mirrorXCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // mirrorZCheckbox
+            // 
+            mirrorZCheckbox.AutoSize = true;
+            mirrorZCheckbox.Location = new Point(217, 110);
+            mirrorZCheckbox.Name = "mirrorZCheckbox";
+            mirrorZCheckbox.Size = new Size(69, 19);
+            mirrorZCheckbox.TabIndex = 5;
+            mirrorZCheckbox.Text = "Mirror Z";
+            mirrorZCheckbox.UseVisualStyleBackColor = true;
             // 
             // ImporterOpenFileDialog
             // 
@@ -156,5 +168,6 @@
         private EasyCompletionComboBox meshSelector;
         private EasyCompletionComboBox mtdSelector;
         private System.Windows.Forms.CheckBox modifyAllMeshesCheckbox;
+        private System.Windows.Forms.CheckBox mirrorZCheckbox;
     }
 }

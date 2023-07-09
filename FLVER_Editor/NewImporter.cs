@@ -15,7 +15,7 @@ public static class NewImporter
 {
     private static MeshImportOptions GetDefaultImportOptions()
     {
-        return new MeshImportOptions(false, false, MTDs[0], MaterialInfoBank, false);
+        return new MeshImportOptions(false, false, true, MTDs[0], MaterialInfoBank, false);
     }
 
     private static void ShowImportErrorDialog(string fbxPath, Exception e)

@@ -40,12 +40,14 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     {
         createDefaultBoneCheckbox.Checked = false;
         mirrorXCheckbox.Checked = false;
+        mirrorZCheckbox.Checked = false;
         skinnedMeshCheckbox.Checked = false;
         meshSelector.Enabled = enabled;
         modifyAllMeshesCheckbox.Enabled = enabled;
         mtdSelector.Enabled = enabled;
         createDefaultBoneCheckbox.Enabled = enabled;
         mirrorXCheckbox.Enabled = enabled;
+        mirrorZCheckbox.Enabled = enabled;
         skinnedMeshCheckbox.Enabled = enabled;
         if (clearMeshes) Meshes.Clear();
         meshSelector.Items.Clear();
@@ -82,11 +84,13 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             mtdSelector.SelectedItem = selectedMesh.Value.MTD;
             createDefaultBoneCheckbox.Checked = selectedMesh.Value.CreateDefaultBone;
             mirrorXCheckbox.Checked = selectedMesh.Value.MirrorX;
+            mirrorZCheckbox.Checked = selectedMesh.Value.MirrorZ;
             skinnedMeshCheckbox.Checked = selectedMesh.Value.IsSkinned;
         };
         mtdSelector.SelectedIndexChanged += (_, _) => { ModifyMesh(i => i.Value.MTD = mtdSelector.SelectedItem.ToString() ?? ""); };
         createDefaultBoneCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.CreateDefaultBone = createDefaultBoneCheckbox.Checked); };
         mirrorXCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.MirrorX = mirrorXCheckbox.Checked); };
+        mirrorZCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.MirrorZ = mirrorZCheckbox.Checked); };
         skinnedMeshCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.IsSkinned = skinnedMeshCheckbox.Checked); };
     }
 
