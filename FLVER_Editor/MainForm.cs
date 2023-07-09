@@ -598,36 +598,10 @@ public partial class MainWindow : Form
         for (int i = 0; i < Flver.Meshes.Count; ++i)
         {
             if (Flver.Meshes[i] == null) continue;
-            FLVER.Bone? defaultBone = Flver.Bones?.ElementAtOrDefault(Flver.Meshes[i].DefaultBoneIndex);
-            Transform3D? boneTransform = null;
-            if (defaultBone != null)
-            {
-                boneTransform = new Transform3D
-                {
-                    RotationOrder = RotationOrder,
-                    Position = new Vector3D(defaultBone.Translation),
-                    Scale = new Vector3D(defaultBone.Scale)
-                };
-                boneTransform.SetRotationInRadians(new Vector3D(defaultBone.Rotation));
-            }
-            Vector3D? boneMatrix = boneTransform?.GetGlobalOrigin();
-            Vector3 boneVector = new(boneMatrix?.X ?? 0, boneMatrix?.Y ?? 0, boneMatrix?.Z ?? 0);
-            if (boneVector.X != 0 || boneVector.Y != 0 || boneVector.Z != 0)
-                Console.WriteLine(@"The default bone has a transformation offset.");
             bool renderBackFaces = Flver.Meshes[i].FaceSets.Count > 0 && !Flver.Meshes[i].FaceSets[0].CullBackfaces;
-            List<FLVER.Vertex[]> faces = Flver.Meshes[i].GetFaces();
-            foreach (FLVER.Vertex[] face in faces)
+            foreach (FLVER.Vertex[] vertexArr in Flver.Meshes[i].GetFaces())
             {
                 if (HiddenMeshIndices.IndexOf(i) != -1) continue;
-                Vector3 firstFaceVertex = face[0].Position; // - new Vector3(0, 0.5f, 0);
-                Vector3 secondFaceVertex = face[1].Position; // - new Vector3(0, 0.5f, 0);
-                Vector3 thirdFaceVertex = face[2].Position; // - new Vector3(0, 0.5f, 0);
-                if (Flver.Meshes[i].Dynamic == 0)
-                {
-                    firstFaceVertex -= boneVector;
-                    secondFaceVertex -= boneVector;
-                    thirdFaceVertex -= boneVector;
-                }
                 Microsoft.Xna.Framework.Color colorLine = Microsoft.Xna.Framework.Color.Black;
                 if (MeshIsSelected && SelectedMeshIndices.IndexOf(i) != -1)
                 {
@@ -641,18 +615,18 @@ public partial class MainWindow : Form
                 colorLine.A = 125;
                 vertexPosColorList.AddRange(new[]
                 {
-                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(firstFaceVertex), colorLine),
-                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(secondFaceVertex), colorLine),
-                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(firstFaceVertex), colorLine),
-                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(thirdFaceVertex), colorLine),
-                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(secondFaceVertex), colorLine),
-                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(thirdFaceVertex), colorLine)
+                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[0].Position), colorLine),
+                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[1].Position), colorLine),
+                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[0].Position), colorLine),
+                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), colorLine),
+                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[1].Position), colorLine),
+                    new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), colorLine)
                 });
                 Microsoft.Xna.Framework.Color faceSetColor = new();
-                Microsoft.Xna.Framework.Vector3 vectorA = Util3D.NumericsVector3ToXnaVector3(secondFaceVertex)
-                    - Util3D.NumericsVector3ToXnaVector3(firstFaceVertex);
-                Microsoft.Xna.Framework.Vector3 vectorB = Util3D.NumericsVector3ToXnaVector3(thirdFaceVertex)
-                    - Util3D.NumericsVector3ToXnaVector3(firstFaceVertex);
+                Microsoft.Xna.Framework.Vector3 vectorA = Util3D.NumericsVector3ToXnaVector3(vertexArr[1].Position)
+                    - Util3D.NumericsVector3ToXnaVector3(vertexArr[0].Position);
+                Microsoft.Xna.Framework.Vector3 vectorB = Util3D.NumericsVector3ToXnaVector3(vertexArr[2].Position)
+                    - Util3D.NumericsVector3ToXnaVector3(vertexArr[0].Position);
                 Microsoft.Xna.Framework.Vector3 normalVector = XnaCrossProduct(vectorA, vectorB);
                 normalVector.Normalize();
                 Microsoft.Xna.Framework.Vector3 lightVector = new(Viewer.lightX, Viewer.lightY, Viewer.lightZ);
@@ -673,40 +647,40 @@ public partial class MainWindow : Form
                 faceSetPosColorList.AddRange(
                     new[]
                     {
-                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(firstFaceVertex), faceSetColor),
-                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(thirdFaceVertex), faceSetColor),
-                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(secondFaceVertex), faceSetColor),
-                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(firstFaceVertex), faceSetColor),
-                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(thirdFaceVertex), faceSetColor),
-                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(secondFaceVertex), faceSetColor)
+                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[0].Position), faceSetColor),
+                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), faceSetColor),
+                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[1].Position), faceSetColor),
+                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[0].Position), faceSetColor),
+                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), faceSetColor),
+                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[1].Position), faceSetColor)
                     });
                 faceSetPosColorTexList.AddRange(
                     new[]
                     {
-                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(firstFaceVertex), faceSetColor,
-                            new Vector2(face[0].UVs[0].X, face[0].UVs[0].Y)),
-                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(thirdFaceVertex), faceSetColor,
-                            new Vector2(face[2].UVs[0].X, face[2].UVs[0].Y)),
-                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(secondFaceVertex), faceSetColor,
-                            new Vector2(face[1].UVs[0].X, face[1].UVs[0].Y))
+                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[0].Position), faceSetColor,
+                            new Vector2(vertexArr[0].UVs[0].X, vertexArr[0].UVs[0].Y)),
+                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), faceSetColor,
+                            new Vector2(vertexArr[2].UVs[0].X, vertexArr[2].UVs[0].Y)),
+                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[1].Position), faceSetColor,
+                            new Vector2(vertexArr[1].UVs[0].X, vertexArr[1].UVs[0].Y))
                     });
                 if (!renderBackFaces) continue;
                 faceSetPosColorList.AddRange(
                     new[]
                     {
-                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(firstFaceVertex), faceSetColor),
-                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(secondFaceVertex), faceSetColor),
-                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(thirdFaceVertex), faceSetColor)
+                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[0].Position), faceSetColor),
+                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[1].Position), faceSetColor),
+                        new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), faceSetColor)
                     });
                 faceSetPosColorTexList.AddRange(
                     new[]
                     {
-                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(firstFaceVertex), faceSetColor,
-                            new Vector2(face[0].UVs[0].X, face[0].UVs[0].Y)),
-                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(secondFaceVertex), faceSetColor,
-                            new Vector2(face[1].UVs[0].X, face[1].UVs[0].Y)),
-                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(thirdFaceVertex), faceSetColor,
-                            new Vector2(face[2].UVs[0].X, face[2].UVs[0].Y))
+                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[0].Position), faceSetColor,
+                            new Vector2(vertexArr[0].UVs[0].X, vertexArr[0].UVs[0].Y)),
+                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[1].Position), faceSetColor,
+                            new Vector2(vertexArr[1].UVs[0].X, vertexArr[1].UVs[0].Y)),
+                        new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), faceSetColor,
+                            new Vector2(vertexArr[2].UVs[0].X, vertexArr[2].UVs[0].Y))
                     });
             }
             for (int j = 0; j < Flver.Meshes[i].Vertices.Count; ++j)
@@ -1743,7 +1717,7 @@ public partial class MainWindow : Form
     {
         string bndFilter = FlverFilePath.EndsWith(".dcx") ? "|BND File (*.dcx)|*.dcx" : "";
         SaveFileDialog dialog = new()
-            { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", "")) };
+        { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", "")) };
         if (dialog.ShowDialog() != DialogResult.OK) return;
         string modelFilePath = dialog.FileName;
         if (FlverFilePath.EndsWith(".dcx"))
@@ -2207,27 +2181,27 @@ public partial class MainWindow : Form
         switch (prompt)
         {
             case true:
-            {
-                if (useOldImporter)
                 {
-                    OpenFileDialog dialog = new() { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
-                    if (dialog.ShowDialog() != DialogResult.OK) return;
-                    UpdateUndoState();
-                    if (!OldImporter.ImportAssimp(Program.Flver, dialog.FileName)) return;
-                    ShowInformationDialog("Successfully imported model into the current FLVER file!");
+                    if (useOldImporter)
+                    {
+                        OpenFileDialog dialog = new() { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
+                        if (dialog.ShowDialog() != DialogResult.OK) return;
+                        UpdateUndoState();
+                        if (!OldImporter.ImportAssimp(Program.Flver, dialog.FileName)) return;
+                        ShowInformationDialog("Successfully imported model into the current FLVER file!");
+                    }
+                    else if (!NewImporter.ImportFbxWithDialogAsync(Flver)) return;
+                    break;
                 }
-                else if (!NewImporter.ImportFbxWithDialogAsync(Flver)) return;
-                break;
-            }
             default:
-            {
-                if (useOldImporter)
                 {
-                    if (!OldImporter.ImportAssimp(Program.Flver, filePath)) return;
+                    if (useOldImporter)
+                    {
+                        if (!OldImporter.ImportAssimp(Program.Flver, filePath)) return;
+                    }
+                    else if (!NewImporter.ImportFbxAsync(Flver, filePath)) return;
+                    break;
                 }
-                else if (!NewImporter.ImportFbxAsync(Flver, filePath)) return;
-                break;
-            }
         }
         Flver = Program.Flver;
         DeselectAllSelectedThings();

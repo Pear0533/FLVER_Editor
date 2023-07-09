@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
-using FileDialogExtenders;
+﻿using FileDialogExtenders;
 using FLVER_Editor.FbxImporter.ViewModels;
 using static FLVER_Editor.Program;
 
@@ -23,6 +18,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
 
     private void PopulateMeshSelector()
     {
+
         foreach (KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> mesh in Meshes)
             meshSelector.Items.Add(mesh.Key.Name);
         meshSelector.SelectedIndex = 0;
@@ -74,9 +70,9 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
                 ResetImportOptionsControls(false);
                 return;
             }
+            ResetImportOptionsControls(true);
             HasImportedModel = NewImporter.ImportFbxAsync(this, e);
             if (!HasImportedModel) return;
-            ResetImportOptionsControls(true, false);
             PopulateMeshSelector();
             PopulateMTDSelector();
         };
@@ -88,7 +84,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             mirrorXCheckbox.Checked = selectedMesh.Value.MirrorX;
             skinnedMeshCheckbox.Checked = selectedMesh.Value.IsSkinned;
         };
-        mtdSelector.SelectedIndexChanged += (_, _) => { ModifyMesh(i => i.Value.MTD = mtdSelector.SelectedItem.ToString()); };
+        mtdSelector.SelectedIndexChanged += (_, _) => { ModifyMesh(i => i.Value.MTD = mtdSelector.SelectedItem.ToString() ?? ""); };
         createDefaultBoneCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.CreateDefaultBone = createDefaultBoneCheckbox.Checked); };
         mirrorXCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.MirrorX = mirrorXCheckbox.Checked); };
         skinnedMeshCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.IsSkinned = skinnedMeshCheckbox.Checked); };
