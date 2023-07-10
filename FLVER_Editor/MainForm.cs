@@ -1193,8 +1193,9 @@ public partial class MainWindow : Form
         if (flverBndTpfEntry != null) FlverBnd.Files[FlverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Tpf.Write();
         else
         {
-            if (FlverFilePath.Contains(".flver")) Tpf.Write(FlverFilePath.Replace("_1.", ".").Replace(".flver", ".tpf"));
-            else if (FlverFilePath.Contains(".flv")) Tpf.Write(FlverFilePath.Replace("_1.", ".").Replace(".flv", ".tpf"));
+            // TODO: The index suffix might not always be a value of 1, it could be 2, 3, etc., so we need to account for that
+            if (FlverFilePath.Contains(".flver")) Tpf.Write(FlverFilePath.Replace("_1.", ".").Replace("_1_", "_").Replace(".flver", ".tpf"));
+            else if (FlverFilePath.Contains(".flv")) Tpf.Write(FlverFilePath.Replace("_1.", ".").Replace("_1_", "_").Replace(".flv", ".tpf"));
         }
     }
 

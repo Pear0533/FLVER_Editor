@@ -328,7 +328,7 @@ namespace FLVER_Editor
         {
             if (!MainWindow.TextureRefreshEnabled) return;
             string rawFilePath = Program.FilePath;
-            rawFilePath = rawFilePath.Replace("_1.", ".");
+            rawFilePath = rawFilePath.Replace("_1.", ".").Replace("_1_", "_");
             rawFilePath = rawFilePath.Substring(0, rawFilePath.Length - 6);
             var tpfFile = $"{rawFilePath}.tpf";
             if (Program.Tpf != null) ReadTPFTextureEntries(Program.Tpf);
