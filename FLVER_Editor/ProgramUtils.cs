@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text;
-using System.Windows.Forms;
 using ObjLoader.Loader.Data.Elements;
 using SoulsAssetPipeline.FLVERImporting;
 using SoulsFormats;
@@ -36,6 +30,7 @@ internal static partial class Program
     {
         return flver.Header.Version switch
         {
+            131088 => "DS2",
             131092 => "DS3",
             131098 when flver.Materials.Any(x => x.MTD.Contains(".matxml")) => "ER",
             131098 => MainWindow.ShowSelectorDialog("Choose target game:", "Target Game",
