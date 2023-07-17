@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
@@ -40,6 +41,7 @@ namespace FLVER_Editor
         {
             Application.EnableVisualStyles();
             Application.SetHighDpiMode(HighDpiMode.DpiUnaware);
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             MainWindow.Arguments = args.ToList();
             Window = new MainWindow();
             Window.Text = WindowTitle;
