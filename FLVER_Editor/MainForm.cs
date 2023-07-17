@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using Assimp;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ using SoulsFormats;
 using static FLVER_Editor.Program;
 using PrimitiveType = Assimp.PrimitiveType;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
+using XnaVector3 = Microsoft.Xna.Framework.Vector3;
 
 // TODO: Allow for hierarchal models to be opened/saved
 
@@ -726,25 +728,47 @@ public partial class MainWindow : Form
         }
         for (int i = 0; i < Flver.Dummies.Count; ++i)
         {
-            FLVER.Dummy dummy = Flver.Dummies[i];
+            // The dummy
+            FLVER.Dummy dmy = Flver.Dummies[i];
+
+            // Whether or not the dummy should be selected (always false during initialization)
             bool shouldSelectDummy = DummyIsSelected && SelectedDummyIndices.IndexOf(i) != -1;
-            Microsoft.Xna.Framework.Color dummyColor = shouldSelectDummy ? Microsoft.Xna.Framework.Color.Yellow : Microsoft.Xna.Framework.Color.Purple;
-            float baseDummyYPos = dummy.Position.Y;
+
+            // The color of dummy in editor
+            var green = Microsoft.Xna.Framework.Color.Green;
+            var purple = Microsoft.Xna.Framework.Color.Purple;
+            var yellow = Microsoft.Xna.Framework.Color.Yellow;
+            var dmyColor = shouldSelectDummy ? yellow : purple;
+
+            // Get transforms
+            var parTrans = Util3D.ComputeTransform(Flver.Bones, dmy.ParentBoneIndex);
+            System.Numerics.Matrix4x4.Invert(parTrans, out System.Numerics.Matrix4x4 invTrans);
+            invTrans = System.Numerics.Matrix4x4.Transpose(invTrans);
+
+            // Transform the vectors
+            var transPos = Vector3.Transform(dmy.Position, parTrans);
+            //var transForward = Vector3.Transform(dmy.Position, invTrans);
+
+            // Add the vector visualization
+            float baseDmyY = transPos.Y;
             const float posStep = 0.0005f;
             for (int j = 0; j < DummyThickness; ++j)
             {
-                vertexPosColorList.AddRange(new[]
-                {
-                    new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X - 0.025f, dummy.Position.Z, baseDummyYPos), dummyColor),
-                    new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X + 0.025f, dummy.Position.Z, baseDummyYPos), dummyColor),
-                    new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X, dummy.Position.Z - 0.025f, baseDummyYPos), dummyColor),
-                    new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X, dummy.Position.Z + 0.025f, baseDummyYPos), dummyColor),
-                    new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X, dummy.Position.Z, baseDummyYPos), Microsoft.Xna.Framework.Color.Green),
-                    new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(dummy.Position.X + dummy.Forward.X, dummy.Position.Z + dummy.Forward.Z,
-                            baseDummyYPos + dummy.Forward.Y),
-                        Microsoft.Xna.Framework.Color.Green)
-                });
-                baseDummyYPos -= posStep;
+                var posCorner1 = new VertexPositionColor(new XnaVector3(transPos.X - 0.025f, transPos.Z, baseDmyY), dmyColor);
+                var posCorner2 = new VertexPositionColor(new XnaVector3(transPos.X + 0.025f, transPos.Z, baseDmyY), dmyColor);
+                var posCorner3 = new VertexPositionColor(new XnaVector3(transPos.X, transPos.Z - 0.025f, baseDmyY), dmyColor);
+                var posCorner4 = new VertexPositionColor(new XnaVector3(transPos.X, transPos.Z + 0.025f, baseDmyY), dmyColor);
+
+                var forwardPosLineStart = new VertexPositionColor(new XnaVector3(transPos.X, transPos.Z, baseDmyY), green);
+                var forwardPosLineEnd = new VertexPositionColor(new XnaVector3(dmy.Forward.X + transPos.X, dmy.Forward.Z + transPos.Z, dmy.Forward.Y + baseDmyY), green);
+
+                vertexPosColorList.Add(posCorner1);
+                vertexPosColorList.Add(posCorner2);
+                vertexPosColorList.Add(posCorner3);
+                vertexPosColorList.Add(posCorner4);
+                vertexPosColorList.Add(forwardPosLineStart);
+                vertexPosColorList.Add(forwardPosLineEnd);
+                baseDmyY -= posStep;
             }
         }
         if (UseCheckingPoint)
