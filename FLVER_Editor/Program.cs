@@ -39,7 +39,7 @@ namespace FLVER_Editor
         private static void Main(string[] args)
         {
             Application.EnableVisualStyles();
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.SetHighDpiMode(HighDpiMode.DpiUnaware);
             MainWindow.Arguments = args.ToList();
             Window = new MainWindow();
             Window.Text = WindowTitle;
