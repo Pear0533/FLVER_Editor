@@ -405,15 +405,6 @@ public partial class MainWindow : Form
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
     }
 
-    public static bool IsMainWindowFocused()
-    {
-        IntPtr activatedHandle = GetForegroundWindow();
-        if (activatedHandle == IntPtr.Zero) return false;
-        int procId = Process.GetCurrentProcess().Id;
-        GetWindowThreadProcessId(activatedHandle, out int activeProcId);
-        return activeProcId == procId;
-    }
-
     [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
     private static extern IntPtr GetForegroundWindow();
 
@@ -2296,8 +2287,7 @@ public partial class MainWindow : Form
 
     private void MainWindowClosing(object sender, FormClosingEventArgs e)
     {
-        if (!IsMainWindowFocused()) e.Cancel = true;
-        else PromptToSaveFLVERFile(e);
+        PromptToSaveFLVERFile(e);
     }
 
     private void AddDummyButtonClicked(object sender, MouseEventArgs e)

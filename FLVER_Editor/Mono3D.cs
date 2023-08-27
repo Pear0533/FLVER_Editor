@@ -615,8 +615,6 @@ namespace FLVER_Editor
         {
             KeyboardState state = Keyboard.GetState();
             MouseState mState = Mouse.GetState();
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Application.Exit();
             var delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             //Marine_Yes00.mp3
