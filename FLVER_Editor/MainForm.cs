@@ -1467,7 +1467,7 @@ public partial class MainWindow : Form
 
     private static void ScaleThing(dynamic thing, float offset, IReadOnlyList<float> totals, int nbi, bool uniform, bool invert, bool useVectorMode)
     {
-        if (nbi >= 3 && nbi <= 5) nbi -= 3;
+        if (nbi is >= 3 and <= 5) nbi -= 3;
         switch (thing)
         {
             case FLVER.Dummy d:
@@ -1476,8 +1476,8 @@ public partial class MainWindow : Form
                 break;
             case FLVER.Vertex v:
                 v.Position = CreateScaleVector(v.Position.X, v.Position.Y, v.Position.Z, offset, totals, nbi, uniform, invert);
-                v.Normal = new Vector3(v.Normal.X, v.Normal.Y, invert && nbi != 2 ? -v.Normal.Z : v.Normal.Z);
-                v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Y, invert && nbi != 2 ? -v.Normal.Z : v.Normal.Z, v.Tangents[0].W);
+                v.Normal = v.Normal with { Z = invert && nbi != 2 ? -v.Normal.Z : v.Normal.Z };
+                if (v.Tangents.Count > 0) v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Y, invert && nbi != 2 ? -v.Normal.Z : v.Normal.Z, v.Tangents[0].W);
                 break;
         }
     }
@@ -1497,7 +1497,7 @@ public partial class MainWindow : Form
             case FLVER.Vertex v:
                 v.Position = CreateRotationVector(v.Position.X, v.Position.Y, v.Position.Z, 0, offset, totals, nbi);
                 v.Normal = CreateRotationVector(v.Normal.X, v.Normal.Y, v.Normal.Z, 0, offset, new float[3], nbi);
-                v.Tangents[0] = CreateRotationVector(v.Tangents[0].X, v.Tangents[0].Y, v.Tangents[0].Z, v.Tangents[0].W, offset, new float[3], nbi);
+                if (v.Tangents.Count > 0) v.Tangents[0] = CreateRotationVector(v.Tangents[0].X, v.Tangents[0].Y, v.Tangents[0].Z, v.Tangents[0].W, offset, new float[3], nbi);
                 break;
         }
     }
@@ -1718,7 +1718,7 @@ public partial class MainWindow : Form
     {
         string bndFilter = FlverFilePath.EndsWith(".dcx") ? "|BND File (*.dcx)|*.dcx" : "";
         SaveFileDialog dialog = new()
-        { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", "")) };
+            { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", "")) };
         if (dialog.ShowDialog() != DialogResult.OK) return;
         string modelFilePath = dialog.FileName;
         if (FlverFilePath.EndsWith(".dcx"))
@@ -1971,13 +1971,16 @@ public partial class MainWindow : Form
         UpdateMesh();
     }
 
-    private void ReverseFaceSets()
+    private static void ReverseFaceSets()
     {
         UpdateUndoState();
         foreach (FLVER2.FaceSet fs in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].FaceSets))
         {
-            for (int j = 0; j < fs.Indices.Count; j += 3)
-                (fs.Indices[j + 1], fs.Indices[j + 2]) = (fs.Indices[j + 2], fs.Indices[j + 1]);
+            if (fs.Indices.Count >= 3)
+            {
+                for (int j = 0; j < fs.Indices.Count; j += 3)
+                    (fs.Indices[j + 1], fs.Indices[j + 2]) = (fs.Indices[j + 2], fs.Indices[j + 1]);
+            }
         }
         UpdateMesh();
     }
@@ -2137,39 +2140,40 @@ public partial class MainWindow : Form
     {
         SaveFileDialog dialog = new() { FileName = $"{Path.GetFileNameWithoutExtension(FlverFilePath)}.dae", Filter = @"Collada DAE File (*.dae)|*.dae" };
         if (dialog.ShowDialog() != DialogResult.OK) return;
-        try
+        Scene scene = new() { RootNode = new Node() };
+        foreach (FLVER2.Material m in Flver.Materials)
+            scene.Materials.Add(new Material { Name = m.Name });
+        for (int i = 0; i < Flver.Meshes.Count; ++i)
         {
-            Scene scene = new() { RootNode = new Node() };
-            foreach (FLVER2.Material m in Flver.Materials)
-                scene.Materials.Add(new Material { Name = m.Name });
-            for (int i = 0; i < Flver.Meshes.Count; ++i)
+            FLVER2.Mesh m = Flver.Meshes[i];
+            Mesh newMesh = new("Mesh_M" + i, PrimitiveType.Triangle);
+            foreach (FLVER.Vertex v in m.Vertices)
             {
-                FLVER2.Mesh m = Flver.Meshes[i];
-                Mesh newMesh = new("Mesh_M" + i, PrimitiveType.Triangle);
-                foreach (FLVER.Vertex v in m.Vertices)
-                {
-                    newMesh.Vertices.Add(new Assimp.Vector3D(v.Position.X, v.Position.Y, v.Position.Z));
-                    newMesh.Normals.Add(new Assimp.Vector3D(v.Normal.X, v.Normal.Y, v.Normal.Z));
-                    newMesh.Tangents.Add(new Assimp.Vector3D(v.Tangents[0].X, v.Tangents[0].Y, v.Tangents[0].Z));
-                    for (int j = 0; j < v.UVs.Count; ++j)
-                        newMesh.TextureCoordinateChannels[j].Add(new Assimp.Vector3D(v.UVs[j].X, 1 - v.UVs[j].Y, 0));
-                }
-                foreach (FLVER2.FaceSet faceSet in m.FaceSets)
-                    newMesh.Faces.Add(new Face(new[] { faceSet.Indices[0], faceSet.Indices[1], faceSet.Indices[2] }));
-                newMesh.MaterialIndex = m.MaterialIndex;
-                scene.Meshes.Add(newMesh);
-                Node nodeBase = new() { Name = "M_" + i + "_" + Flver.Materials[m.MaterialIndex].Name };
-                nodeBase.MeshIndices.Add(i);
-                scene.RootNode.Children.Add(nodeBase);
+                newMesh.Vertices.Add(new Assimp.Vector3D(v.Position.X, v.Position.Y, v.Position.Z));
+                newMesh.Normals.Add(new Assimp.Vector3D(v.Normal.X, v.Normal.Y, v.Normal.Z));
+                if (newMesh.Tangents.Count > 0) newMesh.Tangents.Add(new Assimp.Vector3D(v.Tangents[0].X, v.Tangents[0].Y, v.Tangents[0].Z));
+                for (int j = 0; j < v.UVs.Count; ++j)
+                    newMesh.TextureCoordinateChannels[j].Add(new Assimp.Vector3D(v.UVs[j].X, 1 - v.UVs[j].Y, 0));
             }
-            AssimpContext exporter = new();
-            bool hasExported = exporter.ExportFile(scene, dialog.FileName, "collada");
-            if (hasExported) ShowInformationDialog("Successfully exported FLVER file to the Collada DAE format!");
+            foreach (FLVER2.FaceSet faceSet in m.FaceSets)
+            {
+                for (int n = 0; n < faceSet.Indices.Count; n += 3)
+                {
+                    int first = faceSet.Indices.ElementAtOrDefault(n);
+                    int second = faceSet.Indices.ElementAtOrDefault(n + 1);
+                    int third = faceSet.Indices.ElementAtOrDefault(n + 2);
+                    newMesh.Faces.Add(new Face(new[] { first, second, third }));
+                }
+            }
+            newMesh.MaterialIndex = m.MaterialIndex;
+            scene.Meshes.Add(newMesh);
+            Node nodeBase = new() { Name = "M_" + i + "_" + Flver.Materials[m.MaterialIndex].Name };
+            nodeBase.MeshIndices.Add(i);
+            scene.RootNode.Children.Add(nodeBase);
         }
-        catch
-        {
-            ShowInformationDialog("An error occurred during the exporting process.");
-        }
+        AssimpContext exporter = new();
+        bool hasExported = exporter.ExportFile(scene, dialog.FileName, "collada");
+        if (hasExported) ShowInformationDialog("Successfully exported FLVER file to the Collada DAE format!");
     }
 
     private void ExportToolStripMenuItemClicked(object sender, EventArgs e)
@@ -2182,27 +2186,27 @@ public partial class MainWindow : Form
         switch (prompt)
         {
             case true:
+            {
+                if (useOldImporter)
                 {
-                    if (useOldImporter)
-                    {
-                        OpenFileDialog dialog = new() { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
-                        if (dialog.ShowDialog() != DialogResult.OK) return;
-                        UpdateUndoState();
-                        if (!OldImporter.ImportAssimp(Program.Flver, dialog.FileName)) return;
-                        ShowInformationDialog("Successfully imported model into the current FLVER file!");
-                    }
-                    else if (!NewImporter.ImportFbxWithDialogAsync(Flver)) return;
-                    break;
+                    OpenFileDialog dialog = new() { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
+                    if (dialog.ShowDialog() != DialogResult.OK) return;
+                    UpdateUndoState();
+                    if (!OldImporter.ImportAssimp(Program.Flver, dialog.FileName)) return;
+                    ShowInformationDialog("Successfully imported model into the current FLVER file!");
                 }
+                else if (!NewImporter.ImportFbxWithDialogAsync(Flver)) return;
+                break;
+            }
             default:
+            {
+                if (useOldImporter)
                 {
-                    if (useOldImporter)
-                    {
-                        if (!OldImporter.ImportAssimp(Program.Flver, filePath)) return;
-                    }
-                    else if (!NewImporter.ImportFbxAsync(Flver, filePath)) return;
-                    break;
+                    if (!OldImporter.ImportAssimp(Program.Flver, filePath)) return;
                 }
+                else if (!NewImporter.ImportFbxAsync(Flver, filePath)) return;
+                break;
+            }
         }
         Flver = Program.Flver;
         DeselectAllSelectedThings();
@@ -2590,8 +2594,9 @@ public partial class MainWindow : Form
             v.Position = MirrorThing(v.Position, nbi, totals);
             v.Normal = new Vector3(v.Normal.X * (nbi == 0 ? -1 : 1),
                 v.Normal.Y * (nbi == 1 ? -1 : 1), v.Normal.Z * (nbi == 2 ? -1 : 1));
-            v.Tangents[0] = new Vector4(v.Tangents[0].X * (nbi == 0 ? -1 : 1),
-                v.Tangents[0].Y * (nbi == 1 ? -1 : 1), v.Tangents[0].Z * (nbi == 2 ? -1 : 1), 1);
+            if (v.Tangents.Count > 0)
+                v.Tangents[0] = new Vector4(v.Tangents[0].X * (nbi == 0 ? -1 : 1),
+                    v.Tangents[0].Y * (nbi == 1 ? -1 : 1), v.Tangents[0].Z * (nbi == 2 ? -1 : 1), 1);
         }
         foreach (FLVER.Dummy d in SelectedDummyIndices.Select(i => Flver.Dummies[i]))
         {
@@ -3064,7 +3069,7 @@ public partial class MainWindow : Form
         {
             v.Position = new Vector3(v.Position.X, v.Position.Z, v.Position.Y);
             v.Normal = new Vector3(v.Normal.X, v.Normal.Z, v.Normal.Y);
-            v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Z, v.Tangents[0].Y, 1);
+            if (v.Tangents.Count > 0) v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Z, v.Tangents[0].Y, 1);
         }
         foreach (FLVER.Dummy d in SelectedDummyIndices.Select(i => Flver.Dummies[i]))
             d.Position = new Vector3(d.Position.X, d.Position.Z, d.Position.Y);
