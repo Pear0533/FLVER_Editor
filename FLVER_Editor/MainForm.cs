@@ -2148,12 +2148,10 @@ public partial class MainWindow : Form
             }
             foreach (FLVER2.FaceSet faceSet in m.FaceSets)
             {
-                for (int n = 0; n < faceSet.Indices.Count; n += 3)
+                for (int j = 0; j < faceSet.Indices.Count; j += 3)
                 {
-                    int first = faceSet.Indices.ElementAtOrDefault(n);
-                    int second = faceSet.Indices.ElementAtOrDefault(n + 1);
-                    int third = faceSet.Indices.ElementAtOrDefault(n + 2);
-                    newMesh.Faces.Add(new Face(new[] { first, second, third }));
+                    if (j > faceSet.Indices.Count - 2) continue;
+                    newMesh.Faces.Add(new Face(new[] { faceSet.Indices[j], faceSet.Indices[j + 1], faceSet.Indices[j + 2] }));
                 }
             }
             newMesh.MaterialIndex = m.MaterialIndex;
