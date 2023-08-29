@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FLVER_Editor", "FLVER_Edito
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoulsFormats", "SoulsFormats\SoulsFormats.csproj", "{6D80D587-58A2-40AC-90D9-67352F4D5453}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoulsAssetPipeline", "SoulsAssetPipeline\SoulsAssetPipeline.csproj", "{64DBE8AE-7917-4B74-A7A7-D2AFF70DF09D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{6D80D587-58A2-40AC-90D9-67352F4D5453}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6D80D587-58A2-40AC-90D9-67352F4D5453}.Release|x86.ActiveCfg = Release|Any CPU
 		{6D80D587-58A2-40AC-90D9-67352F4D5453}.Release|x86.Build.0 = Release|Any CPU
+		{64DBE8AE-7917-4B74-A7A7-D2AFF70DF09D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64DBE8AE-7917-4B74-A7A7-D2AFF70DF09D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64DBE8AE-7917-4B74-A7A7-D2AFF70DF09D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{64DBE8AE-7917-4B74-A7A7-D2AFF70DF09D}.Debug|x86.Build.0 = Debug|Any CPU
+		{64DBE8AE-7917-4B74-A7A7-D2AFF70DF09D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64DBE8AE-7917-4B74-A7A7-D2AFF70DF09D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64DBE8AE-7917-4B74-A7A7-D2AFF70DF09D}.Release|x86.ActiveCfg = Release|Any CPU
+		{64DBE8AE-7917-4B74-A7A7-D2AFF70DF09D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

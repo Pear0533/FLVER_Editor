@@ -668,7 +668,7 @@ namespace SoulsFormats
                 => bw.WriteByte((byte)Math.Round(value * 127 + 127));
 
             private static void WriteShortNormAC6(BinaryWriterEx bw, float value)
-                => bw.WriteInt16((short)((value / 127) - 1));
+                => bw.WriteInt16((short)Math.Round((value + 1) * 127));
 
             private static void WriteShortNormXYZAC6(BinaryWriterEx bw, Vector3 value)
             {

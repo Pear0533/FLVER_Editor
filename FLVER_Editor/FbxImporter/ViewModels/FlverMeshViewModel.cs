@@ -4,6 +4,14 @@ namespace FLVER_Editor.FbxImporter.ViewModels;
 
 public class FlverMeshViewModel
 {
+    public FlverMeshViewModel(FLVER2 flver, FLVER2.Mesh mesh)
+    {
+        Mesh = mesh;
+        Material = flver.Materials[mesh.MaterialIndex];
+        GxList = flver.GXLists[Material.GXIndex];
+        Name = Material.Name;
+    }
+
     public FlverMeshViewModel(FLVER2.Mesh mesh, FLVER2.Material material, FLVER2.GXList gxList)
     {
         Mesh = mesh;
