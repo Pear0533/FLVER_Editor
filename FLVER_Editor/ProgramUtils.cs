@@ -30,6 +30,7 @@ internal static partial class Program
     {
         return flver.Header.Version switch
         {
+            131084 => "DS1",
             131088 => "DS2",
             131092 => "DS3",
             131098 when flver.Materials.Any(x => x.MTD.Contains(".matxml")) => "ER",
