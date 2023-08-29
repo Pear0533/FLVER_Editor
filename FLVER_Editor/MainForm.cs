@@ -415,7 +415,9 @@ public partial class MainWindow : Form
 
     private static void ImportBodyModels()
     {
-        if (!PopulateMaterials(Flver)) return;
+        if (MaterialInfoBank == null)
+            return;
+
         IsMaleBodyModelImported = NewImporter.ImportFbxAsync(MaleBodyFlver, $"{ModelResourcePath}\\malebody.fbx");
         IsFemaleBodyModelImported = NewImporter.ImportFbxAsync(FemaleBodyFlver, $"{ModelResourcePath}\\femalebody.fbx");
     }
@@ -616,13 +618,13 @@ public partial class MainWindow : Form
                     new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), colorLine)
                 });
                 Microsoft.Xna.Framework.Color faceSetColor = new();
-                Microsoft.Xna.Framework.Vector3 vectorA = Util3D.NumericsVector3ToXnaVector3(vertexArr[1].Position)
+                XnaVector3 vectorA = Util3D.NumericsVector3ToXnaVector3(vertexArr[1].Position)
                     - Util3D.NumericsVector3ToXnaVector3(vertexArr[0].Position);
-                Microsoft.Xna.Framework.Vector3 vectorB = Util3D.NumericsVector3ToXnaVector3(vertexArr[2].Position)
+                XnaVector3 vectorB = Util3D.NumericsVector3ToXnaVector3(vertexArr[2].Position)
                     - Util3D.NumericsVector3ToXnaVector3(vertexArr[0].Position);
-                Microsoft.Xna.Framework.Vector3 normalVector = XnaCrossProduct(vectorA, vectorB);
+                XnaVector3 normalVector = XnaCrossProduct(vectorA, vectorB);
                 normalVector.Normalize();
-                Microsoft.Xna.Framework.Vector3 lightVector = new(Viewer.lightX, Viewer.lightY, Viewer.lightZ);
+                XnaVector3 lightVector = new(Viewer.lightX, Viewer.lightY, Viewer.lightZ);
                 lightVector.Normalize();
                 int faceSetColorVal = 125 + (int)(125 * XnaDotProduct(normalVector, lightVector));
                 faceSetColorVal = faceSetColorVal > 255 ? 255 : faceSetColorVal < 0 ? 0 : Viewer.flatShading ? 255 : faceSetColorVal;
@@ -708,13 +710,13 @@ public partial class MainWindow : Form
             Vector3D absolutePos = bonesTransform[i].GetGlobalOrigin();
             if (bonesTransform[Flver.Bones[i].ParentIndex] == null) continue;
             Vector3D parentPos = bonesTransform[Flver.Bones[i].ParentIndex].GetGlobalOrigin();
-            vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(parentPos.X - 0.005f, parentPos.Z - 0.005f, parentPos.Y),
+            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(parentPos.X - 0.005f, parentPos.Z - 0.005f, parentPos.Y),
                 Microsoft.Xna.Framework.Color.Purple));
-            vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
+            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
                 Microsoft.Xna.Framework.Color.Purple));
-            vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(parentPos.X + 0.005f, parentPos.Z + 0.005f, parentPos.Y),
+            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(parentPos.X + 0.005f, parentPos.Z + 0.005f, parentPos.Y),
                 Microsoft.Xna.Framework.Color.Purple));
-            vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
+            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
                 Microsoft.Xna.Framework.Color.Purple));
         }
         for (int i = 0; i < Flver.Dummies.Count; ++i)
@@ -766,18 +768,18 @@ public partial class MainWindow : Form
         {
             Vector3 checkingPoint = CheckingPoint;
             Vector3 checkingPointNormal = CheckingPointNormal;
-            vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(checkingPoint.X - 0.05f, checkingPoint.Z - 0.05f, checkingPoint.Y),
+            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(checkingPoint.X - 0.05f, checkingPoint.Z - 0.05f, checkingPoint.Y),
                 Microsoft.Xna.Framework.Color.AntiqueWhite));
-            vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(checkingPoint.X + 0.05f, checkingPoint.Z + 0.05f, checkingPoint.Y),
+            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(checkingPoint.X + 0.05f, checkingPoint.Z + 0.05f, checkingPoint.Y),
                 Microsoft.Xna.Framework.Color.AntiqueWhite));
-            vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(checkingPoint.X - 0.05f, checkingPoint.Z + 0.05f, checkingPoint.Y),
+            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(checkingPoint.X - 0.05f, checkingPoint.Z + 0.05f, checkingPoint.Y),
                 Microsoft.Xna.Framework.Color.AntiqueWhite));
-            vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(checkingPoint.X + 0.05f, checkingPoint.Z - 0.05f, checkingPoint.Y),
+            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(checkingPoint.X + 0.05f, checkingPoint.Z - 0.05f, checkingPoint.Y),
                 Microsoft.Xna.Framework.Color.AntiqueWhite));
-            vertexPosColorList.Add(new VertexPositionColor(new Microsoft.Xna.Framework.Vector3(checkingPoint.X, checkingPoint.Z, checkingPoint.Y),
+            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(checkingPoint.X, checkingPoint.Z, checkingPoint.Y),
                 Microsoft.Xna.Framework.Color.Blue));
             vertexPosColorList.Add(new VertexPositionColor(
-                new Microsoft.Xna.Framework.Vector3(checkingPoint.X + 0.2f * checkingPointNormal.X, checkingPoint.Z + 0.2f * checkingPointNormal.Z,
+                new XnaVector3(checkingPoint.X + 0.2f * checkingPointNormal.X, checkingPoint.Z + 0.2f * checkingPointNormal.Z,
                     checkingPoint.Y + 0.2f * checkingPointNormal.Y),
                 Microsoft.Xna.Framework.Color.Blue));
         }
@@ -1080,6 +1082,10 @@ public partial class MainWindow : Form
         UpdateUI();
         ClearViewerMaterialHighlight();
         ClearUndoRedoStates();
+        if (!PopulateMaterials(Flver))
+        {
+            DisableNewImporter();
+        }
         ImportBodyModels();
         LoadMaterialPresets();
         LoadDummyPresets();
@@ -1888,6 +1894,11 @@ public partial class MainWindow : Form
         Viewer.RefreshTextures();
     }
 
+    public void DisableNewImporter()
+    {
+        importNewCtrlIToolStripMenuItem.Enabled = false;
+    }
+
     public static void ShowInformationDialog(string str)
     {
         MessageBox.Show(str, @"Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -2151,47 +2162,18 @@ public partial class MainWindow : Form
         LoadDummyPresets();
     }
 
-    private static void ExportFLVERAsDAE()
-    {
-        SaveFileDialog dialog = new() { FileName = $"{Path.GetFileNameWithoutExtension(FlverFilePath)}.dae", Filter = @"Collada DAE File (*.dae)|*.dae" };
-        if (dialog.ShowDialog() != DialogResult.OK) return;
-        Scene scene = new() { RootNode = new Node() };
-        foreach (FLVER2.Material m in Flver.Materials)
-            scene.Materials.Add(new Material { Name = m.Name });
-        for (int i = 0; i < Flver.Meshes.Count; ++i)
-        {
-            FLVER2.Mesh m = Flver.Meshes[i];
-            Mesh newMesh = new("Mesh_M" + i, PrimitiveType.Triangle);
-            foreach (FLVER.Vertex v in m.Vertices)
-            {
-                newMesh.Vertices.Add(new Assimp.Vector3D(v.Position.X, v.Position.Y, v.Position.Z));
-                newMesh.Normals.Add(new Assimp.Vector3D(v.Normal.X, v.Normal.Y, v.Normal.Z));
-                if (newMesh.Tangents.Count > 0) newMesh.Tangents.Add(new Assimp.Vector3D(v.Tangents[0].X, v.Tangents[0].Y, v.Tangents[0].Z));
-                for (int j = 0; j < v.UVs.Count; ++j)
-                    newMesh.TextureCoordinateChannels[j].Add(new Assimp.Vector3D(v.UVs[j].X, 1 - v.UVs[j].Y, 0));
-            }
-            foreach (FLVER2.FaceSet faceSet in m.FaceSets)
-            {
-                for (int j = 0; j < faceSet.Indices.Count; j += 3)
-                {
-                    if (j > faceSet.Indices.Count - 2) continue;
-                    newMesh.Faces.Add(new Face(new[] { faceSet.Indices[j], faceSet.Indices[j + 1], faceSet.Indices[j + 2] }));
-                }
-            }
-            newMesh.MaterialIndex = m.MaterialIndex;
-            scene.Meshes.Add(newMesh);
-            Node nodeBase = new() { Name = "M_" + i + "_" + Flver.Materials[m.MaterialIndex].Name };
-            nodeBase.MeshIndices.Add(i);
-            scene.RootNode.Children.Add(nodeBase);
-        }
-        AssimpContext exporter = new();
-        bool hasExported = exporter.ExportFile(scene, dialog.FileName, "collada");
-        if (hasExported) ShowInformationDialog("Successfully exported FLVER file to the Collada DAE format!");
-    }
-
     private void ExportToolStripMenuItemClicked(object sender, EventArgs e)
     {
-        ExportFLVERAsDAE();
+        SaveFileDialog dialog = new()
+        {
+            FileName = $"{Path.GetFileNameWithoutExtension(FlverFilePath)}.dae", Filter = @"Collada DAE File (*.dae)|*.dae"
+        };
+
+        if (dialog.ShowDialog() != DialogResult.OK)
+            return;
+
+        if (Exporter.AssimpExport(Flver, dialog.FileName, "collada"))
+            ShowInformationDialog("Successfully exported FLVER file to the Collada DAE format!");
     }
 
     private void ImportFLVERFile(bool prompt, string filePath, bool useOldImporter = false)
@@ -2694,7 +2676,7 @@ public partial class MainWindow : Form
                 break;
             case true when e.KeyCode == Keys.E:
                 e.SuppressKeyPress = true;
-                ExportFLVERAsDAE();
+                ExportToolStripMenuItemClicked(sender, e);
                 break;
             case true when e.Shift && e.KeyCode == Keys.I:
                 e.SuppressKeyPress = true;

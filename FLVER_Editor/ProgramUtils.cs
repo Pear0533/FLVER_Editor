@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 using ObjLoader.Loader.Data.Elements;
 using SoulsAssetPipeline.FLVERImporting;
@@ -42,6 +43,7 @@ internal static partial class Program
                     null => null,
                     _ => throw new ArgumentOutOfRangeException()
                 },
+            131099 => "AC6",
             _ => throw new InvalidDataException("Invalid Flver Version")
         };
     }
@@ -49,7 +51,8 @@ internal static partial class Program
     public static bool PopulateMaterials(FLVER2 flver)
     {
         string basePath = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "SapResources", "FLVER2MaterialInfoBank");
-        string bankFileName = $"Bank{GetFlverVersion(flver)}.xml";
+        string version = GetFlverVersion(flver);
+        string bankFileName = $"Bank{version}.xml";
         string xmlPath = Path.Join(basePath, bankFileName);
         try
         {
@@ -57,7 +60,7 @@ internal static partial class Program
         }
         catch
         {
-            MainWindow.ShowErrorDialog($"{bankFileName} could not be read.");
+            MainWindow.ShowErrorDialog($"Warning: {version} material bank could not be found.");
             return false;
         }
         MTDs = new List<string>(MaterialInfoBank.MaterialDefs.Keys.Where(x => !string.IsNullOrEmpty(x)).OrderBy(x => x));
@@ -68,20 +71,31 @@ internal static partial class Program
     {
         string[] nameParts = name.Split('|').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
         string trimmedName = nameParts.Length > 1 ? nameParts[0] : name;
+        List<FLVER2.Texture> textures = new List<FLVER2.Texture>();
+
+        if (MTDs.Count > 0)
+        {
+            textures = new List<FLVER2.Texture>(MaterialInfoBank.MaterialDefs[mtd].TextureChannels.Values.Select(x => new FLVER2.Texture { Type = x }));
+        }
+
         FLVER2.Material newMaterial = new()
         {
             Name = trimmedName,
             MTD = mtd,
             Unk18 = flver.Materials.Count,
-            Textures = new List<FLVER2.Texture>(MaterialInfoBank.MaterialDefs[mtd].TextureChannels.Values.Select(x => new FLVER2.Texture { Type = x }))
+            Textures = textures
         };
+        
         return newMaterial;
     }
 
     public static FLVER2.GXList GetGXListFromMTD(string mtd)
     {
         FLVER2.GXList gxList = new();
-        gxList.AddRange(MaterialInfoBank.GetDefaultGXItemsForMTD(mtd));
+        if (!string.IsNullOrEmpty(mtd))
+        {
+            gxList.AddRange(MaterialInfoBank.GetDefaultGXItemsForMTD(mtd));
+        }
         return gxList;
     }
 
