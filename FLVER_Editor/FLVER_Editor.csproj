@@ -14,9 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AssimpNet" Version="4.1.0" />
+    <PackageReference Include="AssimpNet" Version="5.0.0-beta1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Pfim" Version="0.10.3" />
+    <PackageReference Include="Pfim" Version="0.11.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SoulsAssetPipeline\SoulsAssetPipeline.csproj" />
+    <ProjectReference Include="..\SoulsFormats\SoulsFormats.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,12 +75,6 @@
     </Reference>
     <Reference Include="SharpDX.XInput">
       <HintPath>lib\MonogameWindows\SharpDX.XInput.dll</HintPath>
-    </Reference>
-    <Reference Include="SoulsAssetPipeline">
-      <HintPath>SoulsAssetPipeline.dll</HintPath>
-    </Reference>
-    <Reference Include="SoulsFormats">
-      <HintPath>SoulsFormats.dll</HintPath>
     </Reference>
     <Reference Include="TeximpNet">
       <HintPath>TeximpNet.dll</HintPath>
@@ -203,6 +202,9 @@
     <None Update="Resources\model\malebody.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="SapResources\FLVER2MaterialInfoBank\BankAC6.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="SapResources\FLVER2MaterialInfoBank\BankBB.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -222,9 +224,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SapResources\FLVER2MaterialInfoBank\BankSDT.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="SoulsFormats.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

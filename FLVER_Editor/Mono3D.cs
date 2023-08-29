@@ -372,7 +372,7 @@ namespace FLVER_Editor
         //Read dds file to bitmap
         private Bitmap ReadDdsFileToBitmap(string file)
         {
-            IImage image = Pfim.Pfim.FromFile(file);
+            IImage image = Pfimage.FromFile(file);
             PixelFormat format;
             switch (image.Format)
             {
@@ -417,7 +417,7 @@ namespace FLVER_Editor
 
         private Bitmap ReadDdsStreamToBitmap(Stream f)
         {
-            IImage image = Pfim.Pfim.FromStream(f);
+            IImage image = Pfimage.FromStream(f);
             PixelFormat format;
             switch (image.Format)
             {

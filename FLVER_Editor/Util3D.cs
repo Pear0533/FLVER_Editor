@@ -72,6 +72,32 @@ namespace FLVER_Editor
         }
 
         /// <summary>
+        /// Compute the final transform for a vector using the starting bone index and a list of all bones.
+        /// </summary>
+        /// <param name="bones">The list of bones to compute the transform from.</param>
+        /// <param name="startIndex">The starting bone index the vector was binded to.</param>
+        /// <returns>The final transform for a vector.</returns>
+        public static System.Numerics.Matrix4x4 ComputeTransform(List<FLVER.Bone> bones, int startIndex)
+        {
+            // For now this error checking will do, Im not sure if I should throw on this or not though
+            if (bones.Count < 1)
+                return new System.Numerics.Matrix4x4();
+
+            if (startIndex == -1)
+                startIndex = 0;
+
+            var bone = bones[startIndex];
+            var transform = bone.ComputeLocalTransform();
+            while (bone.ParentIndex != -1)
+            {
+                bone = bones[bone.ParentIndex];
+                transform = bone.ComputeLocalTransform() * transform;
+            }
+
+            return transform;
+        }
+
+        /// <summary>
         /// Computes the transform a vertex should have from its bone and that bone's Parent bones.
         /// </summary>
         /// <param name="model">A FLVER model.</param>
