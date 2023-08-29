@@ -1967,10 +1967,10 @@ public partial class MainWindow : Form
         UpdateUndoState();
         foreach (FLVER2.FaceSet fs in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].FaceSets))
         {
-            if (fs.Indices.Count >= 3)
+            for (int j = 0; j < fs.Indices.Count; j += 3)
             {
-                for (int j = 0; j < fs.Indices.Count; j += 3)
-                    (fs.Indices[j + 1], fs.Indices[j + 2]) = (fs.Indices[j + 2], fs.Indices[j + 1]);
+                if (j > fs.Indices.Count - 2) continue;
+                (fs.Indices[j + 1], fs.Indices[j + 2]) = (fs.Indices[j + 2], fs.Indices[j + 1]);
             }
         }
         UpdateMesh();
