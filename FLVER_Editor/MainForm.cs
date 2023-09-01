@@ -58,7 +58,7 @@ public partial class MainWindow : Form
     /// <summary>
     ///     The current version of the program.
     /// </summary>
-    private const string Version = "2.0";
+    private const string Version = "2.1";
 
     /// <summary>
     ///     The patreon support link for Pear.
@@ -1780,6 +1780,7 @@ public partial class MainWindow : Form
     private void BonesTableCellValueChanged(object sender, DataGridViewCellEventArgs e)
     {
         if (IsSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex)) return;
+        int index = bonesTable.FirstDisplayedScrollingRowIndex;
         try
         {
             UpdateUndoState();
@@ -1816,6 +1817,7 @@ public partial class MainWindow : Form
         catch { }
         UpdateUI();
         UpdateMesh();
+        bonesTable.FirstDisplayedScrollingRowIndex = index;
     }
 
     private static string ReplaceModelMask(string materialName, string newModelMaskStr)
@@ -1836,6 +1838,7 @@ public partial class MainWindow : Form
     private void MaterialsTableCellValueChanged(object sender, DataGridViewCellEventArgs e)
     {
         if (IsSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex)) return;
+        int index = materialsTable.FirstDisplayedScrollingRowIndex;
         try
         {
             UpdateUndoState();
@@ -1867,11 +1870,13 @@ public partial class MainWindow : Form
         UpdateUI();
         UpdateMesh();
         Viewer.RefreshTextures();
+        materialsTable.FirstDisplayedScrollingRowIndex = index;
     }
 
     private void TexturesTableCellValueChanged(object sender, DataGridViewCellEventArgs e)
     {
         if (IsSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex)) return;
+        int index = texturesTable.FirstDisplayedScrollingRowIndex;
         try
         {
             UpdateUndoState();
@@ -1889,6 +1894,7 @@ public partial class MainWindow : Form
         catch { }
         UpdateMesh();
         Viewer.RefreshTextures();
+        texturesTable.FirstDisplayedScrollingRowIndex = index;
     }
 
     public void DisableNewImporter()
@@ -1966,6 +1972,7 @@ public partial class MainWindow : Form
     private void MeshTableCellValueChanged(object sender, DataGridViewCellEventArgs e)
     {
         if (IsSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex) || e.ColumnIndex != 2) return;
+        int index = meshTable.FirstDisplayedScrollingRowIndex;
         try
         {
             UpdateUndoState();
@@ -1992,6 +1999,7 @@ public partial class MainWindow : Form
         catch { }
         UpdateUI();
         UpdateMesh();
+        meshTable.FirstDisplayedScrollingRowIndex = index;
     }
 
     private static void ReverseFaceSets()
@@ -2308,6 +2316,7 @@ public partial class MainWindow : Form
     private void DummiesTableCellValueChanged(object sender, DataGridViewCellEventArgs e)
     {
         if (IsSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex)) return;
+        int index = dummiesTable.FirstDisplayedScrollingRowIndex;
         try
         {
             UpdateUndoState();
@@ -2332,6 +2341,7 @@ public partial class MainWindow : Form
         catch { }
         UpdateUI();
         UpdateMesh();
+        dummiesTable.FirstDisplayedScrollingRowIndex = index;
     }
 
     private static decimal ToRadians(decimal degrees) { return degrees * (decimal)(Math.PI / 180); }
