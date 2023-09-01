@@ -385,7 +385,7 @@ namespace SoulsFormats
                 => br.ReadInt16() / 32767f;
 
             private static float ReadShortNormAC6(BinaryReaderEx br)
-                => (br.ReadInt16() / 127) - 1;
+                => (br.ReadInt16() - 127) / 127f;
 
             private static Vector3 ReadShortNormXYZAC6(BinaryReaderEx br)
                 => new Vector3(ReadShortNormAC6(br), ReadShortNormAC6(br), ReadShortNormAC6(br));
@@ -668,7 +668,12 @@ namespace SoulsFormats
                 => bw.WriteByte((byte)Math.Round(value * 127 + 127));
 
             private static void WriteShortNormAC6(BinaryWriterEx bw, float value)
-                => bw.WriteInt16((short)Math.Round((value + 1) * 127));
+                => bw.WriteInt16((short)Math.Round(value * 127 + 127));
+
+            /*
+            private static float ReadShortNormAC6(BinaryReaderEx br)
+                => (br.ReadInt16() - 127) / 127f;
+            */
 
             private static void WriteShortNormXYZAC6(BinaryWriterEx bw, Vector3 value)
             {
