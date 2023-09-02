@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -328,13 +329,13 @@ namespace FLVER_Editor
         {
             if (!MainWindow.TextureRefreshEnabled) return;
             string rawFilePath = Program.FilePath;
-            rawFilePath = rawFilePath.Replace("_1.", ".").Replace("_1_", "_");
-            rawFilePath = rawFilePath.Substring(0, rawFilePath.Length - 6);
-            var tpfFile = $"{rawFilePath}.tpf";
+            rawFilePath = Regex.Replace(Regex.Replace(rawFilePath, @"_\d\.", "."), @"_\d_", "_");
+            rawFilePath = rawFilePath[..rawFilePath.IndexOf('.', StringComparison.Ordinal)];
+            string tpfFilePath = $"{rawFilePath}.tpf";
             if (Program.Tpf != null) ReadTPFTextureEntries(Program.Tpf);
-            else if (File.Exists(tpfFile))
+            else if (File.Exists(tpfFilePath))
             {
-                Program.Tpf = TPF.Read(tpfFile);
+                Program.Tpf = TPF.Read(tpfFilePath);
                 ReadTPFTextureEntries(Program.Tpf);
             }
         }
@@ -522,7 +523,6 @@ namespace FLVER_Editor
             }
             Program.UseCheckingPoint = true;
             Program.CheckingPoint = new System.Numerics.Vector3(miniPoint.X, miniPoint.Y, miniPoint.Z);
-
             if (targetVertex.Normal != null) Program.CheckingPointNormal = new System.Numerics.Vector3(targetVertex.Normal.X, targetVertex.Normal.Y, targetVertex.Normal.Z);
             else Program.CheckingPointNormal = new System.Numerics.Vector3(0, 0, 0);
             MainWindow.UpdateMesh();
@@ -534,7 +534,8 @@ namespace FLVER_Editor
             {
                 string text = Program.FormatOutput(JsonConvert.SerializeObject(targetVertex));
                 int textLength = text.Length / 2;
-                MessageBox.Show($"Parent mesh index: {targetVertexInfo.MeshIndex}\nVertex index: {targetVertexInfo.VertexIndex}\n{text.Substring(0, textLength)}", "Vertex Info 1:");
+                MessageBox.Show($"Parent mesh index: {targetVertexInfo.MeshIndex}\nVertex index: {targetVertexInfo.VertexIndex}\n{text.Substring(0, textLength)}",
+                    "Vertex Info 1:");
                 MessageBox.Show(text.Substring(textLength, text.Length - textLength), "Vertex Info 2:");
             }
         }
@@ -601,7 +602,6 @@ namespace FLVER_Editor
             if (targetVertex.Normal != null) Program.CheckingPointNormal = new System.Numerics.Vector3(targetVertex.Normal.X, targetVertex.Normal.Y, targetVertex.Normal.Z);
             else Program.CheckingPointNormal = new System.Numerics.Vector3(0, 0, 0);
             MainWindow.UpdateMesh();
-
             if (targetVertex != null)
             {
                 string text = Program.FormatOutput(JsonConvert.SerializeObject(targetVertex));
@@ -728,7 +728,7 @@ namespace FLVER_Editor
                 }
                 Program.UseCheckingPoint = true;
                 Program.CheckingPoint = new System.Numerics.Vector3(miniPoint.X, miniPoint.Y, miniPoint.Z);
-                if (targetV.Normal != null)Program.CheckingPointNormal = new System.Numerics.Vector3(targetV.Normal.X, targetV.Normal.Y, targetV.Normal.Z);
+                if (targetV.Normal != null) Program.CheckingPointNormal = new System.Numerics.Vector3(targetV.Normal.X, targetV.Normal.Y, targetV.Normal.Z);
                 else Program.CheckingPointNormal = new System.Numerics.Vector3(0, 0, 0);
                 MainWindow.UpdateMesh();
                 if (targetV != null)
