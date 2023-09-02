@@ -3,14 +3,11 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using Assimp;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SoulsFormats;
 using static FLVER_Editor.Program;
-using PrimitiveType = Assimp.PrimitiveType;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using XnaVector3 = Microsoft.Xna.Framework.Vector3;
 
@@ -417,7 +414,6 @@ public partial class MainWindow : Form
     {
         if (MaterialInfoBank == null)
             return;
-
         IsMaleBodyModelImported = NewImporter.ImportFbxAsync(MaleBodyFlver, $"{ModelResourcePath}\\malebody.fbx");
         IsFemaleBodyModelImported = NewImporter.ImportFbxAsync(FemaleBodyFlver, $"{ModelResourcePath}\\femalebody.fbx");
     }
@@ -1211,9 +1207,8 @@ public partial class MainWindow : Form
         if (flverBndTpfEntry != null) FlverBnd.Files[FlverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Tpf.Write();
         else
         {
-            // TODO: The index suffix might not always be a value of 1, it could be 2, 3, etc., so we need to account for that
-            if (FlverFilePath.Contains(".flver")) Tpf.Write(FlverFilePath.Replace("_1.", ".").Replace("_1_", "_").Replace(".flver", ".tpf"));
-            else if (FlverFilePath.Contains(".flv")) Tpf.Write(FlverFilePath.Replace("_1.", ".").Replace("_1_", "_").Replace(".flv", ".tpf"));
+            if (FlverFilePath.Contains(".flver")) Tpf.Write(RemoveIndexSuffix(FlverFilePath).Replace(".flver", ".tpf"));
+            else if (FlverFilePath.Contains(".flv")) Tpf.Write(RemoveIndexSuffix(FlverFilePath).Replace(".flv", ".tpf"));
         }
     }
 
@@ -2173,10 +2168,8 @@ public partial class MainWindow : Form
         {
             FileName = $"{Path.GetFileNameWithoutExtension(FlverFilePath)}.dae", Filter = @"Collada DAE File (*.dae)|*.dae"
         };
-
         if (dialog.ShowDialog() != DialogResult.OK)
             return;
-
         if (Exporter.AssimpExport(Flver, dialog.FileName, "collada"))
             ShowInformationDialog("Successfully exported FLVER file to the Collada DAE format!");
     }

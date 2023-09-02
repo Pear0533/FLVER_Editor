@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 using ObjLoader.Loader.Data.Elements;
 using SoulsAssetPipeline.FLVERImporting;
 using SoulsFormats;
@@ -26,6 +26,11 @@ internal static partial class Program
     public static FLVER2MaterialInfoBank MaterialInfoBank;
 
     /*************** Basic Tools section *****************/
+
+    public static string RemoveIndexSuffix(string filePath)
+    {
+        return Regex.Replace(Regex.Replace(filePath, @"_\d\.", "."), @"_\d_", "_");
+    }
 
     public static string GetFlverVersion(FLVER2 flver)
     {
@@ -72,12 +77,10 @@ internal static partial class Program
         string[] nameParts = name.Split('|').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
         string trimmedName = nameParts.Length > 1 ? nameParts[0] : name;
         List<FLVER2.Texture> textures = new List<FLVER2.Texture>();
-
         if (MTDs.Count > 0)
         {
             textures = new List<FLVER2.Texture>(MaterialInfoBank.MaterialDefs[mtd].TextureChannels.Values.Select(x => new FLVER2.Texture { Type = x }));
         }
-
         FLVER2.Material newMaterial = new()
         {
             Name = trimmedName,
@@ -85,7 +88,6 @@ internal static partial class Program
             Unk18 = flver.Materials.Count,
             Textures = textures
         };
-        
         return newMaterial;
     }
 

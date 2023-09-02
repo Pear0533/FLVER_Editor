@@ -19,6 +19,7 @@ using Keys = Microsoft.Xna.Framework.Input.Keys;
 using MessageBox = System.Windows.Forms.MessageBox;
 using Point = System.Drawing.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using static FLVER_Editor.Program;
 
 namespace FLVER_Editor
 {
@@ -329,7 +330,7 @@ namespace FLVER_Editor
         {
             if (!MainWindow.TextureRefreshEnabled) return;
             string rawFilePath = Program.FilePath;
-            rawFilePath = Regex.Replace(Regex.Replace(rawFilePath, @"_\d\.", "."), @"_\d_", "_");
+            rawFilePath = RemoveIndexSuffix(rawFilePath);
             rawFilePath = rawFilePath[..rawFilePath.IndexOf('.', StringComparison.Ordinal)];
             string tpfFilePath = $"{rawFilePath}.tpf";
             if (Program.Tpf != null) ReadTPFTextureEntries(Program.Tpf);
