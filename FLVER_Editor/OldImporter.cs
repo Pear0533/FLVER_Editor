@@ -80,7 +80,7 @@ public static class OldImporter
                 },
                 DefaultBoneIndex = 0,
                 Dynamic = 1,
-                VertexBuffers = new List<FLVER2.VertexBuffer> { new(layoutCount - 1) },
+                VertexBuffers = new List<FLVER2.VertexBuffer> { new(layoutCount) },
                 Vertices = new List<FLVER.Vertex>()
             };
             List<List<int>> verticesBoneIndices = new();
