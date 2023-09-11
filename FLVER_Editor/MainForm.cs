@@ -1528,7 +1528,12 @@ public partial class MainWindow : Form
             case 4:
             case 5:
                 ScaleThing(thing, offset, totals, nbi, uniformScaleCheckbox.Checked, false, vectorModeCheckbox.Checked);
-                if (uniformScaleCheckbox.Checked) scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = newValue;
+                if (uniformScaleCheckbox.Checked)
+                {
+                    IsSettingDefaultInfo = true;
+                    scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = newValue;
+                    IsSettingDefaultInfo = false;
+                }
                 break;
             case 6:
             case 7:
