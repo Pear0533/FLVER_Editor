@@ -3028,6 +3028,7 @@ public partial class MainWindow : Form
     private void Undo()
     {
         if (CurrentUndoFlverListIndex < 0) return;
+        DeselectAllSelectedThings();
         UpdateRedoState();
         Flver = FLVER2.Read(UndoFlverList[CurrentUndoFlverListIndex].Write());
         UndoFlverList.RemoveAt(CurrentUndoFlverListIndex);
@@ -3041,6 +3042,7 @@ public partial class MainWindow : Form
     private void Redo()
     {
         if (CurrentRedoFlverListIndex < 0) return;
+        DeselectAllSelectedThings();
         UpdateUndoState(false);
         Flver = FLVER2.Read(RedoFlverList[CurrentRedoFlverListIndex].Write());
         RedoFlverList.RemoveAt(CurrentRedoFlverListIndex);
