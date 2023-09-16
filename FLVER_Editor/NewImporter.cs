@@ -13,7 +13,7 @@ namespace FLVER_Editor;
 
 public static class NewImporter
 {
-    private static MeshImportOptions GetDefaultImportOptions()
+    public static MeshImportOptions GetDefaultImportOptions()
     {
         return new MeshImportOptions(false, false, true, MTDs[0], MaterialInfoBank, false);
     }
