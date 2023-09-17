@@ -18,7 +18,6 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
 
     private void PopulateMeshSelector()
     {
-
         foreach (KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> mesh in Meshes)
             meshSelector.Items.Add(mesh.Key.Name);
         meshSelector.SelectedIndex = 0;
@@ -39,16 +38,14 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     private void ResetImportOptionsControls(bool enabled, bool clearMeshes = true)
     {
         createDefaultBoneCheckbox.Checked = false;
-        mirrorXCheckbox.Checked = false;
         mirrorZCheckbox.Checked = false;
-        skinnedMeshCheckbox.Checked = false;
+        staticMeshCheckbox.Checked = false;
         meshSelector.Enabled = enabled;
-        modifyAllMeshesCheckbox.Enabled = enabled;
+        affectAllMeshesCheckbox.Enabled = enabled;
         mtdSelector.Enabled = enabled;
         createDefaultBoneCheckbox.Enabled = enabled;
-        mirrorXCheckbox.Enabled = enabled;
         mirrorZCheckbox.Enabled = enabled;
-        skinnedMeshCheckbox.Enabled = enabled;
+        staticMeshCheckbox.Enabled = enabled;
         if (clearMeshes) Meshes.Clear();
         meshSelector.Items.Clear();
         mtdSelector.Items.Clear();
@@ -58,7 +55,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
 
     private void ModifyMesh(Action<KeyValuePair<FbxMeshDataViewModel, MeshImportOptions>> action)
     {
-        if (modifyAllMeshesCheckbox.Checked) Meshes.ToList().ForEach(action);
+        if (affectAllMeshesCheckbox.Checked) Meshes.ToList().ForEach(action);
         else action(GetSelectedMesh());
     }
 
@@ -73,7 +70,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
                 return;
             }
             ResetImportOptionsControls(true);
-            HasImportedModel = NewImporter.ImportFbxAsync(this, e);
+            HasImportedModel = Importer.ImportFbxAsync(this, e);
             if (!HasImportedModel) return;
             PopulateMeshSelector();
             PopulateMTDSelector();
@@ -83,15 +80,13 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> selectedMesh = GetSelectedMesh();
             mtdSelector.SelectedItem = selectedMesh.Value.MTD;
             createDefaultBoneCheckbox.Checked = selectedMesh.Value.CreateDefaultBone;
-            mirrorXCheckbox.Checked = selectedMesh.Value.MirrorX;
             mirrorZCheckbox.Checked = selectedMesh.Value.MirrorZ;
-            skinnedMeshCheckbox.Checked = selectedMesh.Value.IsSkinned;
+            staticMeshCheckbox.Checked = selectedMesh.Value.IsStatic;
         };
         mtdSelector.SelectedIndexChanged += (_, _) => { ModifyMesh(i => i.Value.MTD = mtdSelector.SelectedItem.ToString() ?? ""); };
         createDefaultBoneCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.CreateDefaultBone = createDefaultBoneCheckbox.Checked); };
-        mirrorXCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.MirrorX = mirrorXCheckbox.Checked); };
         mirrorZCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.MirrorZ = mirrorZCheckbox.Checked); };
-        skinnedMeshCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.IsSkinned = skinnedMeshCheckbox.Checked); };
+        staticMeshCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.IsStatic = staticMeshCheckbox.Checked); };
     }
 
     protected override void OnPaint(PaintEventArgs pe)

@@ -7,11 +7,11 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle7 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle8 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle9 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle10 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             ribbon = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
@@ -21,8 +21,7 @@
             modelToolStripMenuItem = new ToolStripMenuItem();
             exportToolStripMenuItem2 = new ToolStripMenuItem();
             mergeToolStripMenuItem2 = new ToolStripMenuItem();
-            importNewCtrlIToolStripMenuItem = new ToolStripMenuItem();
-            importToolStripMenuItem1 = new ToolStripMenuItem();
+            importCtrlIToolStripMenuItem = new ToolStripMenuItem();
             presetsFileToolStripMenuItem = new ToolStripMenuItem();
             browseToolStripMenuItem = new ToolStripMenuItem();
             materialsToolStripMenuItem2 = new ToolStripMenuItem();
@@ -262,7 +261,7 @@
             // 
             // modelToolStripMenuItem
             // 
-            modelToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { exportToolStripMenuItem2, mergeToolStripMenuItem2, importNewCtrlIToolStripMenuItem, importToolStripMenuItem1 });
+            modelToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { importCtrlIToolStripMenuItem, exportToolStripMenuItem2, mergeToolStripMenuItem2 });
             modelToolStripMenuItem.Name = "modelToolStripMenuItem";
             modelToolStripMenuItem.Size = new Size(190, 22);
             modelToolStripMenuItem.Text = "Model";
@@ -270,30 +269,23 @@
             // exportToolStripMenuItem2
             // 
             exportToolStripMenuItem2.Name = "exportToolStripMenuItem2";
-            exportToolStripMenuItem2.Size = new Size(213, 22);
+            exportToolStripMenuItem2.Size = new Size(180, 22);
             exportToolStripMenuItem2.Text = "Export (Ctrl+E)";
             exportToolStripMenuItem2.Click += ExportToolStripMenuItemClicked;
             // 
             // mergeToolStripMenuItem2
             // 
             mergeToolStripMenuItem2.Name = "mergeToolStripMenuItem2";
-            mergeToolStripMenuItem2.Size = new Size(213, 22);
+            mergeToolStripMenuItem2.Size = new Size(180, 22);
             mergeToolStripMenuItem2.Text = "Merge (Ctrl+M)";
             mergeToolStripMenuItem2.Click += MergeToolStripMenuItemClicked;
             // 
-            // importNewCtrlIToolStripMenuItem
+            // importCtrlIToolStripMenuItem
             // 
-            importNewCtrlIToolStripMenuItem.Name = "importNewCtrlIToolStripMenuItem";
-            importNewCtrlIToolStripMenuItem.Size = new Size(213, 22);
-            importNewCtrlIToolStripMenuItem.Text = "Import [New] (Ctrl+I)";
-            importNewCtrlIToolStripMenuItem.Click += ImportNewCtrlIToolStripMenuItem_Click;
-            // 
-            // importToolStripMenuItem1
-            // 
-            importToolStripMenuItem1.Name = "importToolStripMenuItem1";
-            importToolStripMenuItem1.Size = new Size(213, 22);
-            importToolStripMenuItem1.Text = "Import [Old] (Ctrl+Shift+I)";
-            importToolStripMenuItem1.Click += ImportOldToolStripMenuItemClicked;
+            importCtrlIToolStripMenuItem.Name = "importCtrlIToolStripMenuItem";
+            importCtrlIToolStripMenuItem.Size = new Size(180, 22);
+            importCtrlIToolStripMenuItem.Text = "Import (Ctrl+I)";
+            importCtrlIToolStripMenuItem.Click += ImportCtrlIToolStripMenuItem_Click;
             // 
             // presetsFileToolStripMenuItem
             // 
@@ -811,8 +803,8 @@
             meshTable.Name = "meshTable";
             meshTable.RowHeadersVisible = false;
             meshTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            meshTable.RowsDefaultCellStyle = dataGridViewCellStyle6;
             meshTable.Size = new Size(574, 184);
             meshTable.TabIndex = 11;
             meshTable.CellContentClick += MeshTable_CellContentClick;
@@ -924,9 +916,9 @@
             dummiesTable.Name = "dummiesTable";
             dummiesTable.RowHeadersVisible = false;
             dummiesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 168);
+            dataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle7;
+            dummiesTable.Size = new Size(573, 167);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1649,8 +1641,8 @@
             materialsTable.Name = "materialsTable";
             materialsTable.RowHeadersVisible = false;
             materialsTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle8.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle8;
             materialsTable.Size = new Size(546, 455);
             materialsTable.TabIndex = 6;
             materialsTable.CellContentClick += MaterialsTableButtonClicked;
@@ -1803,9 +1795,9 @@
             texturesTable.Name = "texturesTable";
             texturesTable.RowHeadersVisible = false;
             texturesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(608, 455);
+            dataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle9;
+            texturesTable.Size = new Size(607, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -1858,8 +1850,8 @@
             bonesTable.Name = "bonesTable";
             bonesTable.RowHeadersVisible = false;
             bonesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle10.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle10;
             bonesTable.Size = new Size(1192, 533);
             bonesTable.TabIndex = 0;
             bonesTable.CellValueChanged += BonesTableCellValueChanged;
@@ -2234,7 +2226,7 @@
         private System.Windows.Forms.ToolStripMenuItem natsuDragneelGeneralSupportToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rayanProgramIconArtworkToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem forsakenSilverFLVEREditor10ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importNewCtrlIToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importCtrlIToolStripMenuItem;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column19;

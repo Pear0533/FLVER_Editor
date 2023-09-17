@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Windows.Forms;
-using FbxDataExtractor;
+﻿using FbxDataExtractor;
 using FLVER_Editor.FbxImporter.ViewModels;
 using SoulsFormats;
 using Win32Types;
@@ -11,11 +6,11 @@ using static FLVER_Editor.Program;
 
 namespace FLVER_Editor;
 
-public static class NewImporter
+public static class Importer
 {
     public static MeshImportOptions GetDefaultImportOptions()
     {
-        return new MeshImportOptions(false, false, true, MTDs[0], MaterialInfoBank, false);
+        return new MeshImportOptions(false, false, MTDs[0], MaterialInfoBank, false);
     }
 
     private static void ShowImportErrorDialog(string fbxPath, Exception e)

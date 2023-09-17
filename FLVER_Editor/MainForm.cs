@@ -414,8 +414,8 @@ public partial class MainWindow : Form
     {
         if (MaterialInfoBank == null)
             return;
-        IsMaleBodyModelImported = NewImporter.ImportFbxAsync(MaleBodyFlver, $"{ModelResourcePath}\\malebody.fbx");
-        IsFemaleBodyModelImported = NewImporter.ImportFbxAsync(FemaleBodyFlver, $"{ModelResourcePath}\\femalebody.fbx");
+        IsMaleBodyModelImported = Importer.ImportFbxAsync(MaleBodyFlver, $"{ModelResourcePath}\\malebody.fbx");
+        IsFemaleBodyModelImported = Importer.ImportFbxAsync(FemaleBodyFlver, $"{ModelResourcePath}\\femalebody.fbx");
     }
 
     private void SetVersionString()
@@ -1900,7 +1900,7 @@ public partial class MainWindow : Form
 
     public void DisableNewImporter()
     {
-        importNewCtrlIToolStripMenuItem.Enabled = false;
+        importCtrlIToolStripMenuItem.Enabled = false;
     }
 
     public static void ShowInformationDialog(string str)
@@ -2172,7 +2172,8 @@ public partial class MainWindow : Form
     {
         SaveFileDialog dialog = new()
         {
-            FileName = $"{Path.GetFileNameWithoutExtension(FlverFilePath)}.dae", Filter = @"Collada DAE File (*.dae)|*.dae"
+            FileName = $"{Path.GetFileNameWithoutExtension(FlverFilePath)}.dae",
+            Filter = @"Collada DAE File (*.dae)|*.dae"
         };
         if (dialog.ShowDialog() != DialogResult.OK)
             return;
@@ -2180,30 +2181,18 @@ public partial class MainWindow : Form
             ShowInformationDialog("Successfully exported FLVER file to the Collada DAE format!");
     }
 
-    private void ImportFLVERFile(bool prompt, string filePath, bool useOldImporter = false)
+    private void ImportFLVERFile(bool prompt, string filePath)
     {
         switch (prompt)
         {
             case true:
             {
-                if (useOldImporter)
-                {
-                    OpenFileDialog dialog = new() { Filter = @"3D Object|*.dae;*.obj;*.fbx" };
-                    if (dialog.ShowDialog() != DialogResult.OK) return;
-                    UpdateUndoState();
-                    if (!OldImporter.ImportAssimp(Program.Flver, dialog.FileName)) return;
-                    ShowInformationDialog("Successfully imported model into the current FLVER file!");
-                }
-                else if (!NewImporter.ImportFbxWithDialogAsync(Flver)) return;
+                if (!Importer.ImportFbxWithDialogAsync(Flver)) return;
                 break;
             }
             default:
             {
-                if (useOldImporter)
-                {
-                    if (!OldImporter.ImportAssimp(Program.Flver, filePath)) return;
-                }
-                else if (!NewImporter.ImportFbxAsync(Flver, filePath)) return;
+                if (!Importer.ImportFbxAsync(Flver, filePath)) return;
                 break;
             }
         }
@@ -2212,11 +2201,6 @@ public partial class MainWindow : Form
         UpdateUI();
         UpdateMesh();
         Viewer.RefreshTextures();
-    }
-
-    private void ImportOldToolStripMenuItemClicked(object sender, EventArgs e)
-    {
-        ImportFLVERFile(true, "", true);
     }
 
     private void MergeFLVERFile()
@@ -2684,11 +2668,7 @@ public partial class MainWindow : Form
                 e.SuppressKeyPress = true;
                 ExportToolStripMenuItemClicked(sender, e);
                 break;
-            case true when e.Shift && e.KeyCode == Keys.I:
-                e.SuppressKeyPress = true;
-                ImportFLVERFile(true, "", true);
-                break;
-            case true when !e.Shift && e.KeyCode == Keys.I:
+            case true when e.KeyCode == Keys.I:
                 e.SuppressKeyPress = true;
                 ImportFLVERFile(true, "");
                 break;
@@ -2742,11 +2722,7 @@ public partial class MainWindow : Form
     private void TabWindowDragDrop(object sender, DragEventArgs e)
     {
         string filePath = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
-        if (filePath.EndsWith(".dae") || filePath.EndsWith(".obj"))
-        {
-            ImportFLVERFile(false, filePath, true);
-        }
-        else if (filePath.EndsWith(".fbx"))
+        if (filePath.EndsWith(".fbx"))
         {
             ImportFLVERFile(false, filePath);
         }
@@ -3169,7 +3145,7 @@ public partial class MainWindow : Form
         OpenBrowser("https://www.youtube.com/watch?v=pJlozwTuIyw");
     }
 
-    private void ImportNewCtrlIToolStripMenuItem_Click(object sender, EventArgs e)
+    private void ImportCtrlIToolStripMenuItem_Click(object sender, EventArgs e)
     {
         ImportFLVERFile(true, "");
     }

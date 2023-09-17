@@ -30,14 +30,13 @@
         {
             importOptionsGroupBox = new GroupBox();
             meshSelectorGroupBox = new GroupBox();
-            modifyAllMeshesCheckbox = new CheckBox();
+            mirrorZCheckbox = new CheckBox();
+            affectAllMeshesCheckbox = new CheckBox();
             meshSelector = new EasyCompletionComboBox();
-            skinnedMeshCheckbox = new CheckBox();
+            staticMeshCheckbox = new CheckBox();
             mtdSelectorGroupBox = new GroupBox();
             mtdSelector = new EasyCompletionComboBox();
             createDefaultBoneCheckbox = new CheckBox();
-            mirrorXCheckbox = new CheckBox();
-            mirrorZCheckbox = new CheckBox();
             importOptionsGroupBox.SuspendLayout();
             meshSelectorGroupBox.SuspendLayout();
             mtdSelectorGroupBox.SuspendLayout();
@@ -57,12 +56,11 @@
             // meshSelectorGroupBox
             // 
             meshSelectorGroupBox.Controls.Add(mirrorZCheckbox);
-            meshSelectorGroupBox.Controls.Add(modifyAllMeshesCheckbox);
+            meshSelectorGroupBox.Controls.Add(affectAllMeshesCheckbox);
             meshSelectorGroupBox.Controls.Add(meshSelector);
-            meshSelectorGroupBox.Controls.Add(skinnedMeshCheckbox);
+            meshSelectorGroupBox.Controls.Add(staticMeshCheckbox);
             meshSelectorGroupBox.Controls.Add(mtdSelectorGroupBox);
             meshSelectorGroupBox.Controls.Add(createDefaultBoneCheckbox);
-            meshSelectorGroupBox.Controls.Add(mirrorXCheckbox);
             meshSelectorGroupBox.Location = new Point(6, 21);
             meshSelectorGroupBox.Name = "meshSelectorGroupBox";
             meshSelectorGroupBox.Size = new Size(528, 136);
@@ -70,15 +68,25 @@
             meshSelectorGroupBox.TabStop = false;
             meshSelectorGroupBox.Text = "Mesh Selector";
             // 
-            // modifyAllMeshesCheckbox
+            // mirrorZCheckbox
             // 
-            modifyAllMeshesCheckbox.AutoSize = true;
-            modifyAllMeshesCheckbox.Location = new Point(398, 24);
-            modifyAllMeshesCheckbox.Name = "modifyAllMeshesCheckbox";
-            modifyAllMeshesCheckbox.Size = new Size(124, 19);
-            modifyAllMeshesCheckbox.TabIndex = 2;
-            modifyAllMeshesCheckbox.Text = "Modify All Meshes";
-            modifyAllMeshesCheckbox.UseVisualStyleBackColor = true;
+            mirrorZCheckbox.AutoSize = true;
+            mirrorZCheckbox.Location = new Point(138, 110);
+            mirrorZCheckbox.Name = "mirrorZCheckbox";
+            mirrorZCheckbox.Size = new Size(69, 19);
+            mirrorZCheckbox.TabIndex = 5;
+            mirrorZCheckbox.Text = "Mirror Z";
+            mirrorZCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // affectAllMeshesCheckbox
+            // 
+            affectAllMeshesCheckbox.AutoSize = true;
+            affectAllMeshesCheckbox.Location = new Point(398, 24);
+            affectAllMeshesCheckbox.Name = "affectAllMeshesCheckbox";
+            affectAllMeshesCheckbox.Size = new Size(118, 19);
+            affectAllMeshesCheckbox.TabIndex = 2;
+            affectAllMeshesCheckbox.Text = "Affect All Meshes";
+            affectAllMeshesCheckbox.UseVisualStyleBackColor = true;
             // 
             // meshSelector
             // 
@@ -88,15 +96,15 @@
             meshSelector.Size = new Size(384, 23);
             meshSelector.TabIndex = 0;
             // 
-            // skinnedMeshCheckbox
+            // staticMeshCheckbox
             // 
-            skinnedMeshCheckbox.AutoSize = true;
-            skinnedMeshCheckbox.Location = new Point(292, 110);
-            skinnedMeshCheckbox.Name = "skinnedMeshCheckbox";
-            skinnedMeshCheckbox.Size = new Size(100, 19);
-            skinnedMeshCheckbox.TabIndex = 4;
-            skinnedMeshCheckbox.Text = "Skinned Mesh";
-            skinnedMeshCheckbox.UseVisualStyleBackColor = true;
+            staticMeshCheckbox.AutoSize = true;
+            staticMeshCheckbox.Location = new Point(213, 110);
+            staticMeshCheckbox.Name = "staticMeshCheckbox";
+            staticMeshCheckbox.Size = new Size(87, 19);
+            staticMeshCheckbox.TabIndex = 4;
+            staticMeshCheckbox.Text = "Static Mesh";
+            staticMeshCheckbox.UseVisualStyleBackColor = true;
             // 
             // mtdSelectorGroupBox
             // 
@@ -127,26 +135,6 @@
             createDefaultBoneCheckbox.Text = "Create Default Bone";
             createDefaultBoneCheckbox.UseVisualStyleBackColor = true;
             // 
-            // mirrorXCheckbox
-            // 
-            mirrorXCheckbox.AutoSize = true;
-            mirrorXCheckbox.Location = new Point(142, 110);
-            mirrorXCheckbox.Name = "mirrorXCheckbox";
-            mirrorXCheckbox.Size = new Size(69, 19);
-            mirrorXCheckbox.TabIndex = 1;
-            mirrorXCheckbox.Text = "Mirror X";
-            mirrorXCheckbox.UseVisualStyleBackColor = true;
-            // 
-            // mirrorZCheckbox
-            // 
-            mirrorZCheckbox.AutoSize = true;
-            mirrorZCheckbox.Location = new Point(217, 110);
-            mirrorZCheckbox.Name = "mirrorZCheckbox";
-            mirrorZCheckbox.Size = new Size(69, 19);
-            mirrorZCheckbox.TabIndex = 5;
-            mirrorZCheckbox.Text = "Mirror Z";
-            mirrorZCheckbox.UseVisualStyleBackColor = true;
-            // 
             // ImporterOpenFileDialog
             // 
             Controls.Add(importOptionsGroupBox);
@@ -160,14 +148,13 @@
 
         #endregion
         private System.Windows.Forms.GroupBox importOptionsGroupBox;
-        private System.Windows.Forms.CheckBox mirrorXCheckbox;
         private System.Windows.Forms.GroupBox mtdSelectorGroupBox;
-        private System.Windows.Forms.CheckBox skinnedMeshCheckbox;
+        private System.Windows.Forms.CheckBox staticMeshCheckbox;
         private System.Windows.Forms.CheckBox createDefaultBoneCheckbox;
         private System.Windows.Forms.GroupBox meshSelectorGroupBox;
         private EasyCompletionComboBox meshSelector;
         private EasyCompletionComboBox mtdSelector;
-        private System.Windows.Forms.CheckBox modifyAllMeshesCheckbox;
+        private System.Windows.Forms.CheckBox affectAllMeshesCheckbox;
         private System.Windows.Forms.CheckBox mirrorZCheckbox;
     }
 }
