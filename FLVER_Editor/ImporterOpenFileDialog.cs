@@ -40,6 +40,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         createDefaultBoneCheckbox.Checked = false;
         mirrorZCheckbox.Checked = false;
         staticMeshCheckbox.Checked = false;
+        boneWeightsMessage.Visible = false;
         meshSelector.Enabled = enabled;
         affectAllMeshesCheckbox.Enabled = enabled;
         mtdSelector.Enabled = enabled;
@@ -57,6 +58,17 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     {
         if (affectAllMeshesCheckbox.Checked) Meshes.ToList().ForEach(action);
         else action(GetSelectedMesh());
+    }
+
+    private void AssertBoneWeightsMessageVisibility()
+    {
+        bool doesSupportBoneWeights = FbxMeshDataViewModel.DoesSupportBoneWeights(mtdSelector.SelectedItem.ToString() ?? "");
+        if (staticMeshCheckbox.Checked || doesSupportBoneWeights) boneWeightsMessage.Visible = false;
+        else
+        {
+            boneWeightsMessage.Visible = true;
+            boneWeightsMessage.Text = @"Warning: The selected MTD does not support bone weights!";
+        }
     }
 
     private void AssignEventHandlers()
@@ -83,10 +95,18 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             mirrorZCheckbox.Checked = selectedMesh.Value.MirrorZ;
             staticMeshCheckbox.Checked = selectedMesh.Value.IsStatic;
         };
-        mtdSelector.SelectedIndexChanged += (_, _) => { ModifyMesh(i => i.Value.MTD = mtdSelector.SelectedItem.ToString() ?? ""); };
+        mtdSelector.SelectedIndexChanged += (_, _) =>
+        {
+            ModifyMesh(i => i.Value.MTD = mtdSelector.SelectedItem.ToString() ?? "");
+            AssertBoneWeightsMessageVisibility();
+        };
         createDefaultBoneCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.CreateDefaultBone = createDefaultBoneCheckbox.Checked); };
         mirrorZCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.MirrorZ = mirrorZCheckbox.Checked); };
-        staticMeshCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.IsStatic = staticMeshCheckbox.Checked); };
+        staticMeshCheckbox.CheckedChanged += (_, _) =>
+        {
+            ModifyMesh(i => i.Value.IsStatic = staticMeshCheckbox.Checked);
+            AssertBoneWeightsMessageVisibility();
+        };
     }
 
     protected override void OnPaint(PaintEventArgs pe)

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 using FbxDataExtractor;
 using SoulsAssetPipeline.FLVERImporting;
 using SoulsFormats;
@@ -28,6 +24,14 @@ public class FbxMeshDataViewModel
 
     private List<int> VertexIndices { get; }
 
+    public static bool DoesSupportBoneWeights(string mtd)
+    {
+        List<FLVER2MaterialInfoBank.VertexBufferDeclaration> acceptableBufferDeclarations =
+            MaterialInfoBank.MaterialDefs[mtd].AcceptableVertexBufferDeclarations;
+        List<FLVER2.BufferLayout> bufferLayouts = acceptableBufferDeclarations[0].Buffers;
+        return bufferLayouts.Any(x => x.Any(y => y.Semantic == FLVER.LayoutSemantic.BoneWeights));
+    }
+
     public void ToFlverMesh(FLVER2 flver, MeshImportOptions options)
     {
         FLVER2.Material newMaterial = GetMaterialFromMTD(flver, Name, options.MTD);
@@ -51,7 +55,7 @@ public class FbxMeshDataViewModel
         {
             VertexBuffers = layoutIndices.Select(x => new FLVER2.VertexBuffer(x)).ToList(),
             MaterialIndex = flver.Materials.Count,
-            Dynamic = (byte)(!options.IsStatic && bufferLayouts.Any(x => x.Any(y => y.Semantic == FLVER.LayoutSemantic.BoneWeights)) ? 1 : 0)
+            Dynamic = (byte)(!options.IsStatic && DoesSupportBoneWeights(options.MTD) ? 1 : 0)
         };
         int defaultBoneIndex = flver.Bones.IndexOf(flver.Bones.FirstOrDefault(x => x.Name == Name));
         if (defaultBoneIndex == -1)

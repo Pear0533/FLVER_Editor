@@ -37,6 +37,7 @@
             mtdSelectorGroupBox = new GroupBox();
             mtdSelector = new EasyCompletionComboBox();
             createDefaultBoneCheckbox = new CheckBox();
+            boneWeightsMessage = new Label();
             importOptionsGroupBox.SuspendLayout();
             meshSelectorGroupBox.SuspendLayout();
             mtdSelectorGroupBox.SuspendLayout();
@@ -135,8 +136,19 @@
             createDefaultBoneCheckbox.Text = "Create Default Bone";
             createDefaultBoneCheckbox.UseVisualStyleBackColor = true;
             // 
+            // boneWeightsMessage
+            // 
+            boneWeightsMessage.AutoSize = true;
+            boneWeightsMessage.ForeColor = Color.Red;
+            boneWeightsMessage.Location = new Point(9, 172);
+            boneWeightsMessage.Name = "boneWeightsMessage";
+            boneWeightsMessage.Size = new Size(21, 15);
+            boneWeightsMessage.TabIndex = 2;
+            boneWeightsMessage.Text = "{0}";
+            // 
             // ImporterOpenFileDialog
             // 
+            Controls.Add(boneWeightsMessage);
             Controls.Add(importOptionsGroupBox);
             Name = "ImporterOpenFileDialog";
             importOptionsGroupBox.ResumeLayout(false);
@@ -144,6 +156,7 @@
             meshSelectorGroupBox.PerformLayout();
             mtdSelectorGroupBox.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -156,5 +169,6 @@
         private EasyCompletionComboBox mtdSelector;
         private System.Windows.Forms.CheckBox affectAllMeshesCheckbox;
         private System.Windows.Forms.CheckBox mirrorZCheckbox;
+        private Label boneWeightsMessage;
     }
 }
