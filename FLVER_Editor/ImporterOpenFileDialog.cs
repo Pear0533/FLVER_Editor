@@ -61,11 +61,20 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     private void AssertBoneWeightsMessageVisibility()
     {
         bool doesSupportBoneWeights = FbxMeshDataViewModel.DoesSupportBoneWeights(mtdSelector.SelectedItem.ToString() ?? "");
-        if (staticMeshCheckbox.Checked || doesSupportBoneWeights) boneWeightsMessage.Visible = false;
-        else
+        bool meshHasBoneWeights = GetSelectedMesh().Key.VertexData.All(i => i.BoneWeights.Any(x => x != 0));
+        switch (staticMeshCheckbox.Checked)
         {
-            boneWeightsMessage.Visible = true;
-            boneWeightsMessage.Text = @"Warning: The selected MTD does not support bone weights!";
+            case false when !doesSupportBoneWeights:
+                boneWeightsMessage.Visible = true;
+                boneWeightsMessage.Text = @"Warning: The selected MTD does not support bone weights!";
+                break;
+            case false when !meshHasBoneWeights:
+                boneWeightsMessage.Visible = true;
+                boneWeightsMessage.Text = @"Warning: The selected mesh does not have bone weights!";
+                break;
+            default:
+                boneWeightsMessage.Visible = false;
+                break;
         }
     }
 

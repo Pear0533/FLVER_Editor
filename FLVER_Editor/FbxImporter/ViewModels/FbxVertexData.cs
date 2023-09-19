@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace FLVER_Editor.FbxImporter.ViewModels;
+﻿namespace FLVER_Editor.FbxImporter.ViewModels;
 
 public class FbxVertexData
 {

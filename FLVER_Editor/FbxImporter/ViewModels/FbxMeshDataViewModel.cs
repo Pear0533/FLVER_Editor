@@ -20,7 +20,7 @@ public class FbxMeshDataViewModel
 
     public string Name { get; set; }
 
-    private List<FbxVertexData> VertexData { get; }
+    public List<FbxVertexData> VertexData { get; }
 
     private List<int> VertexIndices { get; }
 
