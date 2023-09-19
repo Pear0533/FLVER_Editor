@@ -38,14 +38,12 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     private void ResetImportOptionsControls(bool enabled, bool clearMeshes = true)
     {
         createDefaultBoneCheckbox.Checked = false;
-        mirrorZCheckbox.Checked = false;
         staticMeshCheckbox.Checked = false;
         boneWeightsMessage.Visible = false;
         meshSelector.Enabled = enabled;
         affectAllMeshesCheckbox.Enabled = enabled;
         mtdSelector.Enabled = enabled;
         createDefaultBoneCheckbox.Enabled = enabled;
-        mirrorZCheckbox.Enabled = enabled;
         staticMeshCheckbox.Enabled = enabled;
         if (clearMeshes) Meshes.Clear();
         meshSelector.Items.Clear();
@@ -92,7 +90,6 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> selectedMesh = GetSelectedMesh();
             mtdSelector.SelectedItem = selectedMesh.Value.MTD;
             createDefaultBoneCheckbox.Checked = selectedMesh.Value.CreateDefaultBone;
-            mirrorZCheckbox.Checked = selectedMesh.Value.MirrorZ;
             staticMeshCheckbox.Checked = selectedMesh.Value.IsStatic;
         };
         mtdSelector.SelectedIndexChanged += (_, _) =>
@@ -101,7 +98,6 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             AssertBoneWeightsMessageVisibility();
         };
         createDefaultBoneCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.CreateDefaultBone = createDefaultBoneCheckbox.Checked); };
-        mirrorZCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.MirrorZ = mirrorZCheckbox.Checked); };
         staticMeshCheckbox.CheckedChanged += (_, _) =>
         {
             ModifyMesh(i => i.Value.IsStatic = staticMeshCheckbox.Checked);

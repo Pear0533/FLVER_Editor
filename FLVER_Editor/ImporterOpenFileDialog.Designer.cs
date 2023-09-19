@@ -30,7 +30,6 @@
         {
             importOptionsGroupBox = new GroupBox();
             meshSelectorGroupBox = new GroupBox();
-            mirrorZCheckbox = new CheckBox();
             affectAllMeshesCheckbox = new CheckBox();
             meshSelector = new EasyCompletionComboBox();
             staticMeshCheckbox = new CheckBox();
@@ -56,7 +55,6 @@
             // 
             // meshSelectorGroupBox
             // 
-            meshSelectorGroupBox.Controls.Add(mirrorZCheckbox);
             meshSelectorGroupBox.Controls.Add(affectAllMeshesCheckbox);
             meshSelectorGroupBox.Controls.Add(meshSelector);
             meshSelectorGroupBox.Controls.Add(staticMeshCheckbox);
@@ -68,16 +66,6 @@
             meshSelectorGroupBox.TabIndex = 5;
             meshSelectorGroupBox.TabStop = false;
             meshSelectorGroupBox.Text = "Mesh Selector";
-            // 
-            // mirrorZCheckbox
-            // 
-            mirrorZCheckbox.AutoSize = true;
-            mirrorZCheckbox.Location = new Point(138, 110);
-            mirrorZCheckbox.Name = "mirrorZCheckbox";
-            mirrorZCheckbox.Size = new Size(69, 19);
-            mirrorZCheckbox.TabIndex = 5;
-            mirrorZCheckbox.Text = "Mirror Z";
-            mirrorZCheckbox.UseVisualStyleBackColor = true;
             // 
             // affectAllMeshesCheckbox
             // 
@@ -100,7 +88,7 @@
             // staticMeshCheckbox
             // 
             staticMeshCheckbox.AutoSize = true;
-            staticMeshCheckbox.Location = new Point(213, 110);
+            staticMeshCheckbox.Location = new Point(140, 110);
             staticMeshCheckbox.Name = "staticMeshCheckbox";
             staticMeshCheckbox.Size = new Size(87, 19);
             staticMeshCheckbox.TabIndex = 4;
@@ -168,7 +156,6 @@
         private EasyCompletionComboBox meshSelector;
         private EasyCompletionComboBox mtdSelector;
         private System.Windows.Forms.CheckBox affectAllMeshesCheckbox;
-        private System.Windows.Forms.CheckBox mirrorZCheckbox;
         private Label boneWeightsMessage;
     }
 }

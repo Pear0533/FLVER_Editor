@@ -83,24 +83,20 @@ public class FbxMeshDataViewModel
                 boneIndices[j] = boneIndex;
                 boneWeights[j] = orderedWeightData[j].Item2;
             }
-            int zSign = options.MirrorZ ? -1 : 1;
             FLVER.Vertex newVertex = new()
             {
-                Position = new Vector3(vertexData.Position[0], vertexData.Position[1], zSign * vertexData.Position[2]),
-                Normal = new Vector3(vertexData.Normal[0], vertexData.Normal[1], zSign * vertexData.Normal[2]),
+                Position = new Vector3(vertexData.Position[0], vertexData.Position[1], vertexData.Position[2]),
+                Normal = new Vector3(vertexData.Normal[0], vertexData.Normal[1], vertexData.Normal[2]),
                 Bitangent = new Vector4(-1, -1, -1, -1),
-                Tangents = new List<Vector4>(vertexData.Tangents.Select(x => new Vector4(x[0], x[1], zSign * x[2], x[3]))),
-                UVs = new List<Vector3>(vertexData.UVs.Select(x => new Vector3(x[0], 1 - x[1], zSign * x[2]))),
+                Tangents = new List<Vector4>(vertexData.Tangents.Select(x => new Vector4(x[0], x[1], x[2], x[3]))),
+                UVs = new List<Vector3>(vertexData.UVs.Select(x => new Vector3(x[0], 1 - x[1], x[2]))),
                 BoneIndices = boneIndices,
                 BoneWeights = boneWeights
             };
             PadVertex(newVertex, bufferLayouts);
             newMesh.Vertices.Add(newVertex);
         }
-        if (!options.MirrorZ)
-        {
-            FlipFaceSet();
-        }
+        FlipFaceSet();
         FLVER2.FaceSet.FSFlags[] faceSetFlags =
         {
             FLVER2.FaceSet.FSFlags.None,
