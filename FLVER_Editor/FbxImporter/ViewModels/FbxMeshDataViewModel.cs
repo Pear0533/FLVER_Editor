@@ -123,9 +123,10 @@ public class FbxMeshDataViewModel
         }
         newMesh.FaceSets.AddRange(faceSets);
         newMesh.MaterialIndex = flver.Materials.Count;
-        newMaterial.GXIndex = flver.GXLists.Count;
+        // TODO: Double-check
+        if (flver.GXLists.Count > 0) newMaterial.GXIndex = flver.GXLists.Count;
         flver.Materials.Add(newMaterial);
-        flver.GXLists.Add(gxList);
+        if (flver.GXLists.Count > 0) flver.GXLists.Add(gxList);
         flver.Meshes.Add(newMesh);
     }
 
