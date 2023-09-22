@@ -36,7 +36,8 @@ internal static partial class Program
     {
         return flver.Header.Version switch
         {
-            131084 => "DS1",
+            // TODO: Find the version used for DS1
+            131084 => "DS1R",
             131088 => "DS2",
             131092 => "DS3",
             131098 when flver.Materials.Any(x => x.MTD.Contains(".matxml")) => "ER",
