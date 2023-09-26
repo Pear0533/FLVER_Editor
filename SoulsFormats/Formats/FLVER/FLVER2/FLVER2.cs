@@ -96,8 +96,9 @@ namespace SoulsFormats
             br.BigEndian = Header.BigEndian;
 
             // Gundam Unicorn: 0x20005, 0x2000E
-            // ACVD: 
+            // ACV: 20009
             // DS1: 2000B (PS3 o0700/1), 2000C, 2000D
+            // ACVD: 2000F
             // DS2 NT: 2000F, 20010
             // DS2: 20010, 20009 (armor 9320)
             // SFS: 20010
@@ -124,7 +125,7 @@ namespace SoulsFormats
             int vertexIndicesSize = br.AssertByte(0, 8, 16, 32);
             Header.Unicode = br.ReadBoolean();
             Header.Unk4A = br.ReadBoolean();
-            br.AssertByte(0);
+            Header.Unk4B = br.ReadBoolean();
 
             Header.Unk4C = br.ReadInt32();
 
@@ -254,7 +255,7 @@ namespace SoulsFormats
             bw.WriteByte(vertexIndicesSize);
             bw.WriteBoolean(Header.Unicode);
             bw.WriteBoolean(Header.Unk4A);
-            bw.WriteByte(0);
+            bw.WriteBoolean(Header.Unk4B);
 
             bw.WriteInt32(Header.Unk4C);
 
@@ -463,6 +464,11 @@ namespace SoulsFormats
             /// Unknown.
             /// </summary>
             public bool Unk4A { get; set; }
+
+            /// <summary>
+            /// Unknown.
+            /// </summary>
+            public bool Unk4B { get; set; }
 
             /// <summary>
             /// Unknown; I believe this is the primitive restart constant, but I'm not certain.

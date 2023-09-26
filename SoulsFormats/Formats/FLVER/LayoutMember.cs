@@ -47,6 +47,7 @@ namespace SoulsFormats
                         case LayoutType.Byte4C:
                         case LayoutType.UV:
                         case LayoutType.Byte4E:
+                        case LayoutType.Byte4D:
                             return 4;
 
                         case LayoutType.Float2:
