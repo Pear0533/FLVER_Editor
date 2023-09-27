@@ -61,7 +61,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     private void AssertBoneWeightsMessageVisibility()
     {
         bool doesSupportBoneWeights = FbxMeshDataViewModel.DoesSupportBoneWeights(mtdSelector.SelectedItem.ToString() ?? "");
-        bool meshHasBoneWeights = GetSelectedMesh().Key.VertexData.All(i => i.BoneWeights.Any(x => x != 0));
+        bool meshHasBoneWeights = GetSelectedMesh().Key.Data.VertexData.All(i => i.BoneWeights.Any(x => x != 0));
         switch (staticMeshCheckbox.Checked)
         {
             case false when !doesSupportBoneWeights:
@@ -99,7 +99,9 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> selectedMesh = GetSelectedMesh();
             mtdSelector.SelectedItem = selectedMesh.Value.MTD;
             createDefaultBoneCheckbox.Checked = selectedMesh.Value.CreateDefaultBone;
-            staticMeshCheckbox.Checked = selectedMesh.Value.IsStatic;
+
+            // TODO: Replace with new Weighting Modes
+            //staticMeshCheckbox.Checked = selectedMesh.Value.IsStatic;
         };
         mtdSelector.SelectedIndexChanged += (_, _) =>
         {
@@ -107,11 +109,15 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             AssertBoneWeightsMessageVisibility();
         };
         createDefaultBoneCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.CreateDefaultBone = createDefaultBoneCheckbox.Checked); };
+
+        // TODO: Replace with new Weighting Modes
+        /*
         staticMeshCheckbox.CheckedChanged += (_, _) =>
         {
             ModifyMesh(i => i.Value.IsStatic = staticMeshCheckbox.Checked);
             AssertBoneWeightsMessageVisibility();
         };
+        */
     }
 
     protected override void OnPaint(PaintEventArgs pe)
