@@ -1,11 +1,11 @@
 {
   "runtimeTarget": {
-    "name": "net7.0",
+    "name": "net6.0",
     "signature": ""
   },
   "compilationOptions": {},
   "targets": {
-    "net7.0": {
+    "net6.0": {
       "FbxDataExtractor/1.0.0": {
         "runtime": {
           "FbxDataExtractor.dll": {}
