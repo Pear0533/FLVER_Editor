@@ -17,54 +17,50 @@ public class FbxMeshDataViewModel
         {
             Name = "Unknown";
         }
-
         if (nameParts.Length > 1) MTD = nameParts[1];
     }
 
-    public string Name { get; set; }
+    public string Name { get; }
 
     public string? MTD { get; }
 
     public FbxMeshData Data { get; }
 
-    public static bool DoesSupportBoneWeights(string mtd)
+    public static bool DoesSupportBoneWeights(string mtd, string weightingMode)
     {
         List<FLVER2MaterialInfoBank.VertexBufferDeclaration> acceptableBufferDeclarations =
             MaterialInfoBank.MaterialDefs[mtd].AcceptableVertexBufferDeclarations;
         List<FLVER2.BufferLayout> bufferLayouts = acceptableBufferDeclarations[0].Buffers;
-        return bufferLayouts.Any(x => x.Any(y => y.Semantic == FLVER.LayoutSemantic.BoneWeights));
+        return weightingMode != "Skin" || bufferLayouts.SelectMany(x => x).Any(x => x.Semantic == FLVER.LayoutSemantic.BoneWeights);
     }
 
-    public void ToFlverMesh(FLVER2 flver, MeshImportOptions options)
+    public FlverMeshViewModel ToFlverMesh(FLVER2 flver, MeshImportOptions options)
     {
-        FLVER2.Material newMaterial = GetMaterialFromMTD(flver, Name, options.MTD);
-        // TODO: Modify BufferLayouts when applying a material preset
-        FLVER2.GXList gxList = GetGXListFromMTD(options.MTD);
-
+        FLVER2.Material newMaterial = new()
+        {
+            Name = Name,
+            MTD = options.MTD,
+            Textures = new List<FLVER2.Texture>(options.MaterialInfoBank.MaterialDefs[options.MTD].TextureChannels
+                .Values.Select(x => new FLVER2.Texture { Type = x }))
+        };
+        FLVER2.GXList gxList = new();
+        gxList.AddRange(options.MaterialInfoBank.GetDefaultGXItemsForMTD(options.MTD));
         List<FLVER2MaterialInfoBank.VertexBufferDeclaration> acceptableBufferDeclarations =
-            MaterialInfoBank.MaterialDefs[options.MTD].AcceptableVertexBufferDeclarations;
-
+            options.MaterialInfoBank.MaterialDefs[options.MTD].AcceptableVertexBufferDeclarations;
         List<FLVER2.BufferLayout> bufferLayouts = acceptableBufferDeclarations[0].Buffers;
         if (acceptableBufferDeclarations.Count > 1)
         {
             List<FLVER2.BufferLayout>? matchingLayouts = acceptableBufferDeclarations.FirstOrDefault(x =>
-                x.Buffers.SelectMany(y => y).Count(y => y.Semantic == FLVER.LayoutSemantic.Tangent) >=
-                Data.VertexData[0].Tangents.Count)?.Buffers;
-
+                x.Buffers.SelectMany(y => y).Count(y => y.Semantic == FLVER.LayoutSemantic.Tangent) >= Data.VertexData[0].Tangents.Count)?.Buffers;
             if (matchingLayouts != null) bufferLayouts = matchingLayouts;
         }
-
         AdjustBoneIndexBufferSize(flver, bufferLayouts);
-
         List<int> layoutIndices = GetLayoutIndices(flver, bufferLayouts);
-
         FLVER2.Mesh newMesh = new()
         {
             VertexBuffers = layoutIndices.Select(x => new FLVER2.VertexBuffer(x)).ToList(),
-            MaterialIndex = flver.Materials.Count,
             Dynamic = (byte)(options.Weighting == WeightingMode.Skin ? 1 : 0)
         };
-
         int defaultBoneIndex = flver.Bones.IndexOf(flver.Bones.FirstOrDefault(x => x.Name == Name));
         if (defaultBoneIndex == -1)
         {
@@ -78,24 +74,20 @@ public class FbxMeshDataViewModel
                 defaultBoneIndex = 0;
             }
         }
-
         newMesh.DefaultBoneIndex = defaultBoneIndex;
-
-        HashSet<string> missingBones = new();
+        bool foundWeights = false;
         foreach (FbxVertexData vertexData in Data.VertexData)
         {
             FLVER.Vertex newVertex = new()
             {
-                Position = vertexData.Position,
-                Normal = vertexData.Normal,
-                Bitangent = new Vector4(-1, -1, -1, -1),
-                Tangents = new List<Vector4>(vertexData.Tangents.Select(x => x)),
-                UVs = new List<Vector3>(vertexData.UVs.Select(x => new Vector3(x.X, 1 - x.Y, 0.0f))),
+                Position = vertexData.Position with { Z = vertexData.Position.Z },
+                Normal = vertexData.Normal with { Z = vertexData.Normal.Z },
+                Bitangent = vertexData.Bitangent,
+                Tangents = vertexData.Tangents.Select(x => x with { Z = x.Z }).ToList(),
+                UVs = vertexData.UVs.Select(x => new Vector3(x.X, 1 - x.Y, 0.0f)).ToList(),
                 // Fbx uses RGBA, SF uses ARGB
-                Colors = new List<FLVER.VertexColor>(vertexData.Colors.Select(x =>
-                    new FLVER.VertexColor(x.W, x.X, x.Y, x.Z))),
+                Colors = vertexData.Colors.Select(x => new FLVER.VertexColor(x.W, x.X, x.Y, x.Z)).ToList(),
             };
-
             FLVER.VertexBoneIndices boneIndices = new();
             FLVER.VertexBoneWeights boneWeights = new();
             List<(string Name, float Weight)> orderedWeightData = vertexData.BoneNames
@@ -104,16 +96,11 @@ public class FbxMeshDataViewModel
             {
                 (string boneName, float boneWeight) = orderedWeightData[j];
                 int boneIndex = flver.Bones.IndexOf(flver.Bones.FirstOrDefault(x => x.Name == boneName));
-                if (boneIndex == -1)
-                {
-                    missingBones.Add(boneName);
-                    boneIndex = 0;
-                }
-
+                if (boneIndex == -1) boneIndex = 0;
+                if (!foundWeights && boneWeight > 0) foundWeights = true;
                 boneIndices[j] = boneIndex;
                 boneWeights[j] = boneWeight;
             }
-
             if (options.Weighting == WeightingMode.Single)
             {
                 newVertex.NormalW = boneWeights[0] > 0 ? boneIndices[0] : -1;
@@ -123,11 +110,9 @@ public class FbxMeshDataViewModel
                 newVertex.BoneIndices = boneIndices;
                 newVertex.BoneWeights = boneWeights;
             }
-
             PadVertex(newVertex, bufferLayouts);
             newMesh.Vertices.Add(newVertex);
         }
-        FlipFaceSet();
         FLVER2.FaceSet.FSFlags[] faceSetFlags =
         {
             FLVER2.FaceSet.FSFlags.None,
@@ -149,12 +134,8 @@ public class FbxMeshDataViewModel
             });
         }
         newMesh.FaceSets.AddRange(faceSets);
-        newMesh.MaterialIndex = flver.Materials.Count;
-        if (flver.GXLists.Count > 0) newMaterial.GXIndex = flver.GXLists.Count;
-        else newMaterial.GXIndex = -1;
-        flver.Materials.Add(newMaterial);
-        if (flver.GXLists.Count > 0) flver.GXLists.Add(gxList);
-        flver.Meshes.Add(newMesh);
+        FlverMeshViewModel output = new(newMesh, newMaterial, gxList);
+        return output;
     }
 
     private static void AdjustBoneIndexBufferSize(FLVER2 flver, List<FLVER2.BufferLayout> bufferLayouts)
@@ -162,7 +143,8 @@ public class FbxMeshDataViewModel
         if (flver.Bones.Count <= byte.MaxValue) return;
         foreach (FLVER2.BufferLayout bufferLayout in bufferLayouts)
         {
-            foreach (FLVER.LayoutMember layoutMember in bufferLayout.Where(x => x.Semantic == FLVER.LayoutSemantic.BoneIndices))
+            foreach (FLVER.LayoutMember layoutMember in bufferLayout.Where(x =>
+                         x.Semantic == FLVER.LayoutSemantic.BoneIndices))
             {
                 layoutMember.Type = FLVER.LayoutType.ShortBoneIndices;
             }
@@ -178,7 +160,8 @@ public class FbxMeshDataViewModel
             .Where(x => paddedProperties.Contains(x.Semantic));
         foreach (FLVER.LayoutMember layoutMember in layoutMembers)
         {
-            bool isDouble = layoutMember is { Semantic: FLVER.LayoutSemantic.UV, Type: FLVER.LayoutType.Float4 or FLVER.LayoutType.UVPair };
+            bool isDouble = layoutMember is
+                { Semantic: FLVER.LayoutSemantic.UV, Type: FLVER.LayoutType.Float4 or FLVER.LayoutType.UVPair };
             int count = isDouble ? 2 : 1;
             if (usageCounts.ContainsKey(layoutMember.Semantic))
             {
@@ -189,9 +172,9 @@ public class FbxMeshDataViewModel
                 usageCounts.Add(layoutMember.Semantic, count);
             }
         }
-        if (usageCounts.ContainsKey(FLVER.LayoutSemantic.Tangent))
+        if (usageCounts.TryGetValue(FLVER.LayoutSemantic.Tangent, out int tangentCount))
         {
-            int missingTangentCount = usageCounts[FLVER.LayoutSemantic.Tangent] - vertex.Tangents.Count;
+            int missingTangentCount = tangentCount - vertex.Tangents.Count;
             for (int i = 0; i < missingTangentCount; i++)
             {
                 vertex.Tangents.Add(Vector4.Zero);
@@ -228,24 +211,13 @@ public class FbxMeshDataViewModel
                     indices.Add(i);
                     break;
                 }
-
                 if (i != flver.BufferLayouts.Count - 1) continue;
-
                 indices.Add(i + 1);
                 flver.BufferLayouts.Add(referenceBufferLayout);
                 break;
             }
         }
         return indices;
-    }
-
-    private void FlipFaceSet()
-    {
-        for (int i = 0; i < Data.VertexIndices.Count; i += 3)
-        {
-            (Data.VertexIndices[i + 1], Data.VertexIndices[i + 2]) =
-                (Data.VertexIndices[i + 2], Data.VertexIndices[i + 1]);
-        }
     }
 
     private class LayoutMemberComparer : IEqualityComparer<FLVER.LayoutMember>
@@ -256,13 +228,21 @@ public class FbxMeshDataViewModel
             if (x is null) return false;
             if (y is null) return false;
             if (x.GetType() != y.GetType()) return false;
-            return x.Unk00 == y.Unk00 && x.Type == y.Type && x.Semantic == y.Semantic && x.Index == y.Index &&
-                   x.Size == y.Size;
+            return x.Unk00 == y.Unk00 && x.Type == y.Type && x.Semantic == y.Semantic && x.Index == y.Index && x.Size == y.Size;
         }
 
         public int GetHashCode(FLVER.LayoutMember obj)
         {
             return HashCode.Combine(obj.Unk00, (int)obj.Type, (int)obj.Semantic, obj.Index, obj.Size);
+        }
+    }
+
+    private void FlipFaceSet()
+    {
+        for (int i = 0; i < Data.VertexIndices.Count; i += 3)
+        {
+            (Data.VertexIndices[i + 1], Data.VertexIndices[i + 2]) =
+                (Data.VertexIndices[i + 2], Data.VertexIndices[i + 1]);
         }
     }
 }

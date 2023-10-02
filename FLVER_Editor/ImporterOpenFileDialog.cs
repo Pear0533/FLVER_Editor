@@ -16,6 +16,13 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         ResetImportOptionsControls(false);
     }
 
+    private void PopulateWeightingModeSelector()
+    {
+        foreach (WeightingMode weightingMode in WeightingMode.Values)
+            weightingModeSelector.Items.Add(weightingMode.Name);
+        weightingModeSelector.SelectedIndex = 0;
+    }
+
     private void PopulateMeshSelector()
     {
         foreach (KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> mesh in Meshes)
@@ -43,6 +50,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         meshSelector.Enabled = enabled;
         affectAllMeshesCheckbox.Enabled = enabled;
         mtdSelector.Enabled = enabled;
+        weightingModeSelector.Enabled = enabled;
         createDefaultBoneCheckbox.Enabled = enabled;
         staticMeshCheckbox.Enabled = enabled;
         if (clearMeshes) Meshes.Clear();
@@ -60,7 +68,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
 
     private void AssertBoneWeightsMessageVisibility()
     {
-        bool doesSupportBoneWeights = FbxMeshDataViewModel.DoesSupportBoneWeights(mtdSelector.SelectedItem.ToString() ?? "");
+        bool doesSupportBoneWeights = FbxMeshDataViewModel.DoesSupportBoneWeights(mtdSelector.SelectedItem.ToString()!, weightingModeSelector.SelectedItem.ToString()!);
         bool meshHasBoneWeights = GetSelectedMesh().Key.Data.VertexData.All(i => i.BoneWeights.Any(x => x != 0));
         switch (staticMeshCheckbox.Checked)
         {
@@ -93,15 +101,14 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             if (!HasImportedModel) return;
             PopulateMeshSelector();
             PopulateMTDSelector();
+            PopulateWeightingModeSelector();
         };
         meshSelector.SelectedIndexChanged += (_, _) =>
         {
             KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> selectedMesh = GetSelectedMesh();
             mtdSelector.SelectedItem = selectedMesh.Value.MTD;
             createDefaultBoneCheckbox.Checked = selectedMesh.Value.CreateDefaultBone;
-
-            // TODO: Replace with new Weighting Modes
-            //staticMeshCheckbox.Checked = selectedMesh.Value.IsStatic;
+            weightingModeSelector.SelectedItem = selectedMesh.Value.Weighting;
         };
         mtdSelector.SelectedIndexChanged += (_, _) =>
         {
@@ -109,15 +116,10 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             AssertBoneWeightsMessageVisibility();
         };
         createDefaultBoneCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.CreateDefaultBone = createDefaultBoneCheckbox.Checked); };
-
-        // TODO: Replace with new Weighting Modes
-        /*
-        staticMeshCheckbox.CheckedChanged += (_, _) =>
+        weightingModeSelector.SelectedIndexChanged += (_, _) =>
         {
-            ModifyMesh(i => i.Value.IsStatic = staticMeshCheckbox.Checked);
-            AssertBoneWeightsMessageVisibility();
+            ModifyMesh(i => i.Value.Weighting = (WeightingMode)Enum.Parse(typeof(WeightingMode), weightingModeSelector.SelectedItem.ToString()!));
         };
-        */
     }
 
     protected override void OnPaint(PaintEventArgs pe)

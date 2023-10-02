@@ -30,15 +30,18 @@
         {
             importOptionsGroupBox = new GroupBox();
             meshSelectorGroupBox = new GroupBox();
+            weightingModeGroupBox = new GroupBox();
+            weightingModeSelector = new ComboBox();
+            createDefaultBoneCheckbox = new CheckBox();
+            staticMeshCheckbox = new CheckBox();
             affectAllMeshesCheckbox = new CheckBox();
             meshSelector = new EasyCompletionComboBox();
-            staticMeshCheckbox = new CheckBox();
             mtdSelectorGroupBox = new GroupBox();
             mtdSelector = new EasyCompletionComboBox();
-            createDefaultBoneCheckbox = new CheckBox();
             boneWeightsMessage = new Label();
             importOptionsGroupBox.SuspendLayout();
             meshSelectorGroupBox.SuspendLayout();
+            weightingModeGroupBox.SuspendLayout();
             mtdSelectorGroupBox.SuspendLayout();
             SuspendLayout();
             // 
@@ -48,24 +51,63 @@
             importOptionsGroupBox.Controls.Add(meshSelectorGroupBox);
             importOptionsGroupBox.Location = new Point(9, 6);
             importOptionsGroupBox.Name = "importOptionsGroupBox";
-            importOptionsGroupBox.Size = new Size(540, 163);
+            importOptionsGroupBox.Size = new Size(540, 194);
             importOptionsGroupBox.TabIndex = 1;
             importOptionsGroupBox.TabStop = false;
             importOptionsGroupBox.Text = "Import Options";
             // 
             // meshSelectorGroupBox
             // 
+            meshSelectorGroupBox.Controls.Add(weightingModeGroupBox);
+            meshSelectorGroupBox.Controls.Add(createDefaultBoneCheckbox);
+            meshSelectorGroupBox.Controls.Add(staticMeshCheckbox);
             meshSelectorGroupBox.Controls.Add(affectAllMeshesCheckbox);
             meshSelectorGroupBox.Controls.Add(meshSelector);
-            meshSelectorGroupBox.Controls.Add(staticMeshCheckbox);
             meshSelectorGroupBox.Controls.Add(mtdSelectorGroupBox);
-            meshSelectorGroupBox.Controls.Add(createDefaultBoneCheckbox);
             meshSelectorGroupBox.Location = new Point(6, 21);
             meshSelectorGroupBox.Name = "meshSelectorGroupBox";
-            meshSelectorGroupBox.Size = new Size(528, 136);
+            meshSelectorGroupBox.Size = new Size(528, 167);
             meshSelectorGroupBox.TabIndex = 5;
             meshSelectorGroupBox.TabStop = false;
             meshSelectorGroupBox.Text = "Mesh Selector";
+            // 
+            // weightingModeGroupBox
+            // 
+            weightingModeGroupBox.Controls.Add(weightingModeSelector);
+            weightingModeGroupBox.Location = new Point(6, 106);
+            weightingModeGroupBox.Name = "weightingModeGroupBox";
+            weightingModeGroupBox.Size = new Size(200, 54);
+            weightingModeGroupBox.TabIndex = 4;
+            weightingModeGroupBox.TabStop = false;
+            weightingModeGroupBox.Text = "Weighting Mode";
+            // 
+            // weightingModeSelector
+            // 
+            weightingModeSelector.FormattingEnabled = true;
+            weightingModeSelector.Location = new Point(6, 22);
+            weightingModeSelector.Name = "weightingModeSelector";
+            weightingModeSelector.Size = new Size(188, 23);
+            weightingModeSelector.TabIndex = 3;
+            // 
+            // createDefaultBoneCheckbox
+            // 
+            createDefaultBoneCheckbox.AutoSize = true;
+            createDefaultBoneCheckbox.Location = new Point(218, 126);
+            createDefaultBoneCheckbox.Name = "createDefaultBoneCheckbox";
+            createDefaultBoneCheckbox.Size = new Size(131, 19);
+            createDefaultBoneCheckbox.TabIndex = 0;
+            createDefaultBoneCheckbox.Text = "Create Default Bone";
+            createDefaultBoneCheckbox.UseVisualStyleBackColor = true;
+            // 
+            // staticMeshCheckbox
+            // 
+            staticMeshCheckbox.AutoSize = true;
+            staticMeshCheckbox.Location = new Point(351, 126);
+            staticMeshCheckbox.Name = "staticMeshCheckbox";
+            staticMeshCheckbox.Size = new Size(87, 19);
+            staticMeshCheckbox.TabIndex = 4;
+            staticMeshCheckbox.Text = "Static Mesh";
+            staticMeshCheckbox.UseVisualStyleBackColor = true;
             // 
             // affectAllMeshesCheckbox
             // 
@@ -84,16 +126,6 @@
             meshSelector.Name = "meshSelector";
             meshSelector.Size = new Size(384, 23);
             meshSelector.TabIndex = 0;
-            // 
-            // staticMeshCheckbox
-            // 
-            staticMeshCheckbox.AutoSize = true;
-            staticMeshCheckbox.Location = new Point(140, 110);
-            staticMeshCheckbox.Name = "staticMeshCheckbox";
-            staticMeshCheckbox.Size = new Size(87, 19);
-            staticMeshCheckbox.TabIndex = 4;
-            staticMeshCheckbox.Text = "Static Mesh";
-            staticMeshCheckbox.UseVisualStyleBackColor = true;
             // 
             // mtdSelectorGroupBox
             // 
@@ -114,21 +146,11 @@
             mtdSelector.Size = new Size(504, 23);
             mtdSelector.TabIndex = 1;
             // 
-            // createDefaultBoneCheckbox
-            // 
-            createDefaultBoneCheckbox.AutoSize = true;
-            createDefaultBoneCheckbox.Location = new Point(7, 110);
-            createDefaultBoneCheckbox.Name = "createDefaultBoneCheckbox";
-            createDefaultBoneCheckbox.Size = new Size(131, 19);
-            createDefaultBoneCheckbox.TabIndex = 0;
-            createDefaultBoneCheckbox.Text = "Create Default Bone";
-            createDefaultBoneCheckbox.UseVisualStyleBackColor = true;
-            // 
             // boneWeightsMessage
             // 
             boneWeightsMessage.AutoSize = true;
             boneWeightsMessage.ForeColor = Color.Red;
-            boneWeightsMessage.Location = new Point(9, 172);
+            boneWeightsMessage.Location = new Point(9, 202);
             boneWeightsMessage.Name = "boneWeightsMessage";
             boneWeightsMessage.Size = new Size(21, 15);
             boneWeightsMessage.TabIndex = 2;
@@ -142,20 +164,23 @@
             importOptionsGroupBox.ResumeLayout(false);
             meshSelectorGroupBox.ResumeLayout(false);
             meshSelectorGroupBox.PerformLayout();
+            weightingModeGroupBox.ResumeLayout(false);
             mtdSelectorGroupBox.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-        private System.Windows.Forms.GroupBox importOptionsGroupBox;
-        private System.Windows.Forms.GroupBox mtdSelectorGroupBox;
-        private System.Windows.Forms.CheckBox staticMeshCheckbox;
-        private System.Windows.Forms.CheckBox createDefaultBoneCheckbox;
-        private System.Windows.Forms.GroupBox meshSelectorGroupBox;
+        private GroupBox importOptionsGroupBox;
+        private GroupBox mtdSelectorGroupBox;
+        private CheckBox staticMeshCheckbox;
+        private CheckBox createDefaultBoneCheckbox;
+        private GroupBox meshSelectorGroupBox;
         private EasyCompletionComboBox meshSelector;
         private EasyCompletionComboBox mtdSelector;
-        private System.Windows.Forms.CheckBox affectAllMeshesCheckbox;
+        private CheckBox affectAllMeshesCheckbox;
         private Label boneWeightsMessage;
+        private GroupBox weightingModeGroupBox;
+        private ComboBox weightingModeSelector;
     }
 }

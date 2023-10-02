@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json;
 
 namespace FLVER_Editor.FbxImporter.ViewModels;
 
