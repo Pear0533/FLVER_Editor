@@ -40,6 +40,18 @@ public class WeightingMode
         Static
     };
 
+    public static WeightingMode Convert(string value)
+    {
+        WeightingMode mode = value switch
+        {
+            "Static" => Static,
+            "Single" => Single,
+            "Skin" => Skin,
+            _ => Skin
+        };
+        return mode;
+    }
+
     public string Name { get; init; }
     public string Description { get; init; }
 }

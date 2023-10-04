@@ -20,6 +20,7 @@ public static class Importer
 
     public static bool ImportFbxAsync(ImporterOpenFileDialog dialog, string fbxPath)
     {
+        // TODO: Implement exception handling for models which have no binormals
         try
         {
             FbxMeshData.Import(fbxPath).ForEach(x => dialog.Meshes.Add(new FbxMeshDataViewModel(x), GetDefaultImportOptions()));

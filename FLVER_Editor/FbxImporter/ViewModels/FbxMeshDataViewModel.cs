@@ -31,10 +31,11 @@ public class FbxMeshDataViewModel
         List<FLVER2MaterialInfoBank.VertexBufferDeclaration> acceptableBufferDeclarations =
             MaterialInfoBank.MaterialDefs[mtd].AcceptableVertexBufferDeclarations;
         List<FLVER2.BufferLayout> bufferLayouts = acceptableBufferDeclarations[0].Buffers;
-        return weightingMode != "Skin" || bufferLayouts.SelectMany(x => x).Any(x => x.Semantic == FLVER.LayoutSemantic.BoneWeights);
+        bool result = bufferLayouts.SelectMany(x => x).Any(x => x.Semantic == FLVER.LayoutSemantic.BoneWeights);
+        return weightingMode != "Skin" || result;
     }
 
-    public FlverMeshViewModel ToFlverMesh(FLVER2 flver, MeshImportOptions options)
+    public void ToFlverMesh(FLVER2 flver, MeshImportOptions options)
     {
         FLVER2.Material newMaterial = new()
         {
@@ -134,8 +135,11 @@ public class FbxMeshDataViewModel
             });
         }
         newMesh.FaceSets.AddRange(faceSets);
-        FlverMeshViewModel output = new(newMesh, newMaterial, gxList);
-        return output;
+        newMesh.MaterialIndex = flver.Materials.Count;
+        newMaterial.GXIndex = flver.GXLists.Count;
+        flver.Materials.Add(newMaterial);
+        flver.GXLists.Add(gxList);
+        flver.Meshes.Add(newMesh);
     }
 
     private static void AdjustBoneIndexBufferSize(FLVER2 flver, List<FLVER2.BufferLayout> bufferLayouts)
@@ -234,15 +238,6 @@ public class FbxMeshDataViewModel
         public int GetHashCode(FLVER.LayoutMember obj)
         {
             return HashCode.Combine(obj.Unk00, (int)obj.Type, (int)obj.Semantic, obj.Index, obj.Size);
-        }
-    }
-
-    private void FlipFaceSet()
-    {
-        for (int i = 0; i < Data.VertexIndices.Count; i += 3)
-        {
-            (Data.VertexIndices[i + 1], Data.VertexIndices[i + 2]) =
-                (Data.VertexIndices[i + 2], Data.VertexIndices[i + 1]);
         }
     }
 }

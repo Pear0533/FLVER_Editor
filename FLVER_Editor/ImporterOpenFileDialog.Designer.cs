@@ -33,7 +33,6 @@
             weightingModeGroupBox = new GroupBox();
             weightingModeSelector = new ComboBox();
             createDefaultBoneCheckbox = new CheckBox();
-            staticMeshCheckbox = new CheckBox();
             affectAllMeshesCheckbox = new CheckBox();
             meshSelector = new EasyCompletionComboBox();
             mtdSelectorGroupBox = new GroupBox();
@@ -51,7 +50,7 @@
             importOptionsGroupBox.Controls.Add(meshSelectorGroupBox);
             importOptionsGroupBox.Location = new Point(9, 6);
             importOptionsGroupBox.Name = "importOptionsGroupBox";
-            importOptionsGroupBox.Size = new Size(540, 194);
+            importOptionsGroupBox.Size = new Size(540, 162);
             importOptionsGroupBox.TabIndex = 1;
             importOptionsGroupBox.TabStop = false;
             importOptionsGroupBox.Text = "Import Options";
@@ -60,13 +59,12 @@
             // 
             meshSelectorGroupBox.Controls.Add(weightingModeGroupBox);
             meshSelectorGroupBox.Controls.Add(createDefaultBoneCheckbox);
-            meshSelectorGroupBox.Controls.Add(staticMeshCheckbox);
             meshSelectorGroupBox.Controls.Add(affectAllMeshesCheckbox);
             meshSelectorGroupBox.Controls.Add(meshSelector);
             meshSelectorGroupBox.Controls.Add(mtdSelectorGroupBox);
             meshSelectorGroupBox.Location = new Point(6, 21);
             meshSelectorGroupBox.Name = "meshSelectorGroupBox";
-            meshSelectorGroupBox.Size = new Size(528, 167);
+            meshSelectorGroupBox.Size = new Size(528, 135);
             meshSelectorGroupBox.TabIndex = 5;
             meshSelectorGroupBox.TabStop = false;
             meshSelectorGroupBox.Text = "Mesh Selector";
@@ -74,9 +72,9 @@
             // weightingModeGroupBox
             // 
             weightingModeGroupBox.Controls.Add(weightingModeSelector);
-            weightingModeGroupBox.Location = new Point(6, 106);
+            weightingModeGroupBox.Location = new Point(267, 51);
             weightingModeGroupBox.Name = "weightingModeGroupBox";
-            weightingModeGroupBox.Size = new Size(200, 54);
+            weightingModeGroupBox.Size = new Size(255, 54);
             weightingModeGroupBox.TabIndex = 4;
             weightingModeGroupBox.TabStop = false;
             weightingModeGroupBox.Text = "Weighting Mode";
@@ -86,33 +84,23 @@
             weightingModeSelector.FormattingEnabled = true;
             weightingModeSelector.Location = new Point(6, 22);
             weightingModeSelector.Name = "weightingModeSelector";
-            weightingModeSelector.Size = new Size(188, 23);
+            weightingModeSelector.Size = new Size(243, 23);
             weightingModeSelector.TabIndex = 3;
             // 
             // createDefaultBoneCheckbox
             // 
             createDefaultBoneCheckbox.AutoSize = true;
-            createDefaultBoneCheckbox.Location = new Point(218, 126);
+            createDefaultBoneCheckbox.Location = new Point(6, 109);
             createDefaultBoneCheckbox.Name = "createDefaultBoneCheckbox";
             createDefaultBoneCheckbox.Size = new Size(131, 19);
             createDefaultBoneCheckbox.TabIndex = 0;
             createDefaultBoneCheckbox.Text = "Create Default Bone";
             createDefaultBoneCheckbox.UseVisualStyleBackColor = true;
             // 
-            // staticMeshCheckbox
-            // 
-            staticMeshCheckbox.AutoSize = true;
-            staticMeshCheckbox.Location = new Point(351, 126);
-            staticMeshCheckbox.Name = "staticMeshCheckbox";
-            staticMeshCheckbox.Size = new Size(87, 19);
-            staticMeshCheckbox.TabIndex = 4;
-            staticMeshCheckbox.Text = "Static Mesh";
-            staticMeshCheckbox.UseVisualStyleBackColor = true;
-            // 
             // affectAllMeshesCheckbox
             // 
             affectAllMeshesCheckbox.AutoSize = true;
-            affectAllMeshesCheckbox.Location = new Point(398, 24);
+            affectAllMeshesCheckbox.Location = new Point(404, 24);
             affectAllMeshesCheckbox.Name = "affectAllMeshesCheckbox";
             affectAllMeshesCheckbox.Size = new Size(118, 19);
             affectAllMeshesCheckbox.TabIndex = 2;
@@ -122,7 +110,7 @@
             // meshSelector
             // 
             meshSelector.FormattingEnabled = true;
-            meshSelector.Location = new Point(6, 22);
+            meshSelector.Location = new Point(12, 22);
             meshSelector.Name = "meshSelector";
             meshSelector.Size = new Size(384, 23);
             meshSelector.TabIndex = 0;
@@ -133,7 +121,7 @@
             mtdSelectorGroupBox.Controls.Add(mtdSelector);
             mtdSelectorGroupBox.Location = new Point(6, 51);
             mtdSelectorGroupBox.Name = "mtdSelectorGroupBox";
-            mtdSelectorGroupBox.Size = new Size(516, 54);
+            mtdSelectorGroupBox.Size = new Size(255, 54);
             mtdSelectorGroupBox.TabIndex = 3;
             mtdSelectorGroupBox.TabStop = false;
             mtdSelectorGroupBox.Text = "MTD Selector";
@@ -143,14 +131,14 @@
             mtdSelector.FormattingEnabled = true;
             mtdSelector.Location = new Point(6, 22);
             mtdSelector.Name = "mtdSelector";
-            mtdSelector.Size = new Size(504, 23);
+            mtdSelector.Size = new Size(243, 23);
             mtdSelector.TabIndex = 1;
             // 
             // boneWeightsMessage
             // 
             boneWeightsMessage.AutoSize = true;
             boneWeightsMessage.ForeColor = Color.Red;
-            boneWeightsMessage.Location = new Point(9, 202);
+            boneWeightsMessage.Location = new Point(9, 170);
             boneWeightsMessage.Name = "boneWeightsMessage";
             boneWeightsMessage.Size = new Size(21, 15);
             boneWeightsMessage.TabIndex = 2;
@@ -173,7 +161,6 @@
         #endregion
         private GroupBox importOptionsGroupBox;
         private GroupBox mtdSelectorGroupBox;
-        private CheckBox staticMeshCheckbox;
         private CheckBox createDefaultBoneCheckbox;
         private GroupBox meshSelectorGroupBox;
         private EasyCompletionComboBox meshSelector;

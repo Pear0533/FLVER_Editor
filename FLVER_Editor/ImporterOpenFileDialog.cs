@@ -45,14 +45,12 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     private void ResetImportOptionsControls(bool enabled, bool clearMeshes = true)
     {
         createDefaultBoneCheckbox.Checked = false;
-        staticMeshCheckbox.Checked = false;
         boneWeightsMessage.Visible = false;
         meshSelector.Enabled = enabled;
         affectAllMeshesCheckbox.Enabled = enabled;
         mtdSelector.Enabled = enabled;
         weightingModeSelector.Enabled = enabled;
         createDefaultBoneCheckbox.Enabled = enabled;
-        staticMeshCheckbox.Enabled = enabled;
         if (clearMeshes) Meshes.Clear();
         meshSelector.Items.Clear();
         mtdSelector.Items.Clear();
@@ -68,9 +66,11 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
 
     private void AssertBoneWeightsMessageVisibility()
     {
-        bool doesSupportBoneWeights = FbxMeshDataViewModel.DoesSupportBoneWeights(mtdSelector.SelectedItem.ToString()!, weightingModeSelector.SelectedItem.ToString()!);
+        bool doesSupportBoneWeights =
+            FbxMeshDataViewModel.DoesSupportBoneWeights(mtdSelector.SelectedItem?.ToString() ?? "", weightingModeSelector.SelectedItem?.ToString() ?? "");
         bool meshHasBoneWeights = GetSelectedMesh().Key.Data.VertexData.All(i => i.BoneWeights.Any(x => x != 0));
-        switch (staticMeshCheckbox.Checked)
+        // TODO: Change all equality comparisons to use the actual WeightingMode
+        switch (weightingModeSelector.SelectedItem?.ToString() == "Static")
         {
             case false when !doesSupportBoneWeights:
                 boneWeightsMessage.Visible = true;
@@ -118,7 +118,8 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         createDefaultBoneCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.CreateDefaultBone = createDefaultBoneCheckbox.Checked); };
         weightingModeSelector.SelectedIndexChanged += (_, _) =>
         {
-            ModifyMesh(i => i.Value.Weighting = (WeightingMode)Enum.Parse(typeof(WeightingMode), weightingModeSelector.SelectedItem.ToString()!));
+            ModifyMesh(i => i.Value.Weighting = WeightingMode.Convert(weightingModeSelector.SelectedItem.ToString()!));
+            AssertBoneWeightsMessageVisibility();
         };
     }
 
