@@ -26,13 +26,12 @@ public class FbxMeshDataViewModel
 
     public FbxMeshData Data { get; }
 
-    public static bool DoesSupportBoneWeights(string mtd, string weightingMode)
+    public static bool DoesSupportBoneWeights(string? mtd, WeightingMode mode)
     {
         List<FLVER2MaterialInfoBank.VertexBufferDeclaration> acceptableBufferDeclarations =
-            MaterialInfoBank.MaterialDefs[mtd].AcceptableVertexBufferDeclarations;
+            MaterialInfoBank.MaterialDefs[mtd ?? ""].AcceptableVertexBufferDeclarations;
         List<FLVER2.BufferLayout> bufferLayouts = acceptableBufferDeclarations[0].Buffers;
-        bool result = bufferLayouts.SelectMany(x => x).Any(x => x.Semantic == FLVER.LayoutSemantic.BoneWeights);
-        return weightingMode != "Skin" || result;
+        return mode != WeightingMode.Skin || bufferLayouts.SelectMany(x => x).Any(x => x.Semantic == FLVER.LayoutSemantic.BoneWeights);
     }
 
     public void ToFlverMesh(FLVER2 flver, MeshImportOptions options)

@@ -66,11 +66,10 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
 
     private void AssertBoneWeightsMessageVisibility()
     {
-        bool doesSupportBoneWeights =
-            FbxMeshDataViewModel.DoesSupportBoneWeights(mtdSelector.SelectedItem?.ToString() ?? "", weightingModeSelector.SelectedItem?.ToString() ?? "");
+        WeightingMode mode = WeightingMode.Convert(weightingModeSelector.SelectedItem?.ToString());
+        bool doesSupportBoneWeights = FbxMeshDataViewModel.DoesSupportBoneWeights(mtdSelector.SelectedItem?.ToString(), mode);
         bool meshHasBoneWeights = GetSelectedMesh().Key.Data.VertexData.All(i => i.BoneWeights.Any(x => x != 0));
-        // TODO: Change all equality comparisons to use the actual WeightingMode
-        switch (weightingModeSelector.SelectedItem?.ToString() == "Static")
+        switch (mode == WeightingMode.Static)
         {
             case false when !doesSupportBoneWeights:
                 boneWeightsMessage.Visible = true;
