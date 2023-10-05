@@ -113,6 +113,7 @@ public class FbxMeshDataViewModel
             PadVertex(newVertex, bufferLayouts);
             newMesh.Vertices.Add(newVertex);
         }
+        FlipFaceSet();
         FLVER2.FaceSet.FSFlags[] faceSetFlags =
         {
             FLVER2.FaceSet.FSFlags.None,
@@ -237,6 +238,15 @@ public class FbxMeshDataViewModel
         public int GetHashCode(FLVER.LayoutMember obj)
         {
             return HashCode.Combine(obj.Unk00, (int)obj.Type, (int)obj.Semantic, obj.Index, obj.Size);
+        }
+    }
+
+    private void FlipFaceSet()
+    {
+        for (int i = 0; i < Data.VertexIndices.Count; i += 3)
+        {
+            (Data.VertexIndices[i + 1], Data.VertexIndices[i + 2]) =
+                (Data.VertexIndices[i + 2], Data.VertexIndices[i + 1]);
         }
     }
 }
