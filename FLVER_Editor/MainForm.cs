@@ -55,7 +55,7 @@ public partial class MainWindow : Form
     /// <summary>
     ///     The current version of the program.
     /// </summary>
-    private const string Version = "2.2";
+    private const string Version = "2.3";
 
     /// <summary>
     ///     The patreon support link for Pear.
