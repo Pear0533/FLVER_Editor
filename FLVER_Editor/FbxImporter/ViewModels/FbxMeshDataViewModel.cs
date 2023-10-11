@@ -82,7 +82,7 @@ public class FbxMeshDataViewModel
             {
                 Position = vertexData.Position with { Z = vertexData.Position.Z },
                 Normal = vertexData.Normal with { Z = vertexData.Normal.Z },
-                Bitangent = vertexData.Bitangent,
+                Bitangent = vertexData.Bitangent with { Z = vertexData.Bitangent.Z },
                 Tangents = vertexData.Tangents.Select(x => x with { Z = x.Z }).ToList(),
                 UVs = vertexData.UVs.Select(x => new Vector3(x.X, 1 - x.Y, 0.0f)).ToList(),
                 // Fbx uses RGBA, SF uses ARGB
@@ -96,7 +96,10 @@ public class FbxMeshDataViewModel
             {
                 (string boneName, float boneWeight) = orderedWeightData[j];
                 int boneIndex = flver.Bones.IndexOf(flver.Bones.FirstOrDefault(x => x.Name == boneName));
-                if (boneIndex == -1) boneIndex = 0;
+                if (boneIndex == -1)
+                {
+                    boneIndex = 0;
+                }
                 if (!foundWeights && boneWeight > 0) foundWeights = true;
                 boneIndices[j] = boneIndex;
                 boneWeights[j] = boneWeight;
@@ -113,7 +116,6 @@ public class FbxMeshDataViewModel
             PadVertex(newVertex, bufferLayouts);
             newMesh.Vertices.Add(newVertex);
         }
-        FlipFaceSet();
         FLVER2.FaceSet.FSFlags[] faceSetFlags =
         {
             FLVER2.FaceSet.FSFlags.None,
@@ -123,6 +125,7 @@ public class FbxMeshDataViewModel
             FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel1,
             FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel2
         };
+        FlipFaceSet();
         List<FLVER2.FaceSet> faceSets = new();
         foreach (FLVER2.FaceSet.FSFlags faceSetFlag in faceSetFlags)
         {

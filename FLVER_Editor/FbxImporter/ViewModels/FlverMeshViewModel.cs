@@ -8,7 +8,10 @@ public class FlverMeshViewModel
     {
         Mesh = mesh;
         Material = flver.Materials[mesh.MaterialIndex];
-        GxList = flver.GXLists[Material.GXIndex];
+        if (Material.GXIndex != -1)
+        {
+            GxList = flver.GXLists[Material.GXIndex];
+        }
         Name = Material.Name;
     }
 
@@ -24,7 +27,7 @@ public class FlverMeshViewModel
 
     public FLVER2.Material Material { get; }
 
-    public FLVER2.GXList GxList { get; }
+    public FLVER2.GXList? GxList { get; }
 
     public string Name { get; set; }
 }
