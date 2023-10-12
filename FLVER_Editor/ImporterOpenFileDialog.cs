@@ -1,4 +1,5 @@
-﻿using FileDialogExtenders;
+﻿using System.Text.RegularExpressions;
+using FileDialogExtenders;
 using FLVER_Editor.FbxImporter.ViewModels;
 using static FLVER_Editor.Program;
 
@@ -51,6 +52,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         mtdSelector.Enabled = enabled;
         weightingModeSelector.Enabled = enabled;
         createDefaultBoneCheckbox.Enabled = enabled;
+        autoAssignMtdCheckbox.Enabled = enabled;
         if (clearMeshes) Meshes.Clear();
         meshSelector.Items.Clear();
         mtdSelector.Items.Clear();
@@ -125,5 +127,30 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     protected override void OnPaint(PaintEventArgs pe)
     {
         base.OnPaint(pe);
+    }
+
+    private static string ExtractAndValidateMaterialName(string meshName)
+    {
+        Regex regex = new(@"- ([^-]+)\.(mtd|matxml)$");
+        Match match = regex.Match(meshName);
+        if (!match.Success) return "";
+        string name = match.Groups[1].Value;
+        string extension = match.Groups[2].Value;
+        return extension is "mtd" or "matxml" ? $"{name}.{extension}" : "";
+    }
+
+    private void AutoAssignMtdCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+        if (autoAssignMtdCheckbox.Checked)
+        {
+            mtdSelector.Enabled = false;
+            foreach (KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> mesh in Meshes)
+            {
+                string mtdValue = ExtractAndValidateMaterialName(mesh.Key.Name.ToLower());
+                int mtdIndex = MTDs.IndexOf(mtdValue);
+                if (mtdIndex != -1) mesh.Value.MTD = mtdValue;
+            }
+        }
+        else mtdSelector.Enabled = true;
     }
 }
