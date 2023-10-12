@@ -134,7 +134,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         Regex regex = new(@"- ([^-]+)\.(mtd|matxml)$");
         Match match = regex.Match(meshName);
         if (!match.Success) return "";
-        string name = match.Groups[1].Value;
+        string name = match.Groups[1].Value.Trim();
         string extension = match.Groups[2].Value;
         return extension is "mtd" or "matxml" ? $"{name}.{extension}" : "";
     }
