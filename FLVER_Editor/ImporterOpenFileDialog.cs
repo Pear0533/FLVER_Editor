@@ -131,7 +131,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
 
     private static string ExtractAndValidateMaterialName(string meshName)
     {
-        Regex regex = new(@"- ([^-]+)\.(mtd|matxml)$");
+        Regex regex = new(@"-| ([^-|]+)\.(mtd|matxml)$");
         Match match = regex.Match(meshName);
         if (!match.Success) return "";
         string name = match.Groups[1].Value.Trim();
