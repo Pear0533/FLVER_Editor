@@ -1745,7 +1745,7 @@ public partial class MainWindow : Form
             { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", "")) };
         if (dialog.ShowDialog() != DialogResult.OK) return;
         string modelFilePath = dialog.FileName;
-        if (FlverFilePath.EndsWith(".dcx"))
+        if (dialog.FilterIndex == 2)
         {
             // TODO: Perform an assert to ensure the old and new part names have the correct structure
             string newPartName = RemoveFileExtensions(Path.GetFileName(modelFilePath));
