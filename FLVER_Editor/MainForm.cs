@@ -1733,6 +1733,11 @@ public partial class MainWindow : Form
         }
     }
 
+    private static string RemoveFileExtensions(string input)
+    {
+        return input[..input.IndexOf('.')];
+    }
+
     private void SaveFLVERAs()
     {
         string bndFilter = FlverFilePath.EndsWith(".dcx") ? "|BND File (*.dcx)|*.dcx" : "";
@@ -1742,17 +1747,17 @@ public partial class MainWindow : Form
         string modelFilePath = dialog.FileName;
         if (FlverFilePath.EndsWith(".dcx"))
         {
-            int newPartID = GetModelPartIDFromName(modelFilePath);
-            if (newPartID != 0)
+            // TODO: Perform an assert to ensure the old and new part names have the correct structure
+            string newPartName = RemoveFileExtensions(Path.GetFileName(modelFilePath));
+            if (!string.IsNullOrEmpty(newPartName))
             {
-                int ogModelPartID = GetModelPartIDFromName(FlverFilePath);
-                if (ogModelPartID != -1)
+                string ogPartName = RemoveFileExtensions(Path.GetFileName(FlverFilePath));
+                if (!string.IsNullOrEmpty(ogPartName))
                 {
                     foreach (BinderFile file in FlverBnd.Files)
                     {
-                        if (!Path.GetFileName(file.Name).Contains(ogModelPartID.ToString())) continue;
-                        if (file.Name == null) continue;
-                        string newInternalPath = file.Name.Replace(ogModelPartID.ToString(), newPartID.ToString());
+                        if (file.Name == null || !Path.GetFileName(file.Name).Contains(ogPartName, StringComparison.OrdinalIgnoreCase)) continue;
+                        string newInternalPath = file.Name.Replace(ogPartName, newPartName.ToUpper(), StringComparison.OrdinalIgnoreCase);
                         file.Name = newInternalPath;
                     }
                 }
@@ -2762,7 +2767,7 @@ public partial class MainWindow : Form
     {
         SaveFileDialog dialog = new() { Filter = JsonFileFilter };
         if (dialog.ShowDialog() != DialogResult.OK) return;
-        File.WriteAllText(dialog.FileName, JsonConvert.SerializeObject(presets, Formatting.Indented));
+        File.WriteAllText(dialog.FileName, JsonConvert.SerializeObject(presets, Formatting.Indented, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }));
         ShowInformationDialog("Successfully exported presets file!");
     }
 
