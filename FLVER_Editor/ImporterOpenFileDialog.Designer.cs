@@ -39,7 +39,6 @@
             mtdSelectorGroupBox = new GroupBox();
             mtdSelector = new EasyCompletionComboBox();
             boneWeightsMessage = new Label();
-            label1 = new Label();
             importOptionsGroupBox.SuspendLayout();
             meshSelectorGroupBox.SuspendLayout();
             weightingModeGroupBox.SuspendLayout();
@@ -52,14 +51,13 @@
             importOptionsGroupBox.Controls.Add(meshSelectorGroupBox);
             importOptionsGroupBox.Location = new Point(9, 6);
             importOptionsGroupBox.Name = "importOptionsGroupBox";
-            importOptionsGroupBox.Size = new Size(540, 178);
+            importOptionsGroupBox.Size = new Size(540, 162);
             importOptionsGroupBox.TabIndex = 1;
             importOptionsGroupBox.TabStop = false;
             importOptionsGroupBox.Text = "Import Options";
             // 
             // meshSelectorGroupBox
             // 
-            meshSelectorGroupBox.Controls.Add(label1);
             meshSelectorGroupBox.Controls.Add(autoAssignMtdCheckbox);
             meshSelectorGroupBox.Controls.Add(weightingModeGroupBox);
             meshSelectorGroupBox.Controls.Add(createDefaultBoneCheckbox);
@@ -68,7 +66,7 @@
             meshSelectorGroupBox.Controls.Add(mtdSelectorGroupBox);
             meshSelectorGroupBox.Location = new Point(6, 21);
             meshSelectorGroupBox.Name = "meshSelectorGroupBox";
-            meshSelectorGroupBox.Size = new Size(528, 151);
+            meshSelectorGroupBox.Size = new Size(528, 135);
             meshSelectorGroupBox.TabIndex = 5;
             meshSelectorGroupBox.TabStop = false;
             meshSelectorGroupBox.Text = "Mesh Selector";
@@ -76,7 +74,7 @@
             // autoAssignMtdCheckbox
             // 
             autoAssignMtdCheckbox.AutoSize = true;
-            autoAssignMtdCheckbox.Location = new Point(140, 109);
+            autoAssignMtdCheckbox.Location = new Point(140, 110);
             autoAssignMtdCheckbox.Name = "autoAssignMtdCheckbox";
             autoAssignMtdCheckbox.Size = new Size(216, 19);
             autoAssignMtdCheckbox.TabIndex = 5;
@@ -105,7 +103,7 @@
             // createDefaultBoneCheckbox
             // 
             createDefaultBoneCheckbox.AutoSize = true;
-            createDefaultBoneCheckbox.Location = new Point(6, 109);
+            createDefaultBoneCheckbox.Location = new Point(7, 110);
             createDefaultBoneCheckbox.Name = "createDefaultBoneCheckbox";
             createDefaultBoneCheckbox.Size = new Size(131, 19);
             createDefaultBoneCheckbox.TabIndex = 0;
@@ -153,21 +151,11 @@
             // 
             boneWeightsMessage.AutoSize = true;
             boneWeightsMessage.ForeColor = Color.Red;
-            boneWeightsMessage.Location = new Point(9, 186);
+            boneWeightsMessage.Location = new Point(9, 170);
             boneWeightsMessage.Name = "boneWeightsMessage";
             boneWeightsMessage.Size = new Size(21, 15);
             boneWeightsMessage.TabIndex = 2;
             boneWeightsMessage.Text = "{0}";
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.ForeColor = Color.DimGray;
-            label1.Location = new Point(136, 130);
-            label1.Name = "label1";
-            label1.Size = new Size(350, 15);
-            label1.TabIndex = 6;
-            label1.Text = "Hint: Mesh name must be formatted as: Mesh_Name [- or |] MTD";
             // 
             // ImporterOpenFileDialog
             // 
@@ -195,6 +183,5 @@
         private GroupBox weightingModeGroupBox;
         private ComboBox weightingModeSelector;
         private CheckBox autoAssignMtdCheckbox;
-        private Label label1;
     }
 }

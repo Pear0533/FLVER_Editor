@@ -139,6 +139,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         return extension is "mtd" or "matxml" ? $"{name}.{extension}" : "";
     }
 
+    // TODO: Make this a property so that it can affect individual meshes
     private void AutoAssignMtdCheckbox_CheckedChanged(object sender, EventArgs e)
     {
         if (autoAssignMtdCheckbox.Checked)
