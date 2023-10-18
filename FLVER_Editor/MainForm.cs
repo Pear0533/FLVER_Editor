@@ -1751,14 +1751,18 @@ public partial class MainWindow : Form
             string newPartName = RemoveFileExtensions(Path.GetFileName(modelFilePath));
             if (!string.IsNullOrEmpty(newPartName))
             {
-                string ogPartName = RemoveFileExtensions(Path.GetFileName(FlverFilePath));
-                if (!string.IsNullOrEmpty(ogPartName))
+                BinderFile? ogFlverFile = FlverBnd.Files.Find(i => i.Name.EndsWith(".flver", StringComparison.OrdinalIgnoreCase));
+                if (ogFlverFile != null)
                 {
-                    foreach (BinderFile file in FlverBnd.Files)
+                    string ogPartName = RemoveFileExtensions(Path.GetFileName(ogFlverFile.Name));
+                    if (!string.IsNullOrEmpty(ogPartName))
                     {
-                        if (file.Name == null || !Path.GetFileName(file.Name).Contains(ogPartName, StringComparison.OrdinalIgnoreCase)) continue;
-                        string newInternalPath = file.Name.Replace(ogPartName, newPartName.ToUpper(), StringComparison.OrdinalIgnoreCase);
-                        file.Name = newInternalPath;
+                        foreach (BinderFile file in FlverBnd.Files)
+                        {
+                            if (file.Name == null || !Path.GetFileName(file.Name).Contains(ogPartName, StringComparison.OrdinalIgnoreCase)) continue;
+                            string newInternalPath = file.Name.Replace(ogPartName, newPartName.ToUpper(), StringComparison.OrdinalIgnoreCase);
+                            file.Name = newInternalPath;
+                        }
                     }
                 }
             }
