@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿﻿using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -1733,11 +1733,6 @@ public partial class MainWindow : Form
         }
     }
 
-    private static string RemoveFileExtensions(string input)
-    {
-        return input[..input.IndexOf('.')];
-    }
-
     private void SaveFLVERAs()
     {
         string bndFilter = FlverFilePath.EndsWith(".dcx") ? "|BND File (*.dcx)|*.dcx" : "";
@@ -1745,24 +1740,20 @@ public partial class MainWindow : Form
             { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", "")) };
         if (dialog.ShowDialog() != DialogResult.OK) return;
         string modelFilePath = dialog.FileName;
-        if (dialog.FilterIndex == 2)
+        if (FlverFilePath.EndsWith(".dcx"))
         {
-            // TODO: Perform an assert to ensure the old and new part names have the correct structure
-            string newPartName = RemoveFileExtensions(Path.GetFileName(modelFilePath));
-            if (!string.IsNullOrEmpty(newPartName))
+            int newPartID = GetModelPartIDFromName(modelFilePath);
+            if (newPartID != 0)
             {
-                BinderFile? ogFlverFile = FlverBnd.Files.Find(i => i.Name.EndsWith(".flver", StringComparison.OrdinalIgnoreCase));
-                if (ogFlverFile != null)
+                int ogModelPartID = GetModelPartIDFromName(FlverFilePath);
+                if (ogModelPartID != -1)
                 {
-                    string ogPartName = RemoveFileExtensions(Path.GetFileName(ogFlverFile.Name));
-                    if (!string.IsNullOrEmpty(ogPartName))
+                    foreach (BinderFile file in FlverBnd.Files)
                     {
-                        foreach (BinderFile file in FlverBnd.Files)
-                        {
-                            if (file.Name == null || !Path.GetFileName(file.Name).Contains(ogPartName, StringComparison.OrdinalIgnoreCase)) continue;
-                            string newInternalPath = file.Name.Replace(ogPartName, newPartName.ToUpper(), StringComparison.OrdinalIgnoreCase);
-                            file.Name = newInternalPath;
-                        }
+                        if (!Path.GetFileName(file.Name).Contains(ogModelPartID.ToString())) continue;
+                        if (file.Name == null) continue;
+                        string newInternalPath = file.Name.Replace(ogModelPartID.ToString(), newPartID.ToString());
+                        file.Name = newInternalPath;
                     }
                 }
             }
@@ -2771,7 +2762,7 @@ public partial class MainWindow : Form
     {
         SaveFileDialog dialog = new() { Filter = JsonFileFilter };
         if (dialog.ShowDialog() != DialogResult.OK) return;
-        File.WriteAllText(dialog.FileName, JsonConvert.SerializeObject(presets, Formatting.Indented, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }));
+        File.WriteAllText(dialog.FileName, JsonConvert.SerializeObject(presets, Formatting.Indented));
         ShowInformationDialog("Successfully exported presets file!");
     }
 
