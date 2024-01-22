@@ -1,4 +1,4 @@
-﻿﻿using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -929,6 +929,7 @@ public partial class MainWindow : Form
             {
                 row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
             }
+            row.Cells.Add(new DataGridViewButtonCell { Value = "Duplicate" });
             row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
             meshTable.Rows.Add(row);
         }
@@ -1388,6 +1389,11 @@ public partial class MainWindow : Form
                 UpdateSelectedMeshes();
                 break;
             case 4:
+                Flver.Meshes.Insert(rowIndex, Flver.Meshes[rowIndex].Copy());
+                UpdateUI();
+                UpdateMesh();
+                break;
+            case 5:
                 HiddenMeshIndices = UpdateIndicesList(meshTable, HiddenMeshIndices, columnIndex, rowIndex, ref MeshIsHidden);
                 UpdateMesh();
                 break;

@@ -7,11 +7,11 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle7 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle8 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle9 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle10 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             ribbon = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
@@ -19,9 +19,9 @@
             saveToolStripMenuItem = new ToolStripMenuItem();
             saveAsToolStripMenuItem = new ToolStripMenuItem();
             modelToolStripMenuItem = new ToolStripMenuItem();
+            importCtrlIToolStripMenuItem = new ToolStripMenuItem();
             exportToolStripMenuItem2 = new ToolStripMenuItem();
             mergeToolStripMenuItem2 = new ToolStripMenuItem();
-            importCtrlIToolStripMenuItem = new ToolStripMenuItem();
             presetsFileToolStripMenuItem = new ToolStripMenuItem();
             browseToolStripMenuItem = new ToolStripMenuItem();
             materialsToolStripMenuItem2 = new ToolStripMenuItem();
@@ -77,11 +77,6 @@
             meshPagePanelsContainer = new SplitContainer();
             meshPageTablesContainer = new SplitContainer();
             meshTable = new DataGridView();
-            Column1 = new DataGridViewTextBoxColumn();
-            Column2 = new DataGridViewTextBoxColumn();
-            Column3 = new DataGridViewButtonColumn();
-            Column4 = new DataGridViewCheckBoxColumn();
-            Column21 = new DataGridViewCheckBoxColumn();
             label4 = new Label();
             label13 = new Label();
             addDummyButton = new Button();
@@ -180,6 +175,12 @@
             searchBoxStr = new Label();
             meshTabDataTableSelector = new ComboBox();
             displayToolTip = new ToolTip(components);
+            Column1 = new DataGridViewTextBoxColumn();
+            Column2 = new DataGridViewTextBoxColumn();
+            Column3 = new DataGridViewButtonColumn();
+            Column4 = new DataGridViewCheckBoxColumn();
+            Column22 = new DataGridViewButtonColumn();
+            Column21 = new DataGridViewCheckBoxColumn();
             ribbon.SuspendLayout();
             multiSelectMenu.SuspendLayout();
             meshTabPage.SuspendLayout();
@@ -266,26 +267,26 @@
             modelToolStripMenuItem.Size = new Size(190, 22);
             modelToolStripMenuItem.Text = "Model";
             // 
+            // importCtrlIToolStripMenuItem
+            // 
+            importCtrlIToolStripMenuItem.Name = "importCtrlIToolStripMenuItem";
+            importCtrlIToolStripMenuItem.Size = new Size(157, 22);
+            importCtrlIToolStripMenuItem.Text = "Import (Ctrl+I)";
+            importCtrlIToolStripMenuItem.Click += ImportCtrlIToolStripMenuItem_Click;
+            // 
             // exportToolStripMenuItem2
             // 
             exportToolStripMenuItem2.Name = "exportToolStripMenuItem2";
-            exportToolStripMenuItem2.Size = new Size(180, 22);
+            exportToolStripMenuItem2.Size = new Size(157, 22);
             exportToolStripMenuItem2.Text = "Export (Ctrl+E)";
             exportToolStripMenuItem2.Click += ExportToolStripMenuItemClicked;
             // 
             // mergeToolStripMenuItem2
             // 
             mergeToolStripMenuItem2.Name = "mergeToolStripMenuItem2";
-            mergeToolStripMenuItem2.Size = new Size(180, 22);
+            mergeToolStripMenuItem2.Size = new Size(157, 22);
             mergeToolStripMenuItem2.Text = "Merge (Ctrl+M)";
             mergeToolStripMenuItem2.Click += MergeToolStripMenuItemClicked;
-            // 
-            // importCtrlIToolStripMenuItem
-            // 
-            importCtrlIToolStripMenuItem.Name = "importCtrlIToolStripMenuItem";
-            importCtrlIToolStripMenuItem.Size = new Size(180, 22);
-            importCtrlIToolStripMenuItem.Text = "Import (Ctrl+I)";
-            importCtrlIToolStripMenuItem.Click += ImportCtrlIToolStripMenuItem_Click;
             // 
             // presetsFileToolStripMenuItem
             // 
@@ -797,60 +798,19 @@
             meshTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             meshTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             meshTable.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            meshTable.Columns.AddRange(new DataGridViewColumn[] { Column1, Column2, Column3, Column4, Column21 });
+            meshTable.Columns.AddRange(new DataGridViewColumn[] { Column1, Column2, Column3, Column4, Column22, Column21 });
             meshTable.Location = new Point(4, 21);
             meshTable.Margin = new Padding(4, 3, 4, 3);
             meshTable.Name = "meshTable";
             meshTable.RowHeadersVisible = false;
             meshTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            meshTable.RowsDefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
             meshTable.Size = new Size(574, 184);
             meshTable.TabIndex = 11;
             meshTable.CellContentClick += MeshTable_CellContentClick;
             meshTable.CellContentDoubleClick += MeshTable_CellContentDoubleClick;
             meshTable.CellValueChanged += MeshTableCellValueChanged;
-            // 
-            // Column1
-            // 
-            Column1.Frozen = true;
-            Column1.HeaderText = "Index";
-            Column1.MinimumWidth = 8;
-            Column1.Name = "Column1";
-            Column1.ReadOnly = true;
-            Column1.Width = 61;
-            // 
-            // Column2
-            // 
-            Column2.Frozen = true;
-            Column2.HeaderText = "Mesh Name";
-            Column2.MinimumWidth = 8;
-            Column2.Name = "Column2";
-            Column2.ReadOnly = true;
-            Column2.Width = 96;
-            // 
-            // Column3
-            // 
-            Column3.HeaderText = "Simple Skin";
-            Column3.MinimumWidth = 8;
-            Column3.Name = "Column3";
-            Column3.Resizable = DataGridViewTriState.True;
-            Column3.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column3.Width = 93;
-            // 
-            // Column4
-            // 
-            Column4.HeaderText = "Select";
-            Column4.MinimumWidth = 8;
-            Column4.Name = "Column4";
-            Column4.Width = 44;
-            // 
-            // Column21
-            // 
-            Column21.HeaderText = "Hide";
-            Column21.Name = "Column21";
-            Column21.Resizable = DataGridViewTriState.True;
-            Column21.Width = 38;
             // 
             // label4
             // 
@@ -916,9 +876,9 @@
             dummiesTable.Name = "dummiesTable";
             dummiesTable.RowHeadersVisible = false;
             dummiesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle7;
-            dummiesTable.Size = new Size(573, 167);
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            dummiesTable.Size = new Size(573, 165);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1641,8 +1601,8 @@
             materialsTable.Name = "materialsTable";
             materialsTable.RowHeadersVisible = false;
             materialsTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle8.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
             materialsTable.Size = new Size(546, 455);
             materialsTable.TabIndex = 6;
             materialsTable.CellContentClick += MaterialsTableButtonClicked;
@@ -1795,9 +1755,9 @@
             texturesTable.Name = "texturesTable";
             texturesTable.RowHeadersVisible = false;
             texturesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle9;
-            texturesTable.Size = new Size(607, 455);
+            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            texturesTable.Size = new Size(605, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -1850,8 +1810,8 @@
             bonesTable.Name = "bonesTable";
             bonesTable.RowHeadersVisible = false;
             bonesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle10.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
             bonesTable.Size = new Size(1192, 533);
             bonesTable.TabIndex = 0;
             bonesTable.CellValueChanged += BonesTableCellValueChanged;
@@ -2000,6 +1960,54 @@
             meshTabDataTableSelector.TabIndex = 1;
             meshTabDataTableSelector.SelectedIndexChanged += MeshTabDataTableSelector_SelectedIndexChanged;
             // 
+            // Column1
+            // 
+            Column1.Frozen = true;
+            Column1.HeaderText = "Index";
+            Column1.MinimumWidth = 8;
+            Column1.Name = "Column1";
+            Column1.ReadOnly = true;
+            Column1.Width = 61;
+            // 
+            // Column2
+            // 
+            Column2.Frozen = true;
+            Column2.HeaderText = "Mesh Name";
+            Column2.MinimumWidth = 8;
+            Column2.Name = "Column2";
+            Column2.ReadOnly = true;
+            Column2.Width = 96;
+            // 
+            // Column3
+            // 
+            Column3.HeaderText = "Simple Skin";
+            Column3.MinimumWidth = 8;
+            Column3.Name = "Column3";
+            Column3.Resizable = DataGridViewTriState.True;
+            Column3.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column3.Width = 93;
+            // 
+            // Column4
+            // 
+            Column4.HeaderText = "Select";
+            Column4.MinimumWidth = 8;
+            Column4.Name = "Column4";
+            Column4.Width = 44;
+            // 
+            // Column22
+            // 
+            Column22.HeaderText = "Duplicate";
+            Column22.Name = "Column22";
+            Column22.Resizable = DataGridViewTriState.True;
+            Column22.Width = 63;
+            // 
+            // Column21
+            // 
+            Column21.HeaderText = "Hide";
+            Column21.Name = "Column21";
+            Column21.Resizable = DataGridViewTriState.True;
+            Column21.Width = 38;
+            // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -2073,172 +2081,173 @@
             PerformLayout();
         }
 
-        private System.Windows.Forms.MenuStrip ribbon;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
-        private System.Windows.Forms.ContextMenuStrip multiSelectMenu;
-        private System.Windows.Forms.ToolStripTextBox multiSelectMenuTextbox;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.TabPage meshTabPage;
-        private System.Windows.Forms.TabPage materialsTabPage;
-        private System.Windows.Forms.Button applyPresetToAllMaterialsButton;
-        private System.Windows.Forms.Label label14;
+        private MenuStrip ribbon;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripMenuItem saveAsToolStripMenuItem;
+        private ContextMenuStrip multiSelectMenu;
+        private ToolStripTextBox multiSelectMenuTextbox;
+        private ToolStripMenuItem openToolStripMenuItem;
+        private TabPage meshTabPage;
+        private TabPage materialsTabPage;
+        private Button applyPresetToAllMaterialsButton;
+        private Label label14;
         private EasyCompletionComboBox materialPresetsSelector;
-        private System.Windows.Forms.TabPage bonesTabPage;
-        private System.Windows.Forms.DataGridView bonesTable;
-        private System.Windows.Forms.TabControl tabWindow;
-        private System.Windows.Forms.Label copyrightStr;
-        private System.Windows.Forms.SplitContainer materialsPagePanelsContainer;
-        private System.Windows.Forms.DataGridView materialsTable;
-        private System.Windows.Forms.DataGridView texturesTable;
-        private System.Windows.Forms.SplitContainer meshPagePanelsContainer;
-        private System.Windows.Forms.DataGridView meshTable;
-        private System.Windows.Forms.GroupBox meshModifiersContainer;
-        private System.Windows.Forms.TableLayoutPanel meshModifiersNumBoxesContainer;
-        private System.Windows.Forms.NumericUpDown rotZNumBox;
-        private System.Windows.Forms.NumericUpDown scaleZNumBox;
-        private System.Windows.Forms.NumericUpDown rotYNumBox;
-        private System.Windows.Forms.NumericUpDown transZNumBox;
-        private System.Windows.Forms.NumericUpDown rotXNumBox;
-        private System.Windows.Forms.NumericUpDown scaleYNumBox;
-        private System.Windows.Forms.NumericUpDown scaleXNumBox;
-        private System.Windows.Forms.NumericUpDown transXNumBox;
-        private System.Windows.Forms.NumericUpDown transYNumBox;
-        private System.Windows.Forms.CheckBox toggleBackfacesCheckbox;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.CheckBox reverseNormalsCheckbox;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button materialsTableOKButton;
-        private System.Windows.Forms.Button deleteAllMaterialsButton;
-        private System.Windows.Forms.Button selectAllMeshesButton;
-        private System.Windows.Forms.Button deleteSelectedButton;
-        private System.Windows.Forms.CheckBox reverseFacesetsCheckbox;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.DataGridView dummiesTable;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
+        private TabPage bonesTabPage;
+        private DataGridView bonesTable;
+        private TabControl tabWindow;
+        private Label copyrightStr;
+        private SplitContainer materialsPagePanelsContainer;
+        private DataGridView materialsTable;
+        private DataGridView texturesTable;
+        private SplitContainer meshPagePanelsContainer;
+        private DataGridView meshTable;
+        private GroupBox meshModifiersContainer;
+        private TableLayoutPanel meshModifiersNumBoxesContainer;
+        private NumericUpDown rotZNumBox;
+        private NumericUpDown scaleZNumBox;
+        private NumericUpDown rotYNumBox;
+        private NumericUpDown transZNumBox;
+        private NumericUpDown rotXNumBox;
+        private NumericUpDown scaleYNumBox;
+        private NumericUpDown scaleXNumBox;
+        private NumericUpDown transXNumBox;
+        private NumericUpDown transYNumBox;
+        private CheckBox toggleBackfacesCheckbox;
+        private Label label11;
+        private CheckBox reverseNormalsCheckbox;
+        private Label label12;
+        private Label label3;
+        private Label label1;
+        private Label label2;
+        private Button materialsTableOKButton;
+        private Button deleteAllMaterialsButton;
+        private Button selectAllMeshesButton;
+        private Button deleteSelectedButton;
+        private CheckBox reverseFacesetsCheckbox;
+        private Label label8;
+        private DataGridView dummiesTable;
+        private Label label5;
+        private Label label4;
         private EasyCompletionComboBox dummyPresetsSelector;
-        private System.Windows.Forms.Button dummiesTableOKButton;
-        private System.Windows.Forms.Button addAllDummiesToPresetsButton;
-        private System.Windows.Forms.SplitContainer meshPageTablesContainer;
-        private System.Windows.Forms.Label versionStr;
-        private System.Windows.Forms.Button addDummyButton;
-        private System.Windows.Forms.CheckBox uniformScaleCheckbox;
-        private System.Windows.Forms.Button centerXButton;
-        private System.Windows.Forms.CheckBox deleteFacesetsCheckbox;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.ToolStripMenuItem loadJSONToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem bonesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem materialsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportJSONToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem bonesToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem materialsToolStripMenuItem1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column10;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column11;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column12;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column13;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column15;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column17;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn1;
-        private System.Windows.Forms.DataGridViewButtonColumn Column18;
-        private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem toggleTextureRefreshToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem presetsFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem browseToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem mergeToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem materialsToolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem dummiesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem materialsToolStripMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem dummiesToolStripMenuItem1;
-        private System.Windows.Forms.Button applyMatBinTexturesButton;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
-        private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn1;
-        private System.Windows.Forms.ToolStripMenuItem dummyThicknessToolStripMenuItem;
-        private System.Windows.Forms.ToolStripComboBox dummyThicknessSelector;
-        private System.Windows.Forms.CheckBox mirrorZCheckbox;
-        private System.Windows.Forms.CheckBox mirrorYCheckbox;
-        private System.Windows.Forms.CheckBox mirrorXCheckbox;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.ToolStripMenuItem toggleAutoSaveToolStripMenuItem;
+        private Button dummiesTableOKButton;
+        private Button addAllDummiesToPresetsButton;
+        private SplitContainer meshPageTablesContainer;
+        private Label versionStr;
+        private Button addDummyButton;
+        private CheckBox uniformScaleCheckbox;
+        private Button centerXButton;
+        private CheckBox deleteFacesetsCheckbox;
+        private Label label6;
+        private ToolStripMenuItem loadJSONToolStripMenuItem;
+        private ToolStripMenuItem bonesToolStripMenuItem;
+        private ToolStripMenuItem materialsToolStripMenuItem;
+        private ToolStripMenuItem exportJSONToolStripMenuItem;
+        private ToolStripMenuItem bonesToolStripMenuItem1;
+        private ToolStripMenuItem materialsToolStripMenuItem1;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
+        private DataGridViewTextBoxColumn Column9;
+        private DataGridViewTextBoxColumn Column10;
+        private DataGridViewTextBoxColumn Column11;
+        private DataGridViewTextBoxColumn Column12;
+        private DataGridViewTextBoxColumn Column13;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
+        private DataGridViewTextBoxColumn Column15;
+        private DataGridViewTextBoxColumn Column17;
+        private DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn1;
+        private DataGridViewButtonColumn Column18;
+        private ToolStripMenuItem preferencesToolStripMenuItem;
+        private ToolStripMenuItem toggleTextureRefreshToolStripMenuItem;
+        private ToolStripMenuItem presetsFileToolStripMenuItem;
+        private ToolStripMenuItem browseToolStripMenuItem;
+        private ToolStripMenuItem mergeToolStripMenuItem1;
+        private ToolStripMenuItem materialsToolStripMenuItem2;
+        private ToolStripMenuItem dummiesToolStripMenuItem;
+        private ToolStripMenuItem materialsToolStripMenuItem3;
+        private ToolStripMenuItem dummiesToolStripMenuItem1;
+        private Button applyMatBinTexturesButton;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
+        private DataGridViewButtonColumn dataGridViewButtonColumn1;
+        private ToolStripMenuItem dummyThicknessToolStripMenuItem;
+        private ToolStripComboBox dummyThicknessSelector;
+        private CheckBox mirrorZCheckbox;
+        private CheckBox mirrorYCheckbox;
+        private CheckBox mirrorXCheckbox;
+        private Label label7;
+        private ToolStripMenuItem toggleAutoSaveToolStripMenuItem;
         private System.Windows.Forms.Timer autoSaveTimer;
-        private System.Windows.Forms.ToolStripTextBox autoSaveIntervalSelector;
-        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem materialsToolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem dummiesToolStripMenuItem2;
-        private System.Windows.Forms.Button selectAllDummiesButton;
-        private System.Windows.Forms.Button solveAllBBsButton;
-        private System.Windows.Forms.Button setAllBBsMaxSizeButton;
-        private System.Windows.Forms.Button hideAllMeshesButton;
-        private System.Windows.Forms.GroupBox functionsGroupBox;
-        private System.Windows.Forms.ToolStripMenuItem supportPearToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem patreonToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem payPalToolStripMenuItem;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewButtonColumn Column3;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Column4;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Column21;
-        private System.Windows.Forms.ToolStripMenuItem toggleDummyIDsVisibilityToolStripMenuItem;
-        private System.Windows.Forms.TextBox searchBox;
-        private System.Windows.Forms.Label searchBoxStr;
-        private System.Windows.Forms.ComboBox meshTabDataTableSelector;
-        private System.Windows.Forms.Label xAxisLabel;
-        private System.Windows.Forms.Label zAxisLabel;
-        private System.Windows.Forms.Label yAxisLabel;
-        private System.Windows.Forms.ToolStripMenuItem modelToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem mergeToolStripMenuItem2;
-        private System.Windows.Forms.Button displayMaleBodyButton;
-        private System.Windows.Forms.Button displayFemaleBodyButton;
-        private System.Windows.Forms.Button solveAllMeshLODsButton;
-        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Button centerZButton;
-        private System.Windows.Forms.Button centerYButton;
-        private System.Windows.Forms.CheckBox flipYZAxisCheckbox;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Button resetAllMeshButton;
-        private System.Windows.Forms.CheckBox vectorModeCheckbox;
-        private System.Windows.Forms.ToolStripMenuItem toggleDuplicateMaterialsOnMeshImportToolStripMenuItem;
-        private System.Windows.Forms.ToolTip displayToolTip;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem videoTutorialsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem theBasicsRainerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem crashCourseScrubMilkToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem specialThanksToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem the12thAvengerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem natsuDragneelGeneralSupportToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem rayanProgramIconArtworkToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem forsakenSilverFLVEREditor10ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importCtrlIToolStripMenuItem;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column19;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column14;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
-        private System.Windows.Forms.DataGridViewButtonColumn Column6;
-        private System.Windows.Forms.DataGridViewButtonColumn Column20;
-        private System.Windows.Forms.DataGridViewButtonColumn Column16;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Column7;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Column8;
+        private ToolStripTextBox autoSaveIntervalSelector;
+        private ToolStripMenuItem exportToolStripMenuItem1;
+        private ToolStripMenuItem materialsToolStripMenuItem4;
+        private ToolStripMenuItem dummiesToolStripMenuItem2;
+        private Button selectAllDummiesButton;
+        private Button solveAllBBsButton;
+        private Button setAllBBsMaxSizeButton;
+        private Button hideAllMeshesButton;
+        private GroupBox functionsGroupBox;
+        private ToolStripMenuItem supportPearToolStripMenuItem;
+        private ToolStripMenuItem patreonToolStripMenuItem;
+        private ToolStripMenuItem payPalToolStripMenuItem;
+        private Label label9;
+        private Label label10;
+        private Label label13;
+        private ToolStripMenuItem toggleDummyIDsVisibilityToolStripMenuItem;
+        private TextBox searchBox;
+        private Label searchBoxStr;
+        private ComboBox meshTabDataTableSelector;
+        private Label xAxisLabel;
+        private Label zAxisLabel;
+        private Label yAxisLabel;
+        private ToolStripMenuItem modelToolStripMenuItem;
+        private ToolStripMenuItem exportToolStripMenuItem2;
+        private ToolStripMenuItem importToolStripMenuItem1;
+        private ToolStripMenuItem mergeToolStripMenuItem2;
+        private Button displayMaleBodyButton;
+        private Button displayFemaleBodyButton;
+        private Button solveAllMeshLODsButton;
+        private ToolStripMenuItem editToolStripMenuItem;
+        private Label label15;
+        private Button centerZButton;
+        private Button centerYButton;
+        private CheckBox flipYZAxisCheckbox;
+        private Label label16;
+        private Button resetAllMeshButton;
+        private CheckBox vectorModeCheckbox;
+        private ToolStripMenuItem toggleDuplicateMaterialsOnMeshImportToolStripMenuItem;
+        private ToolTip displayToolTip;
+        private ToolStripMenuItem helpToolStripMenuItem;
+        private ToolStripMenuItem videoTutorialsToolStripMenuItem;
+        private ToolStripMenuItem theBasicsRainerToolStripMenuItem;
+        private ToolStripMenuItem crashCourseScrubMilkToolStripMenuItem;
+        private ToolStripMenuItem specialThanksToolStripMenuItem;
+        private ToolStripMenuItem the12thAvengerToolStripMenuItem;
+        private ToolStripMenuItem natsuDragneelGeneralSupportToolStripMenuItem;
+        private ToolStripMenuItem rayanProgramIconArtworkToolStripMenuItem;
+        private ToolStripMenuItem forsakenSilverFLVEREditor10ToolStripMenuItem;
+        private ToolStripMenuItem importCtrlIToolStripMenuItem;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private DataGridViewTextBoxColumn Column19;
+        private DataGridViewTextBoxColumn Column14;
+        private DataGridViewTextBoxColumn Column5;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private DataGridViewButtonColumn Column6;
+        private DataGridViewButtonColumn Column20;
+        private DataGridViewButtonColumn Column16;
+        private DataGridViewCheckBoxColumn Column7;
+        private DataGridViewCheckBoxColumn Column8;
         private CheckBox useWorldOriginCheckbox;
+        private DataGridViewTextBoxColumn Column1;
+        private DataGridViewTextBoxColumn Column2;
+        private DataGridViewButtonColumn Column3;
+        private DataGridViewCheckBoxColumn Column4;
+        private DataGridViewButtonColumn Column22;
+        private DataGridViewCheckBoxColumn Column21;
         private static ToolStripMenuItem undoToolStripMenuItem;
         private static ToolStripMenuItem redoToolStripMenuItem;
     }
