@@ -1390,6 +1390,7 @@ public partial class MainWindow : Form
                 break;
             case 4:
                 Flver.Meshes.Insert(rowIndex, Flver.Meshes[rowIndex].Copy());
+                DeselectAllSelectedThings();
                 UpdateUI();
                 UpdateMesh();
                 break;
