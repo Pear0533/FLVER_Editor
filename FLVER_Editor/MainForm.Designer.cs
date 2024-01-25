@@ -2248,7 +2248,7 @@
         private DataGridViewCheckBoxColumn Column4;
         private DataGridViewButtonColumn Column22;
         private DataGridViewCheckBoxColumn Column21;
-        private ToolStripMenuItem undoToolStripMenuItem;
-        private ToolStripMenuItem redoToolStripMenuItem;
+        private static ToolStripMenuItem undoToolStripMenuItem;
+        private static ToolStripMenuItem redoToolStripMenuItem;
     }
 }
