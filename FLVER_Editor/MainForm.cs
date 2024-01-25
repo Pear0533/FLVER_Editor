@@ -55,7 +55,7 @@ public partial class MainWindow : Form
     /// <summary>
     ///     The current version of the program.
     /// </summary>
-    private const string Version = "2.3";
+    private const string Version = "2.4";
 
     /// <summary>
     ///     The patreon support link for Pear.
@@ -1744,7 +1744,7 @@ public partial class MainWindow : Form
     {
         string bndFilter = FlverFilePath.EndsWith(".dcx") ? "|BND File (*.dcx)|*.dcx" : "";
         SaveFileDialog dialog = new()
-            { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", "")) };
+        { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", "")) };
         if (dialog.ShowDialog() != DialogResult.OK) return;
         string modelFilePath = dialog.FileName;
         if (FlverFilePath.EndsWith(".dcx"))
@@ -2193,15 +2193,15 @@ public partial class MainWindow : Form
         switch (prompt)
         {
             case true:
-            {
-                if (!Importer.ImportFbxWithDialogAsync(Flver)) return;
-                break;
-            }
+                {
+                    if (!Importer.ImportFbxWithDialogAsync(Flver)) return;
+                    break;
+                }
             default:
-            {
-                if (!Importer.ImportFbxAsync(Flver, filePath)) return;
-                break;
-            }
+                {
+                    if (!Importer.ImportFbxAsync(Flver, filePath)) return;
+                    break;
+                }
         }
         Flver = Program.Flver;
         DeselectAllSelectedThings();

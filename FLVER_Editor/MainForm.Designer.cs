@@ -77,6 +77,12 @@
             meshPagePanelsContainer = new SplitContainer();
             meshPageTablesContainer = new SplitContainer();
             meshTable = new DataGridView();
+            Column1 = new DataGridViewTextBoxColumn();
+            Column2 = new DataGridViewTextBoxColumn();
+            Column3 = new DataGridViewButtonColumn();
+            Column4 = new DataGridViewCheckBoxColumn();
+            Column22 = new DataGridViewButtonColumn();
+            Column21 = new DataGridViewCheckBoxColumn();
             label4 = new Label();
             label13 = new Label();
             addDummyButton = new Button();
@@ -175,12 +181,6 @@
             searchBoxStr = new Label();
             meshTabDataTableSelector = new ComboBox();
             displayToolTip = new ToolTip(components);
-            Column1 = new DataGridViewTextBoxColumn();
-            Column2 = new DataGridViewTextBoxColumn();
-            Column3 = new DataGridViewButtonColumn();
-            Column4 = new DataGridViewCheckBoxColumn();
-            Column22 = new DataGridViewButtonColumn();
-            Column21 = new DataGridViewCheckBoxColumn();
             ribbon.SuspendLayout();
             multiSelectMenu.SuspendLayout();
             meshTabPage.SuspendLayout();
@@ -812,6 +812,54 @@
             meshTable.CellContentDoubleClick += MeshTable_CellContentDoubleClick;
             meshTable.CellValueChanged += MeshTableCellValueChanged;
             // 
+            // Column1
+            // 
+            Column1.Frozen = true;
+            Column1.HeaderText = "Index";
+            Column1.MinimumWidth = 8;
+            Column1.Name = "Column1";
+            Column1.ReadOnly = true;
+            Column1.Width = 61;
+            // 
+            // Column2
+            // 
+            Column2.Frozen = true;
+            Column2.HeaderText = "Mesh Name";
+            Column2.MinimumWidth = 8;
+            Column2.Name = "Column2";
+            Column2.ReadOnly = true;
+            Column2.Width = 96;
+            // 
+            // Column3
+            // 
+            Column3.HeaderText = "Simple Skin";
+            Column3.MinimumWidth = 8;
+            Column3.Name = "Column3";
+            Column3.Resizable = DataGridViewTriState.True;
+            Column3.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column3.Width = 93;
+            // 
+            // Column4
+            // 
+            Column4.HeaderText = "Select";
+            Column4.MinimumWidth = 8;
+            Column4.Name = "Column4";
+            Column4.Width = 44;
+            // 
+            // Column22
+            // 
+            Column22.HeaderText = "Duplicate";
+            Column22.Name = "Column22";
+            Column22.Resizable = DataGridViewTriState.True;
+            Column22.Width = 63;
+            // 
+            // Column21
+            // 
+            Column21.HeaderText = "Hide";
+            Column21.Name = "Column21";
+            Column21.Resizable = DataGridViewTriState.True;
+            Column21.Width = 38;
+            // 
             // label4
             // 
             label4.AutoSize = true;
@@ -878,7 +926,7 @@
             dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 165);
+            dummiesTable.Size = new Size(573, 164);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1757,7 +1805,7 @@
             texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
             texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(605, 455);
+            texturesTable.Size = new Size(604, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -1910,7 +1958,7 @@
             copyrightStr.Name = "copyrightStr";
             copyrightStr.Size = new Size(174, 15);
             copyrightStr.TabIndex = 1;
-            copyrightStr.Text = "© Pear, 2023 All rights reserved.";
+            copyrightStr.Text = "© Pear, 2024 All rights reserved.";
             // 
             // versionStr
             // 
@@ -1959,54 +2007,6 @@
             meshTabDataTableSelector.Size = new Size(144, 23);
             meshTabDataTableSelector.TabIndex = 1;
             meshTabDataTableSelector.SelectedIndexChanged += MeshTabDataTableSelector_SelectedIndexChanged;
-            // 
-            // Column1
-            // 
-            Column1.Frozen = true;
-            Column1.HeaderText = "Index";
-            Column1.MinimumWidth = 8;
-            Column1.Name = "Column1";
-            Column1.ReadOnly = true;
-            Column1.Width = 61;
-            // 
-            // Column2
-            // 
-            Column2.Frozen = true;
-            Column2.HeaderText = "Mesh Name";
-            Column2.MinimumWidth = 8;
-            Column2.Name = "Column2";
-            Column2.ReadOnly = true;
-            Column2.Width = 96;
-            // 
-            // Column3
-            // 
-            Column3.HeaderText = "Simple Skin";
-            Column3.MinimumWidth = 8;
-            Column3.Name = "Column3";
-            Column3.Resizable = DataGridViewTriState.True;
-            Column3.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column3.Width = 93;
-            // 
-            // Column4
-            // 
-            Column4.HeaderText = "Select";
-            Column4.MinimumWidth = 8;
-            Column4.Name = "Column4";
-            Column4.Width = 44;
-            // 
-            // Column22
-            // 
-            Column22.HeaderText = "Duplicate";
-            Column22.Name = "Column22";
-            Column22.Resizable = DataGridViewTriState.True;
-            Column22.Width = 63;
-            // 
-            // Column21
-            // 
-            Column21.HeaderText = "Hide";
-            Column21.Name = "Column21";
-            Column21.Resizable = DataGridViewTriState.True;
-            Column21.Width = 38;
             // 
             // MainWindow
             // 
@@ -2248,7 +2248,7 @@
         private DataGridViewCheckBoxColumn Column4;
         private DataGridViewButtonColumn Column22;
         private DataGridViewCheckBoxColumn Column21;
-        private static ToolStripMenuItem undoToolStripMenuItem;
-        private static ToolStripMenuItem redoToolStripMenuItem;
+        private ToolStripMenuItem undoToolStripMenuItem;
+        private ToolStripMenuItem redoToolStripMenuItem;
     }
 }
