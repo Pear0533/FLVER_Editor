@@ -1233,16 +1233,14 @@ public partial class MainWindow : Form
     private static List<int> UpdateIndicesList(DataGridView dataTable, List<int> indices, int columnIndex, int rowIndex, ref bool selectedFlag)
     {
         if (rowIndex < 0) return indices;
-        if ((bool)dataTable[columnIndex, rowIndex].Value)
+        if ((bool)dataTable[columnIndex, rowIndex].EditedFormattedValue)
         {
             if (indices.IndexOf(rowIndex) == -1) indices.Add(rowIndex);
-            else indices.RemoveAt(indices.IndexOf(rowIndex));
         }
         else
         {
             if (indices.Count < 1) selectedFlag = true;
-            if (indices.IndexOf(rowIndex) == -1) indices.Add(rowIndex);
-            else indices.RemoveAt(indices.IndexOf(rowIndex));
+            if (indices.IndexOf(rowIndex) != -1) indices.Remove(rowIndex);
         }
         return indices;
     }
@@ -1375,7 +1373,7 @@ public partial class MainWindow : Form
                 break;
             case 3:
                 SelectedMeshIndices = UpdateIndicesList(meshTable, SelectedMeshIndices, columnIndex, rowIndex, ref MeshIsSelected);
-                UpdateSelectedMeshes();
+                UpdateMesh();
                 break;
             case 4:
                 Flver.Meshes.Insert(rowIndex, Flver.Meshes[rowIndex].Copy());
@@ -1635,9 +1633,15 @@ public partial class MainWindow : Form
     private void ModifyAllThings(DataGridView table, int columnIndex)
     {
         bool allChecked = AreCheckboxesInDataTableAllChecked(table, columnIndex);
+
+        // setting all the checkboxes first since after the indices list fix we make use of the checkbox values
+        IsSettingDefaultInfo = true;
+        ToggleCheckboxesInDataTable(table, columnIndex);
+        IsSettingDefaultInfo = false;
+
+        // we simply loop as now with the updates indices if an index is already in the list we do nothing
         foreach (DataGridViewRow row in table.Rows)
         {
-            if ((bool)row.Cells[columnIndex].Value && !allChecked) continue;
             switch (columnIndex)
             {
                 case 5 when table == meshTable:
@@ -1651,6 +1655,8 @@ public partial class MainWindow : Form
                     break;
             }
         }
+
+        // deciding which part of the UI to update
         switch (columnIndex)
         {
             case 5 when table == meshTable:
@@ -1663,9 +1669,7 @@ public partial class MainWindow : Form
                 UpdateSelectedMeshes();
                 break;
         }
-        IsSettingDefaultInfo = true;
-        ToggleCheckboxesInDataTable(table, columnIndex);
-        IsSettingDefaultInfo = false;
+        
     }
 
     private void SelectAllMeshesButtonClicked(object sender, MouseEventArgs e)
