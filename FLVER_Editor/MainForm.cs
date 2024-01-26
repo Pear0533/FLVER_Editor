@@ -715,6 +715,7 @@ public partial class MainWindow : Form
             vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
                 Microsoft.Xna.Framework.Color.Purple));
         }
+
         for (int i = 0; i < Flver.Bones.Count; ++i)
         {
             bonesTransform[i] = new Transform3D { RotationOrder = RotationOrder, Position = new Vector3D(Flver.Bones[i].Translation) };
@@ -734,6 +735,7 @@ public partial class MainWindow : Form
             vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
                 Microsoft.Xna.Framework.Color.Purple));
         }
+
         for (int i = 0; i < Flver.Dummies.Count; ++i)
         {
             FLVER.Dummy dummy = Flver.Dummies[i];
@@ -757,6 +759,7 @@ public partial class MainWindow : Form
                 baseDummyYPos -= posStep;
             }
         }
+
         if (UseCheckingPoint)
         {
             Vector3 checkingPoint = CheckingPoint;
@@ -776,9 +779,11 @@ public partial class MainWindow : Form
                     checkingPoint.Y + 0.2f * checkingPointNormal.Y),
                 Microsoft.Xna.Framework.Color.Blue));
         }
+
         Viewer.vertices = vertexPosColorList.ToArray();
         Viewer.vertexTexMapList = vertexTexMapList.ToArray();
         Viewer.faceSets = faceSetPosColorList.ToArray();
+
         if (DisplayMaleBody) Flver.Meshes.Remove(MaleBodyFlver.Meshes[0]);
         else if (DisplayFemaleBody) Flver.Meshes.Remove(FemaleBodyFlver.Meshes[0]);
     }
@@ -952,7 +957,7 @@ public partial class MainWindow : Form
                 new DataGridViewTextBoxCell { Value = dummy.ReferenceID },
                 new DataGridViewTextBoxCell { Value = dummy.AttachBoneIndex },
                 new DataGridViewTextBoxCell { Value = dummy.ParentBoneIndex });
-            row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
+            row.Cells.Add(new DataGridViewCheckBoxCell { Value = SelectedDummyIndices.Any(x => x == i) });
             row.Cells.Add(new DataGridViewButtonCell { Value = dummiesTable.Columns[5].HeaderText });
             dummiesTable.Rows.Add(row);
         }
