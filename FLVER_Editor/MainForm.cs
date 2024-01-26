@@ -1160,16 +1160,8 @@ public partial class MainWindow : Form
     private static void ToggleCheckboxesInDataTable(DataGridView table, int columnIndex)
     {
         bool allChecked = AreCheckboxesInDataTableAllChecked(table, columnIndex);
-        
-        var watch = System.Diagnostics.Stopwatch.StartNew();
-
-
-
         foreach (DataGridViewRow row in table.Rows)
             row.Cells[columnIndex].Value = !allChecked;
-
-        var time = watch.ElapsedMilliseconds;
-        System.Diagnostics.Debug.WriteLine(time);
     }
 
     private void MaterialsTableApplyToAllButtonClicked(object sender, MouseEventArgs e)
