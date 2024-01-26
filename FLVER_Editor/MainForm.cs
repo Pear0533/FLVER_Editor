@@ -716,26 +716,6 @@ public partial class MainWindow : Form
                 Microsoft.Xna.Framework.Color.Purple));
         }
 
-        for (int i = 0; i < Flver.Bones.Count; ++i)
-        {
-            bonesTransform[i] = new Transform3D { RotationOrder = RotationOrder, Position = new Vector3D(Flver.Bones[i].Translation) };
-            bonesTransform[i].SetRotationInRadians(new Vector3D(Flver.Bones[i].Rotation));
-            bonesTransform[i].Scale = new Vector3D(Flver.Bones[i].Scale);
-            if (Flver.Bones[i].ParentIndex < 0) continue;
-            bonesTransform[i].Parent = bonesTransform[Flver.Bones[i].ParentIndex];
-            Vector3D absolutePos = bonesTransform[i].GetGlobalOrigin();
-            if (bonesTransform[Flver.Bones[i].ParentIndex] == null) continue;
-            Vector3D parentPos = bonesTransform[Flver.Bones[i].ParentIndex].GetGlobalOrigin();
-            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(parentPos.X - 0.005f, parentPos.Z - 0.005f, parentPos.Y),
-                Microsoft.Xna.Framework.Color.Purple));
-            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
-                Microsoft.Xna.Framework.Color.Purple));
-            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(parentPos.X + 0.005f, parentPos.Z + 0.005f, parentPos.Y),
-                Microsoft.Xna.Framework.Color.Purple));
-            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
-                Microsoft.Xna.Framework.Color.Purple));
-        }
-
         for (int i = 0; i < Flver.Dummies.Count; ++i)
         {
             FLVER.Dummy dummy = Flver.Dummies[i];
