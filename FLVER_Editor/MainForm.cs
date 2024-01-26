@@ -926,27 +926,16 @@ public partial class MainWindow : Form
             row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i },
                 new DataGridViewTextBoxCell { Value = Flver.Materials[mesh.MaterialIndex].Name });
             row.Cells.Add(new DataGridViewButtonCell { Value = "Apply" });
-            
             try
             {
-                row.Cells.Add(new DataGridViewCheckBoxCell { Value = SelectedMeshIndices.Any(x => x == i) });
+                row.Cells.Add(new DataGridViewCheckBoxCell { Value = SelectedMeshIndices[i] >= 0 });
             }
             catch
             {
                 row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
             }
-
             row.Cells.Add(new DataGridViewButtonCell { Value = "Duplicate" });
-
-            try
-            {
-                row.Cells.Add(new DataGridViewCheckBoxCell { Value = HiddenMeshIndices.Any(x => x == i) });
-            }
-            catch
-            {
-                row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
-            }
-
+            row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
             meshTable.Rows.Add(row);
         }
         for (int i = 0; i < Flver.Dummies.Count; ++i)
@@ -1260,20 +1249,17 @@ public partial class MainWindow : Form
     private static List<int> UpdateIndicesList(DataGridView dataTable, List<int> indices, int columnIndex, int rowIndex, ref bool selectedFlag)
     {
         if (rowIndex < 0) return indices;
-
-        // after any data interaction the table enters edited mode first, with the event we are reacting to we are checking the data before it is commited as the true value so instead we get the current value in edited mode and we use it to check for our current status
-        var isChecked = (bool)dataTable[columnIndex, rowIndex].EditedFormattedValue;
-
-        if (isChecked)
+        if ((bool)dataTable[columnIndex, rowIndex].Value)
         {
             if (indices.IndexOf(rowIndex) == -1) indices.Add(rowIndex);
+            else indices.RemoveAt(indices.IndexOf(rowIndex));
         }
         else
         {
             if (indices.Count < 1) selectedFlag = true;
-            if (indices.IndexOf(rowIndex) != -1) indices.RemoveAt(indices.IndexOf(rowIndex));
+            if (indices.IndexOf(rowIndex) == -1) indices.Add(rowIndex);
+            else indices.RemoveAt(indices.IndexOf(rowIndex));
         }
-
         return indices;
     }
 
