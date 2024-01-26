@@ -909,7 +909,7 @@ public partial class MainWindow : Form
             row.Cells.Add(new DataGridViewButtonCell { Value = "Apply" });
             try
             {
-                row.Cells.Add(new DataGridViewCheckBoxCell { Value = SelectedMeshIndices[i] >= 0 });
+                row.Cells.Add(new DataGridViewCheckBoxCell { Value = SelectedMeshIndices.Any(x => x == i) });
             }
             catch
             {
@@ -1239,11 +1239,15 @@ public partial class MainWindow : Form
         }
         else
         {
-            if (indices.Count < 1) selectedFlag = true;
             if (indices.IndexOf(rowIndex) != -1) indices.Remove(rowIndex);
         }
+
+        if (indices.Count > 0) selectedFlag = true;
+
         return indices;
     }
+
+    private bool HasSelection => SelectedDummyIndices.Count > 0 || SelectedMeshIndices.Count > 0;
 
     private void UpdateSelectedDummies()
     {
@@ -1251,7 +1255,7 @@ public partial class MainWindow : Form
         if (DummyIsSelected)
         {
             IsSettingDefaultInfo = true;
-            bool hasIndices = SelectedDummyIndices.Count != 0 || SelectedMeshIndices.Count > 0;
+            bool hasIndices = HasSelection;
             ResetModifierNumBoxValues();
             meshModifiersContainer.Enabled = hasIndices;
             if (hasIndices)
@@ -1271,7 +1275,7 @@ public partial class MainWindow : Form
         if (MeshIsSelected)
         {
             IsSettingDefaultInfo = true;
-            bool hasIndices = SelectedMeshIndices.Count != 0 || SelectedDummyIndices.Count > 0;
+            bool hasIndices = HasSelection;
             ResetModifierNumBoxValues();
             meshModifiersContainer.Enabled = hasIndices;
             if (hasIndices)
