@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -715,25 +716,7 @@ public partial class MainWindow : Form
             vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
                 Microsoft.Xna.Framework.Color.Purple));
         }
-        for (int i = 0; i < Flver.Bones.Count; ++i)
-        {
-            bonesTransform[i] = new Transform3D { RotationOrder = RotationOrder, Position = new Vector3D(Flver.Bones[i].Translation) };
-            bonesTransform[i].SetRotationInRadians(new Vector3D(Flver.Bones[i].Rotation));
-            bonesTransform[i].Scale = new Vector3D(Flver.Bones[i].Scale);
-            if (Flver.Bones[i].ParentIndex < 0) continue;
-            bonesTransform[i].Parent = bonesTransform[Flver.Bones[i].ParentIndex];
-            Vector3D absolutePos = bonesTransform[i].GetGlobalOrigin();
-            if (bonesTransform[Flver.Bones[i].ParentIndex] == null) continue;
-            Vector3D parentPos = bonesTransform[Flver.Bones[i].ParentIndex].GetGlobalOrigin();
-            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(parentPos.X - 0.005f, parentPos.Z - 0.005f, parentPos.Y),
-                Microsoft.Xna.Framework.Color.Purple));
-            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
-                Microsoft.Xna.Framework.Color.Purple));
-            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(parentPos.X + 0.005f, parentPos.Z + 0.005f, parentPos.Y),
-                Microsoft.Xna.Framework.Color.Purple));
-            vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
-                Microsoft.Xna.Framework.Color.Purple));
-        }
+
         for (int i = 0; i < Flver.Dummies.Count; ++i)
         {
             FLVER.Dummy dummy = Flver.Dummies[i];
@@ -757,6 +740,7 @@ public partial class MainWindow : Form
                 baseDummyYPos -= posStep;
             }
         }
+
         if (UseCheckingPoint)
         {
             Vector3 checkingPoint = CheckingPoint;
@@ -776,9 +760,11 @@ public partial class MainWindow : Form
                     checkingPoint.Y + 0.2f * checkingPointNormal.Y),
                 Microsoft.Xna.Framework.Color.Blue));
         }
+
         Viewer.vertices = vertexPosColorList.ToArray();
         Viewer.vertexTexMapList = vertexTexMapList.ToArray();
         Viewer.faceSets = faceSetPosColorList.ToArray();
+
         if (DisplayMaleBody) Flver.Meshes.Remove(MaleBodyFlver.Meshes[0]);
         else if (DisplayFemaleBody) Flver.Meshes.Remove(FemaleBodyFlver.Meshes[0]);
     }
@@ -941,7 +927,7 @@ public partial class MainWindow : Form
                 new DataGridViewTextBoxCell { Value = dummy.ReferenceID },
                 new DataGridViewTextBoxCell { Value = dummy.AttachBoneIndex },
                 new DataGridViewTextBoxCell { Value = dummy.ParentBoneIndex });
-            row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
+            row.Cells.Add(new DataGridViewCheckBoxCell { Value = SelectedDummyIndices.Any(x => x == i) });
             row.Cells.Add(new DataGridViewButtonCell { Value = dummiesTable.Columns[5].HeaderText });
             dummiesTable.Rows.Add(row);
         }
@@ -1161,12 +1147,15 @@ public partial class MainWindow : Form
 
     private static bool AreCheckboxesInDataTableAllChecked(DataGridView table, int columnIndex)
     {
-        bool allChecked = true;
         foreach (DataGridViewRow row in table.Rows)
             if (!(bool)row.Cells[columnIndex].Value)
-                allChecked = false;
-        return allChecked;
+                return false;
+
+
+
+        return true;
     }
+
 
     private static void ToggleCheckboxesInDataTable(DataGridView table, int columnIndex)
     {
@@ -1651,7 +1640,7 @@ public partial class MainWindow : Form
             if ((bool)row.Cells[columnIndex].Value && !allChecked) continue;
             switch (columnIndex)
             {
-                case 4 when table == meshTable:
+                case 5 when table == meshTable:
                     HiddenMeshIndices = UpdateIndicesList(meshTable, HiddenMeshIndices, columnIndex, row.Index, ref MeshIsHidden);
                     break;
                 case 4 when table == dummiesTable:
@@ -1664,7 +1653,7 @@ public partial class MainWindow : Form
         }
         switch (columnIndex)
         {
-            case 4 when table == meshTable:
+            case 5 when table == meshTable:
                 UpdateMesh();
                 break;
             case 4 when table == dummiesTable:
@@ -2800,7 +2789,7 @@ public partial class MainWindow : Form
 
     private void HideAllMeshesButton_MouseClick(object sender, MouseEventArgs e)
     {
-        ModifyAllThings(meshTable, 4);
+        ModifyAllThings(meshTable, 5);
     }
 
     private void PatreonToolStripMenuItem_Click(object sender, EventArgs e)
