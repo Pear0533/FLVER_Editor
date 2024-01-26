@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1146,18 +1147,29 @@ public partial class MainWindow : Form
 
     private static bool AreCheckboxesInDataTableAllChecked(DataGridView table, int columnIndex)
     {
-        bool allChecked = true;
         foreach (DataGridViewRow row in table.Rows)
             if (!(bool)row.Cells[columnIndex].Value)
-                allChecked = false;
-        return allChecked;
+                return false;
+
+
+
+        return true;
     }
+
 
     private static void ToggleCheckboxesInDataTable(DataGridView table, int columnIndex)
     {
         bool allChecked = AreCheckboxesInDataTableAllChecked(table, columnIndex);
+        
+        var watch = System.Diagnostics.Stopwatch.StartNew();
+
+
+
         foreach (DataGridViewRow row in table.Rows)
             row.Cells[columnIndex].Value = !allChecked;
+
+        var time = watch.ElapsedMilliseconds;
+        System.Diagnostics.Debug.WriteLine(time);
     }
 
     private void MaterialsTableApplyToAllButtonClicked(object sender, MouseEventArgs e)
@@ -1636,7 +1648,7 @@ public partial class MainWindow : Form
             if ((bool)row.Cells[columnIndex].Value && !allChecked) continue;
             switch (columnIndex)
             {
-                case 4 when table == meshTable:
+                case 5 when table == meshTable:
                     HiddenMeshIndices = UpdateIndicesList(meshTable, HiddenMeshIndices, columnIndex, row.Index, ref MeshIsHidden);
                     break;
                 case 4 when table == dummiesTable:
@@ -1649,7 +1661,7 @@ public partial class MainWindow : Form
         }
         switch (columnIndex)
         {
-            case 4 when table == meshTable:
+            case 5 when table == meshTable:
                 UpdateMesh();
                 break;
             case 4 when table == dummiesTable:
@@ -2785,7 +2797,7 @@ public partial class MainWindow : Form
 
     private void HideAllMeshesButton_MouseClick(object sender, MouseEventArgs e)
     {
-        ModifyAllThings(meshTable, 4);
+        ModifyAllThings(meshTable, 5);
     }
 
     private void PatreonToolStripMenuItem_Click(object sender, EventArgs e)
