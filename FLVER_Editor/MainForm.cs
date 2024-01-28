@@ -159,6 +159,11 @@ public partial class MainWindow : Form
     private static Mono3D Viewer;
 
     /// <summary>
+    ///    The task currently handling the viewer window.
+    /// </summary>
+    private static Task ViewerTask;
+
+    /// <summary>
     ///     The Tab Window's current background color.
     /// </summary>
     private static Color TabWindowBackColor = DefaultBackColor;
@@ -791,14 +796,14 @@ public partial class MainWindow : Form
     {
         if (Viewer == null)
         {
-            new Thread(() =>
+            // Using a long running task instead of thread
+            ViewerTask = Task.Run(() =>
             {
-                Thread.CurrentThread.IsBackground = true;
                 Viewer = new Mono3D();
                 UpdateMesh();
                 Viewer.RefreshTextures();
                 Viewer.Run();
-            }).Start();
+            });
             return;
         }
         UpdateMesh();
@@ -1110,7 +1115,7 @@ public partial class MainWindow : Form
     private static string PromptForPresetName()
     {
         string presetName = ShowInputDialog("Enter a preset name:", "Add Preset");
-        return presetName == "" ? "" : presetName;
+        return presetName;
     }
 
     private void MaterialsTableButtonClicked(object sender, DataGridViewCellEventArgs e)
@@ -1124,7 +1129,24 @@ public partial class MainWindow : Form
                 UpdateTexturesTable();
                 break;
             case MaterialViewerHighlightButtonIndex:
-                bool unhighlighted = Flver.Meshes.Any(mesh => SelectedMaterialMeshIndices.IndexOf(Flver.Meshes.IndexOf(mesh)) == -1 && mesh.MaterialIndex == e.RowIndex);
+                // bool unhighlighted = Flver.Meshes.Any(mesh => SelectedMaterialMeshIndices.IndexOf(Flver.Meshes.IndexOf(mesh)) == -1 && mesh.MaterialIndex == e.RowIndex);
+
+                var unhighlighted = true;
+
+                // quick optimization to avoid getting the index of every mesh
+                // makes things a but faster for large flvers
+                // which I ran across quite a bit
+                for (int i = 0; i < Flver.Meshes.Count; ++i)
+                {
+                    var mesh = Flver.Meshes[i];
+                    if (mesh.MaterialIndex != e.RowIndex) continue;
+                    if (SelectedMaterialMeshIndices.Contains(i))
+                    {
+                        unhighlighted = false;
+                        break;
+                    }
+                }
+
                 ClearViewerMaterialHighlight();
                 if (unhighlighted)
                 {
@@ -1151,8 +1173,6 @@ public partial class MainWindow : Form
             if (!(bool)row.Cells[columnIndex].Value)
                 return false;
 
-
-
         return true;
     }
 
@@ -1177,7 +1197,9 @@ public partial class MainWindow : Form
     private static void InjectTextureIntoTPF(string textureFilePath)
     {
         if (Tpf == null) Tpf = new TPF();
-        BinderFile flverBndTpfEntry = FlverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
+        BinderFile? flverBndTpfEntry = FlverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
+        if (flverBndTpfEntry is null) return;
+
         byte[] ddsBytes = File.ReadAllBytes(textureFilePath);
         DDS dds = new(ddsBytes);
         byte formatByte = 107;
@@ -1186,6 +1208,7 @@ public partial class MainWindow : Form
             formatByte = (byte)Enum.Parse(typeof(TextureFormats), dds.header10.dxgiFormat.ToString());
         }
         catch { }
+
         TPF.Texture texture = new(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, File.ReadAllBytes(textureFilePath));
         int existingTextureIndex = Tpf.Textures.FindIndex(i => i.Name == texture.Name);
         if (existingTextureIndex != -1)
