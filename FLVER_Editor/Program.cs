@@ -17,7 +17,6 @@ namespace FLVER_Editor
     internal static partial class Program
     {
         public static FLVER2 Flver;
-        public static FLVER2 GhostFlver;
         public static TPF Tpf = null;
         public static List<VertexInfo> VerticesInfo = new List<VertexInfo>();
         public static Dictionary<string, string> BoneParentList = new Dictionary<string, string>();

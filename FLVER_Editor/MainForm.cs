@@ -3190,10 +3190,10 @@ public partial class MainWindow : Form
 
     private void importGhost_Click(object sender, EventArgs e)
     {
-        OpenGhostFLVERFile();
+        OpenGhostModelFile();
     }
 
-    private bool OpenGhostFLVERFile()
+    private bool OpenGhostModelFile()
     {
         RemoveGhostModel();
 
@@ -3202,14 +3202,12 @@ public partial class MainWindow : Form
         if (IsFLVERPath(FlverFilePath))
         {
             GhostModel = FLVER2.Read(FlverFilePath);
-            Program.GhostFlver = GhostModel;
         }
         else
         {
             FLVER2 newFlver = ReadFLVERFromDCXPath(FlverFilePath, true, true, false);
             if (newFlver == null) return false;
             GhostModel = newFlver;
-            Program.GhostFlver = GhostModel;
         }
         MatBinBndPath = null;
 
@@ -3218,9 +3216,9 @@ public partial class MainWindow : Form
             mesh.MaterialIndex = 0;
         }
 
-        if (GhostFlver != null)
+        if (GhostModel != null)
         {
-            Flver.Meshes.AddRange(GhostFlver.Meshes);
+            Flver.Meshes.AddRange(GhostModel.Meshes);
         }
 
         UpdateMesh();
@@ -3248,7 +3246,6 @@ public partial class MainWindow : Form
             Flver.Meshes.Remove(mesh);
         }
         GhostModel = null;
-        Program.GhostFlver = null;
         UpdateMesh();
     }
 }
