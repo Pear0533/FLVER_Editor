@@ -38,6 +38,7 @@
             exportJSONToolStripMenuItem = new ToolStripMenuItem();
             bonesToolStripMenuItem1 = new ToolStripMenuItem();
             materialsToolStripMenuItem1 = new ToolStripMenuItem();
+            importGhost = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
             undoToolStripMenuItem = new ToolStripMenuItem();
             redoToolStripMenuItem = new ToolStripMenuItem();
@@ -181,6 +182,7 @@
             searchBoxStr = new Label();
             meshTabDataTableSelector = new ComboBox();
             displayToolTip = new ToolTip(components);
+            removeGhost = new ToolStripMenuItem();
             ribbon.SuspendLayout();
             multiSelectMenu.SuspendLayout();
             meshTabPage.SuspendLayout();
@@ -232,7 +234,7 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, modelToolStripMenuItem, presetsFileToolStripMenuItem, loadJSONToolStripMenuItem, exportJSONToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, modelToolStripMenuItem, presetsFileToolStripMenuItem, loadJSONToolStripMenuItem, exportJSONToolStripMenuItem, importGhost, removeGhost });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 22);
             fileToolStripMenuItem.Text = "File";
@@ -399,6 +401,13 @@
             materialsToolStripMenuItem1.Size = new Size(122, 22);
             materialsToolStripMenuItem1.Text = "Materials";
             materialsToolStripMenuItem1.Click += ExportMaterialsJSONButtonClicked;
+            // 
+            // importGhost
+            // 
+            importGhost.Name = "importGhost";
+            importGhost.Size = new Size(190, 22);
+            importGhost.Text = "Import Ghost";
+            importGhost.Click += importGhost_Click;
             // 
             // editToolStripMenuItem
             // 
@@ -926,7 +935,7 @@
             dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 164);
+            dummiesTable.Size = new Size(573, 162);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1805,7 +1814,7 @@
             texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
             texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(604, 455);
+            texturesTable.Size = new Size(602, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -2007,6 +2016,13 @@
             meshTabDataTableSelector.Size = new Size(144, 23);
             meshTabDataTableSelector.TabIndex = 1;
             meshTabDataTableSelector.SelectedIndexChanged += MeshTabDataTableSelector_SelectedIndexChanged;
+            // 
+            // removeGhost
+            // 
+            removeGhost.Name = "removeGhost";
+            removeGhost.Size = new Size(190, 22);
+            removeGhost.Text = "Remove Ghost";
+            removeGhost.Click += removeGhost_Click;
             // 
             // MainWindow
             // 
@@ -2248,7 +2264,9 @@
         private DataGridViewCheckBoxColumn Column4;
         private DataGridViewButtonColumn Column22;
         private DataGridViewCheckBoxColumn Column21;
+        private ToolStripMenuItem importGhost;
         private static ToolStripMenuItem undoToolStripMenuItem;
         private static ToolStripMenuItem redoToolStripMenuItem;
+        private ToolStripMenuItem removeGhost;
     }
 }

@@ -381,6 +381,8 @@ public partial class MainWindow : Form
     /// </summary>
     public static bool IsFemaleBodyModelImported;
 
+    public static FLVER2? GhostModel;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -592,6 +594,8 @@ public partial class MainWindow : Form
         List<VertexPositionColor> faceSetPosColorList = new();
         List<VertexPositionColorTexture> faceSetPosColorTexList = new();
         List<VertexTexMap> vertexTexMapList = new();
+
+
         for (int i = 0; i < Flver.Meshes.Count; ++i)
         {
             if (Flver.Meshes[i] == null) continue;
@@ -772,6 +776,8 @@ public partial class MainWindow : Form
 
         if (DisplayMaleBody) Flver.Meshes.Remove(MaleBodyFlver.Meshes[0]);
         else if (DisplayFemaleBody) Flver.Meshes.Remove(FemaleBodyFlver.Meshes[0]);
+
+
     }
 
     private static void ClearViewerMaterialHighlight()
@@ -1696,7 +1702,7 @@ public partial class MainWindow : Form
                 UpdateSelectedMeshes();
                 break;
         }
-        
+
     }
 
     private void SelectAllMeshesButtonClicked(object sender, MouseEventArgs e)
@@ -3180,5 +3186,69 @@ public partial class MainWindow : Form
     private void UseWorldOriginCheckbox_CheckedChanged(object sender, EventArgs e)
     {
         UseWorldOrigin = useWorldOriginCheckbox.Checked;
+    }
+
+    private void importGhost_Click(object sender, EventArgs e)
+    {
+        OpenGhostFLVERFile();
+    }
+
+    private bool OpenGhostFLVERFile()
+    {
+        RemoveGhostModel();
+
+        FlverFilePath = PromptFLVERModel();
+        if (FlverFilePath == "") return false;
+        if (IsFLVERPath(FlverFilePath))
+        {
+            GhostModel = FLVER2.Read(FlverFilePath);
+            Program.GhostFlver = GhostModel;
+        }
+        else
+        {
+            FLVER2 newFlver = ReadFLVERFromDCXPath(FlverFilePath, true, true, false);
+            if (newFlver == null) return false;
+            GhostModel = newFlver;
+            Program.GhostFlver = GhostModel;
+        }
+        MatBinBndPath = null;
+
+        foreach (var mesh in GhostModel.Meshes)
+        {
+            mesh.MaterialIndex = 0;
+        }
+
+        if (GhostFlver != null)
+        {
+            Flver.Meshes.AddRange(GhostFlver.Meshes);
+        }
+
+        UpdateMesh();
+
+        StopAutoInternalIndexOverride = true;
+
+        return true;
+    }
+
+    private void fileToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void removeGhost_Click(object sender, EventArgs e)
+    {
+        RemoveGhostModel();
+    }
+
+    private void RemoveGhostModel()
+    {
+        if (GhostModel == null) return;
+        foreach (var mesh in GhostModel.Meshes)
+        {
+            Flver.Meshes.Remove(mesh);
+        }
+        GhostModel = null;
+        Program.GhostFlver = null;
+        UpdateMesh();
     }
 }
