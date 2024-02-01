@@ -722,22 +722,37 @@ public partial class MainWindow : Form
             FLVER.Dummy dummy = Flver.Dummies[i];
             bool shouldSelectDummy = DummyIsSelected && SelectedDummyIndices.IndexOf(i) != -1;
             Microsoft.Xna.Framework.Color dummyColor = shouldSelectDummy ? Microsoft.Xna.Framework.Color.Yellow : Microsoft.Xna.Framework.Color.Purple;
-            float baseDummyYPos = dummy.Position.Y;
             const float posStep = 0.0005f;
+            const float dummyCrossLength = 0.025f;
+
+            var pos = new Vector3(dummy.Position.X, dummy.Position.Y, dummy.Position.Z);
+
+            Vector3 OffsetPos(Vector3 pos, FLVER2 flver, FLVER.Dummy dummy)
+            {
+                if (dummy.ParentBoneIndex >= 0)
+                    return VecUtils.RecursiveBoneOffset(pos, Flver.Bones[dummy.ParentBoneIndex], Flver);
+                return pos;
+            }
+
+            pos = OffsetPos(pos, Flver, dummy);
+            var forwardPos = OffsetPos(dummy.Position + dummy.Forward, Flver, dummy);
+            var crossPos1 = OffsetPos(dummy.Position + new Vector3(-dummyCrossLength, 0, 0), Flver, dummy);
+            var crossPos2 = OffsetPos(dummy.Position + new Vector3(dummyCrossLength, 0, 0), Flver, dummy);
+            var crossPos3 = OffsetPos(dummy.Position + new Vector3(0, -dummyCrossLength, 0), Flver, dummy);
+            var crossPos4 = OffsetPos(dummy.Position + new Vector3(0, dummyCrossLength, 0), Flver, dummy);
+
             for (int j = 0; j < DummyThickness; ++j)
             {
                 vertexPosColorList.AddRange(new[]
                 {
-                    new VertexPositionColor(new XnaVector3(dummy.Position.X - 0.025f, dummy.Position.Z, baseDummyYPos), dummyColor),
-                    new VertexPositionColor(new XnaVector3(dummy.Position.X + 0.025f, dummy.Position.Z, baseDummyYPos), dummyColor),
-                    new VertexPositionColor(new XnaVector3(dummy.Position.X, dummy.Position.Z - 0.025f, baseDummyYPos), dummyColor),
-                    new VertexPositionColor(new XnaVector3(dummy.Position.X, dummy.Position.Z + 0.025f, baseDummyYPos), dummyColor),
-                    new VertexPositionColor(new XnaVector3(dummy.Position.X, dummy.Position.Z, baseDummyYPos), Microsoft.Xna.Framework.Color.Green),
-                    new VertexPositionColor(new XnaVector3(dummy.Position.X + dummy.Forward.X, dummy.Position.Z + dummy.Forward.Z,
-                            baseDummyYPos + dummy.Forward.Y),
+                    new VertexPositionColor(new XnaVector3(crossPos1.X, crossPos1.Z, crossPos1.Y + posStep*j), dummyColor),
+                    new VertexPositionColor(new XnaVector3(crossPos2.X, crossPos2.Z, crossPos2.Y + posStep*j), dummyColor),
+                    new VertexPositionColor(new XnaVector3(crossPos3.X, crossPos3.Z, crossPos3.Y + posStep*j), dummyColor),
+                    new VertexPositionColor(new XnaVector3(crossPos4.X, crossPos4.Z, crossPos4.Y + posStep*j), dummyColor),
+                    new VertexPositionColor(new XnaVector3(pos.X, pos.Z, pos.Y + posStep*j), Microsoft.Xna.Framework.Color.Green),
+                    new VertexPositionColor(new XnaVector3(forwardPos.X, forwardPos.Z, forwardPos.Y + posStep*j),
                         Microsoft.Xna.Framework.Color.Green)
                 });
-                baseDummyYPos -= posStep;
             }
         }
 
