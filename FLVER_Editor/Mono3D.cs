@@ -1048,8 +1048,15 @@ namespace FLVER_Editor
             DrawScreenText(zAxisLabel, lines[2].Position, viewMatrix, projection);
             DrawScreenText(yAxisLabel, lines[5].Position, viewMatrix, projection);
             if (!MainWindow.AreDummyIdsVisible) return;
-            foreach (FLVER.Dummy d in MainWindow.Flver.Dummies)
-                DrawScreenText(d.ReferenceID.ToString(), d.Position, viewMatrix, projection);
+            foreach (FLVER.Dummy dummy in MainWindow.Flver.Dummies)
+            {
+                var pos = new System.Numerics.Vector3(dummy.Position.X, dummy.Position.Y, dummy.Position.Z);
+
+                if (dummy.ParentBoneIndex >= 0)
+                    pos = VecUtils.RecursiveBoneOffset(pos, Flver.Bones[dummy.ParentBoneIndex], Flver);
+
+                DrawScreenText(dummy.ReferenceID.ToString(), pos, viewMatrix, projection);
+            }
         }
 
         public static Ray GetMouseRay(Vector2 mousePosition, Viewport viewport, BasicEffect camera)
