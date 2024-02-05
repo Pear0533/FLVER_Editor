@@ -909,7 +909,7 @@ public partial class MainWindow : Form
             row.Cells.Add(new DataGridViewButtonCell { Value = "Apply" });
             try
             {
-                row.Cells.Add(new DataGridViewCheckBoxCell { Value = SelectedMeshIndices[i] >= 0 });
+                row.Cells.Add(new DataGridViewCheckBoxCell { Value = SelectedMeshIndices.Any(x => x == i) });
             }
             catch
             {
@@ -1233,19 +1233,21 @@ public partial class MainWindow : Form
     private static List<int> UpdateIndicesList(DataGridView dataTable, List<int> indices, int columnIndex, int rowIndex, ref bool selectedFlag)
     {
         if (rowIndex < 0) return indices;
-        if ((bool)dataTable[columnIndex, rowIndex].Value)
+        if ((bool)dataTable[columnIndex, rowIndex].EditedFormattedValue)
         {
             if (indices.IndexOf(rowIndex) == -1) indices.Add(rowIndex);
-            else indices.RemoveAt(indices.IndexOf(rowIndex));
         }
         else
         {
-            if (indices.Count < 1) selectedFlag = true;
-            if (indices.IndexOf(rowIndex) == -1) indices.Add(rowIndex);
-            else indices.RemoveAt(indices.IndexOf(rowIndex));
+            if (indices.IndexOf(rowIndex) != -1) indices.Remove(rowIndex);
         }
+
+        if (indices.Count > 0) selectedFlag = true;
+
         return indices;
     }
+
+    private bool HasSelection => SelectedDummyIndices.Count > 0 || SelectedMeshIndices.Count > 0;
 
     private void UpdateSelectedDummies()
     {
@@ -1253,7 +1255,7 @@ public partial class MainWindow : Form
         if (DummyIsSelected)
         {
             IsSettingDefaultInfo = true;
-            bool hasIndices = SelectedDummyIndices.Count != 0 || SelectedMeshIndices.Count > 0;
+            bool hasIndices = HasSelection;
             ResetModifierNumBoxValues();
             meshModifiersContainer.Enabled = hasIndices;
             if (hasIndices)
@@ -1273,7 +1275,7 @@ public partial class MainWindow : Form
         if (MeshIsSelected)
         {
             IsSettingDefaultInfo = true;
-            bool hasIndices = SelectedMeshIndices.Count != 0 || SelectedDummyIndices.Count > 0;
+            bool hasIndices = HasSelection;
             ResetModifierNumBoxValues();
             meshModifiersContainer.Enabled = hasIndices;
             if (hasIndices)
@@ -1635,9 +1637,15 @@ public partial class MainWindow : Form
     private void ModifyAllThings(DataGridView table, int columnIndex)
     {
         bool allChecked = AreCheckboxesInDataTableAllChecked(table, columnIndex);
+
+        // setting all the checkboxes first since after the indices list fix we make use of the checkbox values
+        IsSettingDefaultInfo = true;
+        ToggleCheckboxesInDataTable(table, columnIndex);
+        IsSettingDefaultInfo = false;
+
+        // we simply loop as now with the updates indices if an index is already in the list we do nothing
         foreach (DataGridViewRow row in table.Rows)
         {
-            if ((bool)row.Cells[columnIndex].Value && !allChecked) continue;
             switch (columnIndex)
             {
                 case 5 when table == meshTable:
@@ -1651,6 +1659,8 @@ public partial class MainWindow : Form
                     break;
             }
         }
+
+        // deciding which part of the UI to update
         switch (columnIndex)
         {
             case 5 when table == meshTable:
@@ -1663,9 +1673,7 @@ public partial class MainWindow : Form
                 UpdateSelectedMeshes();
                 break;
         }
-        IsSettingDefaultInfo = true;
-        ToggleCheckboxesInDataTable(table, columnIndex);
-        IsSettingDefaultInfo = false;
+        
     }
 
     private void SelectAllMeshesButtonClicked(object sender, MouseEventArgs e)
