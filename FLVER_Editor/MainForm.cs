@@ -595,6 +595,10 @@ public partial class MainWindow : Form
         List<VertexPositionColorTexture> faceSetPosColorTexList = new();
         List<VertexTexMap> vertexTexMapList = new();
 
+        if (GhostModel != null)
+        {
+            Flver.Meshes.AddRange(GhostModel.Meshes);
+        }
 
         for (int i = 0; i < Flver.Meshes.Count; ++i)
         {
@@ -777,6 +781,13 @@ public partial class MainWindow : Form
         if (DisplayMaleBody) Flver.Meshes.Remove(MaleBodyFlver.Meshes[0]);
         else if (DisplayFemaleBody) Flver.Meshes.Remove(FemaleBodyFlver.Meshes[0]);
 
+        if (GhostModel != null)
+        {
+            foreach (var mesh in GhostModel.Meshes)
+            {
+                Flver.Meshes.Remove(mesh);
+            }
+        }
 
     }
 
@@ -1409,7 +1420,14 @@ public partial class MainWindow : Form
                 UpdateSelectedMeshes();
                 break;
             case 4:
-                Flver.Meshes.Insert(rowIndex, Flver.Meshes[rowIndex].Copy());
+                var mesh = Flver.Meshes[rowIndex];
+                // needs major optimization
+                var newMesh = mesh.Copy();
+                Flver.Meshes.Insert(rowIndex,  newMesh);
+                Flver.Materials.Add(Flver.Materials[mesh.MaterialIndex].Copy());
+
+                newMesh.MaterialIndex = Flver.Materials.Count - 1;
+
                 DeselectAllSelectedThings();
                 UpdateUI();
                 UpdateMesh();
@@ -1611,10 +1629,20 @@ public partial class MainWindow : Form
             -Math.Abs(newNumVal - PrevNumVal)
             : Math.Abs(newNumVal - PrevNumVal);
         float[] totals = CalculateMeshTotals();
-        foreach (FLVER.Vertex v in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices))
-            TransformThing(v, offset, totals, nbi, numBox.Value);
+
+        foreach (var meshIndex in SelectedMeshIndices)
+        {
+            var mesh = Flver.Meshes[meshIndex];
+
+            foreach (FLVER.Vertex v in mesh.Vertices)
+                TransformThing(v, offset, totals, nbi, numBox.Value);
+        }
+
+
+
         foreach (int i in SelectedDummyIndices)
             TransformThing(Flver.Dummies[i], offset, totals, nbi, numBox.Value);
+
         UpdateMesh();
         PrevNumVal = newNumVal;
     }
@@ -3197,15 +3225,15 @@ public partial class MainWindow : Form
     {
         RemoveGhostModel();
 
-        FlverFilePath = PromptFLVERModel();
-        if (FlverFilePath == "") return false;
-        if (IsFLVERPath(FlverFilePath))
+        var ghostPath = PromptFLVERModel();
+        if (ghostPath == "") return false;
+        if (IsFLVERPath(ghostPath))
         {
-            GhostModel = FLVER2.Read(FlverFilePath);
+            GhostModel = FLVER2.Read(ghostPath);
         }
         else
         {
-            FLVER2 newFlver = ReadFLVERFromDCXPath(FlverFilePath, true, true, false);
+            FLVER2 newFlver = ReadFLVERFromDCXPath(ghostPath, true, true, false);
             if (newFlver == null) return false;
             GhostModel = newFlver;
         }
@@ -3214,11 +3242,6 @@ public partial class MainWindow : Form
         foreach (var mesh in GhostModel.Meshes)
         {
             mesh.MaterialIndex = 0;
-        }
-
-        if (GhostModel != null)
-        {
-            Flver.Meshes.AddRange(GhostModel.Meshes);
         }
 
         UpdateMesh();
@@ -3240,11 +3263,6 @@ public partial class MainWindow : Form
 
     private void RemoveGhostModel()
     {
-        if (GhostModel == null) return;
-        foreach (var mesh in GhostModel.Meshes)
-        {
-            Flver.Meshes.Remove(mesh);
-        }
         GhostModel = null;
         UpdateMesh();
     }
