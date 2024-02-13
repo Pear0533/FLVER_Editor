@@ -159,6 +159,11 @@ public partial class MainWindow : Form
     private static Mono3D Viewer;
 
     /// <summary>
+    ///    The task currently handling the viewer window.
+    /// </summary>
+    private static Task ViewerTask;
+
+    /// <summary>
     ///     The Tab Window's current background color.
     /// </summary>
     private static Color TabWindowBackColor = DefaultBackColor;
@@ -376,6 +381,8 @@ public partial class MainWindow : Form
     /// </summary>
     public static bool IsFemaleBodyModelImported;
 
+    public static FLVER2? GhostModel;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -587,6 +594,12 @@ public partial class MainWindow : Form
         List<VertexPositionColor> faceSetPosColorList = new();
         List<VertexPositionColorTexture> faceSetPosColorTexList = new();
         List<VertexTexMap> vertexTexMapList = new();
+
+        if (GhostModel != null)
+        {
+            Flver.Meshes.AddRange(GhostModel.Meshes);
+        }
+
         for (int i = 0; i < Flver.Meshes.Count; ++i)
         {
             if (Flver.Meshes[i] == null) continue;
@@ -782,6 +795,15 @@ public partial class MainWindow : Form
 
         if (DisplayMaleBody) Flver.Meshes.Remove(MaleBodyFlver.Meshes[0]);
         else if (DisplayFemaleBody) Flver.Meshes.Remove(FemaleBodyFlver.Meshes[0]);
+
+        if (GhostModel != null)
+        {
+            foreach (var mesh in GhostModel.Meshes)
+            {
+                Flver.Meshes.Remove(mesh);
+            }
+        }
+
     }
 
     private static void ClearViewerMaterialHighlight()
@@ -806,14 +828,14 @@ public partial class MainWindow : Form
     {
         if (Viewer == null)
         {
-            new Thread(() =>
+            // Using a long running task instead of thread
+            ViewerTask = Task.Run(() =>
             {
-                Thread.CurrentThread.IsBackground = true;
                 Viewer = new Mono3D();
                 UpdateMesh();
                 Viewer.RefreshTextures();
                 Viewer.Run();
-            }).Start();
+            });
             return;
         }
         UpdateMesh();
@@ -1125,7 +1147,7 @@ public partial class MainWindow : Form
     private static string PromptForPresetName()
     {
         string presetName = ShowInputDialog("Enter a preset name:", "Add Preset");
-        return presetName == "" ? "" : presetName;
+        return presetName;
     }
 
     private void MaterialsTableButtonClicked(object sender, DataGridViewCellEventArgs e)
@@ -1139,7 +1161,24 @@ public partial class MainWindow : Form
                 UpdateTexturesTable();
                 break;
             case MaterialViewerHighlightButtonIndex:
-                bool unhighlighted = Flver.Meshes.Any(mesh => SelectedMaterialMeshIndices.IndexOf(Flver.Meshes.IndexOf(mesh)) == -1 && mesh.MaterialIndex == e.RowIndex);
+                // bool unhighlighted = Flver.Meshes.Any(mesh => SelectedMaterialMeshIndices.IndexOf(Flver.Meshes.IndexOf(mesh)) == -1 && mesh.MaterialIndex == e.RowIndex);
+
+                var unhighlighted = true;
+
+                // quick optimization to avoid getting the index of every mesh
+                // makes things a but faster for large flvers
+                // which I ran across quite a bit
+                for (int i = 0; i < Flver.Meshes.Count; ++i)
+                {
+                    var mesh = Flver.Meshes[i];
+                    if (mesh.MaterialIndex != e.RowIndex) continue;
+                    if (SelectedMaterialMeshIndices.Contains(i))
+                    {
+                        unhighlighted = false;
+                        break;
+                    }
+                }
+
                 ClearViewerMaterialHighlight();
                 if (unhighlighted)
                 {
@@ -1166,8 +1205,6 @@ public partial class MainWindow : Form
             if (!(bool)row.Cells[columnIndex].Value)
                 return false;
 
-
-
         return true;
     }
 
@@ -1192,7 +1229,9 @@ public partial class MainWindow : Form
     private static void InjectTextureIntoTPF(string textureFilePath)
     {
         if (Tpf == null) Tpf = new TPF();
-        BinderFile flverBndTpfEntry = FlverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
+        BinderFile? flverBndTpfEntry = FlverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
+        if (flverBndTpfEntry is null) return;
+
         byte[] ddsBytes = File.ReadAllBytes(textureFilePath);
         DDS dds = new(ddsBytes);
         byte formatByte = 107;
@@ -1201,6 +1240,7 @@ public partial class MainWindow : Form
             formatByte = (byte)Enum.Parse(typeof(TextureFormats), dds.header10.dxgiFormat.ToString());
         }
         catch { }
+
         TPF.Texture texture = new(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, File.ReadAllBytes(textureFilePath));
         int existingTextureIndex = Tpf.Textures.FindIndex(i => i.Name == texture.Name);
         if (existingTextureIndex != -1)
@@ -1395,7 +1435,14 @@ public partial class MainWindow : Form
                 UpdateSelectedMeshes();
                 break;
             case 4:
-                Flver.Meshes.Insert(rowIndex, Flver.Meshes[rowIndex].Copy());
+                var mesh = Flver.Meshes[rowIndex];
+                // needs major optimization
+                var newMesh = mesh.Copy();
+                Flver.Meshes.Insert(rowIndex,  newMesh);
+                Flver.Materials.Add(Flver.Materials[mesh.MaterialIndex].Copy());
+
+                newMesh.MaterialIndex = Flver.Materials.Count - 1;
+
                 DeselectAllSelectedThings();
                 UpdateUI();
                 UpdateMesh();
@@ -1597,10 +1644,20 @@ public partial class MainWindow : Form
             -Math.Abs(newNumVal - PrevNumVal)
             : Math.Abs(newNumVal - PrevNumVal);
         float[] totals = CalculateMeshTotals();
-        foreach (FLVER.Vertex v in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices))
-            TransformThing(v, offset, totals, nbi, numBox.Value);
+
+        foreach (var meshIndex in SelectedMeshIndices)
+        {
+            var mesh = Flver.Meshes[meshIndex];
+
+            foreach (FLVER.Vertex v in mesh.Vertices)
+                TransformThing(v, offset, totals, nbi, numBox.Value);
+        }
+
+
+
         foreach (int i in SelectedDummyIndices)
             TransformThing(Flver.Dummies[i], offset, totals, nbi, numBox.Value);
+
         UpdateMesh();
         PrevNumVal = newNumVal;
     }
@@ -1688,7 +1745,7 @@ public partial class MainWindow : Form
                 UpdateSelectedMeshes();
                 break;
         }
-        
+
     }
 
     private void SelectAllMeshesButtonClicked(object sender, MouseEventArgs e)
@@ -3172,5 +3229,56 @@ public partial class MainWindow : Form
     private void UseWorldOriginCheckbox_CheckedChanged(object sender, EventArgs e)
     {
         UseWorldOrigin = useWorldOriginCheckbox.Checked;
+    }
+
+    private void importGhost_Click(object sender, EventArgs e)
+    {
+        OpenGhostModelFile();
+    }
+
+    private bool OpenGhostModelFile()
+    {
+        RemoveGhostModel();
+
+        var ghostPath = PromptFLVERModel();
+        if (ghostPath == "") return false;
+        if (IsFLVERPath(ghostPath))
+        {
+            GhostModel = FLVER2.Read(ghostPath);
+        }
+        else
+        {
+            FLVER2 newFlver = ReadFLVERFromDCXPath(ghostPath, true, true, false);
+            if (newFlver == null) return false;
+            GhostModel = newFlver;
+        }
+        MatBinBndPath = null;
+
+        foreach (var mesh in GhostModel.Meshes)
+        {
+            mesh.MaterialIndex = 0;
+        }
+
+        UpdateMesh();
+
+        StopAutoInternalIndexOverride = true;
+
+        return true;
+    }
+
+    private void fileToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void removeGhost_Click(object sender, EventArgs e)
+    {
+        RemoveGhostModel();
+    }
+
+    private void RemoveGhostModel()
+    {
+        GhostModel = null;
+        UpdateMesh();
     }
 }
