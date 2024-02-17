@@ -696,50 +696,6 @@ namespace FLVER_Editor
                 MainWindow.UpdateMesh();
             }
 
-            //1.73 Added focus detect
-            if (mState.RightButton == ButtonState.Pressed && IsActive && false)
-            {
-                Ray r = GetMouseRay(new Vector2(mState.Position.X, mState.Position.Y), GraphicsDevice.Viewport, effect);
-                r.Position = new Vector3(r.Position.X, r.Position.Z, r.Position.Y);
-                r.Direction = new Vector3(r.Direction.X, r.Direction.Z, r.Direction.Y);
-                // Vector3D x1 =  new Vector3D(cameraX + offsetX, cameraY + offsetY, cameraZ + offsetZ);
-                //Vector3D x2 = new Vector3D(centerX + offsetX, centerY + offsetY, centerZ + offsetZ);
-                var x1 = new Vector3D(r.Position);
-                var x2 = new Vector3D(r.Position + r.Direction);
-                //Program.useCheckingPoint = true;
-                // Program.checkingPoint = new System.Numerics.Vector3(x2.X,x2.Z,x2.Y);
-                // Program.updateVertices();
-                var miniPoint = new Vector3D();
-                var ptDistance = float.MaxValue;
-                FLVER.Vertex targetV = null;
-                foreach (FLVER.Vertex v in Program.Vertices)
-                {
-                    if (v.Position == null) continue;
-                    float dis = Vector3D.CalculateDistanceFromLine(new Vector3D(v.Position), x1, x2);
-                    if (ptDistance > dis)
-                    {
-                        miniPoint = new Vector3D(v.Position);
-                        ptDistance = dis;
-                        targetV = v;
-                    }
-                }
-                if (Program.SetVertexPos)
-                {
-                    targetV.Position = new Vector3D(Program.SetVertexX, Program.SetVertexY, Program.SetVertexZ).ToNumericsVector3();
-                }
-                Program.UseCheckingPoint = true;
-                Program.CheckingPoint = new System.Numerics.Vector3(miniPoint.X, miniPoint.Y, miniPoint.Z);
-                if (targetV.Normal != null) Program.CheckingPointNormal = new System.Numerics.Vector3(targetV.Normal.X, targetV.Normal.Y, targetV.Normal.Z);
-                else Program.CheckingPointNormal = new System.Numerics.Vector3(0, 0, 0);
-                MainWindow.UpdateMesh();
-                if (targetV != null)
-                {
-                    string text = Program.FormatOutput(JsonConvert.SerializeObject(targetV));
-                    int l = text.Length / 2;
-                    MessageBox.Show(text.Substring(0, l), "Vertex info1:");
-                    MessageBox.Show(text.Substring(l, text.Length - l), "Vertex info2:");
-                }
-            }
             if (mState.ScrollWheelValue - prevMState.ScrollWheelValue > 0)
             {
                 //mouseY -= (50 * delta);
@@ -847,6 +803,25 @@ namespace FLVER_Editor
                 offsetY += 3 * delta * forwardV.Y;
                 offsetZ += 3 * delta * forwardV.Z;
                 //offsetZ -= 3 * delta; ;
+            }
+            
+            // get selected mesh
+            if (state.IsKeyDown(Keys.Decimal))
+            {
+                // get the position of all yellow vertices
+                   
+                var selectedVertices = vertices.Where(v => v.Color.G == 255 && v.Color.R == 255);
+
+                // if there are any yellow vertices
+                if (selectedVertices.Any())
+                {
+                    // get the position of the first yellow vertex
+                    // average the position of all yellow vertices
+                    var center = new Vector3(selectedVertices.Average(v => v.Position.X), selectedVertices.Average(v => v.Position.Y), selectedVertices.Average(v => v.Position.Z));
+                    offsetX = center.X;
+                    offsetY = center.Y;
+                    offsetZ = center.Z;
+                }
             }
 
             //new Vector3(cameraX + offsetX, cameraY + offsetY, cameraZ + offsetZ)
