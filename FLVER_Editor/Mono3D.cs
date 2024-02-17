@@ -804,6 +804,36 @@ namespace FLVER_Editor
                 offsetZ += 3 * delta * forwardV.Z;
                 //offsetZ -= 3 * delta; ;
             }
+            // use X Y Z to lock onto the different axis X Y Z 
+
+            if (state.IsKeyDown(Keys.D1))
+            {
+                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
+
+                cameraX = state.IsKeyDown(Keys.LeftShift) ? p.Length() : -p.Length();
+                cameraY = 0;
+                cameraZ = 0;
+            }
+
+            if (state.IsKeyDown(Keys.D2))
+            {
+                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
+
+                cameraX = 0;
+                cameraY = state.IsKeyDown(Keys.LeftShift) ? p.Length() : -p.Length();
+                cameraZ = 0;
+            }
+
+            if (state.IsKeyDown(Keys.D3))
+            {
+                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
+
+                cameraX = 0;
+                cameraY = 0.01f;
+                cameraZ = state.IsKeyDown(Keys.LeftShift) ? p.Length() : -p.Length();
+
+            }
+
             
             // get selected mesh
             if (state.IsKeyDown(Keys.Decimal))
@@ -821,6 +851,8 @@ namespace FLVER_Editor
                     offsetX = center.X;
                     offsetY = center.Y;
                     offsetZ = center.Z;
+
+
                 }
             }
 
