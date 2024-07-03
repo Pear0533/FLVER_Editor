@@ -836,7 +836,7 @@ namespace FLVER_Editor
 
             
             // get selected mesh
-            if (state.IsKeyDown(Keys.Decimal))
+            if (state.IsKeyDown(Keys.C))
             {
                 // get the position of all yellow vertices
                    
@@ -851,8 +851,14 @@ namespace FLVER_Editor
                     offsetX = center.X;
                     offsetY = center.Y;
                     offsetZ = center.Z;
-
-
+                }
+                else
+                {
+                    // get the position of the all vertex
+                    // average the position of all vertices
+                    offsetX = 0;
+                    offsetY = 0;
+                    offsetZ = 0;
                 }
             }
 
