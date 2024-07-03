@@ -40,7 +40,7 @@ namespace FLVER_Editor
         private static void Main(string[] args)
         {
             Application.EnableVisualStyles();
-            Application.SetHighDpiMode(HighDpiMode.DpiUnaware);
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             MainWindow.Arguments = args.ToList();
             Window = new MainWindow();
