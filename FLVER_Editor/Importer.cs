@@ -51,7 +51,7 @@ public static class Importer
 
     private static void AddImportDialogMeshesToFlver(FLVER2 flver, Dictionary<FbxMeshDataViewModel, MeshImportOptions> meshes)
     {
-        MainWindow.UpdateUndoState();
+        MainWindow.Instance?.UpdateUndoState();
         meshes.ToList().ForEach(i => i.Key.ToFlverMesh(flver, i.Value));
     }
 
