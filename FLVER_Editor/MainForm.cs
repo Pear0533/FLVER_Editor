@@ -383,6 +383,8 @@ public partial class MainWindow : Form
 
     public static FLVER2? GhostModel;
 
+    public static MainWindow? Instance { get; private set; }
+
     public MainWindow()
     {
         InitializeComponent();
@@ -404,6 +406,7 @@ public partial class MainWindow : Form
         tabWindow.SelectedTab = meshTabPage;
         meshTabDataTableSelector.SelectedIndex = 0;
         Mono3D.mainForm = this;
+        Instance = this;
         if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
     }
 
@@ -1088,6 +1091,32 @@ public partial class MainWindow : Form
         else
         {
             FLVER2 newFlver = ReadFLVERFromDCXPath(FlverFilePath, true, true, true);
+            
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var item in newFlver.SekiroUnk.Members1)
+            {
+                sb.AppendLine($"{item.Index}: {item.Unk00[0]},{item.Unk00[1]},{item.Unk00[2]},{item.Unk00[3]}");
+            }
+
+            File.WriteAllText("mem1.log", sb.ToString());
+
+            sb.Clear();
+
+            ushort SwapBytes(ushort x)
+            {
+                return (ushort)((ushort)((x & 0xff) << 8) | ((x >> 8) & 0xff));
+            }
+
+            foreach (var item in newFlver.SekiroUnk.Members2)
+            {
+                sb.AppendLine($"{item.Index}: {item.Unk00[0]},{item.Unk00[1]},{item.Unk00[2]},{item.Unk00[3]} | ");
+            }
+
+            
+
+            File.WriteAllText("mem2.log", sb.ToString());
+
             if (newFlver == null) return false;
             Flver = newFlver;
             Program.Flver = Flver;
@@ -1438,7 +1467,7 @@ public partial class MainWindow : Form
                 var mesh = Flver.Meshes[rowIndex];
                 // needs major optimization
                 var newMesh = mesh.Copy();
-                Flver.Meshes.Insert(rowIndex,  newMesh);
+                Flver.Meshes.Insert(rowIndex, newMesh);
                 Flver.Materials.Add(Flver.Materials[mesh.MaterialIndex].Copy());
 
                 newMesh.MaterialIndex = Flver.Materials.Count - 1;
@@ -2079,7 +2108,7 @@ public partial class MainWindow : Form
         meshTable.FirstDisplayedScrollingRowIndex = index;
     }
 
-    private static void ReverseFaceSets()
+    private void ReverseFaceSets()
     {
         UpdateUndoState();
         foreach (FLVER2.FaceSet fs in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].FaceSets))
@@ -3055,7 +3084,7 @@ public partial class MainWindow : Form
         Redo();
     }
 
-    public static void UpdateUndoState(bool clearAllRedoActions = true)
+    public void UpdateUndoState(bool clearAllRedoActions = true)
     {
         if (clearAllRedoActions)
         {
@@ -3157,7 +3186,7 @@ public partial class MainWindow : Form
         CenterMeshToWorld(2);
     }
 
-    private static void ResetAllMesh()
+    private void ResetAllMesh()
     {
         UpdateUndoState();
         Flver.BufferLayouts.Add(Generators.GenerateDefaultBufferLayout());
@@ -3266,11 +3295,6 @@ public partial class MainWindow : Form
         return true;
     }
 
-    private void fileToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-
-    }
-
     private void removeGhost_Click(object sender, EventArgs e)
     {
         RemoveGhostModel();
@@ -3280,5 +3304,10 @@ public partial class MainWindow : Form
     {
         GhostModel = null;
         UpdateMesh();
+    }
+
+    private void importToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
     }
 }

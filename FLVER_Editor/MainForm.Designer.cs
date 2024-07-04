@@ -38,7 +38,6 @@
             exportJSONToolStripMenuItem = new ToolStripMenuItem();
             bonesToolStripMenuItem1 = new ToolStripMenuItem();
             materialsToolStripMenuItem1 = new ToolStripMenuItem();
-            importGhost = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
             undoToolStripMenuItem = new ToolStripMenuItem();
             redoToolStripMenuItem = new ToolStripMenuItem();
@@ -50,6 +49,9 @@
             dummyThicknessSelector = new ToolStripComboBox();
             toggleDummyIDsVisibilityToolStripMenuItem = new ToolStripMenuItem();
             toggleDuplicateMaterialsOnMeshImportToolStripMenuItem = new ToolStripMenuItem();
+            ghostToolStripMenuItem1 = new ToolStripMenuItem();
+            importToolStripMenuItem = new ToolStripMenuItem();
+            removeToolStripMenuItem = new ToolStripMenuItem();
             supportPearToolStripMenuItem = new ToolStripMenuItem();
             patreonToolStripMenuItem = new ToolStripMenuItem();
             payPalToolStripMenuItem = new ToolStripMenuItem();
@@ -182,7 +184,6 @@
             searchBoxStr = new Label();
             meshTabDataTableSelector = new ComboBox();
             displayToolTip = new ToolTip(components);
-            removeGhost = new ToolStripMenuItem();
             ribbon.SuspendLayout();
             multiSelectMenu.SuspendLayout();
             meshTabPage.SuspendLayout();
@@ -234,7 +235,7 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, modelToolStripMenuItem, presetsFileToolStripMenuItem, loadJSONToolStripMenuItem, exportJSONToolStripMenuItem, importGhost, removeGhost });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, modelToolStripMenuItem, presetsFileToolStripMenuItem, loadJSONToolStripMenuItem, exportJSONToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 22);
             fileToolStripMenuItem.Text = "File";
@@ -272,21 +273,21 @@
             // importCtrlIToolStripMenuItem
             // 
             importCtrlIToolStripMenuItem.Name = "importCtrlIToolStripMenuItem";
-            importCtrlIToolStripMenuItem.Size = new Size(157, 22);
+            importCtrlIToolStripMenuItem.Size = new Size(180, 22);
             importCtrlIToolStripMenuItem.Text = "Import (Ctrl+I)";
             importCtrlIToolStripMenuItem.Click += ImportCtrlIToolStripMenuItem_Click;
             // 
             // exportToolStripMenuItem2
             // 
             exportToolStripMenuItem2.Name = "exportToolStripMenuItem2";
-            exportToolStripMenuItem2.Size = new Size(157, 22);
+            exportToolStripMenuItem2.Size = new Size(180, 22);
             exportToolStripMenuItem2.Text = "Export (Ctrl+E)";
             exportToolStripMenuItem2.Click += ExportToolStripMenuItemClicked;
             // 
             // mergeToolStripMenuItem2
             // 
             mergeToolStripMenuItem2.Name = "mergeToolStripMenuItem2";
-            mergeToolStripMenuItem2.Size = new Size(157, 22);
+            mergeToolStripMenuItem2.Size = new Size(180, 22);
             mergeToolStripMenuItem2.Text = "Merge (Ctrl+M)";
             mergeToolStripMenuItem2.Click += MergeToolStripMenuItemClicked;
             // 
@@ -402,13 +403,6 @@
             materialsToolStripMenuItem1.Text = "Materials";
             materialsToolStripMenuItem1.Click += ExportMaterialsJSONButtonClicked;
             // 
-            // importGhost
-            // 
-            importGhost.Name = "importGhost";
-            importGhost.Size = new Size(190, 22);
-            importGhost.Text = "Import Ghost";
-            importGhost.Click += importGhost_Click;
-            // 
             // editToolStripMenuItem
             // 
             editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { undoToolStripMenuItem, redoToolStripMenuItem });
@@ -434,7 +428,7 @@
             // 
             // preferencesToolStripMenuItem
             // 
-            preferencesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toggleTextureRefreshToolStripMenuItem, toggleAutoSaveToolStripMenuItem, dummyThicknessToolStripMenuItem, toggleDummyIDsVisibilityToolStripMenuItem, toggleDuplicateMaterialsOnMeshImportToolStripMenuItem });
+            preferencesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toggleTextureRefreshToolStripMenuItem, toggleAutoSaveToolStripMenuItem, dummyThicknessToolStripMenuItem, toggleDummyIDsVisibilityToolStripMenuItem, toggleDuplicateMaterialsOnMeshImportToolStripMenuItem, ghostToolStripMenuItem1 });
             preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
             preferencesToolStripMenuItem.Size = new Size(80, 22);
             preferencesToolStripMenuItem.Text = "Preferences";
@@ -491,6 +485,27 @@
             toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Size = new Size(303, 22);
             toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Text = "Toggle Duplicate Materials On Mesh Import";
             toggleDuplicateMaterialsOnMeshImportToolStripMenuItem.Click += ToggleDuplicateMaterialsOnMeshImportToolStripMenuItem_Click;
+            // 
+            // ghostToolStripMenuItem1
+            // 
+            ghostToolStripMenuItem1.DropDownItems.AddRange(new ToolStripItem[] { importToolStripMenuItem, removeToolStripMenuItem });
+            ghostToolStripMenuItem1.Name = "ghostToolStripMenuItem1";
+            ghostToolStripMenuItem1.Size = new Size(303, 22);
+            ghostToolStripMenuItem1.Text = "Ghost";
+            // 
+            // importToolStripMenuItem
+            // 
+            importToolStripMenuItem.Name = "importToolStripMenuItem";
+            importToolStripMenuItem.Size = new Size(180, 22);
+            importToolStripMenuItem.Text = "Import";
+            importToolStripMenuItem.Click += importGhost_Click;
+            // 
+            // removeToolStripMenuItem
+            // 
+            removeToolStripMenuItem.Name = "removeToolStripMenuItem";
+            removeToolStripMenuItem.Size = new Size(180, 22);
+            removeToolStripMenuItem.Text = "Remove";
+            removeToolStripMenuItem.Click += removeGhost_Click;
             // 
             // supportPearToolStripMenuItem
             // 
@@ -935,7 +950,7 @@
             dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 162);
+            dummiesTable.Size = new Size(573, 160);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1814,7 +1829,7 @@
             texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
             texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(602, 455);
+            texturesTable.Size = new Size(600, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -2016,13 +2031,6 @@
             meshTabDataTableSelector.Size = new Size(144, 23);
             meshTabDataTableSelector.TabIndex = 1;
             meshTabDataTableSelector.SelectedIndexChanged += MeshTabDataTableSelector_SelectedIndexChanged;
-            // 
-            // removeGhost
-            // 
-            removeGhost.Name = "removeGhost";
-            removeGhost.Size = new Size(190, 22);
-            removeGhost.Text = "Remove Ghost";
-            removeGhost.Click += removeGhost_Click;
             // 
             // MainWindow
             // 
@@ -2264,9 +2272,10 @@
         private DataGridViewCheckBoxColumn Column4;
         private DataGridViewButtonColumn Column22;
         private DataGridViewCheckBoxColumn Column21;
-        private ToolStripMenuItem importGhost;
-        private static ToolStripMenuItem undoToolStripMenuItem;
-        private static ToolStripMenuItem redoToolStripMenuItem;
-        private ToolStripMenuItem removeGhost;
+        private ToolStripMenuItem undoToolStripMenuItem;
+        private ToolStripMenuItem redoToolStripMenuItem;
+        private ToolStripMenuItem ghostToolStripMenuItem1;
+        private ToolStripMenuItem importToolStripMenuItem;
+        private ToolStripMenuItem removeToolStripMenuItem;
     }
 }

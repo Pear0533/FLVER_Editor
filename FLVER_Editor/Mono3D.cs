@@ -198,7 +198,7 @@ namespace FLVER_Editor
 
         private void DeleteVertexBelow()
         {
-            MainWindow.UpdateUndoState();
+            MainWindow.Instance?.UpdateUndoState();
             FLVER2.Mesh m = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
             int index = targetVertexInfo.VertexIndex;
             float yValue = targetVertex.Position.Y;
@@ -215,7 +215,7 @@ namespace FLVER_Editor
 
         private void DeleteVertexAbove()
         {
-            MainWindow.UpdateUndoState();
+            MainWindow.Instance?.UpdateUndoState();
             FLVER2.Mesh m = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
             int index = targetVertexInfo.VertexIndex;
             float yValue = targetVertex.Position.Y;
@@ -248,7 +248,7 @@ namespace FLVER_Editor
 
         private void DeleteVertex()
         {
-            MainWindow.UpdateUndoState();
+            MainWindow.Instance?.UpdateUndoState();
             FLVER2.Mesh mesh = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
             int index = targetVertexInfo.VertexIndex;
             DeleteMeshVertexFaceSet(mesh, index);
@@ -560,7 +560,7 @@ namespace FLVER_Editor
                 bn.Text = "Modify";
                 bn.Click += (s, o) =>
                 {
-                    MainWindow.UpdateUndoState();
+                    MainWindow.Instance?.UpdateUndoState();
                     var vn = JsonConvert.DeserializeObject<System.Numerics.Vector3>(tb.Text);
                     targetVertex.Position = vn;
                     MainWindow.UpdateMesh();
