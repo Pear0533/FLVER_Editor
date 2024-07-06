@@ -28,113 +28,86 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             importOptionsGroupBox = new GroupBox();
-            meshSelectorGroupBox = new GroupBox();
-            autoAssignMtdCheckbox = new CheckBox();
+            groupBox1 = new GroupBox();
+            createDefaultBoneMessage = new Label();
+            label1 = new Label();
+            mtdSelectorGroupBox = new GroupBox();
+            mtdSelector = new EasyCompletionComboBox();
             weightingModeGroupBox = new GroupBox();
             weightingModeSelector = new ComboBox();
             createDefaultBoneCheckbox = new CheckBox();
-            affectAllMeshesCheckbox = new CheckBox();
-            meshSelector = new EasyCompletionComboBox();
-            mtdSelectorGroupBox = new GroupBox();
-            mtdSelector = new EasyCompletionComboBox();
             boneWeightsMessage = new Label();
+            autoAssignMtdCheckbox = new CheckBox();
+            meshSelectorGroupBox = new GroupBox();
+            meshSelector = new ListBox();
+            affectAllMeshesCheckbox = new CheckBox();
+            contextMenuStrip1 = new ContextMenuStrip(components);
             importOptionsGroupBox.SuspendLayout();
-            meshSelectorGroupBox.SuspendLayout();
-            weightingModeGroupBox.SuspendLayout();
+            groupBox1.SuspendLayout();
             mtdSelectorGroupBox.SuspendLayout();
+            weightingModeGroupBox.SuspendLayout();
+            meshSelectorGroupBox.SuspendLayout();
             SuspendLayout();
             // 
             // importOptionsGroupBox
             // 
             importOptionsGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            importOptionsGroupBox.Controls.Add(groupBox1);
+            importOptionsGroupBox.Controls.Add(boneWeightsMessage);
+            importOptionsGroupBox.Controls.Add(autoAssignMtdCheckbox);
             importOptionsGroupBox.Controls.Add(meshSelectorGroupBox);
             importOptionsGroupBox.Location = new Point(9, 6);
             importOptionsGroupBox.Name = "importOptionsGroupBox";
-            importOptionsGroupBox.Size = new Size(540, 162);
+            importOptionsGroupBox.Size = new Size(543, 376);
             importOptionsGroupBox.TabIndex = 1;
             importOptionsGroupBox.TabStop = false;
             importOptionsGroupBox.Text = "Import Options";
             // 
-            // meshSelectorGroupBox
+            // groupBox1
             // 
-            meshSelectorGroupBox.Controls.Add(autoAssignMtdCheckbox);
-            meshSelectorGroupBox.Controls.Add(weightingModeGroupBox);
-            meshSelectorGroupBox.Controls.Add(createDefaultBoneCheckbox);
-            meshSelectorGroupBox.Controls.Add(affectAllMeshesCheckbox);
-            meshSelectorGroupBox.Controls.Add(meshSelector);
-            meshSelectorGroupBox.Controls.Add(mtdSelectorGroupBox);
-            meshSelectorGroupBox.Location = new Point(6, 21);
-            meshSelectorGroupBox.Name = "meshSelectorGroupBox";
-            meshSelectorGroupBox.Size = new Size(528, 135);
-            meshSelectorGroupBox.TabIndex = 5;
-            meshSelectorGroupBox.TabStop = false;
-            meshSelectorGroupBox.Text = "Mesh Selector";
+            groupBox1.Controls.Add(createDefaultBoneMessage);
+            groupBox1.Controls.Add(label1);
+            groupBox1.Controls.Add(mtdSelectorGroupBox);
+            groupBox1.Controls.Add(weightingModeGroupBox);
+            groupBox1.Controls.Add(createDefaultBoneCheckbox);
+            groupBox1.Location = new Point(273, 22);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(264, 271);
+            groupBox1.TabIndex = 4;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Mesh Specific";
             // 
-            // autoAssignMtdCheckbox
+            // createDefaultBoneMessage
             // 
-            autoAssignMtdCheckbox.AutoSize = true;
-            autoAssignMtdCheckbox.Location = new Point(140, 110);
-            autoAssignMtdCheckbox.Name = "autoAssignMtdCheckbox";
-            autoAssignMtdCheckbox.Size = new Size(216, 19);
-            autoAssignMtdCheckbox.TabIndex = 5;
-            autoAssignMtdCheckbox.Text = "Auto-Assign MTD from Mesh Name";
-            autoAssignMtdCheckbox.UseVisualStyleBackColor = true;
-            autoAssignMtdCheckbox.CheckedChanged += AutoAssignMtdCheckbox_CheckedChanged;
+            createDefaultBoneMessage.AutoSize = true;
+            createDefaultBoneMessage.ForeColor = Color.Red;
+            createDefaultBoneMessage.Location = new Point(6, 204);
+            createDefaultBoneMessage.Name = "createDefaultBoneMessage";
+            createDefaultBoneMessage.Size = new Size(21, 15);
+            createDefaultBoneMessage.TabIndex = 6;
+            createDefaultBoneMessage.Text = "{1}";
             // 
-            // weightingModeGroupBox
+            // label1
             // 
-            weightingModeGroupBox.Controls.Add(weightingModeSelector);
-            weightingModeGroupBox.Location = new Point(267, 51);
-            weightingModeGroupBox.Name = "weightingModeGroupBox";
-            weightingModeGroupBox.Size = new Size(255, 54);
-            weightingModeGroupBox.TabIndex = 4;
-            weightingModeGroupBox.TabStop = false;
-            weightingModeGroupBox.Text = "Weighting Mode";
-            // 
-            // weightingModeSelector
-            // 
-            weightingModeSelector.FormattingEnabled = true;
-            weightingModeSelector.Location = new Point(6, 22);
-            weightingModeSelector.Name = "weightingModeSelector";
-            weightingModeSelector.Size = new Size(243, 23);
-            weightingModeSelector.TabIndex = 3;
-            // 
-            // createDefaultBoneCheckbox
-            // 
-            createDefaultBoneCheckbox.AutoSize = true;
-            createDefaultBoneCheckbox.Location = new Point(7, 110);
-            createDefaultBoneCheckbox.Name = "createDefaultBoneCheckbox";
-            createDefaultBoneCheckbox.Size = new Size(131, 19);
-            createDefaultBoneCheckbox.TabIndex = 0;
-            createDefaultBoneCheckbox.Text = "Create Default Bone";
-            createDefaultBoneCheckbox.UseVisualStyleBackColor = true;
-            // 
-            // affectAllMeshesCheckbox
-            // 
-            affectAllMeshesCheckbox.AutoSize = true;
-            affectAllMeshesCheckbox.Location = new Point(404, 24);
-            affectAllMeshesCheckbox.Name = "affectAllMeshesCheckbox";
-            affectAllMeshesCheckbox.Size = new Size(118, 19);
-            affectAllMeshesCheckbox.TabIndex = 2;
-            affectAllMeshesCheckbox.Text = "Affect All Meshes";
-            affectAllMeshesCheckbox.UseVisualStyleBackColor = true;
-            // 
-            // meshSelector
-            // 
-            meshSelector.FormattingEnabled = true;
-            meshSelector.Location = new Point(12, 22);
-            meshSelector.Name = "meshSelector";
-            meshSelector.Size = new Size(384, 23);
-            meshSelector.TabIndex = 0;
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 8.25F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.ForeColor = SystemColors.ControlDarkDark;
+            label1.Location = new Point(6, 25);
+            label1.Name = "label1";
+            label1.Size = new Size(240, 26);
+            label1.TabIndex = 5;
+            label1.Text = "Modify the settings of the current mesh \r\nor all Meshes if \"Affect All Meshes\" is checked";
+            label1.Click += label1_Click;
             // 
             // mtdSelectorGroupBox
             // 
             mtdSelectorGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             mtdSelectorGroupBox.Controls.Add(mtdSelector);
-            mtdSelectorGroupBox.Location = new Point(6, 51);
+            mtdSelectorGroupBox.Location = new Point(6, 60);
             mtdSelectorGroupBox.Name = "mtdSelectorGroupBox";
-            mtdSelectorGroupBox.Size = new Size(255, 54);
+            mtdSelectorGroupBox.Size = new Size(252, 54);
             mtdSelectorGroupBox.TabIndex = 3;
             mtdSelectorGroupBox.TabStop = false;
             mtdSelectorGroupBox.Text = "MTD Selector";
@@ -144,31 +117,108 @@
             mtdSelector.FormattingEnabled = true;
             mtdSelector.Location = new Point(6, 22);
             mtdSelector.Name = "mtdSelector";
-            mtdSelector.Size = new Size(243, 23);
+            mtdSelector.Size = new Size(240, 23);
             mtdSelector.TabIndex = 1;
+            // 
+            // weightingModeGroupBox
+            // 
+            weightingModeGroupBox.Controls.Add(weightingModeSelector);
+            weightingModeGroupBox.Location = new Point(6, 120);
+            weightingModeGroupBox.Name = "weightingModeGroupBox";
+            weightingModeGroupBox.Size = new Size(252, 56);
+            weightingModeGroupBox.TabIndex = 4;
+            weightingModeGroupBox.TabStop = false;
+            weightingModeGroupBox.Text = "Weighting Mode";
+            // 
+            // weightingModeSelector
+            // 
+            weightingModeSelector.FormattingEnabled = true;
+            weightingModeSelector.Location = new Point(6, 22);
+            weightingModeSelector.Name = "weightingModeSelector";
+            weightingModeSelector.Size = new Size(240, 23);
+            weightingModeSelector.TabIndex = 3;
+            // 
+            // createDefaultBoneCheckbox
+            // 
+            createDefaultBoneCheckbox.AutoSize = true;
+            createDefaultBoneCheckbox.Location = new Point(6, 182);
+            createDefaultBoneCheckbox.Name = "createDefaultBoneCheckbox";
+            createDefaultBoneCheckbox.Size = new Size(131, 19);
+            createDefaultBoneCheckbox.TabIndex = 0;
+            createDefaultBoneCheckbox.Text = "Create Default Bone";
+            createDefaultBoneCheckbox.UseVisualStyleBackColor = true;
             // 
             // boneWeightsMessage
             // 
             boneWeightsMessage.AutoSize = true;
             boneWeightsMessage.ForeColor = Color.Red;
-            boneWeightsMessage.Location = new Point(9, 170);
+            boneWeightsMessage.Location = new Point(18, 345);
             boneWeightsMessage.Name = "boneWeightsMessage";
             boneWeightsMessage.Size = new Size(21, 15);
             boneWeightsMessage.TabIndex = 2;
             boneWeightsMessage.Text = "{0}";
+            boneWeightsMessage.Click += boneWeightsMessage_Click;
+            // 
+            // autoAssignMtdCheckbox
+            // 
+            autoAssignMtdCheckbox.AutoSize = true;
+            autoAssignMtdCheckbox.Location = new Point(279, 299);
+            autoAssignMtdCheckbox.Name = "autoAssignMtdCheckbox";
+            autoAssignMtdCheckbox.Size = new Size(216, 19);
+            autoAssignMtdCheckbox.TabIndex = 5;
+            autoAssignMtdCheckbox.Text = "Auto-Assign MTD from Mesh Name";
+            autoAssignMtdCheckbox.UseVisualStyleBackColor = true;
+            autoAssignMtdCheckbox.CheckedChanged += AutoAssignMtdCheckbox_CheckedChanged;
+            // 
+            // meshSelectorGroupBox
+            // 
+            meshSelectorGroupBox.Controls.Add(meshSelector);
+            meshSelectorGroupBox.Controls.Add(affectAllMeshesCheckbox);
+            meshSelectorGroupBox.Location = new Point(6, 22);
+            meshSelectorGroupBox.Name = "meshSelectorGroupBox";
+            meshSelectorGroupBox.Size = new Size(261, 307);
+            meshSelectorGroupBox.TabIndex = 5;
+            meshSelectorGroupBox.TabStop = false;
+            meshSelectorGroupBox.Text = "Mesh Selector";
+            // 
+            // meshSelector
+            // 
+            meshSelector.FormattingEnabled = true;
+            meshSelector.ItemHeight = 15;
+            meshSelector.Location = new Point(6, 52);
+            meshSelector.Name = "meshSelector";
+            meshSelector.Size = new Size(243, 244);
+            meshSelector.TabIndex = 3;
+            // 
+            // affectAllMeshesCheckbox
+            // 
+            affectAllMeshesCheckbox.AutoSize = true;
+            affectAllMeshesCheckbox.Location = new Point(12, 24);
+            affectAllMeshesCheckbox.Name = "affectAllMeshesCheckbox";
+            affectAllMeshesCheckbox.Size = new Size(118, 19);
+            affectAllMeshesCheckbox.TabIndex = 2;
+            affectAllMeshesCheckbox.Text = "Affect All Meshes";
+            affectAllMeshesCheckbox.UseVisualStyleBackColor = true;
+            affectAllMeshesCheckbox.CheckedChanged += affectAllMeshesCheckbox_CheckedChanged;
+            // 
+            // contextMenuStrip1
+            // 
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.Size = new Size(61, 4);
             // 
             // ImporterOpenFileDialog
             // 
-            Controls.Add(boneWeightsMessage);
             Controls.Add(importOptionsGroupBox);
             Name = "ImporterOpenFileDialog";
             importOptionsGroupBox.ResumeLayout(false);
+            importOptionsGroupBox.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            mtdSelectorGroupBox.ResumeLayout(false);
+            weightingModeGroupBox.ResumeLayout(false);
             meshSelectorGroupBox.ResumeLayout(false);
             meshSelectorGroupBox.PerformLayout();
-            weightingModeGroupBox.ResumeLayout(false);
-            mtdSelectorGroupBox.ResumeLayout(false);
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -176,12 +226,16 @@
         private GroupBox mtdSelectorGroupBox;
         private CheckBox createDefaultBoneCheckbox;
         private GroupBox meshSelectorGroupBox;
-        private EasyCompletionComboBox meshSelector;
         private EasyCompletionComboBox mtdSelector;
         private CheckBox affectAllMeshesCheckbox;
         private Label boneWeightsMessage;
         private GroupBox weightingModeGroupBox;
         private ComboBox weightingModeSelector;
         private CheckBox autoAssignMtdCheckbox;
+        private ListBox meshSelector;
+        private GroupBox groupBox1;
+        private Label label1;
+        private ContextMenuStrip contextMenuStrip1;
+        private Label createDefaultBoneMessage;
     }
 }

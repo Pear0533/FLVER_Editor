@@ -810,7 +810,7 @@ namespace FLVER_Editor
             {
                 var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
 
-                cameraX = state.IsKeyDown(Keys.LeftShift) ? p.Length() : -p.Length();
+                cameraX = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? p.Length() : -p.Length();
                 cameraY = 0;
                 cameraZ = 0;
             }
@@ -820,7 +820,7 @@ namespace FLVER_Editor
                 var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
 
                 cameraX = 0;
-                cameraY = state.IsKeyDown(Keys.LeftShift) ? p.Length() : -p.Length();
+                cameraY = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? p.Length() : -p.Length();
                 cameraZ = 0;
             }
 
@@ -830,7 +830,7 @@ namespace FLVER_Editor
 
                 cameraX = 0;
                 cameraY = 0.01f;
-                cameraZ = state.IsKeyDown(Keys.LeftShift) ? p.Length() : -p.Length();
+                cameraZ = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? -p.Length() : p.Length();
 
             }
 
