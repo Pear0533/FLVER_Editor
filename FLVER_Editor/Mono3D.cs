@@ -94,7 +94,7 @@ namespace FLVER_Editor
             f = (Form)Control.FromHandle(Window.Handle);
             cm.Items.Add("Cancel", null, delegate
             {
-                Program.UseCheckingPoint = false;
+                UseCheckingPoint = false;
                 MainWindow.UpdateMesh();
             });
             cm.Items.Add("Check Vertex", null, delegate { DisplayVerticesInfo(); });
@@ -329,16 +329,35 @@ namespace FLVER_Editor
         public void RefreshTextures()
         {
             if (!MainWindow.TextureRefreshEnabled) return;
-            string rawFilePath = Program.FilePath;
+
+            // TODO: WIP (Pear)
+            string modelId = MainWindow.GetModelIDFromName(FilePath).ToString();
+            string fileName = Path.GetFileName(FilePath);
+            if (fileName.StartsWith("c"))
+            {
+                Tpf = MainWindow.GetChrTPF(modelId);
+                ReadTPFTextureEntries(Tpf);
+            }
+
+            // TODO: WIP (Pear)
+            if (Flver.Materials.Count == 0) return;
+            for (int i = 0; i < Flver.Materials.Count; i++)
+                MainWindow.ApplyMATBINTextures(i);
+            MainWindow.UpdateTexturesTable();
+            MainWindow.UpdateMesh();
+
+            /*
+            string rawFilePath = FilePath;
             rawFilePath = RemoveIndexSuffix(rawFilePath);
             rawFilePath = rawFilePath[..rawFilePath.IndexOf('.', StringComparison.Ordinal)];
             string tpfFilePath = $"{rawFilePath}.tpf";
-            if (Program.Tpf != null) ReadTPFTextureEntries(Program.Tpf);
+            if (Tpf.Textures.Count > 0) ReadTPFTextureEntries(Tpf);
             else if (File.Exists(tpfFilePath))
             {
-                Program.Tpf = TPF.Read(tpfFilePath);
-                ReadTPFTextureEntries(Program.Tpf);
+                Tpf = TPF.Read(tpfFilePath);
+                ReadTPFTextureEntries(Tpf);
             }
+            */
         }
 
         /// <summary>
@@ -350,7 +369,7 @@ namespace FLVER_Editor
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             testTexture = null;
-            if (!Program.LoadTexture)
+            if (!LoadTexture)
             {
                 return;
             }
@@ -504,10 +523,10 @@ namespace FLVER_Editor
             var ptDistance = float.MaxValue;
             targetVertex = null;
             targetVertexInfo = null;
-            for (var i = 0; i < Program.Vertices.Count; i++)
+            for (var i = 0; i < Vertices.Count; i++)
                 //  foreach (SoulsFormats.FLVER.Vertex vertex in Program.vertices)
             {
-                FLVER.Vertex vertex = Program.Vertices[i];
+                FLVER.Vertex vertex = Vertices[i];
                 if (vertex.Position == null) continue;
                 float dis = Vector3D.CalculateDistanceFromLine(new Vector3D(vertex.Position), x1, x2);
                 if (ptDistance > dis)
@@ -515,17 +534,17 @@ namespace FLVER_Editor
                     miniPoint = new Vector3D(vertex.Position);
                     ptDistance = dis;
                     targetVertex = vertex;
-                    targetVertexInfo = Program.VerticesInfo[i];
+                    targetVertexInfo = VerticesInfo[i];
                 }
             }
-            if (Program.SetVertexPos)
+            if (SetVertexPos)
             {
-                targetVertex.Position = new Vector3D(Program.SetVertexX, Program.SetVertexY, Program.SetVertexZ).ToNumericsVector3();
+                targetVertex.Position = new Vector3D(SetVertexX, SetVertexY, SetVertexZ).ToNumericsVector3();
             }
-            Program.UseCheckingPoint = true;
-            Program.CheckingPoint = new System.Numerics.Vector3(miniPoint.X, miniPoint.Y, miniPoint.Z);
-            if (targetVertex.Normal != null) Program.CheckingPointNormal = new System.Numerics.Vector3(targetVertex.Normal.X, targetVertex.Normal.Y, targetVertex.Normal.Z);
-            else Program.CheckingPointNormal = new System.Numerics.Vector3(0, 0, 0);
+            UseCheckingPoint = true;
+            CheckingPoint = new System.Numerics.Vector3(miniPoint.X, miniPoint.Y, miniPoint.Z);
+            if (targetVertex.Normal != null) CheckingPointNormal = new System.Numerics.Vector3(targetVertex.Normal.X, targetVertex.Normal.Y, targetVertex.Normal.Z);
+            else CheckingPointNormal = new System.Numerics.Vector3(0, 0, 0);
             MainWindow.UpdateMesh();
         }
 
@@ -533,7 +552,7 @@ namespace FLVER_Editor
         {
             if (targetVertex != null)
             {
-                string text = Program.FormatOutput(JsonConvert.SerializeObject(targetVertex));
+                string text = FormatOutput(JsonConvert.SerializeObject(targetVertex));
                 int textLength = text.Length / 2;
                 MessageBox.Show($"Parent mesh index: {targetVertexInfo.MeshIndex}\nVertex index: {targetVertexInfo.VertexIndex}\n{text.Substring(0, textLength)}",
                     "Vertex Info 1:");
@@ -553,7 +572,7 @@ namespace FLVER_Editor
                 tb.Size = new Size(330, 550);
                 tb.Location = new Point(5, 10);
                 tb.Multiline = true;
-                tb.Text = Program.FormatOutput(JsonConvert.SerializeObject(targetVertex.Position));
+                tb.Text = FormatOutput(JsonConvert.SerializeObject(targetVertex.Position));
                 var bn = new Button();
                 bn.Size = new Size(330, 35);
                 bn.Location = new Point(5, 560);
@@ -586,7 +605,7 @@ namespace FLVER_Editor
             var miniPoint = new Vector3D();
             var ptDistance = float.MaxValue;
             targetVertex = null;
-            foreach (FLVER.Vertex v in Program.Vertices)
+            foreach (FLVER.Vertex v in Vertices)
             {
                 if (v.Position == null) continue;
                 float dis = Vector3D.CalculateDistanceFromLine(new Vector3D(v.Position), x1, x2);
@@ -597,15 +616,15 @@ namespace FLVER_Editor
                     targetVertex = v;
                 }
             }
-            if (Program.SetVertexPos) targetVertex.Position = new Vector3D(Program.SetVertexX, Program.SetVertexY, Program.SetVertexZ).ToNumericsVector3();
-            Program.UseCheckingPoint = true;
-            Program.CheckingPoint = new System.Numerics.Vector3(miniPoint.X, miniPoint.Y, miniPoint.Z);
-            if (targetVertex.Normal != null) Program.CheckingPointNormal = new System.Numerics.Vector3(targetVertex.Normal.X, targetVertex.Normal.Y, targetVertex.Normal.Z);
-            else Program.CheckingPointNormal = new System.Numerics.Vector3(0, 0, 0);
+            if (SetVertexPos) targetVertex.Position = new Vector3D(SetVertexX, SetVertexY, SetVertexZ).ToNumericsVector3();
+            UseCheckingPoint = true;
+            CheckingPoint = new System.Numerics.Vector3(miniPoint.X, miniPoint.Y, miniPoint.Z);
+            if (targetVertex.Normal != null) CheckingPointNormal = new System.Numerics.Vector3(targetVertex.Normal.X, targetVertex.Normal.Y, targetVertex.Normal.Z);
+            else CheckingPointNormal = new System.Numerics.Vector3(0, 0, 0);
             MainWindow.UpdateMesh();
             if (targetVertex != null)
             {
-                string text = Program.FormatOutput(JsonConvert.SerializeObject(targetVertex));
+                string text = FormatOutput(JsonConvert.SerializeObject(targetVertex));
                 int l = text.Length / 2;
                 MessageBox.Show(text.Substring(0, l), "Vertex info1:");
                 MessageBox.Show(text.Substring(l, text.Length - l), "Vertex info2:");
@@ -634,7 +653,7 @@ namespace FLVER_Editor
                     var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
                     float nX = cameraY;
                     float nY = -cameraX;
-                    System.Numerics.Vector3 p2 = Program.RotateLine(p, new System.Numerics.Vector3(0, 0, 0),
+                    System.Numerics.Vector3 p2 = RotateLine(p, new System.Numerics.Vector3(0, 0, 0),
                         new System.Numerics.Vector3(nX, nY, 0), mdy * 0.01f);
                     cameraX = p2.X;
                     cameraY = p2.Y;
@@ -687,12 +706,12 @@ namespace FLVER_Editor
             }
             if (state.IsKeyDown(Keys.B) && !prevState.IsKeyDown(Keys.B))
             {
-                Program.BoneDisplay = !Program.BoneDisplay;
+                BoneDisplay = !BoneDisplay;
                 MainWindow.UpdateMesh();
             }
             if (state.IsKeyDown(Keys.M) && !prevState.IsKeyDown(Keys.M))
             {
-                Program.DummyDisplay = !Program.DummyDisplay;
+                DummyDisplay = !DummyDisplay;
                 MainWindow.UpdateMesh();
             }
 
@@ -712,7 +731,7 @@ namespace FLVER_Editor
                 var miniPoint = new Vector3D();
                 var ptDistance = float.MaxValue;
                 FLVER.Vertex targetV = null;
-                foreach (FLVER.Vertex v in Program.Vertices)
+                foreach (FLVER.Vertex v in Vertices)
                 {
                     if (v.Position == null) continue;
                     float dis = Vector3D.CalculateDistanceFromLine(new Vector3D(v.Position), x1, x2);
@@ -723,18 +742,18 @@ namespace FLVER_Editor
                         targetV = v;
                     }
                 }
-                if (Program.SetVertexPos)
+                if (SetVertexPos)
                 {
-                    targetV.Position = new Vector3D(Program.SetVertexX, Program.SetVertexY, Program.SetVertexZ).ToNumericsVector3();
+                    targetV.Position = new Vector3D(SetVertexX, SetVertexY, SetVertexZ).ToNumericsVector3();
                 }
-                Program.UseCheckingPoint = true;
-                Program.CheckingPoint = new System.Numerics.Vector3(miniPoint.X, miniPoint.Y, miniPoint.Z);
-                if (targetV.Normal != null) Program.CheckingPointNormal = new System.Numerics.Vector3(targetV.Normal.X, targetV.Normal.Y, targetV.Normal.Z);
-                else Program.CheckingPointNormal = new System.Numerics.Vector3(0, 0, 0);
+                UseCheckingPoint = true;
+                CheckingPoint = new System.Numerics.Vector3(miniPoint.X, miniPoint.Y, miniPoint.Z);
+                if (targetV.Normal != null) CheckingPointNormal = new System.Numerics.Vector3(targetV.Normal.X, targetV.Normal.Y, targetV.Normal.Z);
+                else CheckingPointNormal = new System.Numerics.Vector3(0, 0, 0);
                 MainWindow.UpdateMesh();
                 if (targetV != null)
                 {
-                    string text = Program.FormatOutput(JsonConvert.SerializeObject(targetV));
+                    string text = FormatOutput(JsonConvert.SerializeObject(targetV));
                     int l = text.Length / 2;
                     MessageBox.Show(text.Substring(0, l), "Vertex info1:");
                     MessageBox.Show(text.Substring(l, text.Length - l), "Vertex info2:");
@@ -775,7 +794,7 @@ namespace FLVER_Editor
             {
                 //mouseY -= (50 * delta);
                 var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                System.Numerics.Vector3 p2 = Program.RotateLine(p, new System.Numerics.Vector3(0, 0, 0),
+                System.Numerics.Vector3 p2 = RotateLine(p, new System.Numerics.Vector3(0, 0, 0),
                     new System.Numerics.Vector3(cameraY, -cameraX, 0), 3 * delta);
                 cameraX = p2.X;
                 cameraY = p2.Y;
@@ -784,7 +803,7 @@ namespace FLVER_Editor
             if (state.IsKeyDown(Keys.Down))
             {
                 var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                System.Numerics.Vector3 p2 = Program.RotateLine(p, new System.Numerics.Vector3(0, 0, 0),
+                System.Numerics.Vector3 p2 = RotateLine(p, new System.Numerics.Vector3(0, 0, 0),
                     new System.Numerics.Vector3(cameraY, -cameraX, 0), -3 * delta);
                 cameraX = p2.X;
                 cameraY = p2.Y;
@@ -934,7 +953,7 @@ namespace FLVER_Editor
                             GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, vertices.Length / 2);
                         }
                     }
-                    if (renderMode == RenderMode.BothNoTex || Program.LoadTexture == false)
+                    if (renderMode == RenderMode.BothNoTex || LoadTexture == false)
                     {
                         if (faceSets.Length > 0)
                         {

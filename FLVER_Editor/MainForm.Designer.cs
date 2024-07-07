@@ -2115,7 +2115,7 @@
         private Label copyrightStr;
         private SplitContainer materialsPagePanelsContainer;
         private DataGridView materialsTable;
-        private DataGridView texturesTable;
+        private static DataGridView texturesTable;
         private SplitContainer meshPagePanelsContainer;
         private DataGridView meshTable;
         private GroupBox meshModifiersContainer;
