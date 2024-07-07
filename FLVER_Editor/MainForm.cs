@@ -1851,41 +1851,22 @@ public partial class MainWindow : Form
         int index = bonesTable.FirstDisplayedScrollingRowIndex;
         try
         {
-            UpdateUndoState();
             string bonesTableValue = bonesTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
-            if (bonesTableValue != null)
+
+            if (bonesTableValue is not null)
             {
-                switch (e.ColumnIndex)
+                BonesTableCellValueUpdatedAction action = new(bonesTableValue, e.RowIndex, e.ColumnIndex, () =>
                 {
-                    case 1:
-                        Flver.Bones[e.RowIndex].Name = bonesTableValue;
-                        break;
-                    case 2:
-                        Flver.Bones[e.RowIndex].ParentIndex = short.Parse(bonesTableValue);
-                        break;
-                    case 3:
-                        Flver.Bones[e.RowIndex].ChildIndex = short.Parse(bonesTableValue);
-                        break;
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 7:
-                    case 8:
-                        string[] comp = bonesTableValue.Split(',');
-                        Vector3 vector = new(float.Parse(comp[0]), float.Parse(comp[1]), float.Parse(comp[2]));
-                        Flver.Bones[e.RowIndex].Translation = e.ColumnIndex == 4 ? vector : Flver.Bones[e.RowIndex].Translation;
-                        Flver.Bones[e.RowIndex].Scale = e.ColumnIndex == 5 ? vector : Flver.Bones[e.RowIndex].Scale;
-                        Flver.Bones[e.RowIndex].Rotation = e.ColumnIndex == 6 ? vector : Flver.Bones[e.RowIndex].Rotation;
-                        Flver.Bones[e.RowIndex].BoundingBoxMin = e.ColumnIndex == 7 ? vector : Flver.Bones[e.RowIndex].BoundingBoxMin;
-                        Flver.Bones[e.RowIndex].BoundingBoxMax = e.ColumnIndex == 8 ? vector : Flver.Bones[e.RowIndex].BoundingBoxMax;
-                        break;
-                }
+                    UpdateUI();
+                    UpdateMesh();
+                    bonesTable.FirstDisplayedScrollingRowIndex = index;
+                });
+
+                ActionManager.Apply(action);
             }
         }
         catch { }
-        UpdateUI();
-        UpdateMesh();
-        bonesTable.FirstDisplayedScrollingRowIndex = index;
+
     }
 
     private static string ReplaceModelMask(string materialName, string newModelMaskStr)
@@ -1909,7 +1890,7 @@ public partial class MainWindow : Form
         int index = materialsTable.FirstDisplayedScrollingRowIndex;
         try
         {
-            UpdateUndoState();
+            //UpdateUndoState();
             string materialName = Flver.Materials[e.RowIndex].Name;
             string materialsTableValue = materialsTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
             if (materialsTableValue != null)
@@ -1947,7 +1928,6 @@ public partial class MainWindow : Form
         int index = texturesTable.FirstDisplayedScrollingRowIndex;
         try
         {
-            UpdateUndoState();
             string textureTableValue = texturesTable[e.ColumnIndex, e.RowIndex].Value?.ToString() ?? "";
 
 
