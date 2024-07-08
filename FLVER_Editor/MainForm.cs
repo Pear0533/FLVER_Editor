@@ -1820,17 +1820,17 @@ public partial class MainWindow : Form
         string modelFilePath = dialog.FileName;
         if (FlverFilePath.EndsWith(".dcx"))
         {
-            int newModelId = GetModelIDFromName(modelFilePath);
-            if (newModelId != 0)
+            int newPartID = GetModelIDFromName(modelFilePath);
+            if (newPartID != 0)
             {
-                int ogModelID = GetModelIDFromName(FlverFilePath);
-                if (ogModelID != -1)
+                int ogModelPartID = GetModelIDFromName(FlverFilePath);
+                if (ogModelPartID != -1)
                 {
                     foreach (BinderFile file in FlverBnd.Files)
                     {
-                        if (!Path.GetFileName(file.Name).Contains(ogModelID.ToString())) continue;
+                        if (!Path.GetFileName(file.Name).Contains(ogModelPartID.ToString())) continue;
                         if (file.Name == null) continue;
-                        string newInternalPath = file.Name.Replace(ogModelID.ToString(), newModelId.ToString());
+                        string newInternalPath = file.Name.Replace(ogModelPartID.ToString(), newPartID.ToString());
                         file.Name = newInternalPath;
                     }
                 }
