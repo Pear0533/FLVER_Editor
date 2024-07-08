@@ -351,11 +351,11 @@ namespace FLVER_Editor
             rawFilePath = RemoveIndexSuffix(rawFilePath);
             rawFilePath = rawFilePath[..rawFilePath.IndexOf('.', StringComparison.Ordinal)];
             string tpfFilePath = $"{rawFilePath}.tpf";
-            if (Tpf.Textures.Count > 0) ReadTPFTextureEntries(Tpf);
+            if (Program.Tpf != null) ReadTPFTextureEntries(Program.Tpf);
             else if (File.Exists(tpfFilePath))
             {
-                Tpf = TPF.Read(tpfFilePath);
-                ReadTPFTextureEntries(Tpf);
+                Program.Tpf = TPF.Read(tpfFilePath);
+                ReadTPFTextureEntries(Program.Tpf);
             }
             */
         }
