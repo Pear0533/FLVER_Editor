@@ -1,4 +1,5 @@
 ﻿using FbxDataExtractor;
+using FLVER_Editor.Actions;
 using FLVER_Editor.FbxImporter.ViewModels;
 using SoulsFormats;
 using Win32Types;
@@ -10,7 +11,7 @@ public static class Importer
 {
     public static MeshImportOptions GetDefaultImportOptions()
     {
-        return new MeshImportOptions(false, MTDs[0], MaterialInfoBank, WeightingMode.Skin);
+        return new MeshImportOptions(false, MTDs[DefaultMTDIndex], MaterialInfoBank, WeightingMode.Skin);
     }
 
     private static void ShowImportErrorDialog(string fbxPath, Exception e)
@@ -33,7 +34,7 @@ public static class Importer
         return true;
     }
 
-    public static bool ImportFbxAsync(FLVER2 flver, string fbxPath)
+    public static bool ImportFbxAsync(FLVER2 flver, string fbxPath, Action refresher)
     {
         List<FbxMeshDataViewModel> meshes;
         try
@@ -45,17 +46,24 @@ public static class Importer
             ShowImportErrorDialog(fbxPath, e);
             return false;
         }
-        meshes.ForEach(i => i.ToFlverMesh(flver, GetDefaultImportOptions()));
+
+        MeshImportOptions meshImport = GetDefaultImportOptions();
+        Dictionary<FbxMeshDataViewModel, MeshImportOptions> meshData = new();
+        meshes.ForEach(x => meshData.Add(x, meshImport));
+
+        ImportMeshesToFlverAction action = new(flver, meshData, refresher);
+        ActionManager.Apply(action);
+
         return true;
     }
 
-    private static void AddImportDialogMeshesToFlver(FLVER2 flver, Dictionary<FbxMeshDataViewModel, MeshImportOptions> meshes)
+    private static void AddImportDialogMeshesToFlver(FLVER2 flver, Dictionary<FbxMeshDataViewModel, MeshImportOptions> meshes, Action refresher)
     {
-        MainWindow.UpdateUndoState();
-        meshes.ToList().ForEach(i => i.Key.ToFlverMesh(flver, i.Value));
+        ImportMeshesToFlverAction action = new(flver, meshes, refresher);
+        ActionManager.Apply(action);
     }
 
-    public static bool ImportFbxWithDialogAsync(FLVER2 flver)
+    public static bool ImportFbxWithDialogAsync(FLVER2 flver, Action refresher)
     {
         ImporterOpenFileDialog dialog = new()
         {
@@ -64,7 +72,8 @@ public static class Importer
             FileDlgCaption = "Open FBX File"
         };
         if (dialog.ShowDialog() != DialogResult.OK || !dialog.HasImportedModel) return false;
-        AddImportDialogMeshesToFlver(flver, dialog.Meshes);
+        ImportMeshesToFlverAction action = new(flver, dialog.Meshes, refresher);
+        ActionManager.Apply(action);
         MainWindow.ShowInformationDialog($"Successfully imported {Path.GetFileName(dialog.FileDlgFileName)}!");
         return true;
     }

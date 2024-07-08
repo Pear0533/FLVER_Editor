@@ -20,6 +20,7 @@ using MessageBox = System.Windows.Forms.MessageBox;
 using Point = System.Drawing.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using static FLVER_Editor.Program;
+using FLVER_Editor.Actions;
 
 namespace FLVER_Editor
 {
@@ -198,61 +199,28 @@ namespace FLVER_Editor
 
         private void DeleteVertexBelow()
         {
-            MainWindow.UpdateUndoState();
             FLVER2.Mesh m = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
             int index = targetVertexInfo.VertexIndex;
             float yValue = targetVertex.Position.Y;
-            for (var i = 0; i < m.Vertices.Count; i++)
-            {
-                if (m.Vertices[i].Position.Y < yValue)
-                {
-                    DeleteMeshVertexFaceSet(m, i);
-                    m.Vertices[i].Position = new System.Numerics.Vector3(0, 0, 0);
-                }
-            }
-            MainWindow.UpdateMesh();
+            DeleteVertexBelowAction action = new(m, yValue, () => MainWindow.UpdateMesh());
+            ActionManager.Apply(action);
         }
 
         private void DeleteVertexAbove()
         {
-            MainWindow.UpdateUndoState();
             FLVER2.Mesh m = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
             int index = targetVertexInfo.VertexIndex;
             float yValue = targetVertex.Position.Y;
-            for (var i = 0; i < m.Vertices.Count; i++)
-            {
-                if (m.Vertices[i].Position.Y > yValue)
-                {
-                    DeleteMeshVertexFaceSet(m, i);
-                    m.Vertices[i].Position = new System.Numerics.Vector3(0, 0, 0);
-                }
-            }
-            MainWindow.UpdateMesh();
-        }
-
-        private void DeleteMeshVertexFaceSet(FLVER2.Mesh mesh, int index)
-        {
-            foreach (FLVER2.FaceSet faceSet in mesh.FaceSets)
-            {
-                for (int i = 0; i + 2 < faceSet.Indices.Count; i += 3)
-                {
-                    if (faceSet.Indices[i] == index || faceSet.Indices[i + 1] == index || faceSet.Indices[i + 2] == index)
-                    {
-                        faceSet.Indices[i] = index;
-                        faceSet.Indices[i + 1] = index;
-                        faceSet.Indices[i + 2] = index;
-                    }
-                }
-            }
+            DeleteVertexAboveAction action = new(m, yValue, () => MainWindow.UpdateMesh());
+            ActionManager.Apply(action);
         }
 
         private void DeleteVertex()
         {
-            MainWindow.UpdateUndoState();
             FLVER2.Mesh mesh = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
             int index = targetVertexInfo.VertexIndex;
-            DeleteMeshVertexFaceSet(mesh, index);
-            targetVertex.Position = new System.Numerics.Vector3(0, 0, 0);
+            DeleteVertexAction action = new DeleteVertexAction(mesh, () => MainWindow.UpdateMesh());
+            ActionManager.Apply(action);
             MainWindow.UpdateMesh();
         }
 
@@ -611,10 +579,8 @@ namespace FLVER_Editor
                 bn.Text = "Modify";
                 bn.Click += (s, o) =>
                 {
-                    MainWindow.UpdateUndoState();
-                    var vn = JsonConvert.DeserializeObject<System.Numerics.Vector3>(tb.Text);
-                    targetVertex.Position = vn;
-                    MainWindow.UpdateMesh();
+                    var newPosition = JsonConvert.DeserializeObject<System.Numerics.Vector3>(tb.Text);
+                    UpdateVertexPosition action = new(newPosition, targetVertex, () => MainWindow.UpdateMesh());
                 };
                 fn.Controls.Add(tb);
                 fn.Controls.Add(bn);
@@ -861,7 +827,7 @@ namespace FLVER_Editor
             {
                 var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
 
-                cameraX = state.IsKeyDown(Keys.LeftShift) ? p.Length() : -p.Length();
+                cameraX = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? p.Length() : -p.Length();
                 cameraY = 0;
                 cameraZ = 0;
             }
@@ -871,7 +837,7 @@ namespace FLVER_Editor
                 var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
 
                 cameraX = 0;
-                cameraY = state.IsKeyDown(Keys.LeftShift) ? p.Length() : -p.Length();
+                cameraY = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? p.Length() : -p.Length();
                 cameraZ = 0;
             }
 
@@ -881,13 +847,13 @@ namespace FLVER_Editor
 
                 cameraX = 0;
                 cameraY = 0.01f;
-                cameraZ = state.IsKeyDown(Keys.LeftShift) ? p.Length() : -p.Length();
+                cameraZ = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? -p.Length() : p.Length();
 
             }
 
             
             // get selected mesh
-            if (state.IsKeyDown(Keys.Decimal))
+            if (state.IsKeyDown(Keys.C))
             {
                 // get the position of all yellow vertices
                    
@@ -902,8 +868,14 @@ namespace FLVER_Editor
                     offsetX = center.X;
                     offsetY = center.Y;
                     offsetZ = center.Z;
-
-
+                }
+                else
+                {
+                    // get the position of the all vertex
+                    // average the position of all vertices
+                    offsetX = 0;
+                    offsetY = 0;
+                    offsetZ = 0;
                 }
             }
 
@@ -914,6 +886,17 @@ namespace FLVER_Editor
              if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D4)) { Program.RotationOrder = RotationOrder.YZX; Program.updateVertices(); }
              if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D5)) { Program.RotationOrder = RotationOrder.ZXY; Program.updateVertices(); }
              if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D6)) { Program.RotationOrder = RotationOrder.ZYX; Program.updateVertices(); }*/
+
+            if ((state.IsKeyDown(Keys.LeftControl) || state.IsKeyDown(Keys.RightControl)) && state.IsKeyDown(Keys.Z))
+            {
+                MainWindow.Instance?.Undo();
+            }
+
+            if ((state.IsKeyDown(Keys.LeftControl) || state.IsKeyDown(Keys.RightControl)) && state.IsKeyDown(Keys.Y))
+            {
+                MainWindow.Instance?.Redo();
+            }
+
             if (state.IsKeyDown(Keys.F))
             {
                 MainWindow.UpdateMesh();
@@ -924,11 +907,6 @@ namespace FLVER_Editor
             prevState = state;
             prevMState = mState;
             base.Update(gameTime);
-        }
-
-        private Vector3 RotatePoint()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
