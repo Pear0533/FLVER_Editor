@@ -581,6 +581,7 @@ namespace FLVER_Editor
                 {
                     var newPosition = JsonConvert.DeserializeObject<System.Numerics.Vector3>(tb.Text);
                     UpdateVertexPosition action = new(newPosition, targetVertex, () => MainWindow.UpdateMesh());
+                    ActionManager.Apply(action);
                 };
                 fn.Controls.Add(tb);
                 fn.Controls.Add(bn);
