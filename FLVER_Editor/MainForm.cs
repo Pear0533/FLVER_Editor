@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -697,9 +698,11 @@ public partial class MainWindow : Form
             if (currMaterial == null) continue;
             List<FLVER2.Texture> texList = currMaterial.Textures;
             if (texList.Count <= 0) continue;
+            // TODO: WIP (Pear)
+            string texturePath = texList.Find(i => i.Type.Contains("Albedo")).Path ?? "";
             VertexTexMap vertexTexMap = new()
             {
-                textureName = Path.GetFileNameWithoutExtension(texList[0].Path),
+                textureName = Path.GetFileNameWithoutExtension(texturePath),
                 faceSetTextures = faceSetPosColorTexList.ToArray()
             };
             faceSetPosColorTexList.Clear();
@@ -1117,7 +1120,7 @@ public partial class MainWindow : Form
         OpenFLVERFile();
     }
 
-    private void UpdateTexturesTable()
+    public static void UpdateTexturesTable()
     {
         if (SelectedMaterialIndex == -1) return;
         texturesTable.Rows.Clear();
@@ -1818,10 +1821,10 @@ public partial class MainWindow : Form
         string modelFilePath = dialog.FileName;
         if (FlverFilePath.EndsWith(".dcx"))
         {
-            int newPartID = GetModelPartIDFromName(modelFilePath);
+            int newPartID = GetModelIDFromName(modelFilePath);
             if (newPartID != 0)
             {
-                int ogModelPartID = GetModelPartIDFromName(FlverFilePath);
+                int ogModelPartID = GetModelIDFromName(FlverFilePath);
                 if (ogModelPartID != -1)
                 {
                     foreach (BinderFile file in FlverBnd.Files)
@@ -2573,6 +2576,29 @@ public partial class MainWindow : Form
         TopMost = false;
     }
 
+    public static void ApplyMATBINTextures(int materialIndex)
+    {
+        // TODO: Remove this (Pear)
+        MatBinBndPath = "D:\\SteamLibrary\\steamapps\\common\\ELDEN RING\\Game\\material\\allmaterial.matbinbnd.dcx";
+        MatBinBnd = BND4.Read(MatBinBndPath);
+
+        foreach (BinderFile matBinFile in MatBinBnd.Files)
+        {
+            string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
+            string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
+            if (rawMaterialFileName != rawMatBinFileName) continue;
+            MATBIN matBin = new();
+            matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
+            if (matBin.Samplers.Any(sampler => sampler.Path != ""))
+            {
+                Flver.Materials[materialIndex].Textures.Clear();
+                foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
+                    Flver.Materials[materialIndex].Textures.Add(newTexture);
+            }
+            break;
+        }
+    }
+
     private void ApplyMATBINTexturesButtonClicked(object sender, EventArgs e)
     {
         if (MatBinBndPath == null)
@@ -2600,21 +2626,7 @@ public partial class MainWindow : Form
             }
         }
         if (MatBinBnd == null) MatBinBnd = BND4.Read(MatBinBndPath);
-        foreach (BinderFile matBinFile in MatBinBnd.Files)
-        {
-            string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[SelectedMaterialIndex].MTD)?.ToLower();
-            string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
-            if (rawMaterialFileName != rawMatBinFileName) continue;
-            MATBIN matBin = new();
-            matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
-            if (matBin.Samplers.Any(sampler => sampler.Path != ""))
-            {
-                Flver.Materials[SelectedMaterialIndex].Textures.Clear();
-                foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
-                    Flver.Materials[SelectedMaterialIndex].Textures.Add(newTexture);
-            }
-            break;
-        }
+        ApplyMATBINTextures(SelectedMaterialIndex);
         UpdateTexturesTable();
     }
 
@@ -3037,7 +3049,7 @@ public partial class MainWindow : Form
         SolveAllMeshLODs();
     }
 
-    private static int GetModelPartIDFromName(string name)
+    public static int GetModelIDFromName(string name)
     {
         string idMatch = Regex.Match(Path.GetFileName(name), @"\d+").Value;
         int.TryParse(idMatch, out int id);
@@ -3280,5 +3292,45 @@ public partial class MainWindow : Form
     {
         GhostModel = null;
         UpdateMesh();
+    }
+
+    public static TPF GetChrTPF(string chrid)
+    {
+        // TODO: Add support for older games... (Pear)
+        string version = GetFlverVersion(Flver);
+        string chrFolderPath = Directory.GetParent(FlverFilePath)?.FullName ?? "";
+        string chrTexBndPath = version switch
+        {
+            "DS3" or "Sekiro" or "AC6" => $@"{chrFolderPath}\c{chrid}.texbnd.dcx",
+            "ER" => $@"{chrFolderPath}\c{chrid}_h.texbnd.dcx",
+            _ => ""
+        };
+        try
+        {
+            BND4 bnd = BND4.Read(chrTexBndPath);
+            return TPF.Read(bnd.Files[0].Bytes);
+        }
+        catch
+        {
+            return new TPF();
+        }
+    }
+
+    public static TPF GetAetTPF(string aetTexturePath)
+    {
+        // TODO: Add support for AC6 and older games... (Pear)
+        string aetTpfFolderName = Directory.GetParent(aetTexturePath)?.Name ?? "";
+        string aetTpfName = Path.GetFileNameWithoutExtension(aetTexturePath);
+        aetTpfName = aetTpfName[..aetTpfName.LastIndexOf("_", StringComparison.Ordinal)];
+        string aetFolderPath = $"{FilePath[..FilePath.IndexOf("\\aeg\\", StringComparison.Ordinal)]}\\aet";
+        string aetTpfPath = $"{aetFolderPath}\\{aetTpfFolderName}\\{aetTpfName}.tpf.dcx";
+        try
+        {
+            return TPF.Read(aetTpfPath);
+        }
+        catch
+        {
+            return new TPF();
+        }
     }
 }
