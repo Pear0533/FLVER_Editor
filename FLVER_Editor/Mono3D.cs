@@ -326,6 +326,31 @@ namespace FLVER_Editor
             }
         }
 
+        public void LoadAETTextures(int materialIndex)
+        {
+            // TODO: Remove this (Pear)
+            string matBinBndPath = "D:\\SteamLibrary\\steamapps\\common\\ELDEN RING\\Game\\material\\allmaterial.matbinbnd.dcx";
+            BND4 matBinBnd = BND4.Read(matBinBndPath);
+
+            foreach (BinderFile matBinFile in matBinBnd.Files)
+            {
+                string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
+                string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
+                if (rawMaterialFileName != rawMatBinFileName) continue;
+                MATBIN matBin = new();
+                matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
+                if (matBin.Samplers.Any(sampler => sampler.Path != ""))
+                {
+                    foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
+                    {
+                        Tpf = MainWindow.GetAetTPF(newTexture.Path);
+                        ReadTPFTextureEntries(Tpf);
+                    }
+                }
+                break;
+            }
+        }
+
         public void RefreshTextures()
         {
             if (!MainWindow.TextureRefreshEnabled) return;
@@ -337,6 +362,13 @@ namespace FLVER_Editor
             {
                 Tpf = MainWindow.GetChrTPF(modelId);
                 ReadTPFTextureEntries(Tpf);
+            }
+            else if (fileName.StartsWith("aeg"))
+            {
+                // TODO: This needs major cleanup... (Pear)
+                if (Flver.Materials.Count == 0) return;
+                for (int i = 0; i < Flver.Materials.Count; i++)
+                    LoadAETTextures(i);
             }
 
             // TODO: WIP (Pear)

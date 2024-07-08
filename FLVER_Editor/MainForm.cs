@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -3304,7 +3305,32 @@ public partial class MainWindow : Form
             "ER" => $@"{chrFolderPath}\c{chrid}_h.texbnd.dcx",
             _ => ""
         };
-        BND4 bnd = BND4.Read(chrTexBndPath);
-        return TPF.Read(bnd.Files[0].Bytes);
+        try
+        {
+            BND4 bnd = BND4.Read(chrTexBndPath);
+            return TPF.Read(bnd.Files[0].Bytes);
+        }
+        catch
+        {
+            return new TPF();
+        }
+    }
+
+    public static TPF GetAetTPF(string aetTexturePath)
+    {
+        // TODO: Add support for AC6 and older games... (Pear)
+        string aetTpfFolderName = Directory.GetParent(aetTexturePath)?.Name ?? "";
+        string aetTpfName = Path.GetFileNameWithoutExtension(aetTexturePath);
+        aetTpfName = aetTpfName[..aetTpfName.LastIndexOf("_", StringComparison.Ordinal)];
+        string aetFolderPath = $"{FilePath[..FilePath.IndexOf("\\aeg\\", StringComparison.Ordinal)]}\\aet";
+        string aetTpfPath = $"{aetFolderPath}\\{aetTpfFolderName}\\{aetTpfName}.tpf.dcx";
+        try
+        {
+            return TPF.Read(aetTpfPath);
+        }
+        catch
+        {
+            return new TPF();
+        }
     }
 }
