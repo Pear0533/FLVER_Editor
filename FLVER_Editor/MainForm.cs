@@ -2393,22 +2393,25 @@ public partial class MainWindow : Form
     {
         // TODO: Remove this (Pear)
         MatBinBndPath = "D:\\SteamLibrary\\steamapps\\common\\ELDEN RING\\Game\\material\\allmaterial.matbinbnd.dcx";
-        MatBinBnd = BND4.Read(MatBinBndPath);
-
-        foreach (BinderFile matBinFile in MatBinBnd.Files)
+        if (File.Exists(MatBinBndPath))
         {
-            string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
-            string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
-            if (rawMaterialFileName != rawMatBinFileName) continue;
-            MATBIN matBin = new();
-            matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
-            if (matBin.Samplers.Any(sampler => sampler.Path != ""))
+            MatBinBnd = BND4.Read(MatBinBndPath);
+
+            foreach (BinderFile matBinFile in MatBinBnd.Files)
             {
-                Flver.Materials[materialIndex].Textures.Clear();
-                foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
-                    Flver.Materials[materialIndex].Textures.Add(newTexture);
+                string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
+                string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
+                if (rawMaterialFileName != rawMatBinFileName) continue;
+                MATBIN matBin = new();
+                matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
+                if (matBin.Samplers.Any(sampler => sampler.Path != ""))
+                {
+                    Flver.Materials[materialIndex].Textures.Clear();
+                    foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
+                        Flver.Materials[materialIndex].Textures.Add(newTexture);
+                }
+                break;
             }
-            break;
         }
     }
 

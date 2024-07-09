@@ -229,13 +229,13 @@ namespace FLVER_Editor
             switch (e.Button)
             {
                 case MouseButtons.Right:
-                {
-                    f.ContextMenuStrip = null;
-                    prevMState = Mouse.GetState();
-                    CheckVerticesSilent();
-                    f.ContextMenuStrip = null;
-                    //file.ContextMenu.Show();
-                }
+                    {
+                        f.ContextMenuStrip = null;
+                        prevMState = Mouse.GetState();
+                        CheckVerticesSilent();
+                        f.ContextMenuStrip = null;
+                        //file.ContextMenu.Show();
+                    }
                     break;
             }
         }
@@ -245,18 +245,18 @@ namespace FLVER_Editor
             switch (e.Button)
             {
                 case MouseButtons.Right:
-                {
-                    if (!rightClickSilence)
                     {
-                        f.ContextMenuStrip = cm;
-                        f.ContextMenuStrip.Show(f, new Point(e.X + 1, e.Y + 1)); //places the menu at the pointer position
+                        if (!rightClickSilence)
+                        {
+                            f.ContextMenuStrip = cm;
+                            f.ContextMenuStrip.Show(f, new Point(e.X + 1, e.Y + 1)); //places the menu at the pointer position
+                        }
+                        else if (prevState.IsKeyDown(Keys.LeftAlt) && rightClickSilence)
+                        {
+                            DeleteVertex();
+                            // System.Windows.MessageBox.Show("Ctrl + Right Click pressed. Switch To Right Click Slience Mode.");
+                        }
                     }
-                    else if (prevState.IsKeyDown(Keys.LeftAlt) && rightClickSilence)
-                    {
-                        DeleteVertex();
-                        // System.Windows.MessageBox.Show("Ctrl + Right Click pressed. Switch To Right Click Slience Mode.");
-                    }
-                }
                     break;
             }
         }
@@ -298,24 +298,28 @@ namespace FLVER_Editor
         {
             // TODO: Remove this (Pear)
             string matBinBndPath = "D:\\SteamLibrary\\steamapps\\common\\ELDEN RING\\Game\\material\\allmaterial.matbinbnd.dcx";
-            BND4 matBinBnd = BND4.Read(matBinBndPath);
 
-            foreach (BinderFile matBinFile in matBinBnd.Files)
+            if (File.Exists(matBinBndPath))
             {
-                string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
-                string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
-                if (rawMaterialFileName != rawMatBinFileName) continue;
-                MATBIN matBin = new();
-                matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
-                if (matBin.Samplers.Any(sampler => sampler.Path != ""))
+                BND4 matBinBnd = BND4.Read(matBinBndPath);
+
+                foreach (BinderFile matBinFile in matBinBnd.Files)
                 {
-                    foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
+                    string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
+                    string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
+                    if (rawMaterialFileName != rawMatBinFileName) continue;
+                    MATBIN matBin = new();
+                    matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
+                    if (matBin.Samplers.Any(sampler => sampler.Path != ""))
                     {
-                        Tpf = MainWindow.GetAetTPF(newTexture.Path);
-                        ReadTPFTextureEntries(Tpf);
+                        foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
+                        {
+                            Tpf = MainWindow.GetAetTPF(newTexture.Path);
+                            ReadTPFTextureEntries(Tpf);
+                        }
                     }
+                    break;
                 }
-                break;
             }
         }
 
@@ -524,7 +528,7 @@ namespace FLVER_Editor
             targetVertex = null;
             targetVertexInfo = null;
             for (var i = 0; i < Program.Vertices.Count; i++)
-                //  foreach (SoulsFormats.FLVER.Vertex vertex in Program.vertices)
+            //  foreach (SoulsFormats.FLVER.Vertex vertex in Program.vertices)
             {
                 FLVER.Vertex vertex = Program.Vertices[i];
                 if (vertex.Position == null) continue;
@@ -852,12 +856,12 @@ namespace FLVER_Editor
 
             }
 
-            
+
             // get selected mesh
             if (state.IsKeyDown(Keys.C))
             {
                 // get the position of all yellow vertices
-                   
+
                 var selectedVertices = vertices.Where(v => v.Color.G == 255 && v.Color.R == 255);
 
                 // if there are any yellow vertices
@@ -907,6 +911,7 @@ namespace FLVER_Editor
             // NOTE: Add your update logic here
             prevState = state;
             prevMState = mState;
+            // TODO: FIX DUMMY DISPLAY (metty)
             base.Update(gameTime);
         }
 
