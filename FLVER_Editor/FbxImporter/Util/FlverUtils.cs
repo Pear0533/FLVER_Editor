@@ -100,7 +100,6 @@ public static class FlverUtils
 
     public static void AddNodesToSkeletons(this FLVER2 flver)
     {
-        if (flver.Skeletons == null) return;
         flver.AddNodesToSkeleton(flver.Skeletons.BaseSkeleton);
         flver.AddNodesToSkeleton(flver.Skeletons.AllSkeletons);
     }
