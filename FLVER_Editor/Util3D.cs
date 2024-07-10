@@ -77,7 +77,7 @@ namespace FLVER_Editor
         /// <param name="bones">The list of bones to compute the transform from.</param>
         /// <param name="startIndex">The starting bone index the vector was binded to.</param>
         /// <returns>The final transform for a vector.</returns>
-        public static System.Numerics.Matrix4x4 ComputeTransform(List<FLVER.Bone> bones, int startIndex)
+        public static System.Numerics.Matrix4x4 ComputeTransform(List<FLVER.Node> bones, int startIndex)
         {
             // For now this error checking will do, Im not sure if I should throw on this or not though
             if (bones.Count < 1)
@@ -110,11 +110,11 @@ namespace FLVER_Editor
             {
                 int boneIndiceIndex = vertex.NormalW;
 
-                var bone = model.Bones[mesh.BoneIndices[boneIndiceIndex]];
+                var bone = model.Nodes[mesh.BoneIndices[boneIndiceIndex]];
                 System.Numerics.Matrix4x4 transform = bone.ComputeLocalTransform();
                 while (bone.ParentIndex != -1)
                 {
-                    bone = model.Bones[bone.ParentIndex];
+                    bone = model.Nodes[bone.ParentIndex];
                     transform *= bone.ComputeLocalTransform();
                 }
 
@@ -127,11 +127,11 @@ namespace FLVER_Editor
                 for (var i = 0; i < vertex.BoneIndices.Length; i++)
                 {
                     int boneIndiceIndex = vertex.BoneIndices[i];
-                    var bone = model.Bones[mesh.BoneIndices[boneIndiceIndex]];
+                    var bone = model.Nodes[mesh.BoneIndices[boneIndiceIndex]];
                     var boneTransform = bone.ComputeLocalTransform();
                     while (bone.ParentIndex != -1)
                     {
-                        bone = model.Bones[bone.ParentIndex];
+                        bone = model.Nodes[bone.ParentIndex];
                         boneTransform *= bone.ComputeLocalTransform();
                     }
 
@@ -150,8 +150,8 @@ namespace FLVER_Editor
         /// <returns>A bone index if found, or -1 if not.</returns>
         public static int FindBoneIndexByName(FLVER2 flver, string name)
         {
-            for (var i = 0; i < flver.Bones.Count; ++i)
-                if (flver.Bones[i].Name == name)
+            for (var i = 0; i < flver.Nodes.Count; ++i)
+                if (flver.Nodes[i].Name == name)
                     return i;
             return -1;
         }

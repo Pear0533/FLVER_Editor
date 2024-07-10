@@ -183,6 +183,8 @@ namespace SoulsFormats
                     Type = TexType.Cubemap;
                 else if (dds.dwCaps2.HasFlag(DDS.DDSCAPS2.VOLUME))
                     Type = TexType.Volume;
+                else if (dds.header10?.arraySize == 2)
+                    Type = TexType.TextureArray;
                 else
                     Type = TexType.Texture;
                 Mipmaps = (byte)dds.dwMipMapCount;
@@ -196,7 +198,7 @@ namespace SoulsFormats
                 Format = br.ReadByte();
                 Type = br.ReadEnum8<TexType>();
                 Mipmaps = br.ReadByte();
-                Flags1 = br.AssertByte(0, 1, 2, 3);
+                Flags1 = br.AssertByte(0, 1, 2, 3, 128);
 
                 if (platform != TPFPlatform.PC)
                 {
@@ -253,6 +255,8 @@ namespace SoulsFormats
                         Type = TexType.Cubemap;
                     else if (dds.dwCaps2.HasFlag(DDS.DDSCAPS2.VOLUME))
                         Type = TexType.Volume;
+                    else if (dds.header10?.arraySize == 2)
+                        Type = TexType.TextureArray;
                     else
                         Type = TexType.Texture;
                     Mipmaps = (byte)dds.dwMipMapCount;
@@ -386,6 +390,11 @@ namespace SoulsFormats
             /// One 3D texture.
             /// </summary>
             Volume = 2,
+
+            /// <summary>
+            /// New texture type in AC6 AET TPFs. Always contains 2 textures in a DX10 array.
+            /// </summary>
+            TextureArray = 3,
         }
 
         /// <summary>

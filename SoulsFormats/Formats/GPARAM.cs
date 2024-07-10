@@ -4,49 +4,24 @@ using System.Numerics;
 
 namespace SoulsFormats
 {
-    /// <summary>
-    /// A graphics config file used since DS2. Extensions: .fltparam, .gparam
-    /// </summary>
+    // Source: YabberAvocado zip in ?ServerName?
+    // TODO: Rebuild this based on TK's original GPARAM with TK's new coremats template.
+    // Decompiled with JetBrains decompiler
+    // Type: SoulsFormats.GPARAM
+    // Assembly: SoulsFormats, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+    // MVID: 91F4CB12-0CD3-441D-AE68-51FE09D1AE40
+    // Assembly location: SoulsFormats.dll
     public class GPARAM : SoulsFile<GPARAM>
     {
-        /// <summary>
-        /// Indicates the format of the GPARAM.
-        /// </summary>
         public GPGame Game;
-
-        /// <summary>
-        /// Unknown.
-        /// </summary>
         public bool Unk0D;
-
-        /// <summary>
-        /// Unknown; in DS2, number of entries in UnkBlock2.
-        /// </summary>
         public int Unk14;
-
-        /// <summary>
-        /// Unknown; only present in Sekiro.
-        /// </summary>
+        public float Unk40;
         public float Unk50;
-
-        /// <summary>
-        /// Groups of params in this file.
-        /// </summary>
         public List<Group> Groups;
-
-        /// <summary>
-        /// Unknown.
-        /// </summary>
         public byte[] UnkBlock2;
-
-        /// <summary>
-        /// Unknown.
-        /// </summary>
         public List<Unk3> Unk3s;
 
-        /// <summary>
-        /// Creates a new empty GPARAM formatted for Sekiro.
-        /// </summary>
         public GPARAM()
         {
             Game = GPGame.Sekiro;
@@ -55,50 +30,37 @@ namespace SoulsFormats
             Unk3s = new List<Unk3>();
         }
 
-        /// <summary>
-        /// Checks whether the data appears to be a file of this format.
-        /// </summary>
         protected override bool Is(BinaryReaderEx br)
         {
-            if (br.Length < 4)
+            if (br.Length < 4L)
                 return false;
-
-            string magic = br.GetASCII(0, 4);
-            return magic == "filt" || magic == "f\0i\0";
+            string ascii = br.GetASCII(0L, 4);
+            return ascii == "filt" || ascii == "f\0i\0";
         }
 
-        /// <summary>
-        /// Deserializes file data from a stream.
-        /// </summary>
         protected override void Read(BinaryReaderEx br)
         {
             br.BigEndian = false;
-
-            // Don't @ me.
             if (br.AssertASCII("filt", "f\0i\0") == "f\0i\0")
                 br.AssertASCII("l\0t\0");
             Game = br.ReadEnum32<GPGame>();
-            br.AssertByte(0);
+            int num1 = br.AssertByte(new byte[1]);
             Unk0D = br.ReadBoolean();
-            br.AssertInt16(0);
-            int groupCount = br.ReadInt32();
+            int num2 = br.AssertInt16(new short[1]);
+            int num3 = br.ReadInt32();
             Unk14 = br.ReadInt32();
-            // Header size or group header headers offset, you decide
-            br.AssertInt32(0x40, 0x50, 0x54);
-
-            Offsets offsets = default;
+            br.AssertInt32(64, 80, 84);
+            Offsets offsets = new Offsets();
             offsets.GroupHeaders = br.ReadInt32();
             offsets.ParamHeaderOffsets = br.ReadInt32();
             offsets.ParamHeaders = br.ReadInt32();
             offsets.Values = br.ReadInt32();
             offsets.ValueIDs = br.ReadInt32();
             offsets.Unk2 = br.ReadInt32();
-
-            int unk3Count = br.ReadInt32();
+            int capacity = br.ReadInt32();
             offsets.Unk3 = br.ReadInt32();
             offsets.Unk3ValueIDs = br.ReadInt32();
-            br.AssertInt32(0);
-
+            Unk40 = br.ReadSingle();
             if (Game == GPGame.DarkSouls3 || Game == GPGame.Sekiro)
             {
                 offsets.CommentOffsetsOffsets = br.ReadInt32();
@@ -107,51 +69,35 @@ namespace SoulsFormats
             }
 
             if (Game == GPGame.Sekiro)
-            {
                 Unk50 = br.ReadSingle();
-            }
-
-            Groups = new List<Group>(groupCount);
-            for (int i = 0; i < groupCount; i++)
-                Groups.Add(new Group(br, Game, i, offsets));
-
+            Groups = new List<Group>(num3);
+            for (int index = 0; index < num3; ++index)
+                Groups.Add(new Group(br, Game, index, offsets));
             UnkBlock2 = br.GetBytes(offsets.Unk2, offsets.Unk3 - offsets.Unk2);
-
             br.Position = offsets.Unk3;
-            Unk3s = new List<Unk3>(unk3Count);
-            for (int i = 0; i < unk3Count; i++)
+            Unk3s = new List<Unk3>(capacity);
+            for (int index = 0; index < capacity; ++index)
                 Unk3s.Add(new Unk3(br, Game, offsets));
-
-            if (Game == GPGame.DarkSouls3 || Game == GPGame.Sekiro)
+            if (Game != GPGame.DarkSouls3 && Game != GPGame.Sekiro)
+                return;
+            int[] int32s = br.GetInt32s(offsets.CommentOffsetsOffsets, num3);
+            int num4 = offsets.Comments - offsets.CommentOffsets;
+            for (int index1 = 0; index1 < num3; ++index1)
             {
-                int[] commentOffsetsOffsets = br.GetInt32s(offsets.CommentOffsetsOffsets, groupCount);
-                int commentOffsetsLength = offsets.Comments - offsets.CommentOffsets;
-                for (int i = 0; i < groupCount; i++)
+                int num5 = index1 != num3 - 1 ? (int32s[index1 + 1] - int32s[index1]) / 4 : (num4 - int32s[index1]) / 4;
+                br.Position = offsets.CommentOffsets + int32s[index1];
+                for (int index2 = 0; index2 < num5; ++index2)
                 {
-                    int commentCount;
-                    if (i == groupCount - 1)
-                        commentCount = (commentOffsetsLength - commentOffsetsOffsets[i]) / 4;
-                    else
-                        commentCount = (commentOffsetsOffsets[i + 1] - commentOffsetsOffsets[i]) / 4;
-
-                    br.Position = offsets.CommentOffsets + commentOffsetsOffsets[i];
-                    for (int j = 0; j < commentCount; j++)
-                    {
-                        int commentOffset = br.ReadInt32();
-                        string comment = br.GetUTF16(offsets.Comments + commentOffset);
-                        Groups[i].Comments.Add(comment);
-                    }
+                    int num6 = br.ReadInt32();
+                    string utF16 = br.GetUTF16(offsets.Comments + num6);
+                    Groups[index1].Comments.Add(utF16);
                 }
             }
         }
 
-        /// <summary>
-        /// Serializes file data to a stream.
-        /// </summary>
         protected override void Write(BinaryWriterEx bw)
         {
             bw.BigEndian = false;
-
             if (Game == GPGame.DarkSouls2)
                 bw.WriteASCII("filt");
             else
@@ -163,19 +109,16 @@ namespace SoulsFormats
             bw.WriteInt32(Groups.Count);
             bw.WriteInt32(Unk14);
             bw.ReserveInt32("HeaderSize");
-
             bw.ReserveInt32("GroupHeadersOffset");
             bw.ReserveInt32("ParamHeaderOffsetsOffset");
             bw.ReserveInt32("ParamHeadersOffset");
             bw.ReserveInt32("ValuesOffset");
             bw.ReserveInt32("ValueIDsOffset");
             bw.ReserveInt32("UnkOffset2");
-
             bw.WriteInt32(Unk3s.Count);
             bw.ReserveInt32("UnkOffset3");
             bw.ReserveInt32("Unk3ValuesOffset");
-            bw.WriteInt32(0);
-
+            bw.WriteSingle(Unk40);
             if (Game == GPGame.DarkSouls3 || Game == GPGame.Sekiro)
             {
                 bw.ReserveInt32("CommentOffsetsOffsetsOffset");
@@ -184,93 +127,60 @@ namespace SoulsFormats
             }
 
             if (Game == GPGame.Sekiro)
-            {
                 bw.WriteSingle(Unk50);
-            }
-
             bw.FillInt32("HeaderSize", (int)bw.Position);
-
-            for (int i = 0; i < Groups.Count; i++)
-                Groups[i].WriteHeaderOffset(bw, i);
-
-            int groupHeadersOffset = (int)bw.Position;
-            bw.FillInt32("GroupHeadersOffset", groupHeadersOffset);
-            for (int i = 0; i < Groups.Count; i++)
-                Groups[i].WriteHeader(bw, Game, i, groupHeadersOffset);
-
-            int paramHeaderOffsetsOffset = (int)bw.Position;
-            bw.FillInt32("ParamHeaderOffsetsOffset", paramHeaderOffsetsOffset);
-            for (int i = 0; i < Groups.Count; i++)
-                Groups[i].WriteParamHeaderOffsets(bw, i, paramHeaderOffsetsOffset);
-
-            int paramHeadersOffset = (int)bw.Position;
-            bw.FillInt32("ParamHeadersOffset", paramHeadersOffset);
-            for (int i = 0; i < Groups.Count; i++)
-                Groups[i].WriteParamHeaders(bw, Game, i, paramHeadersOffset);
-
-            int valuesOffset = (int)bw.Position;
-            bw.FillInt32("ValuesOffset", valuesOffset);
-            for (int i = 0; i < Groups.Count; i++)
-                Groups[i].WriteValues(bw, i, valuesOffset);
-
-            int valueIDsOffset = (int)bw.Position;
+            for (int index = 0; index < Groups.Count; ++index)
+                Groups[index].WriteHeaderOffset(bw, index);
+            int position1 = (int)bw.Position;
+            bw.FillInt32("GroupHeadersOffset", position1);
+            for (int index = 0; index < Groups.Count; ++index)
+                Groups[index].WriteHeader(bw, Game, index, position1);
+            int position2 = (int)bw.Position;
+            bw.FillInt32("ParamHeaderOffsetsOffset", position2);
+            for (int index = 0; index < Groups.Count; ++index)
+                Groups[index].WriteParamHeaderOffsets(bw, index, position2);
+            int position3 = (int)bw.Position;
+            bw.FillInt32("ParamHeadersOffset", position3);
+            for (int index = 0; index < Groups.Count; ++index)
+                Groups[index].WriteParamHeaders(bw, Game, index, position3);
+            int position4 = (int)bw.Position;
+            bw.FillInt32("ValuesOffset", position4);
+            for (int index = 0; index < Groups.Count; ++index)
+                Groups[index].WriteValues(bw, index, position4);
+            int position5 = (int)bw.Position;
             bw.FillInt32("ValueIDsOffset", (int)bw.Position);
-            for (int i = 0; i < Groups.Count; i++)
-                Groups[i].WriteValueIDs(bw, Game, i, valueIDsOffset);
-
+            for (int index = 0; index < Groups.Count; ++index)
+                Groups[index].WriteValueIDs(bw, Game, index, position5);
             bw.FillInt32("UnkOffset2", (int)bw.Position);
             bw.WriteBytes(UnkBlock2);
-
             bw.FillInt32("UnkOffset3", (int)bw.Position);
-            for (int i = 0; i < Unk3s.Count; i++)
-                Unk3s[i].WriteHeader(bw, Game, i);
-
-            int unk3ValuesOffset = (int)bw.Position;
-            bw.FillInt32("Unk3ValuesOffset", unk3ValuesOffset);
-            for (int i = 0; i < Unk3s.Count; i++)
-                Unk3s[i].WriteValues(bw, Game, i, unk3ValuesOffset);
-
-            if (Game == GPGame.DarkSouls3 || Game == GPGame.Sekiro)
-            {
-                bw.FillInt32("CommentOffsetsOffsetsOffset", (int)bw.Position);
-                for (int i = 0; i < Groups.Count; i++)
-                    Groups[i].WriteCommentOffsetsOffset(bw, i);
-
-                int commentOffsetsOffset = (int)bw.Position;
-                bw.FillInt32("CommentOffsetsOffset", commentOffsetsOffset);
-                for (int i = 0; i < Groups.Count; i++)
-                    Groups[i].WriteCommentOffsets(bw, i, commentOffsetsOffset);
-
-                int commentsOffset = (int)bw.Position;
-                bw.FillInt32("CommentsOffset", commentsOffset);
-                for (int i = 0; i < Groups.Count; i++)
-                    Groups[i].WriteComments(bw, i, commentsOffset);
-            }
+            for (int index = 0; index < Unk3s.Count; ++index)
+                Unk3s[index].WriteHeader(bw, Game, index);
+            int position6 = (int)bw.Position;
+            bw.FillInt32("Unk3ValuesOffset", position6);
+            for (int index = 0; index < Unk3s.Count; ++index)
+                Unk3s[index].WriteValues(bw, Game, index, position6);
+            if (Game != GPGame.DarkSouls3 && Game != GPGame.Sekiro)
+                return;
+            bw.FillInt32("CommentOffsetsOffsetsOffset", (int)bw.Position);
+            for (int index = 0; index < Groups.Count; ++index)
+                Groups[index].WriteCommentOffsetsOffset(bw, index);
+            int position7 = (int)bw.Position;
+            bw.FillInt32("CommentOffsetsOffset", position7);
+            for (int index = 0; index < Groups.Count; ++index)
+                Groups[index].WriteCommentOffsets(bw, index, position7);
+            int position8 = (int)bw.Position;
+            bw.FillInt32("CommentsOffset", position8);
+            for (int index = 0; index < Groups.Count; ++index)
+                Groups[index].WriteComments(bw, index, position8);
         }
 
-        /// <summary>
-        /// Returns the first group with a matching name, or null if not found.
-        /// </summary>
-        public Group this[string name1] => Groups.Find(group => group.Name1 == name1);
+        public Group this[string name1] => Groups.Find((Predicate<Group>)(group => group.Name1 == name1));
 
-        /// <summary>
-        /// The game this GPARAM is from.
-        /// </summary>
         public enum GPGame : uint
         {
-            /// <summary>
-            /// Dark Souls 2
-            /// </summary>
             DarkSouls2 = 2,
-
-            /// <summary>
-            /// Dark Souls 3 and Bloodborne
-            /// </summary>
             DarkSouls3 = 3,
-
-            /// <summary>
-            /// Sekiro
-            /// </summary>
             Sekiro = 5,
         }
 
@@ -289,34 +199,13 @@ namespace SoulsFormats
             public int Comments;
         }
 
-        /// <summary>
-        /// A group of graphics params.
-        /// </summary>
         public class Group
         {
-            /// <summary>
-            /// Identifies the group.
-            /// </summary>
             public string Name1;
-
-            /// <summary>
-            /// Identifies the group, but shorter? Not present in DS2.
-            /// </summary>
             public string Name2;
-
-            /// <summary>
-            /// Params in this group.
-            /// </summary>
             public List<Param> Params;
-
-            /// <summary>
-            /// Comments indicating the purpose of each entry in param values. Not present in DS2.
-            /// </summary>
             public List<string> Comments;
 
-            /// <summary>
-            /// Creates a new Group with no params or comments.
-            /// </summary>
             public Group(string name1, string name2)
             {
                 Name1 = name1;
@@ -327,44 +216,47 @@ namespace SoulsFormats
 
             internal Group(BinaryReaderEx br, GPGame game, int index, Offsets offsets)
             {
-                int groupHeaderOffset = br.ReadInt32();
-                br.StepIn(offsets.GroupHeaders + groupHeaderOffset);
+                int num1 = br.ReadInt32();
+                br.StepIn(offsets.GroupHeaders + num1);
+                int capacity = br.ReadInt32();
+                int num2 = br.ReadInt32();
+                if (game == GPGame.DarkSouls2)
                 {
-                    int paramCount = br.ReadInt32();
-                    int paramHeaderOffsetsOffset = br.ReadInt32();
-                    if (game == GPGame.DarkSouls2)
-                    {
-                        Name1 = br.ReadShiftJIS();
-                    }
-                    else
-                    {
-                        Name1 = br.ReadUTF16();
-                        Name2 = br.ReadUTF16();
-                    }
-
-                    br.StepIn(offsets.ParamHeaderOffsets + paramHeaderOffsetsOffset);
-                    {
-                        Params = new List<Param>(paramCount);
-                        for (int i = 0; i < paramCount; i++)
-                            Params.Add(new Param(br, game, offsets));
-                    }
-                    br.StepOut();
+                    Name1 = br.ReadShiftJIS();
                 }
+                else
+                {
+                    Name1 = br.ReadUTF16();
+                    Name2 = br.ReadUTF16();
+                }
+
+                br.StepIn(offsets.ParamHeaderOffsets + num2);
+                Params = new List<Param>(capacity);
+                for (int index1 = 0; index1 < capacity; ++index1)
+                    Params.Add(new Param(br, game, offsets));
+                br.StepOut();
                 br.StepOut();
                 Comments = new List<string>();
             }
 
             internal void WriteHeaderOffset(BinaryWriterEx bw, int groupIndex)
             {
-                bw.ReserveInt32($"GroupHeaderOffset{groupIndex}");
+                BinaryWriterEx binaryWriterEx = bw;
+                binaryWriterEx.ReserveInt32("GroupHeaderOffset" + groupIndex);
             }
 
-            internal void WriteHeader(BinaryWriterEx bw, GPGame game, int groupIndex, int groupHeadersOffset)
+            internal void WriteHeader(
+                BinaryWriterEx bw,
+                GPGame game,
+                int groupIndex,
+                int groupHeadersOffset)
             {
-                bw.FillInt32($"GroupHeaderOffset{groupIndex}", (int)bw.Position - groupHeadersOffset);
+                BinaryWriterEx binaryWriterEx1 = bw;
+                int num = (int)bw.Position - groupHeadersOffset;
+                binaryWriterEx1.FillInt32("GroupHeaderOffset" + groupIndex, num);
                 bw.WriteInt32(Params.Count);
-                bw.ReserveInt32($"ParamHeaderOffsetsOffset{groupIndex}");
-
+                BinaryWriterEx binaryWriterEx2 = bw;
+                binaryWriterEx2.ReserveInt32("ParamHeaderOffsetsOffset" + groupIndex);
                 if (game == GPGame.DarkSouls2)
                 {
                     bw.WriteShiftJIS(Name1, true);
@@ -374,172 +266,107 @@ namespace SoulsFormats
                     bw.WriteUTF16(Name1, true);
                     bw.WriteUTF16(Name2, true);
                 }
+
                 bw.Pad(4);
             }
 
-            internal void WriteParamHeaderOffsets(BinaryWriterEx bw, int groupIndex, int paramHeaderOffsetsOffset)
+            internal void WriteParamHeaderOffsets(
+                BinaryWriterEx bw,
+                int groupIndex,
+                int paramHeaderOffsetsOffset)
             {
-                bw.FillInt32($"ParamHeaderOffsetsOffset{groupIndex}", (int)bw.Position - paramHeaderOffsetsOffset);
-                for (int i = 0; i < Params.Count; i++)
-                    Params[i].WriteParamHeaderOffset(bw, groupIndex, i);
+                BinaryWriterEx binaryWriterEx = bw;
+                int num = (int)bw.Position - paramHeaderOffsetsOffset;
+                binaryWriterEx.FillInt32("ParamHeaderOffsetsOffset" + groupIndex, num);
+                for (int index = 0; index < Params.Count; ++index)
+                    Params[index].WriteParamHeaderOffset(bw, groupIndex, index);
             }
 
-            internal void WriteParamHeaders(BinaryWriterEx bw, GPGame game, int groupindex, int paramHeadersOffset)
+            internal void WriteParamHeaders(
+                BinaryWriterEx bw,
+                GPGame game,
+                int groupindex,
+                int paramHeadersOffset)
             {
-                for (int i = 0; i < Params.Count; i++)
-                    Params[i].WriteParamHeader(bw, game, groupindex, i, paramHeadersOffset);
+                for (int index = 0; index < Params.Count; ++index)
+                    Params[index].WriteParamHeader(bw, game, groupindex, index, paramHeadersOffset);
             }
 
             internal void WriteValues(BinaryWriterEx bw, int groupindex, int valuesOffset)
             {
-                for (int i = 0; i < Params.Count; i++)
-                    Params[i].WriteValues(bw, groupindex, i, valuesOffset);
+                for (int index = 0; index < Params.Count; ++index)
+                    Params[index].WriteValues(bw, groupindex, index, valuesOffset);
             }
 
-            internal void WriteValueIDs(BinaryWriterEx bw, GPGame game, int groupIndex, int valueIDsOffset)
+            internal void WriteValueIDs(
+                BinaryWriterEx bw,
+                GPGame game,
+                int groupIndex,
+                int valueIDsOffset)
             {
-                for (int i = 0; i < Params.Count; i++)
-                    Params[i].WriteValueIDs(bw, game, groupIndex, i, valueIDsOffset);
+                for (int index = 0; index < Params.Count; ++index)
+                    Params[index].WriteValueIDs(bw, game, groupIndex, index, valueIDsOffset);
             }
 
             internal void WriteCommentOffsetsOffset(BinaryWriterEx bw, int index)
             {
-                bw.ReserveInt32($"CommentOffsetsOffset{index}");
+                BinaryWriterEx binaryWriterEx = bw;
+                binaryWriterEx.ReserveInt32("CommentOffsetsOffset" + index);
             }
 
             internal void WriteCommentOffsets(BinaryWriterEx bw, int index, int commentOffsetsOffset)
             {
-                bw.FillInt32($"CommentOffsetsOffset{index}", (int)bw.Position - commentOffsetsOffset);
-                for (int i = 0; i < Comments.Count; i++)
-                    bw.ReserveInt32($"CommentOffset{index}:{i}");
+                BinaryWriterEx binaryWriterEx1 = bw;
+                int num = (int)bw.Position - commentOffsetsOffset;
+                binaryWriterEx1.FillInt32("CommentOffsetsOffset" + index, num);
+                for (int index1 = 0; index1 < Comments.Count; ++index1)
+                {
+                    BinaryWriterEx binaryWriterEx2 = bw;
+                    binaryWriterEx2.ReserveInt32("CommentOffset" + index + ":" + index1);
+                }
             }
 
             internal void WriteComments(BinaryWriterEx bw, int index, int commentsOffset)
             {
-                for (int i = 0; i < Comments.Count; i++)
+                for (int index1 = 0; index1 < Comments.Count; ++index1)
                 {
-                    bw.FillInt32($"CommentOffset{index}:{i}", (int)bw.Position - commentsOffset);
-                    bw.WriteUTF16(Comments[i], true);
+                    BinaryWriterEx binaryWriterEx = bw;
+                    int num = (int)bw.Position - commentsOffset;
+                    binaryWriterEx.FillInt32("CommentOffset" + index + ":" + index1, num);
+                    bw.WriteUTF16(Comments[index1], true);
                     bw.Pad(4);
                 }
             }
 
-            /// <summary>
-            /// Returns the first param with a matching name, or null if not found.
-            /// </summary>
-            public Param this[string name1] => Params.Find(param => param.Name1 == name1);
+            public Param this[string name1] => Params.Find((Predicate<Param>)(param => param.Name1 == name1));
 
-            /// <summary>
-            /// Returns the long and short names of the group.
-            /// </summary>
-            public override string ToString()
-            {
-                if (Name2 == null)
-                    return Name1;
-                else
-                    return $"{Name1} | {Name2}";
-            }
+            public override string ToString() => Name2 == null ? Name1 : Name1 + " | " + Name2;
         }
 
-        /// <summary>
-        /// Value types allowed in a param.
-        /// </summary>
         public enum ParamType : byte
         {
-            /// <summary>
-            /// Unknown; only ever appears as a single value.
-            /// </summary>
-            Byte = 0x1,
-
-            /// <summary>
-            /// One short.
-            /// </summary>
-            Short = 0x2,
-
-            /// <summary>
-            /// One int.
-            /// </summary>
-            IntA = 0x3,
-
-            /// <summary>
-            /// One bool.
-            /// </summary>
-            BoolA = 0x5,
-
-            /// <summary>
-            /// One int.
-            /// </summary>
-            IntB = 0x7,
-
-            /// <summary>
-            /// One float.
-            /// </summary>
-            Float = 0x9,
-
-            /// <summary>
-            /// One bool.
-            /// </summary>
-            BoolB = 0xB,
-
-            /// <summary>
-            /// Two floats and 8 unused bytes.
-            /// </summary>
-            Float2 = 0xC,
-
-            /// <summary>
-            /// Three floats and 4 unused bytes.
-            /// </summary>
-            Float3 = 0xD,
-
-            /// <summary>
-            /// Four floats.
-            /// </summary>
-            Float4 = 0xE,
-
-            /// <summary>
-            /// Four bytes, used for BGRA.
-            /// </summary>
-            Byte4 = 0xF,
+            Byte = 1,
+            Short = 2,
+            IntA = 3,
+            BoolA = 5,
+            IntB = 7,
+            Float = 9,
+            BoolB = 11, // 0x0B
+            Float2 = 12, // 0x0C
+            Float3 = 13, // 0x0D
+            Float4 = 14, // 0x0E
+            Byte4 = 15, // 0x0F
         }
 
-        /// <summary>
-        /// A collection of values controlling the same parameter in different circumstances.
-        /// </summary>
         public class Param
         {
-            /// <summary>
-            /// Identifies the param specifically.
-            /// </summary>
             public string Name1;
-
-            /// <summary>
-            /// Identifies the param generically. Not present in DS2.
-            /// </summary>
             public string Name2;
-
-            /// <summary>
-            /// Type of values in this param.
-            /// </summary>
             public ParamType Type;
-
-            /// <summary>
-            /// Values in this param.
-            /// </summary>
             public List<object> Values;
-
-            /// <summary>
-            /// Unknown.
-            /// </summary>
             public List<int> ValueIDs;
+            public List<float> TimeOfDay;
 
-            /// <summary>
-            /// Unknown; one for each value ID, only present in Sekiro.
-            /// </summary>
-            public List<float> UnkFloats;
-
-            /// <summary>
-            /// Creates a new Param with no values or unk1s.
-            /// </summary>
             public Param(string name1, string name2, ParamType type)
             {
                 Name1 = name1;
@@ -547,129 +374,115 @@ namespace SoulsFormats
                 Type = type;
                 Values = new List<object>();
                 ValueIDs = new List<int>();
-                UnkFloats = null;
+                TimeOfDay = null;
             }
 
             internal Param(BinaryReaderEx br, GPGame game, Offsets offsets)
             {
-                int paramHeaderOffset = br.ReadInt32();
-                br.StepIn(offsets.ParamHeaders + paramHeaderOffset);
+                int num1 = br.ReadInt32();
+                br.StepIn(offsets.ParamHeaders + num1);
+                int num2 = br.ReadInt32();
+                int num3 = br.ReadInt32();
+                Type = br.ReadEnum8<ParamType>();
+                byte capacity = br.ReadByte();
+                int num4 = br.AssertByte(new byte[1]);
+                int num5 = br.AssertByte(new byte[1]);
+                if (Type == ParamType.Byte && capacity > 1)
+                    throw new Exception("Notify TKGP so he can look into this, please.");
+                if (game == GPGame.DarkSouls2)
                 {
-                    int valuesOffset = br.ReadInt32();
-                    int valueIDsOffset = br.ReadInt32();
-
-                    Type = br.ReadEnum8<ParamType>();
-                    byte valueCount = br.ReadByte();
-                    br.AssertByte(0);
-                    br.AssertByte(0);
-
-                    if (Type == ParamType.Byte && valueCount > 1)
-                        throw new Exception("Notify TKGP so he can look into this, please.");
-
-                    if (game == GPGame.DarkSouls2)
-                    {
-                        Name1 = br.ReadShiftJIS();
-                    }
-                    else
-                    {
-                        Name1 = br.ReadUTF16();
-                        Name2 = br.ReadUTF16();
-                    }
-
-                    br.StepIn(offsets.Values + valuesOffset);
-                    {
-                        Values = new List<object>(valueCount);
-                        for (int i = 0; i < valueCount; i++)
-                        {
-                            switch (Type)
-                            {
-                                case ParamType.Byte:
-                                    Values.Add(br.ReadByte());
-                                    break;
-
-                                case ParamType.Short:
-                                    Values.Add(br.ReadInt16());
-                                    break;
-
-                                case ParamType.IntA:
-                                    Values.Add(br.ReadInt32());
-                                    break;
-
-                                case ParamType.BoolA:
-                                    Values.Add(br.ReadBoolean());
-                                    break;
-
-                                case ParamType.IntB:
-                                    Values.Add(br.ReadInt32());
-                                    break;
-
-                                case ParamType.Float:
-                                    Values.Add(br.ReadSingle());
-                                    break;
-
-                                case ParamType.BoolB:
-                                    Values.Add(br.ReadBoolean());
-                                    break;
-
-                                case ParamType.Float2:
-                                    Values.Add(br.ReadVector2());
-                                    br.AssertInt32(0);
-                                    br.AssertInt32(0);
-                                    break;
-
-                                case ParamType.Float3:
-                                    Values.Add(br.ReadVector3());
-                                    br.AssertInt32(0);
-                                    break;
-
-                                case ParamType.Float4:
-                                    Values.Add(br.ReadVector4());
-                                    break;
-
-                                case ParamType.Byte4:
-                                    Values.Add(br.ReadBytes(4));
-                                    break;
-                            }
-                        }
-                    }
-                    br.StepOut();
-
-                    br.StepIn(offsets.ValueIDs + valueIDsOffset);
-                    {
-                        ValueIDs = new List<int>(valueCount);
-                        if (game == GPGame.Sekiro)
-                            UnkFloats = new List<float>(valueCount);
-                        else
-                            UnkFloats = null;
-
-                        for (int i = 0; i < valueCount; i++)
-                        {
-                            ValueIDs.Add(br.ReadInt32());
-                            if (game == GPGame.Sekiro)
-                                UnkFloats.Add(br.ReadSingle());
-                        }
-                    }
-                    br.StepOut();
+                    Name1 = br.ReadShiftJIS();
                 }
+                else
+                {
+                    Name1 = br.ReadUTF16();
+                    Name2 = br.ReadUTF16();
+                }
+
+                br.StepIn(offsets.Values + num2);
+                Values = new List<object>(capacity);
+                for (int index = 0; index < capacity; ++index)
+                {
+                    switch (Type)
+                    {
+                        case ParamType.Byte:
+                            Values.Add(br.ReadByte());
+                            break;
+                        case ParamType.Short:
+                            Values.Add(br.ReadInt16());
+                            break;
+                        case ParamType.IntA:
+                            Values.Add(br.ReadInt32());
+                            break;
+                        case ParamType.BoolA:
+                            Values.Add(br.ReadBoolean());
+                            break;
+                        case ParamType.IntB:
+                            Values.Add(br.ReadInt32());
+                            break;
+                        case ParamType.Float:
+                            Values.Add(br.ReadSingle());
+                            break;
+                        case ParamType.BoolB:
+                            Values.Add(br.ReadBoolean());
+                            break;
+                        case ParamType.Float2:
+                            Values.Add(br.ReadVector2());
+                            br.AssertInt32(new int[1]);
+                            br.AssertInt32(new int[1]);
+                            break;
+                        case ParamType.Float3:
+                            Values.Add(br.ReadVector3());
+                            br.AssertInt32(new int[1]);
+                            break;
+                        case ParamType.Float4:
+                            Values.Add(br.ReadVector4());
+                            break;
+                        case ParamType.Byte4:
+                            Values.Add(br.ReadBytes(4));
+                            break;
+                    }
+                }
+
+                br.StepOut();
+                br.StepIn(offsets.ValueIDs + num3);
+                ValueIDs = new List<int>(capacity);
+                TimeOfDay = game != GPGame.Sekiro ? null : new List<float>(capacity);
+                for (int index = 0; index < capacity; ++index)
+                {
+                    ValueIDs.Add(br.ReadInt32());
+                    if (game == GPGame.Sekiro)
+                        TimeOfDay.Add(br.ReadSingle());
+                }
+
+                br.StepOut();
                 br.StepOut();
             }
 
             internal void WriteParamHeaderOffset(BinaryWriterEx bw, int groupIndex, int paramIndex)
             {
-                bw.ReserveInt32($"ParamHeaderOffset{groupIndex}:{paramIndex}");
+                BinaryWriterEx binaryWriterEx = bw;
+                binaryWriterEx.ReserveInt32("ParamHeaderOffset" + groupIndex + ":" + paramIndex);
             }
 
-            internal void WriteParamHeader(BinaryWriterEx bw, GPGame game, int groupIndex, int paramIndex, int paramHeadersOffset)
+            internal void WriteParamHeader(
+                BinaryWriterEx bw,
+                GPGame game,
+                int groupIndex,
+                int paramIndex,
+                int paramHeadersOffset)
             {
-                bw.FillInt32($"ParamHeaderOffset{groupIndex}:{paramIndex}", (int)bw.Position - paramHeadersOffset);
-                bw.ReserveInt32($"ValuesOffset{groupIndex}:{paramIndex}");
-                bw.ReserveInt32($"ValueIDsOffset{groupIndex}:{paramIndex}");
-
+                BinaryWriterEx binaryWriterEx1 = bw;
+                int num = (int)bw.Position - paramHeadersOffset;
+                binaryWriterEx1.FillInt32("ParamHeaderOffset" + groupIndex + ":" + paramIndex, num);
+                BinaryWriterEx binaryWriterEx2 = bw;
+                binaryWriterEx2.ReserveInt32("ValuesOffset" + groupIndex + ":" + paramIndex);
+                BinaryWriterEx binaryWriterEx3 = bw;
+                binaryWriterEx3.ReserveInt32("ValueIDsOffset" + groupIndex + ":" + paramIndex);
                 bw.WriteByte((byte)Type);
                 bw.WriteByte((byte)Values.Count);
                 bw.WriteByte(0);
                 bw.WriteByte(0);
-
                 if (game == GPGame.DarkSouls2)
                 {
                     bw.WriteShiftJIS(Name1, true);
@@ -679,123 +492,99 @@ namespace SoulsFormats
                     bw.WriteUTF16(Name1, true);
                     bw.WriteUTF16(Name2, true);
                 }
+
                 bw.Pad(4);
             }
 
-            internal void WriteValues(BinaryWriterEx bw, int groupIndex, int paramIndex, int valuesOffset)
+            internal void WriteValues(
+                BinaryWriterEx bw,
+                int groupIndex,
+                int paramIndex,
+                int valuesOffset)
             {
-                bw.FillInt32($"ValuesOffset{groupIndex}:{paramIndex}", (int)bw.Position - valuesOffset);
-                for (int i = 0; i < Values.Count; i++)
+                BinaryWriterEx binaryWriterEx = bw;
+                int num = (int)bw.Position - valuesOffset;
+                binaryWriterEx.FillInt32("ValuesOffset" + groupIndex + ":" + paramIndex, num);
+                for (int index = 0; index < Values.Count; ++index)
                 {
-                    object value = Values[i];
+                    object obj = Values[index];
                     switch (Type)
                     {
                         case ParamType.Byte:
-                            bw.WriteInt32((byte)value);
+                            bw.WriteInt32((byte)obj);
                             break;
-
                         case ParamType.Short:
-                            bw.WriteInt16((short)value);
+                            bw.WriteInt16((short)obj);
                             break;
-
                         case ParamType.IntA:
-                            bw.WriteInt32((int)value);
+                            bw.WriteInt32((int)obj);
                             break;
-
                         case ParamType.BoolA:
-                            bw.WriteBoolean((bool)value);
+                            bw.WriteBoolean((bool)obj);
                             break;
-
                         case ParamType.IntB:
-                            bw.WriteInt32((int)value);
+                            bw.WriteInt32((int)obj);
                             break;
-
                         case ParamType.Float:
-                            bw.WriteSingle((float)value);
+                            bw.WriteSingle((float)obj);
                             break;
-
                         case ParamType.BoolB:
-                            bw.WriteBoolean((bool)value);
+                            bw.WriteBoolean((bool)obj);
                             break;
-
                         case ParamType.Float2:
-                            bw.WriteVector2((Vector2)value);
+                            bw.WriteVector2((Vector2)obj);
                             bw.WriteInt32(0);
                             bw.WriteInt32(0);
                             break;
-
                         case ParamType.Float3:
-                            bw.WriteVector3((Vector3)value);
+                            bw.WriteVector3((Vector3)obj);
                             bw.WriteInt32(0);
                             break;
-
                         case ParamType.Float4:
-                            bw.WriteVector4((Vector4)value);
+                            bw.WriteVector4((Vector4)obj);
                             break;
-
                         case ParamType.Byte4:
-                            bw.WriteBytes((byte[])value);
+                            bw.WriteBytes((byte[])obj);
                             break;
                     }
                 }
+
                 bw.Pad(4);
             }
 
-            internal void WriteValueIDs(BinaryWriterEx bw, GPGame game, int groupIndex, int paramIndex, int valueIDsOffset)
+            internal void WriteValueIDs(
+                BinaryWriterEx bw,
+                GPGame game,
+                int groupIndex,
+                int paramIndex,
+                int valueIDsOffset)
             {
-                bw.FillInt32($"ValueIDsOffset{groupIndex}:{paramIndex}", (int)bw.Position - valueIDsOffset);
-                for (int i = 0; i < ValueIDs.Count; i++)
+                BinaryWriterEx binaryWriterEx = bw;
+                int num = (int)bw.Position - valueIDsOffset;
+                binaryWriterEx.FillInt32("ValueIDsOffset" + groupIndex + ":" + paramIndex, num);
+                for (int index = 0; index < ValueIDs.Count; ++index)
                 {
-                    bw.WriteInt32(ValueIDs[i]);
+                    bw.WriteInt32(ValueIDs[index]);
                     if (game == GPGame.Sekiro)
-                        bw.WriteSingle(UnkFloats[i]);
+                        bw.WriteSingle(TimeOfDay[index]);
                 }
             }
 
-            /// <summary>
-            /// Returns the value in this param at the given index.
-            /// </summary>
             public object this[int index]
             {
                 get => Values[index];
                 set => Values[index] = value;
             }
 
-            /// <summary>
-            /// Returns the specific and generic names of the param.
-            /// </summary>
-            public override string ToString()
-            {
-                if (Name2 == null)
-                    return Name1;
-                else
-                    return $"{Name1} | {Name2}";
-            }
+            public override string ToString() => Name2 == null ? Name1 : Name1 + " | " + Name2;
         }
 
-        /// <summary>
-        /// Unknown.
-        /// </summary>
         public class Unk3
         {
-            /// <summary>
-            /// Index of a group.
-            /// </summary>
             public int GroupIndex;
-
-            /// <summary>
-            /// Unknown; matches value IDs in the group.
-            /// </summary>
             public List<int> ValueIDs;
-
-            /// <summary>
-            /// Unknown; only present in Sekiro.
-            /// </summary>
             public int Unk0C;
 
-            /// <summary>
-            /// Creates a new Unk3 with no value IDs.
-            /// </summary>
             public Unk3(int groupIndex)
             {
                 GroupIndex = groupIndex;
@@ -806,31 +595,39 @@ namespace SoulsFormats
             {
                 GroupIndex = br.ReadInt32();
                 int count = br.ReadInt32();
-                uint valueIDsOffset = br.ReadUInt32();
+                uint num = br.ReadUInt32();
                 if (game == GPGame.Sekiro)
                     Unk0C = br.ReadInt32();
-
-                ValueIDs = new List<int>(br.GetInt32s(offsets.Unk3ValueIDs + valueIDsOffset, count));
+                ValueIDs = new List<int>(br.GetInt32s(offsets.Unk3ValueIDs + num, count));
             }
 
             internal void WriteHeader(BinaryWriterEx bw, GPGame game, int index)
             {
                 bw.WriteInt32(GroupIndex);
                 bw.WriteInt32(ValueIDs.Count);
-                bw.ReserveInt32($"Unk3ValueIDsOffset{index}");
-                if (game == GPGame.Sekiro)
-                    bw.WriteInt32(Unk0C);
+                BinaryWriterEx binaryWriterEx = bw;
+                binaryWriterEx.ReserveInt32("Unk3ValueIDsOffset" + index);
+                if (game != GPGame.Sekiro)
+                    return;
+                bw.WriteInt32(Unk0C);
             }
 
-            internal void WriteValues(BinaryWriterEx bw, GPGame game, int index, int unk3ValueIDsOffset)
+            internal void WriteValues(
+                BinaryWriterEx bw,
+                GPGame game,
+                int index,
+                int unk3ValueIDsOffset)
             {
                 if (ValueIDs.Count == 0)
                 {
-                    bw.FillInt32($"Unk3ValueIDsOffset{index}", 0);
+                    BinaryWriterEx binaryWriterEx = bw;
+                    binaryWriterEx.FillInt32("Unk3ValueIDsOffset" + index, 0);
                 }
                 else
                 {
-                    bw.FillInt32($"Unk3ValueIDsOffset{index}", (int)bw.Position - unk3ValueIDsOffset);
+                    BinaryWriterEx binaryWriterEx = bw;
+                    int num = (int)bw.Position - unk3ValueIDsOffset;
+                    binaryWriterEx.FillInt32("Unk3ValueIDsOffset" + index, num);
                     bw.WriteInt32s(ValueIDs);
                 }
             }

@@ -6,42 +6,45 @@ using static SoulsFormats.DDS;
 namespace SoulsFormats
 {
     /* Known TPF texture formats
-      0 - DXT1
-      1 - DXT1
-      3 - DXT3
-      5 - DXT5
-      6 - B5G5R5A1_UNORM
-      9 - B8G8R8A8
-     10 - R8G8B8 on PC, A8G8B8R8 on PS3
-     16 - A8
-     22 - A16B16G16R16f
-     23 - DXT5
-     24 - DXT1
-     25 - DXT1
-     33 - DXT5
-    100 - BC6H_UF16
-    102 - BC7_UNORM
-    103 - ATI1
-    104 - ATI2
-    105 - A8B8G8R8
-    106 - BC7_UNORM
-    107 - BC7_UNORM
-    108 - DXT1
-    109 - DXT1
-    110 - DXT5
-    112 - BC7_UNORM_SRGB
-    113 - BC6H_UF16
-    */
+  0 - DXT1
+  1 - DXT1
+  3 - DXT3
+  5 - DXT5
+  6 - B5G5R5A1_UNORM
+  9 - B8G8R8A8
+ 10 - R8G8B8 on PC, A8G8B8R8 on PS3
+ 16 - A8
+ 22 - A16B16G16R16f
+ 23 - DXT5
+ 24 - DXT1
+ 25 - DXT1
+ 33 - DXT5
+100 - BC6H_UF16
+102 - BC7_UNORM
+103 - ATI1
+104 - ATI2
+105 - A8B8G8R8
+106 - BC7_UNORM
+107 - BC7_UNORM
+108 - DXT1
+109 - DXT1
+110 - DXT5
+112 - BC7_UNORM_SRGB
+113 - BC6H_UF16
+*/
 
-    /* BCn block sizes
-    BC1 (DXT1) - 8
-    BC2 (DXT3) - 16
-    BC3 (DXT5) - 16
-    BC4 (ATI1) - 8
-    BC5 (ATI2) - 16
-    BC6 - 16
-    BC7 - 16
-    */
+/* BCn block sizes
+BC1 (DXT1) - 8
+BC2 (DXT3) - 16
+BC3 (DXT5) - 16
+BC4 (ATI1) - 8
+BC5 (ATI2) - 16
+BC6 - 16
+BC7 - 16
+*/
+
+// Source: TK SoulsFormats
+// TKSF Headerizer, but included here to be accesses from the DSMS TPF.
     internal static class Headerizer
     {
         private static Dictionary<byte, int> CompressedBPB = new Dictionary<byte, int>
@@ -142,8 +145,8 @@ namespace SoulsFormats
                 dds.dwCaps2 = DDSCAPS2.VOLUME;
 
             PIXELFORMAT ddspf = dds.ddspf;
-
-            if (FourCC.ContainsKey(format) || DX10Formats.Contains(format))
+            var dxFormats = DX10Formats.ToList();
+            if (FourCC.ContainsKey(format) || dxFormats.Contains(format))
                 ddspf.dwFlags = DDPF.FOURCC;
             if (format == 6)
                 ddspf.dwFlags |= DDPF.ALPHAPIXELS | DDPF.RGB;
@@ -158,7 +161,7 @@ namespace SoulsFormats
 
             if (FourCC.ContainsKey(format))
                 ddspf.dwFourCC = FourCC[format];
-            else if (DX10Formats.Contains(format))
+            else if (dxFormats.Contains(format))
                 ddspf.dwFourCC = "DX10";
 
             if (format == 6)
@@ -382,8 +385,8 @@ namespace SoulsFormats
             {
                 var bw = new BinaryWriterEx(false);
                 foreach (Image image in images)
-                    foreach (byte[] mip in image.MipLevels)
-                        bw.WriteBytes(mip);
+                foreach (byte[] mip in image.MipLevels)
+                    bw.WriteBytes(mip);
                 return bw.FinishBytes();
             }
 

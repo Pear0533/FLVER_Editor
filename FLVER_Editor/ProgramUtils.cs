@@ -85,7 +85,7 @@ internal static partial class Program
         {
             Name = trimmedName,
             MTD = mtd,
-            Unk18 = flver.Materials.Count,
+            Index = flver.Materials.Count,
             Textures = textures
         };
         return newMaterial;
@@ -261,7 +261,7 @@ internal static partial class Program
         else return;
         FLVER2 replacementModel = FLVER2.Read(openReplacementModelDialog.FileName);
         Console.WriteLine(seikiroDonorModel.Header);
-        Console.WriteLine("Seikiro unk is:" + seikiroDonorModel.SekiroUnk);
+        Console.WriteLine("Seikiro unk is:" + seikiroDonorModel.Skeletons);
         Console.WriteLine("Material:");
         foreach (FLVER2.Material material in seikiroDonorModel.Materials) Console.WriteLine(material.Name);
         foreach (FLVER2.Mesh material in seikiroDonorModel.Meshes) Console.WriteLine("Mesh#" + material.MaterialIndex);
@@ -299,14 +299,14 @@ internal static partial class Program
         float z = float.Parse(textbox3.Text);
         seikiroDonorModel.Meshes = replacementModel.Meshes;
         if (copyMaterial.Checked) seikiroDonorModel.Materials = replacementModel.Materials;
-        if (copyBones.Checked) seikiroDonorModel.Bones = replacementModel.Bones;
+        if (copyBones.Checked) seikiroDonorModel.Nodes = replacementModel.Nodes;
         if (copyDummy.Checked) seikiroDonorModel.Dummies = replacementModel.Dummies;
         if (weightToFirstBone.Checked)
         {
             for (int i = 0; i < seikiroDonorModel.Meshes.Count; i++)
             {
                 seikiroDonorModel.Meshes[i].BoneIndices = new List<int> { 0, 1 };
-                seikiroDonorModel.Meshes[i].DefaultBoneIndex = 1;
+                seikiroDonorModel.Meshes[i].NodeIndex = 1;
                 foreach (FLVER.Vertex vertex in seikiroDonorModel.Meshes[i].Vertices)
                 {
                     if (Util3D.BoneWeightsToFloatArray(vertex.BoneWeights) == null) continue;

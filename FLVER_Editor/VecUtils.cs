@@ -36,11 +36,11 @@ public static class VecUtils
     }
 
     // Offset a vector position by the rotation and translation of a bone it is attached to
-    public static Vector3 RecursiveBoneOffset(Vector3 pos, FLVER.Bone bone, FLVER2 flver)
+    public static Vector3 RecursiveBoneOffset(Vector3 pos, FLVER.Node bone, FLVER2 flver)
     {
         pos = RotateVector(pos, bone.Rotation) + bone.Translation;
         if (bone.ParentIndex >= 0)
-            return RecursiveBoneOffset(pos, flver.Bones[bone.ParentIndex], flver);
+            return RecursiveBoneOffset(pos, flver.Nodes[bone.ParentIndex], flver);
         return pos;
     }
 }

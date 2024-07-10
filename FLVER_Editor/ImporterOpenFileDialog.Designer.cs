@@ -33,7 +33,6 @@
             autoAssignMtdCheckbox = new CheckBox();
             weightingModeGroupBox = new GroupBox();
             weightingModeSelector = new ComboBox();
-            createDefaultBoneCheckbox = new CheckBox();
             affectAllMeshesCheckbox = new CheckBox();
             meshSelector = new EasyCompletionComboBox();
             mtdSelectorGroupBox = new GroupBox();
@@ -60,7 +59,6 @@
             // 
             meshSelectorGroupBox.Controls.Add(autoAssignMtdCheckbox);
             meshSelectorGroupBox.Controls.Add(weightingModeGroupBox);
-            meshSelectorGroupBox.Controls.Add(createDefaultBoneCheckbox);
             meshSelectorGroupBox.Controls.Add(affectAllMeshesCheckbox);
             meshSelectorGroupBox.Controls.Add(meshSelector);
             meshSelectorGroupBox.Controls.Add(mtdSelectorGroupBox);
@@ -74,7 +72,7 @@
             // autoAssignMtdCheckbox
             // 
             autoAssignMtdCheckbox.AutoSize = true;
-            autoAssignMtdCheckbox.Location = new Point(140, 110);
+            autoAssignMtdCheckbox.Location = new Point(10, 110);
             autoAssignMtdCheckbox.Name = "autoAssignMtdCheckbox";
             autoAssignMtdCheckbox.Size = new Size(216, 19);
             autoAssignMtdCheckbox.TabIndex = 5;
@@ -99,16 +97,6 @@
             weightingModeSelector.Name = "weightingModeSelector";
             weightingModeSelector.Size = new Size(243, 23);
             weightingModeSelector.TabIndex = 3;
-            // 
-            // createDefaultBoneCheckbox
-            // 
-            createDefaultBoneCheckbox.AutoSize = true;
-            createDefaultBoneCheckbox.Location = new Point(7, 110);
-            createDefaultBoneCheckbox.Name = "createDefaultBoneCheckbox";
-            createDefaultBoneCheckbox.Size = new Size(131, 19);
-            createDefaultBoneCheckbox.TabIndex = 0;
-            createDefaultBoneCheckbox.Text = "Create Default Bone";
-            createDefaultBoneCheckbox.UseVisualStyleBackColor = true;
             // 
             // affectAllMeshesCheckbox
             // 
@@ -174,7 +162,6 @@
         #endregion
         private GroupBox importOptionsGroupBox;
         private GroupBox mtdSelectorGroupBox;
-        private CheckBox createDefaultBoneCheckbox;
         private GroupBox meshSelectorGroupBox;
         private EasyCompletionComboBox meshSelector;
         private EasyCompletionComboBox mtdSelector;

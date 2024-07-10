@@ -45,13 +45,11 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
 
     private void ResetImportOptionsControls(bool enabled, bool clearMeshes = true)
     {
-        createDefaultBoneCheckbox.Checked = false;
         boneWeightsMessage.Visible = false;
         meshSelector.Enabled = enabled;
         affectAllMeshesCheckbox.Enabled = enabled;
         mtdSelector.Enabled = enabled;
         weightingModeSelector.Enabled = enabled;
-        createDefaultBoneCheckbox.Enabled = enabled;
         autoAssignMtdCheckbox.Enabled = enabled;
         if (clearMeshes) Meshes.Clear();
         meshSelector.Items.Clear();
@@ -108,7 +106,6 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         {
             KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> selectedMesh = GetSelectedMesh();
             mtdSelector.SelectedItem = selectedMesh.Value.MTD;
-            createDefaultBoneCheckbox.Checked = selectedMesh.Value.CreateDefaultBone;
             weightingModeSelector.SelectedItem = selectedMesh.Value.Weighting;
         };
         mtdSelector.SelectedIndexChanged += (_, _) =>
@@ -116,7 +113,6 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             ModifyMesh(i => i.Value.MTD = mtdSelector.SelectedItem.ToString() ?? "");
             AssertBoneWeightsMessageVisibility();
         };
-        createDefaultBoneCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.CreateDefaultBone = createDefaultBoneCheckbox.Checked); };
         weightingModeSelector.SelectedIndexChanged += (_, _) =>
         {
             ModifyMesh(i => i.Value.Weighting = WeightingMode.Convert(weightingModeSelector.SelectedItem.ToString()!));

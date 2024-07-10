@@ -1104,7 +1104,7 @@ namespace FLVER_Editor
                 var pos = new System.Numerics.Vector3(dummy.Position.X, dummy.Position.Y, dummy.Position.Z);
 
                 if (dummy.ParentBoneIndex >= 0)
-                    pos = VecUtils.RecursiveBoneOffset(pos, Flver.Bones[dummy.ParentBoneIndex], Flver);
+                    pos = VecUtils.RecursiveBoneOffset(pos, Flver.Nodes[dummy.ParentBoneIndex], Flver);
 
                 DrawScreenText(dummy.ReferenceID.ToString(), pos, viewMatrix, projection);
             }

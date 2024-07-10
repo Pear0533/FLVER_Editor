@@ -22,27 +22,27 @@ public partial class MainWindow : Form
     /// <summary>
     ///     Index of the edit button column in the Materials table.
     /// </summary>
-    private const int MaterialEditButtonIndex = 6;
+    private const int MaterialEditButtonIndex = 5;
 
     /// <summary>
     ///     Index of the viewer highlight button column in the Materials table.
     /// </summary>
-    private const int MaterialViewerHighlightButtonIndex = 7;
+    private const int MaterialViewerHighlightButtonIndex = 6;
 
     /// <summary>
     ///     Index of the add material preset button column in the Materials table.
     /// </summary>
-    private const int MaterialAddPresetCbIndex = 8;
+    private const int MaterialAddPresetCbIndex = 7;
 
     /// <summary>
     ///     Index of the apply material preset button column in the Materials table.
     /// </summary>
-    private const int MaterialApplyPresetCbIndex = 9;
+    private const int MaterialApplyPresetCbIndex = 8;
 
     /// <summary>
     ///     Index of the delete material button column in the Materials table.
     /// </summary>
-    private const int MaterialDeleteCbIndex = 10;
+    private const int MaterialDeleteCbIndex = 9;
 
     /// <summary>
     ///     The file filter for opening image files.
@@ -712,17 +712,17 @@ public partial class MainWindow : Form
         for (int i = 0; i < BonePositionList.Count; ++i)
             BonePositionList[i] = null;
         // TODO: Investigate the maximum threshold on bones
-        Transform3D[] bonesTransform = new Transform3D[Flver.Bones.Count];
-        for (int i = 0; i < Flver.Bones.Count; ++i)
+        Transform3D[] bonesTransform = new Transform3D[Flver.Nodes.Count];
+        for (int i = 0; i < Flver.Nodes.Count; ++i)
         {
-            bonesTransform[i] = new Transform3D { RotationOrder = RotationOrder, Position = new Vector3D(Flver.Bones[i].Translation) };
-            bonesTransform[i].SetRotationInRadians(new Vector3D(Flver.Bones[i].Rotation));
-            bonesTransform[i].Scale = new Vector3D(Flver.Bones[i].Scale);
-            if (Flver.Bones[i].ParentIndex < 0) continue;
-            bonesTransform[i].Parent = bonesTransform[Flver.Bones[i].ParentIndex];
+            bonesTransform[i] = new Transform3D { RotationOrder = RotationOrder, Position = new Vector3D(Flver.Nodes[i].Translation) };
+            bonesTransform[i].SetRotationInRadians(new Vector3D(Flver.Nodes[i].Rotation));
+            bonesTransform[i].Scale = new Vector3D(Flver.Nodes[i].Scale);
+            if (Flver.Nodes[i].ParentIndex < 0) continue;
+            bonesTransform[i].Parent = bonesTransform[Flver.Nodes[i].ParentIndex];
             Vector3D absolutePos = bonesTransform[i].GetGlobalOrigin();
-            if (bonesTransform[Flver.Bones[i].ParentIndex] == null) continue;
-            Vector3D parentPos = bonesTransform[Flver.Bones[i].ParentIndex].GetGlobalOrigin();
+            if (bonesTransform[Flver.Nodes[i].ParentIndex] == null) continue;
+            Vector3D parentPos = bonesTransform[Flver.Nodes[i].ParentIndex].GetGlobalOrigin();
             vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(parentPos.X - 0.005f, parentPos.Z - 0.005f, parentPos.Y),
                 Microsoft.Xna.Framework.Color.Purple));
             vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
@@ -746,7 +746,7 @@ public partial class MainWindow : Form
             Vector3 OffsetPos(Vector3 pos, FLVER2 flver, FLVER.Dummy dummy)
             {
                 if (dummy.ParentBoneIndex >= 0)
-                    return VecUtils.RecursiveBoneOffset(pos, Flver.Bones[dummy.ParentBoneIndex], Flver);
+                    return VecUtils.RecursiveBoneOffset(pos, Flver.Nodes[dummy.ParentBoneIndex], Flver);
                 return pos;
             }
 
@@ -912,12 +912,12 @@ public partial class MainWindow : Form
         texturesTable.Rows.Clear();
         meshTable.Rows.Clear();
         dummiesTable.Rows.Clear();
-        for (int i = 0; i < Flver.Bones.Count; ++i)
+        for (int i = 0; i < Flver.Nodes.Count; ++i)
         {
-            FLVER.Bone bone = Flver.Bones[i];
+            FLVER.Node bone = Flver.Nodes[i];
             DataGridViewRow row = new();
             row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i }, new DataGridViewTextBoxCell { Value = bone.Name },
-                new DataGridViewTextBoxCell { Value = bone.ParentIndex }, new DataGridViewTextBoxCell { Value = bone.ChildIndex },
+                new DataGridViewTextBoxCell { Value = bone.ParentIndex }, new DataGridViewTextBoxCell { Value = bone.FirstChildIndex },
                 new DataGridViewTextBoxCell { Value = $"{bone.Translation.X},{bone.Translation.Y},{bone.Translation.Z}" },
                 new DataGridViewTextBoxCell { Value = $"{bone.Scale.X},{bone.Scale.Y},{bone.Scale.Z}" },
                 new DataGridViewTextBoxCell { Value = $"{bone.Rotation.X},{bone.Rotation.Y},{bone.Rotation.Z}" },
@@ -929,10 +929,10 @@ public partial class MainWindow : Form
         {
             FLVER2.Material material = Flver.Materials[i];
             DataGridViewRow row = new();
-            if (!StopAutoInternalIndexOverride) material.Unk18 = i;
+            if (!StopAutoInternalIndexOverride) material.Index = i;
             row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i }, new DataGridViewTextBoxCell { Value = material.Name },
-                new DataGridViewTextBoxCell { Value = GetModelMask(material.Name) }, new DataGridViewTextBoxCell { Value = material.Flags },
-                new DataGridViewTextBoxCell { Value = material.MTD }, new DataGridViewTextBoxCell { Value = material.Unk18 });
+                new DataGridViewTextBoxCell { Value = GetModelMask(material.Name) }, new DataGridViewTextBoxCell { Value = material.MTD },
+                new DataGridViewTextBoxCell { Value = material.Index });
             for (int j = 0; j < 3; ++j)
                 row.Cells.Add(new DataGridViewButtonCell { Value = materialsTable.Columns[j + 6].HeaderText });
             for (int j = 0; j < 2; ++j)
@@ -1398,7 +1398,7 @@ public partial class MainWindow : Form
 
     private void ApplyMeshSimpleSkin(int meshIndex)
     {
-        int boneIndex = ShowSelectorDialog("Pick a Bone", Flver.Bones);
+        int boneIndex = ShowSelectorDialog("Pick a Bone", Flver.Nodes);
         if (boneIndex == -1) return;
         List<FLVER.Vertex> unweightedVerts = Flver.Meshes[meshIndex].Vertices.Where(v =>
             Util3D.BoneIndicesToIntArray(v.BoneIndices) != null
@@ -1870,13 +1870,13 @@ public partial class MainWindow : Form
                 switch (e.ColumnIndex)
                 {
                     case 1:
-                        Flver.Bones[e.RowIndex].Name = bonesTableValue;
+                        Flver.Nodes[e.RowIndex].Name = bonesTableValue;
                         break;
                     case 2:
-                        Flver.Bones[e.RowIndex].ParentIndex = short.Parse(bonesTableValue);
+                        Flver.Nodes[e.RowIndex].ParentIndex = short.Parse(bonesTableValue);
                         break;
                     case 3:
-                        Flver.Bones[e.RowIndex].ChildIndex = short.Parse(bonesTableValue);
+                        Flver.Nodes[e.RowIndex].FirstChildIndex = short.Parse(bonesTableValue);
                         break;
                     case 4:
                     case 5:
@@ -1885,11 +1885,11 @@ public partial class MainWindow : Form
                     case 8:
                         string[] comp = bonesTableValue.Split(',');
                         Vector3 vector = new(float.Parse(comp[0]), float.Parse(comp[1]), float.Parse(comp[2]));
-                        Flver.Bones[e.RowIndex].Translation = e.ColumnIndex == 4 ? vector : Flver.Bones[e.RowIndex].Translation;
-                        Flver.Bones[e.RowIndex].Scale = e.ColumnIndex == 5 ? vector : Flver.Bones[e.RowIndex].Scale;
-                        Flver.Bones[e.RowIndex].Rotation = e.ColumnIndex == 6 ? vector : Flver.Bones[e.RowIndex].Rotation;
-                        Flver.Bones[e.RowIndex].BoundingBoxMin = e.ColumnIndex == 7 ? vector : Flver.Bones[e.RowIndex].BoundingBoxMin;
-                        Flver.Bones[e.RowIndex].BoundingBoxMax = e.ColumnIndex == 8 ? vector : Flver.Bones[e.RowIndex].BoundingBoxMax;
+                        Flver.Nodes[e.RowIndex].Translation = e.ColumnIndex == 4 ? vector : Flver.Nodes[e.RowIndex].Translation;
+                        Flver.Nodes[e.RowIndex].Scale = e.ColumnIndex == 5 ? vector : Flver.Nodes[e.RowIndex].Scale;
+                        Flver.Nodes[e.RowIndex].Rotation = e.ColumnIndex == 6 ? vector : Flver.Nodes[e.RowIndex].Rotation;
+                        Flver.Nodes[e.RowIndex].BoundingBoxMin = e.ColumnIndex == 7 ? vector : Flver.Nodes[e.RowIndex].BoundingBoxMin;
+                        Flver.Nodes[e.RowIndex].BoundingBoxMax = e.ColumnIndex == 8 ? vector : Flver.Nodes[e.RowIndex].BoundingBoxMax;
                         break;
                 }
             }
@@ -1935,13 +1935,10 @@ public partial class MainWindow : Form
                         Flver.Materials[e.RowIndex].Name = ReplaceModelMask(materialName, materialsTableValue);
                         break;
                     case 3:
-                        Flver.Materials[e.RowIndex].Flags = int.Parse(materialsTableValue);
-                        break;
-                    case 4:
                         Flver.Materials[e.RowIndex].MTD = materialsTableValue;
                         break;
-                    case 5:
-                        Flver.Materials[e.RowIndex].Unk18 = int.Parse(materialsTableValue);
+                    case 4:
+                        Flver.Materials[e.RowIndex].Index = int.Parse(materialsTableValue);
                         break;
                 }
             }
@@ -2073,7 +2070,7 @@ public partial class MainWindow : Form
                     v.BoneWeights[0] = 1;
                 }
                 if (!Flver.Meshes[e.RowIndex].BoneIndices.Contains(newBoneWeight)) Flver.Meshes[e.RowIndex].BoneIndices.Add(newBoneWeight);
-                Flver.Meshes[e.RowIndex].Dynamic = 1;
+                Flver.Meshes[e.RowIndex].UseBoneWeights = true;
             }
         }
         catch { }
@@ -2149,7 +2146,7 @@ public partial class MainWindow : Form
         mesh.BoundingBox.Max = new Vector3(maxX, maxY, maxZ);
     }
 
-    private static System.Numerics.Matrix4x4 GetNMatrix(FLVER.Bone b)
+    private static System.Numerics.Matrix4x4 GetNMatrix(FLVER.Node b)
     {
         return System.Numerics.Matrix4x4.CreateScale(b.Scale)
             * System.Numerics.Matrix4x4.CreateRotationX(b.Rotation.X)
@@ -2158,16 +2155,16 @@ public partial class MainWindow : Form
             * System.Numerics.Matrix4x4.CreateTranslation(b.Translation);
     }
 
-    private static FLVER.Bone GetParent(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones)
+    private static FLVER.Node GetParent(FLVER.Node b, IReadOnlyList<FLVER.Node> bones)
     {
         if (b.ParentIndex >= 0 && b.ParentIndex < bones.Count) return bones[b.ParentIndex];
         return null;
     }
 
-    private static System.Numerics.Matrix4x4 GetAbsoluteNMatrix(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones)
+    private static System.Numerics.Matrix4x4 GetAbsoluteNMatrix(FLVER.Node b, IReadOnlyList<FLVER.Node> bones)
     {
         System.Numerics.Matrix4x4 result = System.Numerics.Matrix4x4.Identity;
-        FLVER.Bone parentBone = b;
+        FLVER.Node parentBone = b;
         while (parentBone != null)
         {
             System.Numerics.Matrix4x4 m = GetNMatrix(parentBone);
@@ -2177,7 +2174,7 @@ public partial class MainWindow : Form
         return result;
     }
 
-    private static void UpdateBonesBoundingBox(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones, Vector3 vertexPos)
+    private static void UpdateBonesBoundingBox(FLVER.Node b, IReadOnlyList<FLVER.Node> bones, Vector3 vertexPos)
     {
         System.Numerics.Matrix4x4 boneAbsoluteMatrix = GetAbsoluteNMatrix(b, bones);
         if (!System.Numerics.Matrix4x4.Invert(boneAbsoluteMatrix, out System.Numerics.Matrix4x4 invertedBoneMatrix)) return;
@@ -2197,7 +2194,7 @@ public partial class MainWindow : Form
         UpdateUndoState();
         Flver.Header.BoundingBoxMin = new Vector3();
         Flver.Header.BoundingBoxMax = new Vector3();
-        foreach (FLVER.Bone bone in Flver.Bones)
+        foreach (FLVER.Node bone in Flver.Nodes)
         {
             bone.BoundingBoxMin = new Vector3();
             bone.BoundingBoxMax = new Vector3();
@@ -2212,9 +2209,9 @@ public partial class MainWindow : Form
                 foreach (int boneIndex in Util3D.BoneIndicesToIntArray(vertex.BoneIndices))
                 {
                     bool boneDoesNotExist = false;
-                    if (boneIndex >= 0 && boneIndex < Flver.Bones.Count) Flver.Bones[boneIndex].Unk3C = 0;
+                    if (boneIndex >= 0 && boneIndex < Flver.Nodes.Count) Flver.Nodes[boneIndex].Flags = 0;
                     else boneDoesNotExist = true;
-                    if (!boneDoesNotExist) UpdateBonesBoundingBox(Flver.Bones[boneIndex], Flver.Bones, vertex.Position);
+                    if (!boneDoesNotExist) UpdateBonesBoundingBox(Flver.Nodes[boneIndex], Flver.Nodes, vertex.Position);
                 }
             }
         }
@@ -2295,12 +2292,12 @@ public partial class MainWindow : Form
             int materialOffset = Flver.Materials.Count;
             int layoutOffset = Flver.BufferLayouts.Count;
             Dictionary<int, int> newFlverToCurrentFlver = new();
-            for (int i = 0; i < newFlver.Bones.Count; ++i)
+            for (int i = 0; i < newFlver.Nodes.Count; ++i)
             {
-                FLVER.Bone attachBone = newFlver.Bones[i];
-                for (int j = 0; j < Flver.Bones.Count; ++j)
+                FLVER.Node attachBone = newFlver.Nodes[i];
+                for (int j = 0; j < Flver.Nodes.Count; ++j)
                 {
-                    if (attachBone.Name != Flver.Bones[j].Name) continue;
+                    if (attachBone.Name != Flver.Nodes[j].Name) continue;
                     newFlverToCurrentFlver.Add(i, j);
                     break;
                 }
@@ -2419,7 +2416,7 @@ public partial class MainWindow : Form
             switch (type)
             {
                 case 0:
-                    Flver.Bones = JsonConvert.DeserializeObject<List<FLVER.Bone>>(jsonText);
+                    Flver.Nodes = JsonConvert.DeserializeObject<List<FLVER.Node>>(jsonText);
                     break;
                 case 1:
                     Flver.Materials = JsonConvert.DeserializeObject<List<FLVER2.Material>>(jsonText);
@@ -2464,7 +2461,7 @@ public partial class MainWindow : Form
 
     private void ExportBonesJSONButtonClicked(object sender, EventArgs e)
     {
-        ExportJSON(Flver.Bones);
+        ExportJSON(Flver.Nodes);
     }
 
     private void ExportMaterialsJSONButtonClicked(object sender, EventArgs e)
@@ -3179,8 +3176,8 @@ public partial class MainWindow : Form
             m.BoundingBox.Max = new Vector3(1, 1, 1);
             m.BoundingBox.Min = new Vector3(-1, -1, -1);
             m.BoundingBox.Unk = new Vector3();
-            m.DefaultBoneIndex = 0;
-            m.Dynamic = 1;
+            m.NodeIndex = 0;
+            m.UseBoneWeights = true;
             int[] varray = m.FaceSets[0].Indices.ToArray();
             m.FaceSets = new List<FLVER2.FaceSet>();
             for (int i = 0; i < m.Vertices.Count; i++)

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using ZstdNet;
 
 namespace SoulsFormats
 {
@@ -164,7 +165,7 @@ namespace SoulsFormats
                 ((value & 0b00100000) >> 3) |
                 ((value & 0b01000000) >> 5) |
                 ((value & 0b10000000) >> 7)
-                );
+            );
         }
 
         /// <summary>
@@ -382,6 +383,7 @@ namespace SoulsFormats
         {
             return (byte[])ds2SaveKey.Clone();
         }
+
         private static readonly byte[] ds2SaveKey = ParseHexString("B7 FD 46 3E 4A 9C 11 02 DF 17 39 E5 F3 B2 A5 0F");
 
         /// <summary>
@@ -391,7 +393,9 @@ namespace SoulsFormats
         {
             return (byte[])scholarSaveKey.Clone();
         }
-        private static readonly byte[] scholarSaveKey = ParseHexString("59 9F 9B 69 96 40 A5 52 36 EE 2D 70 83 5E C7 44");
+
+        private static readonly byte[] scholarSaveKey =
+            ParseHexString("59 9F 9B 69 96 40 A5 52 36 EE 2D 70 83 5E C7 44");
 
         /// <summary>
         /// Returns a copy of the key used for encrypting DS3 save files on PC.
@@ -400,6 +404,7 @@ namespace SoulsFormats
         {
             return (byte[])ds3SaveKey.Clone();
         }
+
         private static readonly byte[] ds3SaveKey = ParseHexString("FD 46 4D 69 5E 69 A3 9A 10 E3 19 A7 AC E8 B7 FA");
 
         /// <summary>
@@ -466,53 +471,87 @@ namespace SoulsFormats
             }
         }
 
-        private static readonly byte[] ds3RegulationKey = SFEncoding.ASCII.GetBytes("ds3#jn/8_7(rsY9pg55GFN7VFL#+3n/)");
+        public enum RegulationKey
+        {
+            DarkSouls3 = 0,
+            EldenRing = 1,
+            ArmoredCore6 = 2,
+        }
+
+            private static readonly Dictionary<RegulationKey, byte[]> RegulationKeyDictionary = new Dictionary<RegulationKey, byte[]>
+            {
+                { RegulationKey.DarkSouls3, SFEncoding.ASCII.GetBytes("ds3#jn/8_7(rsY9pg55GFN7VFL#+3n/)") },
+                { RegulationKey.EldenRing, ParseHexString(
+                    "99 BF FC 36 6A 6B C8 C6 F5 82 7D 09 36 02 D6 76 C4 28 92 A0 1C 20 7F B0 24 D3 AF 4E 49 3F EF 99")},
+                { RegulationKey.ArmoredCore6, ParseHexString(
+                    "10 CE ED 47 7B 7C D9 D7 E6 93 8E 11 47 13 E7 87 D5 39 13 B1 D 31 8E C1 35 E4 BE 50 50 4E E 10")}
+            };
 
         /// <summary>
         /// Decrypts and unpacks DS3's regulation BND4 from the specified path.
         /// </summary>
         public static BND4 DecryptDS3Regulation(string path)
         {
+            return DecryptBndWithKey(path, RegulationKey.DarkSouls3);
+        }
+        /// <summary>
+        /// Decrypts and unpacks ER's regulation BND4 from the specified path.
+        /// </summary>
+        public static BND4 DecryptERRegulation(string path)
+        {
+            return DecryptBndWithKey(path, RegulationKey.EldenRing);
+        }
+        /// <summary>
+        /// Decrypts and unpacks AC6's regulation BND4 from the specified path.
+        /// </summary>
+        public static BND4 DecryptAC6Regulation(string path)
+        {
+            return DecryptBndWithKey(path, RegulationKey.ArmoredCore6);
+        }
+
+        /// <summary>
+        /// Decrypts and unpacks a regulation BND4 from the specified path with a provided key.
+        /// </summary>
+        public static BND4 DecryptBndWithKey(string path, RegulationKey key)
+        {
             byte[] bytes = File.ReadAllBytes(path);
-            bytes = DecryptByteArray(ds3RegulationKey, bytes);
+            bytes = DecryptByteArray(key, bytes);
             return BND4.Read(bytes);
         }
+
 
         /// <summary>
         /// Repacks and encrypts DS3's regulation BND4 to the specified path.
         /// </summary>
         public static void EncryptDS3Regulation(string path, BND4 bnd)
         {
-            byte[] bytes = bnd.Write();
-            bytes = EncryptByteArray(ds3RegulationKey, bytes);
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
-            File.WriteAllBytes(path, bytes);
+            EncryptRegulationWithKey(path, bnd, RegulationKey.DarkSouls3);
         }
-
-        private static readonly byte[] erRegulationKey = ParseHexString("99 BF FC 36 6A 6B C8 C6 F5 82 7D 09 36 02 D6 76 C4 28 92 A0 1C 20 7F B0 24 D3 AF 4E 49 3F EF 99");
-
-        /// <summary>
-        /// Decrypts and unpacks ER's regulation BND4 from the specified path.
-        /// </summary>
-        public static BND4 DecryptERRegulation(string path)
-        {
-            byte[] bytes = File.ReadAllBytes(path);
-            bytes = DecryptByteArray(erRegulationKey, bytes);
-            return BND4.Read(bytes);
-        }
-
         /// <summary>
         /// Repacks and encrypts ER's regulation BND4 to the specified path.
         /// </summary>
         public static void EncryptERRegulation(string path, BND4 bnd)
         {
+            EncryptRegulationWithKey(path, bnd, RegulationKey.EldenRing);
+        }
+
+        /// <summary>
+        /// Repacks and encrypts AC6's regulation BND4 to the specified path.
+        /// </summary>
+        public static void EncryptAC6Regulation(string path, BND4 bnd)
+        {
+            EncryptRegulationWithKey(path, bnd, RegulationKey.ArmoredCore6);
+        }
+
+        public static void EncryptRegulationWithKey(string path, BND4 bnd, RegulationKey key)
+        {
             byte[] bytes = bnd.Write();
-            bytes = EncryptByteArray(erRegulationKey, bytes);
+            bytes = EncryptByteArray(key, bytes);
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             File.WriteAllBytes(path, bytes);
         }
 
-        private static byte[] EncryptByteArray(byte[] key, byte[] secret)
+        private static byte[] EncryptByteArray(RegulationKey key, byte[] secret)
         {
             using (MemoryStream ms = new MemoryStream())
             using (AesManaged cryptor = new AesManaged())
@@ -524,10 +563,11 @@ namespace SoulsFormats
 
                 byte[] iv = cryptor.IV;
 
-                using (CryptoStream cs = new CryptoStream(ms, cryptor.CreateEncryptor(key, iv), CryptoStreamMode.Write))
+                using (CryptoStream cs = new CryptoStream(ms, cryptor.CreateEncryptor(RegulationKeyDictionary[key], iv), CryptoStreamMode.Write))
                 {
                     cs.Write(secret, 0, secret.Length);
                 }
+
                 byte[] encryptedContent = ms.ToArray();
 
                 byte[] result = new byte[iv.Length + encryptedContent.Length];
@@ -539,7 +579,7 @@ namespace SoulsFormats
             }
         }
 
-        private static byte[] DecryptByteArray(byte[] key, byte[] secret)
+        private static byte[] DecryptByteArray(RegulationKey key, byte[] secret)
         {
             byte[] iv = new byte[16];
             byte[] encryptedContent = new byte[secret.Length - 16];
@@ -555,11 +595,39 @@ namespace SoulsFormats
                 cryptor.KeySize = 256;
                 cryptor.BlockSize = 128;
 
-                using (CryptoStream cs = new CryptoStream(ms, cryptor.CreateDecryptor(key, iv), CryptoStreamMode.Write))
+                using (CryptoStream cs = new CryptoStream(ms, cryptor.CreateDecryptor(RegulationKeyDictionary[key], iv), CryptoStreamMode.Write))
                 {
                     cs.Write(encryptedContent, 0, encryptedContent.Length);
                 }
+
                 return ms.ToArray();
+            }
+        }
+
+        /**
+         * Written by ClayAmore
+         */
+        public static byte[] ReadZstd(BinaryReaderEx br, int compressedSize)
+        {
+            byte[] compressed = br.ReadBytes(compressedSize);
+
+            using (var decompressedStream = new MemoryStream())
+            {
+                using (var compressedStream = new MemoryStream(compressed))
+                using (var deflateStream = new DecompressionStream(compressedStream))
+                {
+                    deflateStream.CopyTo(decompressedStream);
+                }
+                return decompressedStream.ToArray();
+            }
+        }
+
+        public static byte[] WriteZstd(byte[] data, int compressionLevel)
+        {
+            var options = new CompressionOptions(compressionLevel);
+            using (var compressor = new Compressor(options))
+            {
+                return compressor.Wrap(data).ToArray();
             }
         }
     }

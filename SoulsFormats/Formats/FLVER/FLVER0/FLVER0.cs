@@ -36,8 +36,8 @@ namespace SoulsFormats
         public List<Material> Materials { get; set; }
         IReadOnlyList<IFlverMaterial> IFlver.Materials => Materials;
 
-        public List<FLVER.Bone> Bones { get; set; }
-        IReadOnlyList<FLVER.Bone> IFlver.Bones => Bones;
+        public List<FLVER.Node> Bones { get; set; }
+        IReadOnlyList<FLVER.Node> IFlver.Nodes => Bones;
 
         public List<Mesh> Meshes { get; set; }
         IReadOnlyList<IFlverMesh> IFlver.Meshes => Meshes;
@@ -99,9 +99,9 @@ namespace SoulsFormats
             for (int i = 0; i < materialCount; i++)
                 Materials.Add(new Material(br, this));
 
-            Bones = new List<FLVER.Bone>(boneCount);
+            Bones = new List<FLVER.Node>(boneCount);
             for (int i = 0; i < boneCount; i++)
-                Bones.Add(new FLVER.Bone(br, Unicode));
+                Bones.Add(new FLVER.Node(br, Unicode));
 
             Meshes = new List<Mesh>(meshCount);
             for (int i = 0; i < meshCount; i++)

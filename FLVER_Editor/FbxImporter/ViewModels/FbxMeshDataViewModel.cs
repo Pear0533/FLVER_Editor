@@ -59,22 +59,22 @@ public class FbxMeshDataViewModel
         FLVER2.Mesh newMesh = new()
         {
             VertexBuffers = layoutIndices.Select(x => new FLVER2.VertexBuffer(x)).ToList(),
-            Dynamic = (byte)(options.Weighting == WeightingMode.Skin ? 1 : 0)
+            UseBoneWeights = options.Weighting == WeightingMode.Skin
         };
-        int defaultBoneIndex = flver.Bones.IndexOf(flver.Bones.FirstOrDefault(x => x.Name == Name));
+        int defaultBoneIndex = flver.Nodes.IndexOf(flver.Nodes.FirstOrDefault(x => x.Name == Name));
         if (defaultBoneIndex == -1)
         {
             if (options.CreateDefaultBone)
             {
-                flver.Bones.Add(new FLVER.Bone { Name = Name });
-                defaultBoneIndex = flver.Bones.Count - 1;
+                flver.Nodes.Add(new FLVER.Node { Name = Name });
+                defaultBoneIndex = flver.Nodes.Count - 1;
             }
             else
             {
                 defaultBoneIndex = 0;
             }
         }
-        newMesh.DefaultBoneIndex = defaultBoneIndex;
+        newMesh.NodeIndex = defaultBoneIndex;
         bool foundWeights = false;
         foreach (FbxVertexData vertexData in Data.VertexData)
         {
@@ -82,7 +82,9 @@ public class FbxMeshDataViewModel
             {
                 Position = vertexData.Position with { Z = vertexData.Position.Z },
                 Normal = vertexData.Normal with { Z = vertexData.Normal.Z },
-                Bitangent = vertexData.Bitangent with { Z = vertexData.Bitangent.Z },
+                //bitangent is usually not an actual bitangent
+                //Bitangent = vertexData.Bitangent with { Z = vertexData.Bitangent.Z * zSign },
+                Bitangent = new Vector4(-1.0f),
                 Tangents = vertexData.Tangents.Select(x => x with { Z = x.Z }).ToList(),
                 UVs = vertexData.UVs.Select(x => new Vector3(x.X, 1 - x.Y, 0.0f)).ToList(),
                 // Fbx uses RGBA, SF uses ARGB
@@ -95,7 +97,7 @@ public class FbxMeshDataViewModel
             for (int j = 0; j < Math.Min(orderedWeightData.Count, 4); j++)
             {
                 (string boneName, float boneWeight) = orderedWeightData[j];
-                int boneIndex = flver.Bones.IndexOf(flver.Bones.FirstOrDefault(x => x.Name == boneName));
+                int boneIndex = flver.Nodes.IndexOf(flver.Nodes.FirstOrDefault(x => x.Name == boneName));
                 if (boneIndex == -1)
                 {
                     boneIndex = 0;
@@ -147,7 +149,7 @@ public class FbxMeshDataViewModel
 
     private static void AdjustBoneIndexBufferSize(FLVER2 flver, List<FLVER2.BufferLayout> bufferLayouts)
     {
-        if (flver.Bones.Count <= byte.MaxValue) return;
+        if (flver.Nodes.Count <= byte.MaxValue) return;
         foreach (FLVER2.BufferLayout bufferLayout in bufferLayouts)
         {
             foreach (FLVER.LayoutMember layoutMember in bufferLayout.Where(x =>
