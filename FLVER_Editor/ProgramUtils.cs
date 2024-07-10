@@ -23,6 +23,7 @@ internal static partial class Program
         ATI3 = 103
     }
     public static List<string> MTDs;
+    public static int DefaultMTDIndex = 0;
     public static FLVER2MaterialInfoBank MaterialInfoBank;
 
     /*************** Basic Tools section *****************/
@@ -42,12 +43,12 @@ internal static partial class Program
             131098 when flver.Materials.Any(x => x.MTD.Contains(".matxml")) => "ER",
             131098 => MainWindow.ShowSelectorDialog("Choose target game:", "Target Game",
                     new object[] { "Elden Ring", "Sekiro" }) switch
-                {
-                    "Elden Ring" => "ER",
-                    "Sekiro" => "SDT",
-                    null => null,
-                    _ => throw new ArgumentOutOfRangeException()
-                },
+            {
+                "Elden Ring" => "ER",
+                "Sekiro" => "SDT",
+                null => null,
+                _ => throw new ArgumentOutOfRangeException()
+            },
             131099 => "AC6",
             _ => throw new InvalidDataException("Invalid Flver Version")
         };
@@ -69,6 +70,14 @@ internal static partial class Program
             return false;
         }
         MTDs = new List<string>(MaterialInfoBank.MaterialDefs.Keys.Where(x => !string.IsNullOrEmpty(x)).OrderBy(x => x));
+
+        var defaultMtdIndex = MTDs.FindIndex(x => x.Contains("c[amsn]_e.mtd", StringComparison.OrdinalIgnoreCase));
+
+        if (defaultMtdIndex >= 0)
+        {
+            DefaultMTDIndex = defaultMtdIndex;
+        }
+
         return true;
     }
 

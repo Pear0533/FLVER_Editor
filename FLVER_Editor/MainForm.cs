@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using FLVER_Editor.Actions;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -37,12 +38,12 @@ public partial class MainWindow : Form
     /// <summary>
     ///     Index of the apply material preset button column in the Materials table.
     /// </summary>
-    private const int MaterialApplyPresetCbIndex = 8;
+    public const int MaterialApplyPresetCbIndex = 8;
 
     /// <summary>
     ///     Index of the delete material button column in the Materials table.
     /// </summary>
-    private const int MaterialDeleteCbIndex = 9;
+    public const int MaterialDeleteCbIndex = 9;
 
     /// <summary>
     ///     The file filter for opening image files.
@@ -122,7 +123,7 @@ public partial class MainWindow : Form
     /// <summary>
     ///     The current BND4 the loaded FLVER2 model file is in if applicable.
     /// </summary>
-    private static BND4 FlverBnd;
+    public static BND4 FlverBnd;
 
     /// <summary>
     ///     The current BND4 the loaded MatBins are in if applicable.
@@ -384,6 +385,8 @@ public partial class MainWindow : Form
 
     public static FLVER2? GhostModel;
 
+    public static MainWindow? Instance { get; private set; }
+
     public MainWindow()
     {
         InitializeComponent();
@@ -405,6 +408,7 @@ public partial class MainWindow : Form
         tabWindow.SelectedTab = meshTabPage;
         meshTabDataTableSelector.SelectedIndex = 0;
         Mono3D.mainForm = this;
+        Instance = this;
         if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
     }
 
@@ -423,8 +427,9 @@ public partial class MainWindow : Form
     {
         if (MaterialInfoBank == null)
             return;
-        IsMaleBodyModelImported = Importer.ImportFbxAsync(MaleBodyFlver, $"{ModelResourcePath}\\malebody.fbx");
-        IsFemaleBodyModelImported = Importer.ImportFbxAsync(FemaleBodyFlver, $"{ModelResourcePath}\\femalebody.fbx");
+        IsMaleBodyModelImported = Importer.ImportFbxAsync(MaleBodyFlver, $"{ModelResourcePath}\\malebody.fbx", () => { });
+        IsFemaleBodyModelImported = Importer.ImportFbxAsync(FemaleBodyFlver, $"{ModelResourcePath}\\femalebody.fbx", () => { 
+        });
     }
 
     private void SetVersionString()
@@ -1010,7 +1015,7 @@ public partial class MainWindow : Form
         return filePath.Contains(".flv") || filePath.Contains(".flver");
     }
 
-    private FLVER2 ReadFLVERFromDCXPath(string filePath, bool setMainFlverCompressionType, bool setBinderIndex, bool wantsTpf)
+    public FLVER2 ReadFLVERFromDCXPath(string filePath, bool setMainFlverCompressionType, bool setBinderIndex, bool wantsTpf)
     {
         List<BinderFile> flverFiles = new();
         BND4 newFlverBnd = null;
@@ -1097,7 +1102,7 @@ public partial class MainWindow : Form
         }
         CurrentFlverBytes = Flver.Write();
         saveToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
-        MatBinBndPath = null;
+         MatBinBndPath = null;
         DeselectAllSelectedThings();
         UpdateUI();
         ClearViewerMaterialHighlight();
@@ -1232,7 +1237,9 @@ public partial class MainWindow : Form
     private static void InjectTextureIntoTPF(string textureFilePath)
     {
         if (Tpf == null) Tpf = new TPF();
+
         BinderFile? flverBndTpfEntry = FlverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
+
         if (flverBndTpfEntry is null) return;
 
         byte[] ddsBytes = File.ReadAllBytes(textureFilePath);
@@ -1246,31 +1253,36 @@ public partial class MainWindow : Form
 
         TPF.Texture texture = new(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, File.ReadAllBytes(textureFilePath));
         int existingTextureIndex = Tpf.Textures.FindIndex(i => i.Name == texture.Name);
+
         if (existingTextureIndex != -1)
         {
             Tpf.Textures.RemoveAt(existingTextureIndex);
             Tpf.Textures.Insert(existingTextureIndex, texture);
         }
         else Tpf.Textures.Add(texture);
-        if (flverBndTpfEntry != null) FlverBnd.Files[FlverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Tpf.Write();
-        else
-        {
-            if (FlverFilePath.Contains(".flver")) Tpf.Write(RemoveIndexSuffix(FlverFilePath).Replace(".flver", ".tpf"));
-            else if (FlverFilePath.Contains(".flv")) Tpf.Write(RemoveIndexSuffix(FlverFilePath).Replace(".flv", ".tpf"));
-        }
+
+        FlverBnd.Files[FlverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Tpf.Write();
     }
+
 
     private void TexturesTableButtonClicked(object sender, DataGridViewCellEventArgs e)
     {
         if (e.RowIndex < 0 || e.ColumnIndex != 2) return;
         OpenFileDialog dialog = new() { Filter = ImageFilesFilter };
         if (dialog.ShowDialog() != DialogResult.OK) return;
-        UpdateUndoState();
-        Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path = $"{Path.GetFileNameWithoutExtension(dialog.FileName)}.tif";
-        InjectTextureIntoTPF(dialog.FileName);
-        UpdateTexturesTable();
-        UpdateMesh();
-        Viewer.RefreshTextures();
+        //UpdateUndoState();
+        var filename = dialog.FileName;
+        var oldfilename = Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path;
+
+        UpdateTextureAction action = new(FlverBnd, filename, (filename) =>
+        {
+            Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path = $"{Path.GetFileNameWithoutExtension(dialog.FileName)}.tif";
+            UpdateTexturesTable();
+            UpdateMesh();
+            Viewer.RefreshTextures();
+        });
+        ActionManager.Apply(action);
+
     }
 
     private void ResetModifierNumBoxValues()
@@ -1410,18 +1422,10 @@ public partial class MainWindow : Form
             ShowInformationDialog("Found no unweighted vertices to apply default weights to.");
             return;
         }
-        UpdateUndoState();
-        foreach (FLVER.Vertex v in unweightedVerts)
-        {
-            v.BoneIndices[0] = boneIndex;
-            v.BoneWeights = new FLVER.VertexBoneWeights
-            {
-                [0] = 1,
-                [1] = 0,
-                [2] = 0,
-                [3] = 0
-            };
-        }
+
+        ApplyMeshSimpleSkinAction action = new(boneIndex, unweightedVerts);
+        ActionManager.Apply(action);
+
         ShowInformationDialog("Successfully applied mesh simple skin!");
     }
 
@@ -1472,25 +1476,14 @@ public partial class MainWindow : Form
                 UpdateSelectedDummies();
                 break;
             case 5:
-                UpdateUndoState();
-                FLVER.Dummy duplicatedDummy = new()
+                DuplicateDummyAction action = new(Flver, rowIndex, () =>
                 {
-                    Position = Flver.Dummies[rowIndex].Position,
-                    Forward = Flver.Dummies[rowIndex].Forward,
-                    Upward = Flver.Dummies[rowIndex].Upward,
-                    ReferenceID = Flver.Dummies[rowIndex].ReferenceID,
-                    ParentBoneIndex = Flver.Dummies[rowIndex].ParentBoneIndex,
-                    AttachBoneIndex = Flver.Dummies[rowIndex].AttachBoneIndex,
-                    Color = Flver.Dummies[rowIndex].Color,
-                    Flag1 = Flver.Dummies[rowIndex].Flag1,
-                    UseUpwardVector = Flver.Dummies[rowIndex].UseUpwardVector,
-                    Unk30 = Flver.Dummies[rowIndex].Unk30,
-                    Unk34 = Flver.Dummies[rowIndex].Unk34
-                };
-                Flver.Dummies.Add(duplicatedDummy);
-                DeselectAllSelectedThings();
-                UpdateUI();
-                UpdateMesh();
+                    DeselectAllSelectedThings();
+                    UpdateUI();
+                    UpdateMesh();
+                });
+                ActionManager.Apply(action);
+
                 break;
         }
     }
@@ -1500,99 +1493,20 @@ public partial class MainWindow : Form
         DummiesTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
     }
 
-    private static Vector3 CreateTranslationVector(float x, float y, float z, float offset, int nbi)
-    {
-        return new Vector3(x + (nbi == 0 ? offset : 0), y + (nbi == 1 ? offset : 0), z + (nbi == 2 ? offset : 0));
-    }
-
-    private static Vector3 CreateScaleVector(float x, float y, float z, float offset, IReadOnlyList<float> totals, int nbi, bool uniform, bool invert)
-    {
-        float scalar = offset < 0 && !invert ? -(offset - 1) : invert ? offset - 1 : offset + 1;
-        float newX = nbi == 0 || uniform ? x - totals[0] : x;
-        float newY = nbi == 1 || uniform ? y - totals[1] : y;
-        float newZ = nbi == 2 || uniform ? z - totals[2] : z;
-        newX = nbi == 0 || uniform ? (offset < 0 && !invert ? newX / scalar : newX * scalar) + totals[0] : x;
-        newY = nbi == 1 || uniform ? (offset < 0 && !invert ? newY / scalar : newY * scalar) + totals[1] : y;
-        newZ = nbi == 2 || uniform ? (offset < 0 && !invert ? newZ / scalar : newZ * scalar) + totals[2] : z;
-        return new Vector3(newX, newY, newZ);
-    }
-
-    private static dynamic CreateRotationVector(float x, float y, float z, float w, float offset, IReadOnlyList<float> totals, int nbi)
-    {
-        float newX = nbi == 1 ? offset : 0;
-        float newY = nbi == 0 ? offset : 0;
-        float newZ = nbi == 2 ? offset : 0;
-        Vector3 vector = new(x - totals[0], y - totals[1], z - totals[2]);
-        vector = RotatePoint(vector, newY, newX, newZ);
-        return w == 0 ? new Vector3(vector.X + totals[0], vector.Y + totals[1], vector.Z + totals[2]) :
-            new Vector4(vector.X + totals[0], vector.Y + totals[1], vector.Z + totals[2], w);
-    }
-
-    private static void TranslateThing(dynamic thing, float offset, int nbi)
-    {
-        switch (thing)
-        {
-            case FLVER.Dummy d:
-                d.Position = CreateTranslationVector(d.Position.X, d.Position.Y, d.Position.Z, offset, nbi);
-                break;
-            case FLVER.Vertex v:
-                v.Position = CreateTranslationVector(v.Position.X, v.Position.Y, v.Position.Z, offset, nbi);
-                break;
-        }
-    }
-
-    private static void ScaleThing(dynamic thing, float offset, IReadOnlyList<float> totals, int nbi, bool uniform, bool invert, bool useVectorMode)
-    {
-        if (nbi is >= 3 and <= 5) nbi -= 3;
-        switch (thing)
-        {
-            case FLVER.Dummy d:
-                if (useVectorMode) d.Forward = CreateTranslationVector(d.Forward.X, d.Forward.Y, d.Forward.Z, offset, nbi);
-                else d.Position = CreateScaleVector(d.Position.X, d.Position.Y, d.Position.Z, offset, totals, nbi, uniform, invert);
-                break;
-            case FLVER.Vertex v:
-                v.Position = CreateScaleVector(v.Position.X, v.Position.Y, v.Position.Z, offset, totals, nbi, uniform, invert);
-                v.Normal = v.Normal with { Z = invert && nbi != 2 ? -v.Normal.Z : v.Normal.Z };
-                if (v.Tangents.Count > 0) v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Y, invert && nbi != 2 ? -v.Normal.Z : v.Normal.Z, v.Tangents[0].W);
-                break;
-        }
-    }
-
-    private static void RotateThing(dynamic thing, float offset, IReadOnlyList<float> totals, int nbi, bool useVectorMode)
-    {
-        if (nbi >= 6 && nbi <= 8) nbi -= 6;
-        float newX = nbi == 0 ? offset : 0;
-        float newY = nbi == 1 ? offset : 0;
-        float newZ = nbi == 2 ? offset : 0;
-        switch (thing)
-        {
-            case FLVER.Dummy d:
-                if (useVectorMode) d.Forward = RotatePoint(d.Forward, newX, newZ, newY);
-                else d.Position = CreateRotationVector(d.Position.X, d.Position.Y, d.Position.Z, 0, offset, totals, nbi);
-                break;
-            case FLVER.Vertex v:
-                v.Position = CreateRotationVector(v.Position.X, v.Position.Y, v.Position.Z, 0, offset, totals, nbi);
-                v.Normal = CreateRotationVector(v.Normal.X, v.Normal.Y, v.Normal.Z, 0, offset, new float[3], nbi);
-                float tangentW = v.Tangents[0].W == 0 ? -1 : v.Tangents[0].W;
-                if (v.Tangents.Count > 0) v.Tangents[0] = CreateRotationVector(v.Tangents[0].X, v.Tangents[0].Y, v.Tangents[0].Z, tangentW, offset, new float[3], nbi);
-                break;
-        }
-    }
-
-    private void TransformThing(dynamic thing, float offset, IReadOnlyList<float> totals, int nbi, decimal newValue)
+    private void TransformThing(dynamic thing, float offset, IReadOnlyList<float> totals, int nbi, decimal newValue, bool uniform, bool vectorMode)
     {
         switch (nbi)
         {
             case 0:
             case 1:
             case 2:
-                TranslateThing(thing, offset / 55, nbi);
+                Transform3DOperations.TranslateThing(thing, offset / 55, nbi);
                 break;
             case 3:
             case 4:
             case 5:
-                ScaleThing(thing, offset, totals, nbi, uniformScaleCheckbox.Checked, false, vectorModeCheckbox.Checked);
-                if (uniformScaleCheckbox.Checked)
+                Transform3DOperations.ScaleThing(thing, offset, totals, nbi, uniform, false, vectorMode);
+                if (uniform)
                 {
                     IsSettingDefaultInfo = true;
                     scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = newValue;
@@ -1602,7 +1516,7 @@ public partial class MainWindow : Form
             case 6:
             case 7:
             case 8:
-                RotateThing(thing, offset, totals, nbi, vectorModeCheckbox.Checked);
+                Transform3DOperations.RotateThing(thing, offset, totals, nbi, vectorMode);
                 break;
         }
     }
@@ -1636,8 +1550,9 @@ public partial class MainWindow : Form
     private void ModifierNumBoxValueChanged(object sender, EventArgs e)
     {
         if (IsSettingDefaultInfo) return;
-        UpdateUndoState();
+
         NumericUpDown numBox = (NumericUpDown)sender;
+
         int nbi = meshModifiersNumBoxesContainer.GetRow(numBox) * meshModifiersNumBoxesContainer.ColumnCount
             + meshModifiersNumBoxesContainer.GetColumn(numBox);
         float newNumVal = (float)(numBox == rotXNumBox || numBox == rotYNumBox || numBox == rotZNumBox ? ToRadians(numBox.Value) : numBox.Value);
@@ -1646,23 +1561,27 @@ public partial class MainWindow : Form
         float offset = newNumVal < PrevNumVal ?
             -Math.Abs(newNumVal - PrevNumVal)
             : Math.Abs(newNumVal - PrevNumVal);
+
         float[] totals = CalculateMeshTotals();
 
-        foreach (var meshIndex in SelectedMeshIndices)
+        MeshTansformAction action = new(Flver, SelectedMeshIndices, SelectedDummyIndices, offset, totals, nbi, PrevNumVal, newNumVal, uniformScaleCheckbox.Checked, vectorModeCheckbox.Checked, (value, uniform) =>
         {
-            var mesh = Flver.Meshes[meshIndex];
+            IsSettingDefaultInfo = true;
 
-            foreach (FLVER.Vertex v in mesh.Vertices)
-                TransformThing(v, offset, totals, nbi, numBox.Value);
-        }
+            numBox.Value = (decimal)value;
 
+            if (uniform && nbi is 3 or 4 or 5)
+            {
+                scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = (decimal)value;
+            }
 
+            IsSettingDefaultInfo = false;
 
-        foreach (int i in SelectedDummyIndices)
-            TransformThing(Flver.Dummies[i], offset, totals, nbi, numBox.Value);
+            UpdateMesh();
+            PrevNumVal = value;
+        });
 
-        UpdateMesh();
-        PrevNumVal = newNumVal;
+        ActionManager.Apply(action);
     }
 
     private void ModifierNumBoxFocused(object sender, EventArgs e)
@@ -1675,38 +1594,22 @@ public partial class MainWindow : Form
 
     private void MaterialsTableOkButtonClicked(object sender, MouseEventArgs e)
     {
-        try
+        //UpdateUndoState();
+        bool displayMissingPresetDialog = false;
+        object selectedMaterial = MaterialPresets.Values.ToArray().ElementAtOrDefault(materialPresetsSelector.SelectedIndex);
+        FLVER2.Material? newMaterial = JsonConvert.DeserializeObject<FLVER2.Material>(JsonConvert.SerializeObject(selectedMaterial));
+
+        MaterialsTableOkAction action = new(Flver, materialsTable, newMaterial, (displayPresetError) =>
         {
-            UpdateUndoState();
-            bool displayMissingPresetDialog = false;
-            foreach (DataGridViewRow row in materialsTable.Rows)
-            {
-                if (!(bool)row.Cells[MaterialApplyPresetCbIndex].Value) continue;
-                string previousMaterialName = Flver.Materials[row.Index].Name;
-                object selectedMaterial = MaterialPresets.Values.ToArray().ElementAtOrDefault(materialPresetsSelector.SelectedIndex);
-                if (selectedMaterial == null)
-                {
-                    displayMissingPresetDialog = true;
-                    break;
-                }
-                FLVER2.Material newMaterial = JsonConvert.DeserializeObject<FLVER2.Material>(JsonConvert.SerializeObject(selectedMaterial));
-                Flver.Materials[row.Index] = newMaterial;
-                Flver.Materials[row.Index].Name = previousMaterialName;
-            }
-            if (displayMissingPresetDialog) ShowErrorDialog("The specified preset does not exist.");
-            for (int i = Flver.Materials.Count - 1; i >= 0; --i)
-            {
-                if (!(bool)materialsTable.Rows[i].Cells[MaterialDeleteCbIndex].Value || Flver.Materials.Count <= 1) continue;
-                Flver.Materials.RemoveAt(i);
-                foreach (FLVER2.Mesh mesh in Flver.Meshes.Where(mesh => mesh.MaterialIndex > 0))
-                    mesh.MaterialIndex--;
-            }
+            if (displayPresetError) ShowErrorDialog("The specified preset does not exist.");
+
             ClearViewerMaterialHighlight();
             UpdateUI();
             UpdateMesh();
             Viewer.RefreshTextures();
-        }
-        catch { }
+        });
+        ActionManager.Apply(action);
+
     }
 
     private void ModifyAllThings(DataGridView table, int columnIndex)
@@ -1763,32 +1666,16 @@ public partial class MainWindow : Form
 
     private void DeleteSelectedButtonClicked(object sender, MouseEventArgs e)
     {
-        UpdateUndoState();
-        for (int i = Flver.Meshes.Count - 1; i >= 0; --i)
+        //UpdateUndoState();
+
+        DeleteSelectedMeshAction action = new(Flver, meshTable, dummiesTable, deleteFacesetsCheckbox.Checked, () =>
         {
-            if (!(bool)meshTable.Rows[i].Cells[3].Value) continue;
-            if (deleteFacesetsCheckbox.Checked)
-            {
-                foreach (FLVER2.FaceSet fs in Flver.Meshes[i].FaceSets)
-                    for (int j = 0; j < fs.Indices.Count; ++j)
-                        fs.Indices[j] = 1;
-            }
-            else
-            {
-                SelectedMeshIndices.RemoveAt(SelectedMeshIndices.IndexOf(i));
-                Flver.Meshes.RemoveAt(i);
-            }
-        }
-        for (int i = Flver.Dummies.Count - 1; i >= 0; --i)
-        {
-            if (!(bool)dummiesTable.Rows[i].Cells[4].Value) continue;
-            SelectedDummyIndices.RemoveAt(SelectedDummyIndices.IndexOf(i));
-            Flver.Dummies.RemoveAt(i);
-        }
-        meshModifiersContainer.Enabled = MeshIsSelected = DummyIsSelected = false;
-        DeselectAllSelectedThings();
-        UpdateUI();
-        UpdateMesh();
+            meshModifiersContainer.Enabled = MeshIsSelected = DummyIsSelected = false;
+            DeselectAllSelectedThings();
+            UpdateUI();
+            UpdateMesh();
+        });
+        ActionManager.Apply(action);
     }
 
     private void ModifierNumBoxEnterPressed(object sender, KeyEventArgs e)
@@ -1863,41 +1750,22 @@ public partial class MainWindow : Form
         int index = bonesTable.FirstDisplayedScrollingRowIndex;
         try
         {
-            UpdateUndoState();
             string bonesTableValue = bonesTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
-            if (bonesTableValue != null)
+
+            if (bonesTableValue is not null)
             {
-                switch (e.ColumnIndex)
+                BodesTableCellValueUpdatedAction action = new(Flver, bonesTableValue, e.RowIndex, e.ColumnIndex, () =>
                 {
-                    case 1:
-                        Flver.Nodes[e.RowIndex].Name = bonesTableValue;
-                        break;
-                    case 2:
-                        Flver.Nodes[e.RowIndex].ParentIndex = short.Parse(bonesTableValue);
-                        break;
-                    case 3:
-                        Flver.Nodes[e.RowIndex].FirstChildIndex = short.Parse(bonesTableValue);
-                        break;
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 7:
-                    case 8:
-                        string[] comp = bonesTableValue.Split(',');
-                        Vector3 vector = new(float.Parse(comp[0]), float.Parse(comp[1]), float.Parse(comp[2]));
-                        Flver.Nodes[e.RowIndex].Translation = e.ColumnIndex == 4 ? vector : Flver.Nodes[e.RowIndex].Translation;
-                        Flver.Nodes[e.RowIndex].Scale = e.ColumnIndex == 5 ? vector : Flver.Nodes[e.RowIndex].Scale;
-                        Flver.Nodes[e.RowIndex].Rotation = e.ColumnIndex == 6 ? vector : Flver.Nodes[e.RowIndex].Rotation;
-                        Flver.Nodes[e.RowIndex].BoundingBoxMin = e.ColumnIndex == 7 ? vector : Flver.Nodes[e.RowIndex].BoundingBoxMin;
-                        Flver.Nodes[e.RowIndex].BoundingBoxMax = e.ColumnIndex == 8 ? vector : Flver.Nodes[e.RowIndex].BoundingBoxMax;
-                        break;
-                }
+                    UpdateUI();
+                    UpdateMesh();
+                    bonesTable.FirstDisplayedScrollingRowIndex = index;
+                });
+
+                ActionManager.Apply(action);
             }
         }
         catch { }
-        UpdateUI();
-        UpdateMesh();
-        bonesTable.FirstDisplayedScrollingRowIndex = index;
+
     }
 
     private static string ReplaceModelMask(string materialName, string newModelMaskStr)
@@ -1921,7 +1789,7 @@ public partial class MainWindow : Form
         int index = materialsTable.FirstDisplayedScrollingRowIndex;
         try
         {
-            UpdateUndoState();
+            //UpdateUndoState();
             string materialName = Flver.Materials[e.RowIndex].Name;
             string materialsTableValue = materialsTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
             if (materialsTableValue != null)
@@ -1956,22 +1824,19 @@ public partial class MainWindow : Form
         int index = texturesTable.FirstDisplayedScrollingRowIndex;
         try
         {
-            UpdateUndoState();
             string textureTableValue = texturesTable[e.ColumnIndex, e.RowIndex].Value?.ToString() ?? "";
-            switch (e.ColumnIndex)
+
+
+            TexturesTableCellUpdateAction action = new(Flver, SelectedMaterialIndex, e.RowIndex, e.ColumnIndex, textureTableValue, () =>
             {
-                case 0:
-                    Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Type = textureTableValue;
-                    break;
-                case 1:
-                    Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path = textureTableValue;
-                    break;
-            }
+                UpdateMesh();
+                Viewer.RefreshTextures();
+                texturesTable.FirstDisplayedScrollingRowIndex = index;
+            });
+            ActionManager.Apply(action);
         }
         catch { }
-        UpdateMesh();
-        Viewer.RefreshTextures();
-        texturesTable.FirstDisplayedScrollingRowIndex = index;
+
     }
 
     public void DisableNewImporter()
@@ -2052,45 +1917,27 @@ public partial class MainWindow : Form
         int index = meshTable.FirstDisplayedScrollingRowIndex;
         try
         {
-            UpdateUndoState();
-            string boneWeightValue = meshTable[2, e.RowIndex].Value?.ToString();
+            //UpdateUndoState();
+            string? boneWeightValue = meshTable[2, e.RowIndex].Value?.ToString();
             if (boneWeightValue != null)
             {
                 int newBoneWeight = int.Parse(boneWeightValue);
-                foreach (FLVER.Vertex v in Flver.Meshes[e.RowIndex].Vertices)
+                MeshTableCellValueChangedAction action = new(Flver, newBoneWeight, e.RowIndex, meshTable.FirstDisplayedScrollingRowIndex, index, (targetIndex) =>
                 {
-                    if (Util3D.BoneWeightsToFloatArray(v.BoneWeights) == null)
-                    {
-                        v.BoneWeights = new FLVER.VertexBoneWeights();
-                        v.BoneIndices = new FLVER.VertexBoneIndices();
-                    }
-                    for (int j = 0; j < v.BoneWeights.Length; ++j)
-                        v.BoneWeights[j] = 0;
-                    v.BoneIndices[0] = newBoneWeight;
-                    v.BoneWeights[0] = 1;
-                }
-                if (!Flver.Meshes[e.RowIndex].BoneIndices.Contains(newBoneWeight)) Flver.Meshes[e.RowIndex].BoneIndices.Add(newBoneWeight);
-                Flver.Meshes[e.RowIndex].UseBoneWeights = true;
+                    UpdateUI();
+                    UpdateMesh();
+                    meshTable.FirstDisplayedScrollingRowIndex = targetIndex;
+                });
+                ActionManager.Apply(action);
             }
         }
         catch { }
-        UpdateUI();
-        UpdateMesh();
-        meshTable.FirstDisplayedScrollingRowIndex = index;
     }
 
-    private static void ReverseFaceSets()
+    private void ReverseFaceSets()
     {
-        UpdateUndoState();
-        foreach (FLVER2.FaceSet fs in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].FaceSets))
-        {
-            for (int j = 0; j < fs.Indices.Count; j += 3)
-            {
-                if (j > fs.Indices.Count - 2) continue;
-                (fs.Indices[j + 1], fs.Indices[j + 2]) = (fs.Indices[j + 2], fs.Indices[j + 1]);
-            }
-        }
-        UpdateMesh();
+        ReverseFaceSetsAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].FaceSets), () => UpdateMesh());
+        ActionManager.Apply(action);
     }
 
     private void ReverseFaceSetsCheckboxChanged(object sender, EventArgs e)
@@ -2102,15 +1949,12 @@ public partial class MainWindow : Form
     private void ReverseNormalsCheckboxChanged(object sender, EventArgs e)
     {
         if (IsSettingDefaultInfo) return;
-        UpdateUndoState();
-        foreach (FLVER.Vertex v in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices))
+        ReverseNormalsAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices), () =>
         {
-            v.Normal = new Vector3(-v.Normal.X, -v.Normal.Y, -v.Normal.Z);
-            for (int j = 0; j < v.Tangents.Count; ++j)
-                v.Tangents[j] = new Vector4(-v.Tangents[j].X, -v.Tangents[j].Y, -v.Tangents[j].Z, v.Tangents[j].W);
-        }
-        ShowInformationDialog("Mesh normals have been reversed!");
-        UpdateMesh();
+            ShowInformationDialog("Mesh normals have been reversed!");
+            UpdateMesh();
+        });
+        ActionManager.Apply(action);
     }
 
     private void ToggleBackFacesCheckboxChanged(object sender, EventArgs e)
@@ -2191,32 +2035,12 @@ public partial class MainWindow : Form
 
     private void SolveAllBBs()
     {
-        UpdateUndoState();
-        Flver.Header.BoundingBoxMin = new Vector3();
-        Flver.Header.BoundingBoxMax = new Vector3();
-        foreach (FLVER.Node bone in Flver.Nodes)
+        SolveAllBBsAction action = new(Flver, () =>
         {
-            bone.BoundingBoxMin = new Vector3();
-            bone.BoundingBoxMax = new Vector3();
-        }
-        foreach (FLVER2.Mesh mesh in Flver.Meshes)
-        {
-            foreach (FLVER.Vertex vertex in mesh.Vertices)
-            {
-                UpdateHeaderBoundingBox(Flver.Header, vertex.Position);
-                UpdateMeshBoundingBox(mesh, vertex.Position);
-                if (Util3D.BoneIndicesToIntArray(vertex.BoneIndices) == null) continue;
-                foreach (int boneIndex in Util3D.BoneIndicesToIntArray(vertex.BoneIndices))
-                {
-                    bool boneDoesNotExist = false;
-                    if (boneIndex >= 0 && boneIndex < Flver.Nodes.Count) Flver.Nodes[boneIndex].Flags = 0;
-                    else boneDoesNotExist = true;
-                    if (!boneDoesNotExist) UpdateBonesBoundingBox(Flver.Nodes[boneIndex], Flver.Nodes, vertex.Position);
-                }
-            }
-        }
-        ShowInformationDialog("Solved all bone and mesh bounding boxes!");
-        UpdateMesh();
+            ShowInformationDialog("Solved all bone and mesh bounding boxes!");
+            UpdateMesh();
+        });
+        ActionManager.Apply(action);
     }
 
     private void SolveAllBBsButtonClicked(object sender, MouseEventArgs e)
@@ -2227,12 +2051,16 @@ public partial class MainWindow : Form
     private void DummiesTableOKButtonClicked(object sender, MouseEventArgs e)
     {
         if (dummyPresetsSelector.SelectedIndex < 0) return;
-        UpdateUndoState();
-        DeselectAllSelectedThings();
         string dummyJson = JsonConvert.SerializeObject(DummyPresets.Values.ToArray()[dummyPresetsSelector.SelectedIndex]);
-        Flver.Dummies = JsonConvert.DeserializeObject<List<FLVER.Dummy>>(dummyJson);
-        UpdateUI();
-        UpdateMesh();
+        var newDummies = JsonConvert.DeserializeObject<List<FLVER.Dummy>>(dummyJson);
+
+        LoadDummyProfile action = new(newDummies, Flver.Dummies, () =>
+        {
+            DeselectAllSelectedThings();
+            UpdateUI();
+            UpdateMesh();
+        });
+        ActionManager.Apply(action);
     }
 
     private void AddAllDummiesToPresetsButtonClicked(object sender, MouseEventArgs e)
@@ -2259,24 +2087,29 @@ public partial class MainWindow : Form
 
     private void ImportFLVERFile(bool prompt, string filePath)
     {
+        var refresh = () =>
+        {
+            Flver = Program.Flver;
+            DeselectAllSelectedThings();
+            UpdateUI();
+            UpdateMesh();
+            Viewer.RefreshTextures();
+        };
+
         switch (prompt)
         {
             case true:
                 {
-                    if (!Importer.ImportFbxWithDialogAsync(Flver)) return;
+                    if (!Importer.ImportFbxWithDialogAsync(Flver, refresh)) return;
                     break;
                 }
             default:
                 {
-                    if (!Importer.ImportFbxAsync(Flver, filePath)) return;
+                    if (!Importer.ImportFbxAsync(Flver, filePath, refresh)) return;
                     break;
                 }
         }
-        Flver = Program.Flver;
-        DeselectAllSelectedThings();
-        UpdateUI();
-        UpdateMesh();
-        Viewer.RefreshTextures();
+        
     }
 
     private void MergeFLVERFile()
@@ -2285,44 +2118,20 @@ public partial class MainWindow : Form
         if (newFlverFilePath == "") return;
         try
         {
-            UpdateUndoState();
             FLVER2 newFlver = IsFLVERPath(newFlverFilePath) ? FLVER2.Read(newFlverFilePath) :
                 ReadFLVERFromDCXPath(newFlverFilePath, false, false, false);
             if (newFlver == null) return;
-            int materialOffset = Flver.Materials.Count;
-            int layoutOffset = Flver.BufferLayouts.Count;
-            Dictionary<int, int> newFlverToCurrentFlver = new();
-            for (int i = 0; i < newFlver.Nodes.Count; ++i)
+
+            MergeFlversAction action = new(Flver, newFlver, () =>
             {
-                FLVER.Node attachBone = newFlver.Nodes[i];
-                for (int j = 0; j < Flver.Nodes.Count; ++j)
-                {
-                    if (attachBone.Name != Flver.Nodes[j].Name) continue;
-                    newFlverToCurrentFlver.Add(i, j);
-                    break;
-                }
-            }
-            foreach (FLVER2.Mesh m in newFlver.Meshes)
-            {
-                m.MaterialIndex += materialOffset;
-                foreach (FLVER2.VertexBuffer vb in m.VertexBuffers)
-                    vb.LayoutIndex += layoutOffset;
-                foreach (FLVER.Vertex v in m.Vertices.Where(v => Util3D.BoneIndicesToIntArray(v.BoneIndices) != null))
-                {
-                    for (int i = 0; i < v.BoneIndices.Length; ++i)
-                    {
-                        if (newFlverToCurrentFlver.ContainsKey(v.BoneIndices[i])) v.BoneIndices[i] = newFlverToCurrentFlver[v.BoneIndices[i]];
-                    }
-                }
-            }
-            Flver.BufferLayouts = Flver.BufferLayouts.Concat(newFlver.BufferLayouts).ToList();
-            Flver.Meshes = Flver.Meshes.Concat(newFlver.Meshes).ToList();
-            Flver.Materials = Flver.Materials.Concat(newFlver.Materials).ToList();
+                DeselectAllSelectedThings();
+                UpdateUI();
+                UpdateMesh();
+                Viewer.RefreshTextures();
+            });
+            ActionManager.Apply(action);
+
             ShowInformationDialog(@"Successfully attached new FLVER to the current one!");
-            DeselectAllSelectedThings();
-            UpdateUI();
-            UpdateMesh();
-            Viewer.RefreshTextures();
         }
         catch
         {
@@ -2360,16 +2169,14 @@ public partial class MainWindow : Form
 
     private void AddDummyButtonClicked(object sender, MouseEventArgs e)
     {
-        UpdateUndoState();
-        FLVER.Dummy newDummy = new()
+        Vector3 position = MainWindow.Flver.Dummies.Count > 0 ? MainWindow.Flver.Dummies[MainWindow.Flver.Dummies.Count - 1].Position : new Vector3(0, 0, 0);
+        AddNewDummyAction action = new(position , () =>
         {
-            Position = Flver.Dummies.Count > 0 ? Flver.Dummies[Flver.Dummies.Count - 1].Position : new Vector3(0, 0, 0),
-            ReferenceID = -1
-        };
-        Flver.Dummies.Add(newDummy);
-        DeselectAllSelectedThings();
-        UpdateUI();
-        UpdateMesh();
+            DeselectAllSelectedThings();
+            UpdateUI();
+            UpdateMesh();
+        });
+        ActionManager.Apply(action);
     }
 
     private void DummiesTableCellValueChanged(object sender, DataGridViewCellEventArgs e)
@@ -2378,29 +2185,20 @@ public partial class MainWindow : Form
         int index = dummiesTable.FirstDisplayedScrollingRowIndex;
         try
         {
-            UpdateUndoState();
             string dummiesTableValue = dummiesTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
             if (dummiesTableValue != null)
             {
                 short parsed = short.Parse(dummiesTableValue);
-                switch (e.ColumnIndex)
+                DummyTableDataChangedAction action = new(Flver, parsed, e.RowIndex, e.ColumnIndex, () =>
                 {
-                    case 1:
-                        Flver.Dummies[e.RowIndex].ReferenceID = parsed;
-                        break;
-                    case 2:
-                        Flver.Dummies[e.RowIndex].AttachBoneIndex = parsed;
-                        break;
-                    case 3:
-                        Flver.Dummies[e.RowIndex].ParentBoneIndex = parsed;
-                        break;
-                }
+                    UpdateUI();
+                    UpdateMesh();
+                    dummiesTable.FirstDisplayedScrollingRowIndex = index;
+                });
+                ActionManager.Apply(action);
             }
         }
         catch { }
-        UpdateUI();
-        UpdateMesh();
-        dummiesTable.FirstDisplayedScrollingRowIndex = index;
     }
 
     private static decimal ToRadians(decimal degrees) { return degrees * (decimal)(Math.PI / 180); }
@@ -2411,21 +2209,16 @@ public partial class MainWindow : Form
         if (dialog.ShowDialog() != DialogResult.OK) return;
         try
         {
-            UpdateUndoState();
             string jsonText = File.ReadAllText(dialog.FileName);
-            switch (type)
+            LoadJsonAction action = new(Flver, type, jsonText, () =>
             {
-                case 0:
-                    Flver.Nodes = JsonConvert.DeserializeObject<List<FLVER.Node>>(jsonText);
-                    break;
-                case 1:
-                    Flver.Materials = JsonConvert.DeserializeObject<List<FLVER2.Material>>(jsonText);
-                    break;
-            }
-            DeselectAllSelectedThings();
-            ClearViewerMaterialHighlight();
-            UpdateUI();
-            UpdateMesh();
+                DeselectAllSelectedThings();
+                ClearViewerMaterialHighlight();
+                UpdateUI();
+                UpdateMesh();
+            });
+            ActionManager.Apply(action);
+
             ShowInformationDialog("Successfully parsed JSON!");
         }
         catch
@@ -2528,19 +2321,14 @@ public partial class MainWindow : Form
 
     private void SetAllBBsMaxSize()
     {
-        UpdateUndoState();
-        Vector3 minVector = new(0, 0, 0);
-        Vector3 maxVector = new(999, 999, 999);
-        Flver.Header.BoundingBoxMin = maxVector;
-        Flver.Header.BoundingBoxMax = minVector;
-        foreach (FLVER2.Mesh mesh in from mesh in Flver.Meshes from vertex in mesh.Vertices select mesh)
+
+        SetAllBBsMaxSizeAction action = new(Flver, () =>
         {
-            mesh.BoundingBox ??= new FLVER2.Mesh.BoundingBoxes();
-            mesh.BoundingBox.Min = maxVector;
-            mesh.BoundingBox.Max = minVector;
-        }
+            UpdateMesh();
+        });
+        ActionManager.Apply(action);
+
         ShowInformationDialog("Set all mesh bounding boxes to maximum size!");
-        UpdateMesh();
     }
 
     private void SetAllBBsMaxSizeButtonClicked(object sender, EventArgs e)
@@ -2577,22 +2365,25 @@ public partial class MainWindow : Form
     {
         // TODO: Remove this (Pear)
         MatBinBndPath = "D:\\SteamLibrary\\steamapps\\common\\ELDEN RING\\Game\\material\\allmaterial.matbinbnd.dcx";
-        MatBinBnd = BND4.Read(MatBinBndPath);
-
-        foreach (BinderFile matBinFile in MatBinBnd.Files)
+        if (File.Exists(MatBinBndPath))
         {
-            string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
-            string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
-            if (rawMaterialFileName != rawMatBinFileName) continue;
-            MATBIN matBin = new();
-            matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
-            if (matBin.Samplers.Any(sampler => sampler.Path != ""))
+            MatBinBnd = BND4.Read(MatBinBndPath);
+
+            foreach (BinderFile matBinFile in MatBinBnd.Files)
             {
-                Flver.Materials[materialIndex].Textures.Clear();
-                foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
-                    Flver.Materials[materialIndex].Textures.Add(newTexture);
+                string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
+                string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
+                if (rawMaterialFileName != rawMatBinFileName) continue;
+                MATBIN matBin = new();
+                matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
+                if (matBin.Samplers.Any(sampler => sampler.Path != ""))
+                {
+                    Flver.Materials[materialIndex].Textures.Clear();
+                    foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
+                        Flver.Materials[materialIndex].Textures.Add(newTexture);
+                }
+                break;
             }
-            break;
         }
     }
 
@@ -2656,24 +2447,15 @@ public partial class MainWindow : Form
 
     private void MirrorMesh(int nbi)
     {
-        UpdateUndoState();
         float[] totals = CalculateMeshTotals();
-        foreach (FLVER.Vertex v in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices))
+        var targetMeshes = SelectedMeshIndices.Select(i => Flver.Meshes[i]);
+        var targetDummies = SelectedDummyIndices.Select(i => Flver.Dummies[i]);
+        MirrorMeshAction action = new(targetMeshes, targetDummies, nbi, totals, useWorldOriginCheckbox.Checked, vectorModeCheckbox.Checked, () =>
         {
-            v.Position = MirrorThing(v.Position, nbi, totals);
-            v.Normal = new Vector3(v.Normal.X * (nbi == 0 ? -1 : 1),
-                v.Normal.Y * (nbi == 1 ? -1 : 1), v.Normal.Z * (nbi == 2 ? -1 : 1));
-            if (v.Tangents.Count > 0)
-                v.Tangents[0] = new Vector4(v.Tangents[0].X * (nbi == 0 ? -1 : 1),
-                    v.Tangents[0].Y * (nbi == 1 ? -1 : 1), v.Tangents[0].Z * (nbi == 2 ? -1 : 1), 1);
-        }
-        foreach (FLVER.Dummy d in SelectedDummyIndices.Select(i => Flver.Dummies[i]))
-        {
-            if (vectorModeCheckbox.Checked) d.Forward = MirrorThing(d.Forward, nbi, totals);
-            else d.Position = MirrorThing(d.Position, nbi, totals);
-        }
-        ReverseFaceSets();
-        UpdateMesh();
+            UpdateMesh();
+        });
+
+        ActionManager.Apply(action);
     }
 
     private void MirrorXCheckboxCheckedChanged(object sender, EventArgs e)
@@ -3021,23 +2803,9 @@ public partial class MainWindow : Form
 
     private void SolveAllMeshLODs()
     {
-        UpdateUndoState();
-        FLVER2.FaceSet.FSFlags[] faceSetFlags =
-        {
-            FLVER2.FaceSet.FSFlags.None,
-            FLVER2.FaceSet.FSFlags.LodLevel1,
-            FLVER2.FaceSet.FSFlags.LodLevel2,
-            FLVER2.FaceSet.FSFlags.MotionBlur,
-            FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel1,
-            FLVER2.FaceSet.FSFlags.MotionBlur | FLVER2.FaceSet.FSFlags.LodLevel2
-        };
-        foreach (FLVER2.Mesh m in SelectedMeshIndices.Select(i => Flver.Meshes[i]))
-        {
-            List<int> vertexIndices = m.FaceSets[0].Indices;
-            m.FaceSets.Clear();
-            foreach (FLVER2.FaceSet.FSFlags flag in faceSetFlags)
-                AddNewMeshFaceset(m, flag, vertexIndices);
-        }
+        SolveAllMeshLODsAction action = new(SelectedMeshIndices.Select(i => Flver.Meshes[i]));
+        ActionManager.Apply(action);
+
         ShowInformationDialog("Created missing LODs from existing mesh data!");
     }
 
@@ -3064,91 +2832,61 @@ public partial class MainWindow : Form
         Redo();
     }
 
-    public static void UpdateUndoState(bool clearAllRedoActions = true)
+    public void UpdateUndoState(bool clearAllRedoActions = true)
     {
         if (clearAllRedoActions)
         {
             RedoFlverList.Clear();
-            CurrentRedoFlverListIndex = -1;
             redoToolStripMenuItem.Enabled = false;
         }
+
         undoToolStripMenuItem.Enabled = true;
-        UndoFlverList.Add(FLVER2.Read(Flver.Write()));
-        CurrentUndoFlverListIndex++;
-        if (CurrentUndoFlverListIndex <= UndoRedoStackLimit) return;
-        UndoFlverList.RemoveAt(0);
-        CurrentUndoFlverListIndex--;
     }
 
-    private void UpdateRedoState()
+    public void UpdateRedoState()
     {
         redoToolStripMenuItem.Enabled = true;
-        RedoFlverList.Add(FLVER2.Read(Flver.Write()));
-        CurrentRedoFlverListIndex++;
     }
 
-    private void Undo()
+    public void Undo()
     {
-        if (CurrentUndoFlverListIndex < 0) return;
-        DeselectAllSelectedThings();
-        UpdateRedoState();
-        Flver = FLVER2.Read(UndoFlverList[CurrentUndoFlverListIndex].Write());
-        UndoFlverList.RemoveAt(CurrentUndoFlverListIndex);
-        CurrentUndoFlverListIndex--;
-        UpdateUI();
-        UpdateMesh();
-        if (CurrentUndoFlverListIndex != -1) return;
-        undoToolStripMenuItem.Enabled = false;
+        ActionManager.Undo();
+        undoToolStripMenuItem.Enabled = ActionManager.UndoStack.Count != 0;
     }
 
-    private void Redo()
+    public void Redo()
     {
-        if (CurrentRedoFlverListIndex < 0) return;
-        DeselectAllSelectedThings();
-        UpdateUndoState(false);
-        Flver = FLVER2.Read(RedoFlverList[CurrentRedoFlverListIndex].Write());
-        RedoFlverList.RemoveAt(CurrentRedoFlverListIndex);
-        CurrentRedoFlverListIndex--;
-        UpdateUI();
-        UpdateMesh();
-        if (CurrentRedoFlverListIndex != -1) return;
-        redoToolStripMenuItem.Enabled = false;
+        ActionManager.Redo();
+        redoToolStripMenuItem.Enabled = ActionManager.RedoStack.Count != 0;
     }
 
     private void ClearUndoRedoStates()
     {
-        UndoFlverList.Clear();
-        RedoFlverList.Clear();
-        CurrentUndoFlverListIndex = -1;
-        CurrentRedoFlverListIndex = -1;
+        ActionManager.Clear();
         undoToolStripMenuItem.Enabled = false;
         redoToolStripMenuItem.Enabled = false;
     }
 
     private void FlipYZAxisCheckboxChanged(object sender, EventArgs e)
     {
-        UpdateUndoState();
-        foreach (FLVER.Vertex v in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices))
+        FlipYZAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices), SelectedDummyIndices.Select(i => Flver.Dummies[i]), () =>
         {
-            v.Position = new Vector3(v.Position.X, v.Position.Z, v.Position.Y);
-            v.Normal = new Vector3(v.Normal.X, v.Normal.Z, v.Normal.Y);
-            if (v.Tangents.Count > 0) v.Tangents[0] = new Vector4(v.Tangents[0].X, v.Tangents[0].Z, v.Tangents[0].Y, 1);
-        }
-        foreach (FLVER.Dummy d in SelectedDummyIndices.Select(i => Flver.Dummies[i]))
-            d.Position = new Vector3(d.Position.X, d.Position.Z, d.Position.Y);
-        UpdateMesh();
+            UpdateMesh();
+        });
+        ActionManager.Apply(action);
+
         ShowInformationDialog("Successfully flipped the YZ axis!");
     }
 
     private void CenterMeshToWorld(int nbi)
     {
-        UpdateUndoState();
         float[] totals = CalculateMeshTotals();
-        foreach (FLVER.Vertex v in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices))
-            TranslateThing(v, -totals[nbi], nbi);
-        foreach (FLVER.Dummy d in SelectedDummyIndices.Select(i => Flver.Dummies[i]))
-            TranslateThing(d, -totals[nbi], nbi);
-        UpdateMesh();
+
+        CenterMeshToWorldAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices), SelectedMeshIndices.Select(i => Flver.Dummies[i]), nbi, totals, () => {
+            UpdateMesh();
+        });
+        ActionManager.Apply(action);
+
     }
 
     private void CenterXButtonClicked(object sender, MouseEventArgs e)
@@ -3166,32 +2904,10 @@ public partial class MainWindow : Form
         CenterMeshToWorld(2);
     }
 
-    private static void ResetAllMesh()
+    private void ResetAllMesh()
     {
-        UpdateUndoState();
-        Flver.BufferLayouts.Add(Generators.GenerateDefaultBufferLayout());
-        foreach (FLVER2.Mesh m in Flver.Meshes)
-        {
-            m.BoundingBox ??= new FLVER2.Mesh.BoundingBoxes();
-            m.BoundingBox.Max = new Vector3(1, 1, 1);
-            m.BoundingBox.Min = new Vector3(-1, -1, -1);
-            m.BoundingBox.Unk = new Vector3();
-            m.NodeIndex = 0;
-            m.UseBoneWeights = true;
-            int[] varray = m.FaceSets[0].Indices.ToArray();
-            m.FaceSets = new List<FLVER2.FaceSet>();
-            for (int i = 0; i < m.Vertices.Count; i++)
-            {
-                FLVER.Vertex vit = m.Vertices[i];
-                m.Vertices[i] = Generators.GenerateNewFlverVertexUsingNumerics(new Vector3(vit.Position.X, vit.Position.Y, vit.Position.Z), vit.Normal, vit.Tangents,
-                    vit.Bitangent, vit.UVs, 1);
-                m.Vertices[i].BoneIndices = vit.BoneIndices;
-                m.Vertices[i].BoneWeights = vit.BoneWeights;
-            }
-            m.FaceSets.Add(Generators.GenerateBasicFaceSet());
-            m.FaceSets[0].Indices = varray.ToList();
-            m.FaceSets[0].CullBackfaces = false;
-        }
+        ResetAllMeshesAction action = new();
+        ActionManager.Apply(action);
         ShowInformationDialog("Successfully reset all mesh!");
     }
 
@@ -3275,11 +2991,6 @@ public partial class MainWindow : Form
         return true;
     }
 
-    private void fileToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-
-    }
-
     private void removeGhost_Click(object sender, EventArgs e)
     {
         RemoveGhostModel();
@@ -3329,5 +3040,10 @@ public partial class MainWindow : Form
         {
             return new TPF();
         }
+    }
+
+    private void importToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+
     }
 }

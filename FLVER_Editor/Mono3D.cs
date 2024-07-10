@@ -20,6 +20,7 @@ using MessageBox = System.Windows.Forms.MessageBox;
 using Point = System.Drawing.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using static FLVER_Editor.Program;
+using FLVER_Editor.Actions;
 
 namespace FLVER_Editor
 {
@@ -198,61 +199,28 @@ namespace FLVER_Editor
 
         private void DeleteVertexBelow()
         {
-            MainWindow.UpdateUndoState();
             FLVER2.Mesh m = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
             int index = targetVertexInfo.VertexIndex;
             float yValue = targetVertex.Position.Y;
-            for (var i = 0; i < m.Vertices.Count; i++)
-            {
-                if (m.Vertices[i].Position.Y < yValue)
-                {
-                    DeleteMeshVertexFaceSet(m, i);
-                    m.Vertices[i].Position = new System.Numerics.Vector3(0, 0, 0);
-                }
-            }
-            MainWindow.UpdateMesh();
+            DeleteVertexBelowAction action = new(m, yValue, () => MainWindow.UpdateMesh());
+            ActionManager.Apply(action);
         }
 
         private void DeleteVertexAbove()
         {
-            MainWindow.UpdateUndoState();
             FLVER2.Mesh m = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
             int index = targetVertexInfo.VertexIndex;
             float yValue = targetVertex.Position.Y;
-            for (var i = 0; i < m.Vertices.Count; i++)
-            {
-                if (m.Vertices[i].Position.Y > yValue)
-                {
-                    DeleteMeshVertexFaceSet(m, i);
-                    m.Vertices[i].Position = new System.Numerics.Vector3(0, 0, 0);
-                }
-            }
-            MainWindow.UpdateMesh();
-        }
-
-        private void DeleteMeshVertexFaceSet(FLVER2.Mesh mesh, int index)
-        {
-            foreach (FLVER2.FaceSet faceSet in mesh.FaceSets)
-            {
-                for (int i = 0; i + 2 < faceSet.Indices.Count; i += 3)
-                {
-                    if (faceSet.Indices[i] == index || faceSet.Indices[i + 1] == index || faceSet.Indices[i + 2] == index)
-                    {
-                        faceSet.Indices[i] = index;
-                        faceSet.Indices[i + 1] = index;
-                        faceSet.Indices[i + 2] = index;
-                    }
-                }
-            }
+            DeleteVertexAboveAction action = new(m, yValue, () => MainWindow.UpdateMesh());
+            ActionManager.Apply(action);
         }
 
         private void DeleteVertex()
         {
-            MainWindow.UpdateUndoState();
             FLVER2.Mesh mesh = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
             int index = targetVertexInfo.VertexIndex;
-            DeleteMeshVertexFaceSet(mesh, index);
-            targetVertex.Position = new System.Numerics.Vector3(0, 0, 0);
+            DeleteVertexAction action = new DeleteVertexAction(mesh, () => MainWindow.UpdateMesh());
+            ActionManager.Apply(action);
             MainWindow.UpdateMesh();
         }
 
@@ -261,13 +229,13 @@ namespace FLVER_Editor
             switch (e.Button)
             {
                 case MouseButtons.Right:
-                {
-                    f.ContextMenuStrip = null;
-                    prevMState = Mouse.GetState();
-                    CheckVerticesSilent();
-                    f.ContextMenuStrip = null;
-                    //file.ContextMenu.Show();
-                }
+                    {
+                        f.ContextMenuStrip = null;
+                        prevMState = Mouse.GetState();
+                        CheckVerticesSilent();
+                        f.ContextMenuStrip = null;
+                        //file.ContextMenu.Show();
+                    }
                     break;
             }
         }
@@ -277,18 +245,18 @@ namespace FLVER_Editor
             switch (e.Button)
             {
                 case MouseButtons.Right:
-                {
-                    if (!rightClickSilence)
                     {
-                        f.ContextMenuStrip = cm;
-                        f.ContextMenuStrip.Show(f, new Point(e.X + 1, e.Y + 1)); //places the menu at the pointer position
+                        if (!rightClickSilence)
+                        {
+                            f.ContextMenuStrip = cm;
+                            f.ContextMenuStrip.Show(f, new Point(e.X + 1, e.Y + 1)); //places the menu at the pointer position
+                        }
+                        else if (prevState.IsKeyDown(Keys.LeftAlt) && rightClickSilence)
+                        {
+                            DeleteVertex();
+                            // System.Windows.MessageBox.Show("Ctrl + Right Click pressed. Switch To Right Click Slience Mode.");
+                        }
                     }
-                    else if (prevState.IsKeyDown(Keys.LeftAlt) && rightClickSilence)
-                    {
-                        DeleteVertex();
-                        // System.Windows.MessageBox.Show("Ctrl + Right Click pressed. Switch To Right Click Slience Mode.");
-                    }
-                }
                     break;
             }
         }
@@ -330,24 +298,28 @@ namespace FLVER_Editor
         {
             // TODO: Remove this (Pear)
             string matBinBndPath = "D:\\SteamLibrary\\steamapps\\common\\ELDEN RING\\Game\\material\\allmaterial.matbinbnd.dcx";
-            BND4 matBinBnd = BND4.Read(matBinBndPath);
 
-            foreach (BinderFile matBinFile in matBinBnd.Files)
+            if (File.Exists(matBinBndPath))
             {
-                string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
-                string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
-                if (rawMaterialFileName != rawMatBinFileName) continue;
-                MATBIN matBin = new();
-                matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
-                if (matBin.Samplers.Any(sampler => sampler.Path != ""))
+                BND4 matBinBnd = BND4.Read(matBinBndPath);
+
+                foreach (BinderFile matBinFile in matBinBnd.Files)
                 {
-                    foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
+                    string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
+                    string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
+                    if (rawMaterialFileName != rawMatBinFileName) continue;
+                    MATBIN matBin = new();
+                    matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
+                    if (matBin.Samplers.Any(sampler => sampler.Path != ""))
                     {
-                        Tpf = MainWindow.GetAetTPF(newTexture.Path);
-                        ReadTPFTextureEntries(Tpf);
+                        foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
+                        {
+                            Tpf = MainWindow.GetAetTPF(newTexture.Path);
+                            ReadTPFTextureEntries(Tpf);
+                        }
                     }
+                    break;
                 }
-                break;
             }
         }
 
@@ -556,7 +528,7 @@ namespace FLVER_Editor
             targetVertex = null;
             targetVertexInfo = null;
             for (var i = 0; i < Program.Vertices.Count; i++)
-                //  foreach (SoulsFormats.FLVER.Vertex vertex in Program.vertices)
+            //  foreach (SoulsFormats.FLVER.Vertex vertex in Program.vertices)
             {
                 FLVER.Vertex vertex = Program.Vertices[i];
                 if (vertex.Position == null) continue;
@@ -611,10 +583,9 @@ namespace FLVER_Editor
                 bn.Text = "Modify";
                 bn.Click += (s, o) =>
                 {
-                    MainWindow.UpdateUndoState();
-                    var vn = JsonConvert.DeserializeObject<System.Numerics.Vector3>(tb.Text);
-                    targetVertex.Position = vn;
-                    MainWindow.UpdateMesh();
+                    var newPosition = JsonConvert.DeserializeObject<System.Numerics.Vector3>(tb.Text);
+                    UpdateVertexPosition action = new(newPosition, targetVertex, () => MainWindow.UpdateMesh());
+                    ActionManager.Apply(action);
                 };
                 fn.Controls.Add(tb);
                 fn.Controls.Add(bn);
@@ -747,50 +718,6 @@ namespace FLVER_Editor
                 MainWindow.UpdateMesh();
             }
 
-            //1.73 Added focus detect
-            if (mState.RightButton == ButtonState.Pressed && IsActive && false)
-            {
-                Ray r = GetMouseRay(new Vector2(mState.Position.X, mState.Position.Y), GraphicsDevice.Viewport, effect);
-                r.Position = new Vector3(r.Position.X, r.Position.Z, r.Position.Y);
-                r.Direction = new Vector3(r.Direction.X, r.Direction.Z, r.Direction.Y);
-                // Vector3D x1 =  new Vector3D(cameraX + offsetX, cameraY + offsetY, cameraZ + offsetZ);
-                //Vector3D x2 = new Vector3D(centerX + offsetX, centerY + offsetY, centerZ + offsetZ);
-                var x1 = new Vector3D(r.Position);
-                var x2 = new Vector3D(r.Position + r.Direction);
-                //Program.useCheckingPoint = true;
-                // Program.checkingPoint = new System.Numerics.Vector3(x2.X,x2.Z,x2.Y);
-                // Program.updateVertices();
-                var miniPoint = new Vector3D();
-                var ptDistance = float.MaxValue;
-                FLVER.Vertex targetV = null;
-                foreach (FLVER.Vertex v in Program.Vertices)
-                {
-                    if (v.Position == null) continue;
-                    float dis = Vector3D.CalculateDistanceFromLine(new Vector3D(v.Position), x1, x2);
-                    if (ptDistance > dis)
-                    {
-                        miniPoint = new Vector3D(v.Position);
-                        ptDistance = dis;
-                        targetV = v;
-                    }
-                }
-                if (Program.SetVertexPos)
-                {
-                    targetV.Position = new Vector3D(Program.SetVertexX, Program.SetVertexY, Program.SetVertexZ).ToNumericsVector3();
-                }
-                Program.UseCheckingPoint = true;
-                Program.CheckingPoint = new System.Numerics.Vector3(miniPoint.X, miniPoint.Y, miniPoint.Z);
-                if (targetV.Normal != null) Program.CheckingPointNormal = new System.Numerics.Vector3(targetV.Normal.X, targetV.Normal.Y, targetV.Normal.Z);
-                else Program.CheckingPointNormal = new System.Numerics.Vector3(0, 0, 0);
-                MainWindow.UpdateMesh();
-                if (targetV != null)
-                {
-                    string text = Program.FormatOutput(JsonConvert.SerializeObject(targetV));
-                    int l = text.Length / 2;
-                    MessageBox.Show(text.Substring(0, l), "Vertex info1:");
-                    MessageBox.Show(text.Substring(l, text.Length - l), "Vertex info2:");
-                }
-            }
             if (mState.ScrollWheelValue - prevMState.ScrollWheelValue > 0)
             {
                 //mouseY -= (50 * delta);
@@ -899,6 +826,63 @@ namespace FLVER_Editor
                 offsetZ += 3 * delta * forwardV.Z;
                 //offsetZ -= 3 * delta; ;
             }
+            // use X Y Z to lock onto the different axis X Y Z 
+
+            if (state.IsKeyDown(Keys.D1))
+            {
+                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
+
+                cameraX = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? p.Length() : -p.Length();
+                cameraY = 0;
+                cameraZ = 0;
+            }
+
+            if (state.IsKeyDown(Keys.D2))
+            {
+                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
+
+                cameraX = 0;
+                cameraY = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? p.Length() : -p.Length();
+                cameraZ = 0;
+            }
+
+            if (state.IsKeyDown(Keys.D3))
+            {
+                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
+
+                cameraX = 0;
+                cameraY = 0.01f;
+                cameraZ = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? -p.Length() : p.Length();
+
+            }
+
+
+            // get selected mesh
+            if (state.IsKeyDown(Keys.C))
+            {
+                // get the position of all yellow vertices
+
+                var selectedVertices = vertices.Where(v => v.Color.G == 255 && v.Color.R == 255);
+
+                // if there are any yellow vertices
+                if (selectedVertices.Any())
+                {
+                    // get the position of the first yellow vertex
+                    // average the position of all yellow vertices
+                    var center = new Vector3(selectedVertices.Average(v => v.Position.X), selectedVertices.Average(v => v.Position.Y), selectedVertices.Average(v => v.Position.Z));
+                    offsetX = center.X;
+                    offsetY = center.Y;
+                    offsetZ = center.Z;
+                }
+                else
+                {
+                    // get the position of the all vertex
+                    // average the position of all vertices
+                    offsetX = 0;
+                    offsetY = 0;
+                    offsetZ = 0;
+                }
+            }
 
             //new Vector3(cameraX + offsetX, cameraY + offsetY, cameraZ + offsetZ)
             /* if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D1)) { Program.RotationOrder = RotationOrder.XYZ; Program.updateVertices(); }
@@ -907,6 +891,17 @@ namespace FLVER_Editor
              if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D4)) { Program.RotationOrder = RotationOrder.YZX; Program.updateVertices(); }
              if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D5)) { Program.RotationOrder = RotationOrder.ZXY; Program.updateVertices(); }
              if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D6)) { Program.RotationOrder = RotationOrder.ZYX; Program.updateVertices(); }*/
+
+            if ((state.IsKeyDown(Keys.LeftControl) || state.IsKeyDown(Keys.RightControl)) && state.IsKeyDown(Keys.Z))
+            {
+                MainWindow.Instance?.Undo();
+            }
+
+            if ((state.IsKeyDown(Keys.LeftControl) || state.IsKeyDown(Keys.RightControl)) && state.IsKeyDown(Keys.Y))
+            {
+                MainWindow.Instance?.Redo();
+            }
+
             if (state.IsKeyDown(Keys.F))
             {
                 MainWindow.UpdateMesh();
@@ -916,12 +911,8 @@ namespace FLVER_Editor
             // NOTE: Add your update logic here
             prevState = state;
             prevMState = mState;
+            // TODO: FIX DUMMY DISPLAY (metty)
             base.Update(gameTime);
-        }
-
-        private Vector3 RotatePoint()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>

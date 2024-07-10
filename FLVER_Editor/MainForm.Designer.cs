@@ -233,7 +233,7 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, modelToolStripMenuItem, presetsFileToolStripMenuItem, loadJSONToolStripMenuItem, exportJSONToolStripMenuItem, importGhost, removeGhost });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, modelToolStripMenuItem, presetsFileToolStripMenuItem, loadJSONToolStripMenuItem, exportJSONToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 22);
             fileToolStripMenuItem.Text = "File";
@@ -271,21 +271,21 @@
             // importCtrlIToolStripMenuItem
             // 
             importCtrlIToolStripMenuItem.Name = "importCtrlIToolStripMenuItem";
-            importCtrlIToolStripMenuItem.Size = new Size(157, 22);
+            importCtrlIToolStripMenuItem.Size = new Size(180, 22);
             importCtrlIToolStripMenuItem.Text = "Import (Ctrl+I)";
             importCtrlIToolStripMenuItem.Click += ImportCtrlIToolStripMenuItem_Click;
             // 
             // exportToolStripMenuItem2
             // 
             exportToolStripMenuItem2.Name = "exportToolStripMenuItem2";
-            exportToolStripMenuItem2.Size = new Size(157, 22);
+            exportToolStripMenuItem2.Size = new Size(180, 22);
             exportToolStripMenuItem2.Text = "Export (Ctrl+E)";
             exportToolStripMenuItem2.Click += ExportToolStripMenuItemClicked;
             // 
             // mergeToolStripMenuItem2
             // 
             mergeToolStripMenuItem2.Name = "mergeToolStripMenuItem2";
-            mergeToolStripMenuItem2.Size = new Size(157, 22);
+            mergeToolStripMenuItem2.Size = new Size(180, 22);
             mergeToolStripMenuItem2.Text = "Merge (Ctrl+M)";
             mergeToolStripMenuItem2.Click += MergeToolStripMenuItemClicked;
             // 

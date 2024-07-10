@@ -56,7 +56,7 @@ public class FbxMeshDataViewModel
             if (matchingLayouts != null) bufferLayouts = matchingLayouts;
         }
         AdjustBoneIndexBufferSize(flver, bufferLayouts);
-        List<int> layoutIndices = GetLayoutIndices(flver, bufferLayouts);
+        List<int> layoutIndices = ModifyLayoutIndices(flver, bufferLayouts);
         FLVER2.Mesh newMesh = new()
         {
             VertexBuffers = layoutIndices.Select(x => new FLVER2.VertexBuffer(x)).ToList(),
@@ -214,7 +214,7 @@ public class FbxMeshDataViewModel
         }
     }
 
-    private static List<int> GetLayoutIndices(FLVER2 flver, List<FLVER2.BufferLayout> bufferLayouts)
+    private static List<int> ModifyLayoutIndices(FLVER2 flver, List<FLVER2.BufferLayout> bufferLayouts)
     {
         List<int> indices = new();
         foreach (FLVER2.BufferLayout referenceBufferLayout in bufferLayouts)

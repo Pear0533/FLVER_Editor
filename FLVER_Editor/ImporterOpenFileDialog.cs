@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using FileDialogExtenders;
 using FLVER_Editor.FbxImporter.ViewModels;
 using static FLVER_Editor.Program;
@@ -9,6 +10,15 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
 {
     public readonly Dictionary<FbxMeshDataViewModel, MeshImportOptions> Meshes = new();
     public bool HasImportedModel;
+
+    const int WM_PAINT = 15;
+    const int WM_ERASEBKGND = 20;
+
+    [DllImport("user32.dll")]
+    static extern IntPtr GetWindowDC(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    static extern IntPtr ReleaseWindowDC(IntPtr hWnd);
 
     public ImporterOpenFileDialog()
     {
@@ -27,7 +37,11 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     private void PopulateMeshSelector()
     {
         foreach (KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> mesh in Meshes)
+        {
             meshSelector.Items.Add(mesh.Key.Name);
+            meshSelector.Items.Add(mesh.Key.Name);
+        }
+
         meshSelector.SelectedIndex = 0;
     }
 
@@ -35,7 +49,9 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     {
         foreach (string material in MTDs)
             mtdSelector.Items.Add(material);
-        mtdSelector.SelectedIndex = 0;
+        var default_mtd_index =
+
+        mtdSelector.SelectedIndex = DefaultMTDIndex;
     }
 
     private KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> GetSelectedMesh()
@@ -85,6 +101,13 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         }
     }
 
+    private void ApplyCurrentMeshOptions()
+    {
+        KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> selectedMesh = GetSelectedMesh();
+        mtdSelector.SelectedItem = selectedMesh.Value.MTD;
+        weightingModeSelector.SelectedItem = selectedMesh.Value.Weighting;
+    }
+
     private void AssignEventHandlers()
     {
         // TODO: Allow for non-triangulated mesh to be imported
@@ -104,17 +127,21 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         };
         meshSelector.SelectedIndexChanged += (_, _) =>
         {
+            ApplyCurrentMeshOptions();
             KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> selectedMesh = GetSelectedMesh();
             mtdSelector.SelectedItem = selectedMesh.Value.MTD;
             weightingModeSelector.SelectedItem = selectedMesh.Value.Weighting;
         };
         mtdSelector.SelectedIndexChanged += (_, _) =>
         {
+            if (mtdSelector.SelectedItem == null) return;
             ModifyMesh(i => i.Value.MTD = mtdSelector.SelectedItem.ToString() ?? "");
             AssertBoneWeightsMessageVisibility();
         };
+
         weightingModeSelector.SelectedIndexChanged += (_, _) =>
         {
+            if (weightingModeSelector.SelectedItem == null) return;
             ModifyMesh(i => i.Value.Weighting = WeightingMode.Convert(weightingModeSelector.SelectedItem.ToString()!));
             AssertBoneWeightsMessageVisibility();
         };
@@ -149,5 +176,39 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             }
         }
         else mtdSelector.Enabled = true;
+    }
+
+    private void boneWeightsMessage_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void affectAllMeshesCheckbox_CheckedChanged(object sender, EventArgs e)
+    {
+        if (sender is CheckBox box)
+        {
+            meshSelector.Enabled = !box.Checked;
+
+            if (!box.Checked)
+            {
+                ApplyCurrentMeshOptions();
+                return;
+            }
+
+            if (Meshes.Select(x => x.Value.MTD).Distinct().Count() != 1)
+            {
+                mtdSelector.SelectedIndex = -1;
+            }
+
+            if (Meshes.Select(x => x.Value.Weighting.Name).Distinct().Count() != 1)
+            {
+                weightingModeSelector.SelectedIndex = -1;
+            }
+        }
+    }
+
+    private void label1_Click(object sender, EventArgs e)
+    {
+
     }
 }
