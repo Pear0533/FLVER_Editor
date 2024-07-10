@@ -428,7 +428,8 @@ public partial class MainWindow : Form
         if (MaterialInfoBank == null)
             return;
         IsMaleBodyModelImported = Importer.ImportFbxAsync(MaleBodyFlver, $"{ModelResourcePath}\\malebody.fbx", () => { });
-        IsFemaleBodyModelImported = Importer.ImportFbxAsync(FemaleBodyFlver, $"{ModelResourcePath}\\femalebody.fbx", () => { 
+        IsFemaleBodyModelImported = Importer.ImportFbxAsync(FemaleBodyFlver, $"{ModelResourcePath}\\femalebody.fbx", () =>
+        {
         });
     }
 
@@ -1102,7 +1103,7 @@ public partial class MainWindow : Form
         }
         CurrentFlverBytes = Flver.Write();
         saveToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
-         MatBinBndPath = null;
+        MatBinBndPath = null;
         DeselectAllSelectedThings();
         UpdateUI();
         ClearViewerMaterialHighlight();
@@ -1128,15 +1129,15 @@ public partial class MainWindow : Form
     public static void UpdateTexturesTable()
     {
         if (SelectedMaterialIndex == -1) return;
-        texturesTable.Rows.Clear();
+        MainWindow.Instance?.texturesTable.Rows.Clear();
         for (int i = 0; i < Flver.Materials.ElementAtOrDefault(SelectedMaterialIndex)?.Textures.Count; ++i)
         {
             FLVER2.Material material = Flver.Materials[SelectedMaterialIndex];
             DataGridViewRow row = new();
             row.Cells.AddRange(new DataGridViewTextBoxCell { Value = material.Textures[i].Type },
                 new DataGridViewTextBoxCell { Value = material.Textures[i].Path });
-            row.Cells.Add(new DataGridViewButtonCell { Value = texturesTable.Columns[2].HeaderText });
-            texturesTable.Rows.Add(row);
+            row.Cells.Add(new DataGridViewButtonCell { Value = MainWindow.Instance?.texturesTable.Columns[2].HeaderText });
+            MainWindow.Instance?.texturesTable.Rows.Add(row);
         }
     }
 
@@ -1564,21 +1565,26 @@ public partial class MainWindow : Form
 
         float[] totals = CalculateMeshTotals();
 
-        MeshTansformAction action = new(Flver, SelectedMeshIndices, SelectedDummyIndices, offset, totals, nbi, PrevNumVal, newNumVal, uniformScaleCheckbox.Checked, vectorModeCheckbox.Checked, (value, uniform) =>
+        MeshTansformAction action = new(Flver, SelectedMeshIndices, SelectedDummyIndices, offset, totals, nbi, PrevNumVal, newNumVal, uniformScaleCheckbox.Checked, vectorModeCheckbox.Checked, (inputValue, prevNum, uniform) =>
         {
             IsSettingDefaultInfo = true;
 
-            numBox.Value = (decimal)value;
+            numBox.Invoke(() =>
+            {
+                numBox.Value = inputValue;
+            });
 
             if (uniform && nbi is 3 or 4 or 5)
             {
-                scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = (decimal)value;
+                scaleXNumBox.Invoke(() => scaleXNumBox.Value = inputValue);
+                scaleYNumBox.Invoke(() => scaleYNumBox.Value = inputValue);
+                scaleZNumBox.Invoke(() => scaleZNumBox.Value = inputValue);
             }
 
             IsSettingDefaultInfo = false;
 
             UpdateMesh();
-            PrevNumVal = value;
+            PrevNumVal = prevNum;
         });
 
         ActionManager.Apply(action);
@@ -2037,10 +2043,10 @@ public partial class MainWindow : Form
     {
         SolveAllBBsAction action = new(Flver, () =>
         {
-            ShowInformationDialog("Solved all bone and mesh bounding boxes!");
             UpdateMesh();
         });
         ActionManager.Apply(action);
+        ShowInformationDialog("Solved all bone and mesh bounding boxes!");
     }
 
     private void SolveAllBBsButtonClicked(object sender, MouseEventArgs e)
@@ -2109,7 +2115,7 @@ public partial class MainWindow : Form
                     break;
                 }
         }
-        
+
     }
 
     private void MergeFLVERFile()
@@ -2170,7 +2176,7 @@ public partial class MainWindow : Form
     private void AddDummyButtonClicked(object sender, MouseEventArgs e)
     {
         Vector3 position = MainWindow.Flver.Dummies.Count > 0 ? MainWindow.Flver.Dummies[MainWindow.Flver.Dummies.Count - 1].Position : new Vector3(0, 0, 0);
-        AddNewDummyAction action = new(position , () =>
+        AddNewDummyAction action = new(position, () =>
         {
             DeselectAllSelectedThings();
             UpdateUI();
@@ -2882,7 +2888,8 @@ public partial class MainWindow : Form
     {
         float[] totals = CalculateMeshTotals();
 
-        CenterMeshToWorldAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices), SelectedMeshIndices.Select(i => Flver.Dummies[i]), nbi, totals, () => {
+        CenterMeshToWorldAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices), SelectedMeshIndices.Select(i => Flver.Dummies[i]), nbi, totals, () =>
+        {
             UpdateMesh();
         });
         ActionManager.Apply(action);
@@ -2967,26 +2974,30 @@ public partial class MainWindow : Form
 
         var ghostPath = PromptFLVERModel();
         if (ghostPath == "") return false;
+        FLVER2 model;
+
         if (IsFLVERPath(ghostPath))
         {
-            GhostModel = FLVER2.Read(ghostPath);
+            model = FLVER2.Read(ghostPath);
         }
         else
         {
             FLVER2 newFlver = ReadFLVERFromDCXPath(ghostPath, true, true, false);
             if (newFlver == null) return false;
-            GhostModel = newFlver;
+            model = newFlver;
         }
-        MatBinBndPath = null;
 
-        foreach (var mesh in GhostModel.Meshes)
+        ImportGhostModelAction action = new(GhostModel, model, (newModel) =>
         {
-            mesh.MaterialIndex = 0;
-        }
+            MatBinBndPath = null;
+            GhostModel = newModel;
 
-        UpdateMesh();
+            UpdateMesh();
 
-        StopAutoInternalIndexOverride = true;
+            StopAutoInternalIndexOverride = true;
+        });
+        ActionManager.Apply(action);
+
 
         return true;
     }
@@ -2998,8 +3009,13 @@ public partial class MainWindow : Form
 
     private void RemoveGhostModel()
     {
-        GhostModel = null;
-        UpdateMesh();
+
+        RemoveGhostModelAction action = new(null, flver =>
+        {
+            GhostModel = flver;
+            UpdateMesh();
+        });
+        ActionManager.Apply(action);
     }
 
     public static TPF GetChrTPF(string chrid)
