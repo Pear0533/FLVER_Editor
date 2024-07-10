@@ -934,7 +934,7 @@ public partial class MainWindow : Form
                 new DataGridViewTextBoxCell { Value = GetModelMask(material.Name) }, new DataGridViewTextBoxCell { Value = material.MTD },
                 new DataGridViewTextBoxCell { Value = material.Index });
             for (int j = 0; j < 3; ++j)
-                row.Cells.Add(new DataGridViewButtonCell { Value = materialsTable.Columns[j + 6].HeaderText });
+                row.Cells.Add(new DataGridViewButtonCell { Value = materialsTable.Columns[j + 5].HeaderText });
             for (int j = 0; j < 2; ++j)
                 row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
             materialsTable.Rows.Add(row);
@@ -1441,7 +1441,7 @@ public partial class MainWindow : Form
                 var mesh = Flver.Meshes[rowIndex];
                 // needs major optimization
                 var newMesh = mesh.Copy();
-                Flver.Meshes.Insert(rowIndex,  newMesh);
+                Flver.Meshes.Insert(rowIndex, newMesh);
                 Flver.Materials.Add(Flver.Materials[mesh.MaterialIndex].Copy());
 
                 newMesh.MaterialIndex = Flver.Materials.Count - 1;

@@ -39,6 +39,7 @@
             bonesToolStripMenuItem1 = new ToolStripMenuItem();
             materialsToolStripMenuItem1 = new ToolStripMenuItem();
             importGhost = new ToolStripMenuItem();
+            removeGhost = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
             undoToolStripMenuItem = new ToolStripMenuItem();
             redoToolStripMenuItem = new ToolStripMenuItem();
@@ -144,17 +145,6 @@
             materialsPagePanelsContainer = new SplitContainer();
             label9 = new Label();
             materialsTable = new DataGridView();
-            dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
-            dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
-            Column19 = new DataGridViewTextBoxColumn();
-            Column14 = new DataGridViewTextBoxColumn();
-            Column5 = new DataGridViewTextBoxColumn();
-            dataGridViewTextBoxColumn4 = new DataGridViewTextBoxColumn();
-            Column6 = new DataGridViewButtonColumn();
-            Column20 = new DataGridViewButtonColumn();
-            Column16 = new DataGridViewButtonColumn();
-            Column7 = new DataGridViewCheckBoxColumn();
-            Column8 = new DataGridViewCheckBoxColumn();
             applyPresetToAllMaterialsButton = new Button();
             materialPresetsSelector = new EasyCompletionComboBox();
             label10 = new Label();
@@ -182,7 +172,16 @@
             searchBoxStr = new Label();
             meshTabDataTableSelector = new ComboBox();
             displayToolTip = new ToolTip(components);
-            removeGhost = new ToolStripMenuItem();
+            dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
+            Column19 = new DataGridViewTextBoxColumn();
+            Column5 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn4 = new DataGridViewTextBoxColumn();
+            Column6 = new DataGridViewButtonColumn();
+            Column20 = new DataGridViewButtonColumn();
+            Column16 = new DataGridViewButtonColumn();
+            Column7 = new DataGridViewCheckBoxColumn();
+            Column8 = new DataGridViewCheckBoxColumn();
             ribbon.SuspendLayout();
             multiSelectMenu.SuspendLayout();
             meshTabPage.SuspendLayout();
@@ -408,6 +407,13 @@
             importGhost.Size = new Size(190, 22);
             importGhost.Text = "Import Ghost";
             importGhost.Click += importGhost_Click;
+            // 
+            // removeGhost
+            // 
+            removeGhost.Name = "removeGhost";
+            removeGhost.Size = new Size(190, 22);
+            removeGhost.Text = "Remove Ghost";
+            removeGhost.Click += removeGhost_Click;
             // 
             // editToolStripMenuItem
             // 
@@ -935,7 +941,7 @@
             dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 162);
+            dummiesTable.Size = new Size(573, 161);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1336,7 +1342,6 @@
             rotZNumBox.Location = new Point(190, 63);
             rotZNumBox.Margin = new Padding(4, 3, 4, 3);
             rotZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            rotZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotZNumBox.Name = "rotZNumBox";
             rotZNumBox.Size = new Size(85, 24);
             rotZNumBox.TabIndex = 13;
@@ -1354,7 +1359,6 @@
             scaleZNumBox.Location = new Point(190, 33);
             scaleZNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            scaleZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleZNumBox.Name = "scaleZNumBox";
             scaleZNumBox.Size = new Size(85, 24);
             scaleZNumBox.TabIndex = 13;
@@ -1372,7 +1376,6 @@
             rotYNumBox.Location = new Point(97, 63);
             rotYNumBox.Margin = new Padding(4, 3, 4, 3);
             rotYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            rotYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotYNumBox.Name = "rotYNumBox";
             rotYNumBox.Size = new Size(85, 24);
             rotYNumBox.TabIndex = 12;
@@ -1390,7 +1393,6 @@
             transZNumBox.Location = new Point(190, 3);
             transZNumBox.Margin = new Padding(4, 3, 4, 3);
             transZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            transZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transZNumBox.Name = "transZNumBox";
             transZNumBox.Size = new Size(85, 24);
             transZNumBox.TabIndex = 13;
@@ -1408,7 +1410,6 @@
             rotXNumBox.Location = new Point(4, 63);
             rotXNumBox.Margin = new Padding(4, 3, 4, 3);
             rotXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            rotXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotXNumBox.Name = "rotXNumBox";
             rotXNumBox.Size = new Size(85, 24);
             rotXNumBox.TabIndex = 11;
@@ -1426,7 +1427,6 @@
             scaleYNumBox.Location = new Point(97, 33);
             scaleYNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            scaleYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleYNumBox.Name = "scaleYNumBox";
             scaleYNumBox.Size = new Size(85, 24);
             scaleYNumBox.TabIndex = 12;
@@ -1444,7 +1444,6 @@
             scaleXNumBox.Location = new Point(4, 33);
             scaleXNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            scaleXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleXNumBox.Name = "scaleXNumBox";
             scaleXNumBox.Size = new Size(85, 24);
             scaleXNumBox.TabIndex = 11;
@@ -1462,7 +1461,6 @@
             transXNumBox.Location = new Point(4, 3);
             transXNumBox.Margin = new Padding(4, 3, 4, 3);
             transXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            transXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transXNumBox.Name = "transXNumBox";
             transXNumBox.Size = new Size(85, 24);
             transXNumBox.TabIndex = 11;
@@ -1480,7 +1478,6 @@
             transYNumBox.Location = new Point(97, 3);
             transYNumBox.Margin = new Padding(4, 3, 4, 3);
             transYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            transYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transYNumBox.Name = "transYNumBox";
             transYNumBox.Size = new Size(85, 24);
             transYNumBox.TabIndex = 12;
@@ -1652,7 +1649,7 @@
             materialsTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             materialsTable.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             materialsTable.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            materialsTable.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2, Column19, Column14, Column5, dataGridViewTextBoxColumn4, Column6, Column20, Column16, Column7, Column8 });
+            materialsTable.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2, Column19, Column5, dataGridViewTextBoxColumn4, Column6, Column20, Column16, Column7, Column8 });
             materialsTable.Location = new Point(4, 75);
             materialsTable.Margin = new Padding(4, 3, 4, 3);
             materialsTable.Name = "materialsTable";
@@ -1664,92 +1661,6 @@
             materialsTable.TabIndex = 6;
             materialsTable.CellContentClick += MaterialsTableButtonClicked;
             materialsTable.CellValueChanged += MaterialsTableCellValueChanged;
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            dataGridViewTextBoxColumn1.Frozen = true;
-            dataGridViewTextBoxColumn1.HeaderText = "Index";
-            dataGridViewTextBoxColumn1.MinimumWidth = 8;
-            dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            dataGridViewTextBoxColumn1.ReadOnly = true;
-            dataGridViewTextBoxColumn1.Width = 61;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            dataGridViewTextBoxColumn2.Frozen = true;
-            dataGridViewTextBoxColumn2.HeaderText = "Name";
-            dataGridViewTextBoxColumn2.MinimumWidth = 8;
-            dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            dataGridViewTextBoxColumn2.Width = 64;
-            // 
-            // Column19
-            // 
-            Column19.HeaderText = "Model Mask";
-            Column19.Name = "Column19";
-            Column19.Width = 89;
-            // 
-            // Column14
-            // 
-            Column14.HeaderText = "Flags";
-            Column14.MinimumWidth = 8;
-            Column14.Name = "Column14";
-            Column14.Width = 59;
-            // 
-            // Column5
-            // 
-            Column5.HeaderText = "MTD Path";
-            Column5.MinimumWidth = 8;
-            Column5.Name = "Column5";
-            Column5.Width = 78;
-            // 
-            // dataGridViewTextBoxColumn4
-            // 
-            dataGridViewTextBoxColumn4.HeaderText = "Internal Index";
-            dataGridViewTextBoxColumn4.MinimumWidth = 8;
-            dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            dataGridViewTextBoxColumn4.Width = 96;
-            // 
-            // Column6
-            // 
-            Column6.HeaderText = "Edit Textures";
-            Column6.MinimumWidth = 8;
-            Column6.Name = "Column6";
-            Column6.Resizable = DataGridViewTriState.True;
-            Column6.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column6.Text = "";
-            Column6.Width = 90;
-            // 
-            // Column20
-            // 
-            Column20.HeaderText = "Viewer Highlight";
-            Column20.Name = "Column20";
-            Column20.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column20.Width = 110;
-            // 
-            // Column16
-            // 
-            Column16.HeaderText = "Add Preset";
-            Column16.MinimumWidth = 8;
-            Column16.Name = "Column16";
-            Column16.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column16.Width = 82;
-            // 
-            // Column7
-            // 
-            Column7.HeaderText = "Apply Preset";
-            Column7.MinimumWidth = 8;
-            Column7.Name = "Column7";
-            Column7.Resizable = DataGridViewTriState.True;
-            Column7.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column7.Width = 90;
-            // 
-            // Column8
-            // 
-            Column8.HeaderText = "Delete";
-            Column8.MinimumWidth = 8;
-            Column8.Name = "Column8";
-            Column8.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column8.Width = 65;
             // 
             // applyPresetToAllMaterialsButton
             // 
@@ -1814,7 +1725,7 @@
             texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
             texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(602, 455);
+            texturesTable.Size = new Size(601, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -2017,12 +1928,84 @@
             meshTabDataTableSelector.TabIndex = 1;
             meshTabDataTableSelector.SelectedIndexChanged += MeshTabDataTableSelector_SelectedIndexChanged;
             // 
-            // removeGhost
+            // dataGridViewTextBoxColumn1
             // 
-            removeGhost.Name = "removeGhost";
-            removeGhost.Size = new Size(190, 22);
-            removeGhost.Text = "Remove Ghost";
-            removeGhost.Click += removeGhost_Click;
+            dataGridViewTextBoxColumn1.Frozen = true;
+            dataGridViewTextBoxColumn1.HeaderText = "Index";
+            dataGridViewTextBoxColumn1.MinimumWidth = 8;
+            dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            dataGridViewTextBoxColumn1.ReadOnly = true;
+            dataGridViewTextBoxColumn1.Width = 61;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            dataGridViewTextBoxColumn2.Frozen = true;
+            dataGridViewTextBoxColumn2.HeaderText = "Name";
+            dataGridViewTextBoxColumn2.MinimumWidth = 8;
+            dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            dataGridViewTextBoxColumn2.Width = 64;
+            // 
+            // Column19
+            // 
+            Column19.HeaderText = "Model Mask";
+            Column19.Name = "Column19";
+            Column19.Width = 97;
+            // 
+            // Column5
+            // 
+            Column5.HeaderText = "MTD Path";
+            Column5.MinimumWidth = 8;
+            Column5.Name = "Column5";
+            Column5.Width = 84;
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            dataGridViewTextBoxColumn4.HeaderText = "Internal Index";
+            dataGridViewTextBoxColumn4.MinimumWidth = 8;
+            dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            dataGridViewTextBoxColumn4.Width = 104;
+            // 
+            // Column6
+            // 
+            Column6.HeaderText = "Edit Textures";
+            Column6.MinimumWidth = 8;
+            Column6.Name = "Column6";
+            Column6.Resizable = DataGridViewTriState.True;
+            Column6.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column6.Text = "";
+            Column6.Width = 98;
+            // 
+            // Column20
+            // 
+            Column20.HeaderText = "Viewer Highlight";
+            Column20.Name = "Column20";
+            Column20.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column20.Width = 110;
+            // 
+            // Column16
+            // 
+            Column16.HeaderText = "Add Preset";
+            Column16.MinimumWidth = 8;
+            Column16.Name = "Column16";
+            Column16.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column16.Width = 82;
+            // 
+            // Column7
+            // 
+            Column7.HeaderText = "Apply Preset";
+            Column7.MinimumWidth = 8;
+            Column7.Name = "Column7";
+            Column7.Resizable = DataGridViewTriState.True;
+            Column7.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column7.Width = 90;
+            // 
+            // Column8
+            // 
+            Column8.HeaderText = "Delete";
+            Column8.MinimumWidth = 8;
+            Column8.Name = "Column8";
+            Column8.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column8.Width = 65;
             // 
             // MainWindow
             // 
@@ -2115,7 +2098,6 @@
         private Label copyrightStr;
         private SplitContainer materialsPagePanelsContainer;
         private DataGridView materialsTable;
-        private static DataGridView texturesTable;
         private SplitContainer meshPagePanelsContainer;
         private DataGridView meshTable;
         private GroupBox meshModifiersContainer;
@@ -2246,17 +2228,6 @@
         private ToolStripMenuItem rayanProgramIconArtworkToolStripMenuItem;
         private ToolStripMenuItem forsakenSilverFLVEREditor10ToolStripMenuItem;
         private ToolStripMenuItem importCtrlIToolStripMenuItem;
-        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private DataGridViewTextBoxColumn Column19;
-        private DataGridViewTextBoxColumn Column14;
-        private DataGridViewTextBoxColumn Column5;
-        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
-        private DataGridViewButtonColumn Column6;
-        private DataGridViewButtonColumn Column20;
-        private DataGridViewButtonColumn Column16;
-        private DataGridViewCheckBoxColumn Column7;
-        private DataGridViewCheckBoxColumn Column8;
         private CheckBox useWorldOriginCheckbox;
         private DataGridViewTextBoxColumn Column1;
         private DataGridViewTextBoxColumn Column2;
@@ -2265,8 +2236,19 @@
         private DataGridViewButtonColumn Column22;
         private DataGridViewCheckBoxColumn Column21;
         private ToolStripMenuItem importGhost;
+        private ToolStripMenuItem removeGhost;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private DataGridViewTextBoxColumn Column19;
+        private DataGridViewTextBoxColumn Column5;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private DataGridViewButtonColumn Column6;
+        private DataGridViewButtonColumn Column20;
+        private DataGridViewButtonColumn Column16;
+        private DataGridViewCheckBoxColumn Column7;
+        private DataGridViewCheckBoxColumn Column8;
+        private static DataGridView texturesTable;
         private static ToolStripMenuItem undoToolStripMenuItem;
         private static ToolStripMenuItem redoToolStripMenuItem;
-        private ToolStripMenuItem removeGhost;
     }
 }

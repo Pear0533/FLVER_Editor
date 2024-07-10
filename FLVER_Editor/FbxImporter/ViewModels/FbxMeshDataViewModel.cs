@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using FbxDataExtractor;
+using FbxImporter.Util;
 using SoulsAssetPipeline.FLVERImporting;
 using SoulsFormats;
 using static FLVER_Editor.Program;
@@ -61,20 +62,23 @@ public class FbxMeshDataViewModel
             VertexBuffers = layoutIndices.Select(x => new FLVER2.VertexBuffer(x)).ToList(),
             UseBoneWeights = options.Weighting == WeightingMode.Skin
         };
-        int defaultBoneIndex = flver.Nodes.IndexOf(flver.Nodes.FirstOrDefault(x => x.Name == Name));
-        if (defaultBoneIndex == -1)
+        int nodeIndex = flver.Nodes.IndexOf(flver.Nodes.FirstOrDefault(x => x.Name == Name));
+        if (nodeIndex == -1)
         {
-            if (options.CreateDefaultBone)
+            nodeIndex = flver.Nodes.FindIndex(x => x.Flags.HasFlag(FLVER.Node.NodeFlags.Disabled));
+            if (nodeIndex == -1) nodeIndex = flver.Nodes.Count;
+            int lastRootNodeIndex = flver.Nodes.FindLastIndex(x =>
+                x is { ParentIndex: -1, NextSiblingIndex: -1 } && !x.Flags.HasFlag(FLVER.Node.NodeFlags.Disabled));
+            flver.Nodes.Insert(nodeIndex, new FLVER.Node
             {
-                flver.Nodes.Add(new FLVER.Node { Name = Name });
-                defaultBoneIndex = flver.Nodes.Count - 1;
-            }
-            else
-            {
-                defaultBoneIndex = 0;
-            }
+                Name = Name,
+                Flags = FLVER.Node.NodeFlags.Mesh,
+                PreviousSiblingIndex = (short)lastRootNodeIndex
+            });
+            if (lastRootNodeIndex != -1)
+                flver.Nodes[lastRootNodeIndex].NextSiblingIndex = (short)nodeIndex;
         }
-        newMesh.NodeIndex = defaultBoneIndex;
+        newMesh.NodeIndex = nodeIndex;
         bool foundWeights = false;
         foreach (FbxVertexData vertexData in Data.VertexData)
         {
@@ -145,11 +149,14 @@ public class FbxMeshDataViewModel
         flver.Materials.Add(newMaterial);
         flver.GXLists.Add(gxList);
         flver.Meshes.Add(newMesh);
+        // TODO: We need to implement FbxImporter's Write method and call it whenever we save a FLVER file...
+        flver.AddNodesToSkeletons();
+        flver.SetNodeFlags();
     }
 
     private static void AdjustBoneIndexBufferSize(FLVER2 flver, List<FLVER2.BufferLayout> bufferLayouts)
     {
-        if (flver.Nodes.Count <= byte.MaxValue) return;
+        if (flver.Nodes.FindLastIndex(x => !x.Flags.HasFlag(FLVER.Node.NodeFlags.Disabled)) <= byte.MaxValue) return;
         foreach (FLVER2.BufferLayout bufferLayout in bufferLayouts)
         {
             foreach (FLVER.LayoutMember layoutMember in bufferLayout.Where(x =>

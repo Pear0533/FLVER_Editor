@@ -4,17 +4,14 @@ namespace FLVER_Editor.FbxImporter.ViewModels;
 
 public record MeshImportOptions
 {
-    public bool CreateDefaultBone { get; set; }
-
     public string MTD { get; set; } = null!;
 
     public FLVER2MaterialInfoBank MaterialInfoBank { get; set; } = null!;
 
     public WeightingMode Weighting { get; set; } = WeightingMode.Skin;
 
-    public MeshImportOptions(bool createDefaultBone, string mtd, FLVER2MaterialInfoBank infoBank, WeightingMode weighting)
+    public MeshImportOptions(string mtd, FLVER2MaterialInfoBank infoBank, WeightingMode weighting)
     {
-        CreateDefaultBone = createDefaultBone;
         MTD = mtd;
         MaterialInfoBank = infoBank;
         Weighting = weighting;
