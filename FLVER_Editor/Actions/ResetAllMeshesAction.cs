@@ -11,7 +11,7 @@ namespace FLVER_Editor.Actions
     public class ResetAllMeshesAction : TransformAction
     {
         private record BoundingRange(Vector3 Max, Vector3 Min, Vector3 Ukn);
-        private record MeshData(BoundingRange? BoundingBox, int DefaultBoneIndex, int Dynamic, List<FLVER2.FaceSet> FaceSets, List<FLVER.Vertex> Vertices);
+        private record MeshData(BoundingRange? BoundingBox, int NodeIndex, bool UseBoneWeights, List<FLVER2.FaceSet> FaceSets, List<FLVER.Vertex> Vertices);
 
         private Dictionary<FLVER2.Mesh, MeshData> oldMeshData = new();
 
@@ -23,8 +23,8 @@ namespace FLVER_Editor.Actions
 
                 var oldData = new MeshData(
                     m.BoundingBox is null ? null : new BoundingRange(m.BoundingBox.Max, m.BoundingBox.Min, m.BoundingBox.Unk),
-                    m.DefaultBoneIndex,
-                    m.Dynamic,
+                    m.NodeIndex,
+                    m.UseBoneWeights,
                     m.FaceSets,
                     oldVertices
                 );
@@ -35,8 +35,8 @@ namespace FLVER_Editor.Actions
                 m.BoundingBox.Max = new Vector3(1, 1, 1);
                 m.BoundingBox.Min = new Vector3(-1, -1, -1);
                 m.BoundingBox.Unk = new Vector3();
-                m.DefaultBoneIndex = 0;
-                m.Dynamic = 1;
+                m.NodeIndex = 0;
+                m.UseBoneWeights = true;
                 int[] varray = m.FaceSets[0].Indices.ToArray();
                 m.FaceSets = new List<FLVER2.FaceSet>();
                 for (int i = 0; i < m.Vertices.Count; i++)
@@ -73,11 +73,11 @@ namespace FLVER_Editor.Actions
                     m.BoundingBox.Unk = meshData.BoundingBox.Ukn;
                 }
 
-                m.DefaultBoneIndex = m.DefaultBoneIndex;
-                m.Dynamic = m.Dynamic;
+                m.NodeIndex = meshData.NodeIndex;
+                m.UseBoneWeights = meshData.UseBoneWeights;
 
                 // we can assign it direction here because Execute completely removes it and assigns a new faceset list
-                m.FaceSets = m.FaceSets;
+                m.FaceSets = meshData.FaceSets;
 
                 // we must copy the vertex one by one because the Execute overrides it one by one by making new Vertx
                 for (int i = 0; i < m.Vertices.Count; i++)

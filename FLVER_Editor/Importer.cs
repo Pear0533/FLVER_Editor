@@ -11,7 +11,7 @@ public static class Importer
 {
     public static MeshImportOptions GetDefaultImportOptions()
     {
-        return new MeshImportOptions(false, MTDs[DefaultMTDIndex], MaterialInfoBank, WeightingMode.Skin);
+        return new MeshImportOptions(MTDs[0], MaterialInfoBank, WeightingMode.Skin);
     }
 
     private static void ShowImportErrorDialog(string fbxPath, Exception e)

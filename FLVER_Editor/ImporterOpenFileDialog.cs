@@ -61,14 +61,11 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
 
     private void ResetImportOptionsControls(bool enabled, bool clearMeshes = true)
     {
-        createDefaultBoneCheckbox.Checked = false;
         boneWeightsMessage.Visible = false;
-        createDefaultBoneMessage.Visible = false;
         meshSelector.Enabled = enabled;
         affectAllMeshesCheckbox.Enabled = enabled;
         mtdSelector.Enabled = enabled;
         weightingModeSelector.Enabled = enabled;
-        createDefaultBoneCheckbox.Enabled = enabled;
         autoAssignMtdCheckbox.Enabled = enabled;
         if (clearMeshes) Meshes.Clear();
         meshSelector.Items.Clear();
@@ -108,7 +105,6 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     {
         KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> selectedMesh = GetSelectedMesh();
         mtdSelector.SelectedItem = selectedMesh.Value.MTD;
-        createDefaultBoneCheckbox.Checked = selectedMesh.Value.CreateDefaultBone;
         weightingModeSelector.SelectedItem = selectedMesh.Value.Weighting;
     }
 
@@ -132,6 +128,9 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         meshSelector.SelectedIndexChanged += (_, _) =>
         {
             ApplyCurrentMeshOptions();
+            KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> selectedMesh = GetSelectedMesh();
+            mtdSelector.SelectedItem = selectedMesh.Value.MTD;
+            weightingModeSelector.SelectedItem = selectedMesh.Value.Weighting;
         };
         mtdSelector.SelectedIndexChanged += (_, _) =>
         {
@@ -139,13 +138,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             ModifyMesh(i => i.Value.MTD = mtdSelector.SelectedItem.ToString() ?? "");
             AssertBoneWeightsMessageVisibility();
         };
-        createDefaultBoneCheckbox.CheckedChanged += (_, _) => { ModifyMesh(i => i.Value.CreateDefaultBone = createDefaultBoneCheckbox.Checked);
 
-            if (affectAllMeshesCheckbox.Checked)
-            {
-                createDefaultBoneMessage.Visible = false;
-            }
-        };
         weightingModeSelector.SelectedIndexChanged += (_, _) =>
         {
             if (weightingModeSelector.SelectedItem == null) return;
@@ -202,11 +195,6 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
                 return;
             }
 
-            if (Meshes.Select(x => x.Value.CreateDefaultBone).Distinct().Count() != 1)
-            {
-                createDefaultBoneMessage.Text = "Multiple Meshes have different settings,\nchanging this will overwrite all of them.";
-                createDefaultBoneMessage.Visible = true;
-            }
             if (Meshes.Select(x => x.Value.MTD).Distinct().Count() != 1)
             {
                 mtdSelector.SelectedIndex = -1;

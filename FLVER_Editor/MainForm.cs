@@ -23,27 +23,27 @@ public partial class MainWindow : Form
     /// <summary>
     ///     Index of the edit button column in the Materials table.
     /// </summary>
-    private const int MaterialEditButtonIndex = 6;
+    private const int MaterialEditButtonIndex = 5;
 
     /// <summary>
     ///     Index of the viewer highlight button column in the Materials table.
     /// </summary>
-    private const int MaterialViewerHighlightButtonIndex = 7;
+    private const int MaterialViewerHighlightButtonIndex = 6;
 
     /// <summary>
     ///     Index of the add material preset button column in the Materials table.
     /// </summary>
-    private const int MaterialAddPresetCbIndex = 8;
+    private const int MaterialAddPresetCbIndex = 7;
 
     /// <summary>
     ///     Index of the apply material preset button column in the Materials table.
     /// </summary>
-    public const int MaterialApplyPresetCbIndex = 9;
+    public const int MaterialApplyPresetCbIndex = 8;
 
     /// <summary>
     ///     Index of the delete material button column in the Materials table.
     /// </summary>
-    public const int MaterialDeleteCbIndex = 10;
+    public const int MaterialDeleteCbIndex = 9;
 
     /// <summary>
     ///     The file filter for opening image files.
@@ -717,17 +717,17 @@ public partial class MainWindow : Form
         for (int i = 0; i < BonePositionList.Count; ++i)
             BonePositionList[i] = null;
         // TODO: Investigate the maximum threshold on bones
-        Transform3D[] bonesTransform = new Transform3D[Flver.Bones.Count];
-        for (int i = 0; i < Flver.Bones.Count; ++i)
+        Transform3D[] bonesTransform = new Transform3D[Flver.Nodes.Count];
+        for (int i = 0; i < Flver.Nodes.Count; ++i)
         {
-            bonesTransform[i] = new Transform3D { RotationOrder = RotationOrder, Position = new Vector3D(Flver.Bones[i].Translation) };
-            bonesTransform[i].SetRotationInRadians(new Vector3D(Flver.Bones[i].Rotation));
-            bonesTransform[i].Scale = new Vector3D(Flver.Bones[i].Scale);
-            if (Flver.Bones[i].ParentIndex < 0) continue;
-            bonesTransform[i].Parent = bonesTransform[Flver.Bones[i].ParentIndex];
+            bonesTransform[i] = new Transform3D { RotationOrder = RotationOrder, Position = new Vector3D(Flver.Nodes[i].Translation) };
+            bonesTransform[i].SetRotationInRadians(new Vector3D(Flver.Nodes[i].Rotation));
+            bonesTransform[i].Scale = new Vector3D(Flver.Nodes[i].Scale);
+            if (Flver.Nodes[i].ParentIndex < 0) continue;
+            bonesTransform[i].Parent = bonesTransform[Flver.Nodes[i].ParentIndex];
             Vector3D absolutePos = bonesTransform[i].GetGlobalOrigin();
-            if (bonesTransform[Flver.Bones[i].ParentIndex] == null) continue;
-            Vector3D parentPos = bonesTransform[Flver.Bones[i].ParentIndex].GetGlobalOrigin();
+            if (bonesTransform[Flver.Nodes[i].ParentIndex] == null) continue;
+            Vector3D parentPos = bonesTransform[Flver.Nodes[i].ParentIndex].GetGlobalOrigin();
             vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(parentPos.X - 0.005f, parentPos.Z - 0.005f, parentPos.Y),
                 Microsoft.Xna.Framework.Color.Purple));
             vertexPosColorList.Add(new VertexPositionColor(new XnaVector3(absolutePos.X, absolutePos.Z, absolutePos.Y),
@@ -751,7 +751,7 @@ public partial class MainWindow : Form
             Vector3 OffsetPos(Vector3 pos, FLVER2 flver, FLVER.Dummy dummy)
             {
                 if (dummy.ParentBoneIndex >= 0)
-                    return VecUtils.RecursiveBoneOffset(pos, Flver.Bones[dummy.ParentBoneIndex], Flver);
+                    return VecUtils.RecursiveBoneOffset(pos, Flver.Nodes[dummy.ParentBoneIndex], Flver);
                 return pos;
             }
 
@@ -917,12 +917,12 @@ public partial class MainWindow : Form
         texturesTable.Rows.Clear();
         meshTable.Rows.Clear();
         dummiesTable.Rows.Clear();
-        for (int i = 0; i < Flver.Bones.Count; ++i)
+        for (int i = 0; i < Flver.Nodes.Count; ++i)
         {
-            FLVER.Bone bone = Flver.Bones[i];
+            FLVER.Node bone = Flver.Nodes[i];
             DataGridViewRow row = new();
             row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i }, new DataGridViewTextBoxCell { Value = bone.Name },
-                new DataGridViewTextBoxCell { Value = bone.ParentIndex }, new DataGridViewTextBoxCell { Value = bone.ChildIndex },
+                new DataGridViewTextBoxCell { Value = bone.ParentIndex }, new DataGridViewTextBoxCell { Value = bone.FirstChildIndex },
                 new DataGridViewTextBoxCell { Value = $"{bone.Translation.X},{bone.Translation.Y},{bone.Translation.Z}" },
                 new DataGridViewTextBoxCell { Value = $"{bone.Scale.X},{bone.Scale.Y},{bone.Scale.Z}" },
                 new DataGridViewTextBoxCell { Value = $"{bone.Rotation.X},{bone.Rotation.Y},{bone.Rotation.Z}" },
@@ -934,12 +934,12 @@ public partial class MainWindow : Form
         {
             FLVER2.Material material = Flver.Materials[i];
             DataGridViewRow row = new();
-            if (!StopAutoInternalIndexOverride) material.Unk18 = i;
+            if (!StopAutoInternalIndexOverride) material.Index = i;
             row.Cells.AddRange(new DataGridViewTextBoxCell { Value = i }, new DataGridViewTextBoxCell { Value = material.Name },
-                new DataGridViewTextBoxCell { Value = GetModelMask(material.Name) }, new DataGridViewTextBoxCell { Value = material.Flags },
-                new DataGridViewTextBoxCell { Value = material.MTD }, new DataGridViewTextBoxCell { Value = material.Unk18 });
+                new DataGridViewTextBoxCell { Value = GetModelMask(material.Name) }, new DataGridViewTextBoxCell { Value = material.MTD },
+                new DataGridViewTextBoxCell { Value = material.Index });
             for (int j = 0; j < 3; ++j)
-                row.Cells.Add(new DataGridViewButtonCell { Value = materialsTable.Columns[j + 6].HeaderText });
+                row.Cells.Add(new DataGridViewButtonCell { Value = materialsTable.Columns[j + 5].HeaderText });
             for (int j = 0; j < 2; ++j)
                 row.Cells.Add(new DataGridViewCheckBoxCell { Value = false });
             materialsTable.Rows.Add(row);
@@ -1096,39 +1096,13 @@ public partial class MainWindow : Form
         else
         {
             FLVER2 newFlver = ReadFLVERFromDCXPath(FlverFilePath, true, true, true);
-
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var item in newFlver.SekiroUnk.Members1)
-            {
-                sb.AppendLine($"{item.Index}: {item.Unk00[0]},{item.Unk00[1]},{item.Unk00[2]},{item.Unk00[3]}");
-            }
-
-            File.WriteAllText("mem1.log", sb.ToString());
-
-            sb.Clear();
-
-            ushort SwapBytes(ushort x)
-            {
-                return (ushort)((ushort)((x & 0xff) << 8) | ((x >> 8) & 0xff));
-            }
-
-            foreach (var item in newFlver.SekiroUnk.Members2)
-            {
-                sb.AppendLine($"{item.Index}: {item.Unk00[0]},{item.Unk00[1]},{item.Unk00[2]},{item.Unk00[3]} | ");
-            }
-
-
-
-            File.WriteAllText("mem2.log", sb.ToString());
-
             if (newFlver == null) return false;
             Flver = newFlver;
             Program.Flver = Flver;
         }
         CurrentFlverBytes = Flver.Write();
         saveToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
-        MatBinBndPath = null;
+         MatBinBndPath = null;
         DeselectAllSelectedThings();
         UpdateUI();
         ClearViewerMaterialHighlight();
@@ -1300,7 +1274,7 @@ public partial class MainWindow : Form
         var filename = dialog.FileName;
         var oldfilename = Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path;
 
-        UpdateTextureAction action = new(filename, (filename) =>
+        UpdateTextureAction action = new(FlverBnd, filename, (filename) =>
         {
             Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path = $"{Path.GetFileNameWithoutExtension(dialog.FileName)}.tif";
             UpdateTexturesTable();
@@ -1436,7 +1410,7 @@ public partial class MainWindow : Form
 
     private void ApplyMeshSimpleSkin(int meshIndex)
     {
-        int boneIndex = ShowSelectorDialog("Pick a Bone", Flver.Bones);
+        int boneIndex = ShowSelectorDialog("Pick a Bone", Flver.Nodes);
         if (boneIndex == -1) return;
         List<FLVER.Vertex> unweightedVerts = Flver.Meshes[meshIndex].Vertices.Where(v =>
             Util3D.BoneIndicesToIntArray(v.BoneIndices) != null
@@ -1502,7 +1476,7 @@ public partial class MainWindow : Form
                 UpdateSelectedDummies();
                 break;
             case 5:
-                DuplicateDummyAction action = new(rowIndex, () =>
+                DuplicateDummyAction action = new(Flver, rowIndex, () =>
                 {
                     DeselectAllSelectedThings();
                     UpdateUI();
@@ -1590,7 +1564,7 @@ public partial class MainWindow : Form
 
         float[] totals = CalculateMeshTotals();
 
-        MeshTansformAction action = new(SelectedMeshIndices, SelectedDummyIndices, offset, totals, nbi, PrevNumVal, newNumVal, uniformScaleCheckbox.Checked, vectorModeCheckbox.Checked, (value, uniform) =>
+        MeshTansformAction action = new(Flver, SelectedMeshIndices, SelectedDummyIndices, offset, totals, nbi, PrevNumVal, newNumVal, uniformScaleCheckbox.Checked, vectorModeCheckbox.Checked, (value, uniform) =>
         {
             IsSettingDefaultInfo = true;
 
@@ -1625,7 +1599,7 @@ public partial class MainWindow : Form
         object selectedMaterial = MaterialPresets.Values.ToArray().ElementAtOrDefault(materialPresetsSelector.SelectedIndex);
         FLVER2.Material? newMaterial = JsonConvert.DeserializeObject<FLVER2.Material>(JsonConvert.SerializeObject(selectedMaterial));
 
-        MaterialsTableOkAction action = new(materialsTable, newMaterial, (displayPresetError) =>
+        MaterialsTableOkAction action = new(Flver, materialsTable, newMaterial, (displayPresetError) =>
         {
             if (displayPresetError) ShowErrorDialog("The specified preset does not exist.");
 
@@ -1694,7 +1668,7 @@ public partial class MainWindow : Form
     {
         //UpdateUndoState();
 
-        DeleteSelectedMeshAction action = new(meshTable, dummiesTable, deleteFacesetsCheckbox.Checked, () =>
+        DeleteSelectedMeshAction action = new(Flver, meshTable, dummiesTable, deleteFacesetsCheckbox.Checked, () =>
         {
             meshModifiersContainer.Enabled = MeshIsSelected = DummyIsSelected = false;
             DeselectAllSelectedThings();
@@ -1780,7 +1754,7 @@ public partial class MainWindow : Form
 
             if (bonesTableValue is not null)
             {
-                BonesTableCellValueUpdatedAction action = new(bonesTableValue, e.RowIndex, e.ColumnIndex, () =>
+                BodesTableCellValueUpdatedAction action = new(Flver, bonesTableValue, e.RowIndex, e.ColumnIndex, () =>
                 {
                     UpdateUI();
                     UpdateMesh();
@@ -1829,13 +1803,10 @@ public partial class MainWindow : Form
                         Flver.Materials[e.RowIndex].Name = ReplaceModelMask(materialName, materialsTableValue);
                         break;
                     case 3:
-                        Flver.Materials[e.RowIndex].Flags = int.Parse(materialsTableValue);
-                        break;
-                    case 4:
                         Flver.Materials[e.RowIndex].MTD = materialsTableValue;
                         break;
-                    case 5:
-                        Flver.Materials[e.RowIndex].Unk18 = int.Parse(materialsTableValue);
+                    case 4:
+                        Flver.Materials[e.RowIndex].Index = int.Parse(materialsTableValue);
                         break;
                 }
             }
@@ -1856,7 +1827,7 @@ public partial class MainWindow : Form
             string textureTableValue = texturesTable[e.ColumnIndex, e.RowIndex].Value?.ToString() ?? "";
 
 
-            TexturesTableCellUpdateAction action = new(SelectedMaterialIndex, e.RowIndex, e.ColumnIndex, textureTableValue, () =>
+            TexturesTableCellUpdateAction action = new(Flver, SelectedMaterialIndex, e.RowIndex, e.ColumnIndex, textureTableValue, () =>
             {
                 UpdateMesh();
                 Viewer.RefreshTextures();
@@ -1951,7 +1922,7 @@ public partial class MainWindow : Form
             if (boneWeightValue != null)
             {
                 int newBoneWeight = int.Parse(boneWeightValue);
-                MeshTableCellValueChangedAction action = new(newBoneWeight, e.RowIndex, meshTable.FirstDisplayedScrollingRowIndex, index, (targetIndex) =>
+                MeshTableCellValueChangedAction action = new(Flver, newBoneWeight, e.RowIndex, meshTable.FirstDisplayedScrollingRowIndex, index, (targetIndex) =>
                 {
                     UpdateUI();
                     UpdateMesh();
@@ -2019,7 +1990,7 @@ public partial class MainWindow : Form
         mesh.BoundingBox.Max = new Vector3(maxX, maxY, maxZ);
     }
 
-    private static System.Numerics.Matrix4x4 GetNMatrix(FLVER.Bone b)
+    private static System.Numerics.Matrix4x4 GetNMatrix(FLVER.Node b)
     {
         return System.Numerics.Matrix4x4.CreateScale(b.Scale)
             * System.Numerics.Matrix4x4.CreateRotationX(b.Rotation.X)
@@ -2028,16 +1999,16 @@ public partial class MainWindow : Form
             * System.Numerics.Matrix4x4.CreateTranslation(b.Translation);
     }
 
-    private static FLVER.Bone GetParent(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones)
+    private static FLVER.Node GetParent(FLVER.Node b, IReadOnlyList<FLVER.Node> bones)
     {
         if (b.ParentIndex >= 0 && b.ParentIndex < bones.Count) return bones[b.ParentIndex];
         return null;
     }
 
-    private static System.Numerics.Matrix4x4 GetAbsoluteNMatrix(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones)
+    private static System.Numerics.Matrix4x4 GetAbsoluteNMatrix(FLVER.Node b, IReadOnlyList<FLVER.Node> bones)
     {
         System.Numerics.Matrix4x4 result = System.Numerics.Matrix4x4.Identity;
-        FLVER.Bone parentBone = b;
+        FLVER.Node parentBone = b;
         while (parentBone != null)
         {
             System.Numerics.Matrix4x4 m = GetNMatrix(parentBone);
@@ -2047,7 +2018,7 @@ public partial class MainWindow : Form
         return result;
     }
 
-    private static void UpdateBonesBoundingBox(FLVER.Bone b, IReadOnlyList<FLVER.Bone> bones, Vector3 vertexPos)
+    private static void UpdateBonesBoundingBox(FLVER.Node b, IReadOnlyList<FLVER.Node> bones, Vector3 vertexPos)
     {
         System.Numerics.Matrix4x4 boneAbsoluteMatrix = GetAbsoluteNMatrix(b, bones);
         if (!System.Numerics.Matrix4x4.Invert(boneAbsoluteMatrix, out System.Numerics.Matrix4x4 invertedBoneMatrix)) return;
@@ -2064,7 +2035,7 @@ public partial class MainWindow : Form
 
     private void SolveAllBBs()
     {
-        SolveAllBBsAction action = new(() =>
+        SolveAllBBsAction action = new(Flver, () =>
         {
             ShowInformationDialog("Solved all bone and mesh bounding boxes!");
             UpdateMesh();
@@ -2151,7 +2122,7 @@ public partial class MainWindow : Form
                 ReadFLVERFromDCXPath(newFlverFilePath, false, false, false);
             if (newFlver == null) return;
 
-            MergeFlversAction action = new(newFlver, () =>
+            MergeFlversAction action = new(Flver, newFlver, () =>
             {
                 DeselectAllSelectedThings();
                 UpdateUI();
@@ -2198,7 +2169,8 @@ public partial class MainWindow : Form
 
     private void AddDummyButtonClicked(object sender, MouseEventArgs e)
     {
-        AddNewDummyAction action = new(() =>
+        Vector3 position = MainWindow.Flver.Dummies.Count > 0 ? MainWindow.Flver.Dummies[MainWindow.Flver.Dummies.Count - 1].Position : new Vector3(0, 0, 0);
+        AddNewDummyAction action = new(position , () =>
         {
             DeselectAllSelectedThings();
             UpdateUI();
@@ -2217,7 +2189,7 @@ public partial class MainWindow : Form
             if (dummiesTableValue != null)
             {
                 short parsed = short.Parse(dummiesTableValue);
-                DummyTableDataChangedAction action = new(parsed, e.RowIndex, e.ColumnIndex, () =>
+                DummyTableDataChangedAction action = new(Flver, parsed, e.RowIndex, e.ColumnIndex, () =>
                 {
                     UpdateUI();
                     UpdateMesh();
@@ -2238,7 +2210,7 @@ public partial class MainWindow : Form
         try
         {
             string jsonText = File.ReadAllText(dialog.FileName);
-            LoadJsonAction action = new(type, jsonText, () =>
+            LoadJsonAction action = new(Flver, type, jsonText, () =>
             {
                 DeselectAllSelectedThings();
                 ClearViewerMaterialHighlight();
@@ -2282,7 +2254,7 @@ public partial class MainWindow : Form
 
     private void ExportBonesJSONButtonClicked(object sender, EventArgs e)
     {
-        ExportJSON(Flver.Bones);
+        ExportJSON(Flver.Nodes);
     }
 
     private void ExportMaterialsJSONButtonClicked(object sender, EventArgs e)
@@ -2350,7 +2322,7 @@ public partial class MainWindow : Form
     private void SetAllBBsMaxSize()
     {
 
-        SetAllBBsMaxSizeAction action = new(() =>
+        SetAllBBsMaxSizeAction action = new(Flver, () =>
         {
             UpdateMesh();
         });
@@ -2935,6 +2907,7 @@ public partial class MainWindow : Form
     private void ResetAllMesh()
     {
         ResetAllMeshesAction action = new();
+        ActionManager.Apply(action);
         ShowInformationDialog("Successfully reset all mesh!");
     }
 

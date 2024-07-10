@@ -9,6 +9,7 @@ namespace FLVER_Editor.Actions;
 
 public class DeleteSelectedMeshAction : TransformAction
 {
+    private readonly FLVER2 flver;
     private readonly DataGridView meshTable;
     private readonly DataGridView dummiesTable;
     private readonly bool deleteFacesets;
@@ -17,8 +18,9 @@ public class DeleteSelectedMeshAction : TransformAction
     private Dictionary<int, FLVER2.Mesh> deletedMeshes = new();
     private Dictionary<int, FLVER.Dummy> deletedDummies = new();
 
-    public DeleteSelectedMeshAction(DataGridView meshTable, DataGridView dummiesTable, bool deleteFacesets, Action? refresher)
+    public DeleteSelectedMeshAction(FLVER2 flver, DataGridView meshTable, DataGridView dummiesTable, bool deleteFacesets, Action? refresher)
     {
+        this.flver = flver;
         this.meshTable = meshTable;
         this.dummiesTable = dummiesTable;
         this.deleteFacesets = deleteFacesets;
@@ -31,12 +33,12 @@ public class DeleteSelectedMeshAction : TransformAction
         this.deletedMeshes.Clear();
         this.deletedDummies.Clear();
 
-        for (int i = MainWindow.Flver.Meshes.Count - 1; i >= 0; --i)
+        for (int i = flver.Meshes.Count - 1; i >= 0; --i)
         {
             if (!(bool)meshTable.Rows[i].Cells[3].Value) continue;
             if (deleteFacesets)
             {
-                foreach (FLVER2.FaceSet fs in MainWindow.Flver.Meshes[i].FaceSets)
+                foreach (FLVER2.FaceSet fs in flver.Meshes[i].FaceSets)
                 {
                     var facesetIndices = new List<int>();
                     
@@ -51,19 +53,19 @@ public class DeleteSelectedMeshAction : TransformAction
             }
             else
             {
-                deletedMeshes.Add(i, MainWindow.Flver.Meshes[i]);
-                MainWindow.Flver.Meshes.RemoveAt(i);
+                deletedMeshes.Add(i, flver.Meshes[i]);
+                flver.Meshes.RemoveAt(i);
             }
 
             refresher?.Invoke();
         }
 
-        for (int i = MainWindow.Flver.Dummies.Count - 1; i >= 0; --i)
+        for (int i = flver.Dummies.Count - 1; i >= 0; --i)
         {
             if (!(bool)dummiesTable.Rows[i].Cells[4].Value) continue;
 
-            deletedDummies.Add(i, MainWindow.Flver.Dummies[i]);
-            MainWindow.Flver.Dummies.RemoveAt(i);
+            deletedDummies.Add(i, flver.Dummies[i]);
+            flver.Dummies.RemoveAt(i);
         }
     }
 
@@ -86,13 +88,13 @@ public class DeleteSelectedMeshAction : TransformAction
         {
             foreach (var fs in deletedMeshes)
             {
-                MainWindow.Flver.Meshes.Insert(fs.Key, fs.Value);
+                flver.Meshes.Insert(fs.Key, fs.Value);
             }
         }
 
         foreach (var fs in deletedDummies)
         {
-            MainWindow.Flver.Dummies.Insert(fs.Key, fs.Value);
+            flver.Dummies.Insert(fs.Key, fs.Value);
         }
 
         refresher?.Invoke();

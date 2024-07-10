@@ -13,6 +13,14 @@ namespace SoulsFormats
     /// </summary>
     public class BinaryReaderEx
     {
+        /// <summary>
+        /// Skips various assertions in order to load a file despite potential mismatches.
+        /// This is mainly a tool to circumvent malicious format hacking by modders who try to
+        /// "obfuscate" their files. This should not be set to TRUE for most purposes unless
+        /// you are extremely sure what you are doing.
+        /// </summary>
+        public static bool IsFlexible { get; set; }
+
         private BinaryReader br;
         private Stack<long> steps;
 
@@ -103,6 +111,8 @@ namespace SoulsFormats
         /// </summary>
         private T AssertValue<T>(T value, string typeName, string valueFormat, T[] options) where T : IEquatable<T>
         {
+            if (IsFlexible) return value;
+
             foreach (T option in options)
                 if (value.Equals(option))
                     return value;

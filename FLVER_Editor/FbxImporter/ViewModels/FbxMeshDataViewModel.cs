@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using FbxDataExtractor;
+using FbxImporter.Util;
 using SoulsAssetPipeline.FLVERImporting;
 using SoulsFormats;
 using static FLVER_Editor.Program;
@@ -59,22 +60,25 @@ public class FbxMeshDataViewModel
         FLVER2.Mesh newMesh = new()
         {
             VertexBuffers = layoutIndices.Select(x => new FLVER2.VertexBuffer(x)).ToList(),
-            Dynamic = (byte)(options.Weighting == WeightingMode.Skin ? 1 : 0)
+            UseBoneWeights = options.Weighting == WeightingMode.Skin
         };
-        int defaultBoneIndex = flver.Bones.IndexOf(flver.Bones.FirstOrDefault(x => x.Name == Name));
-        if (defaultBoneIndex == -1)
+        int nodeIndex = flver.Nodes.IndexOf(flver.Nodes.FirstOrDefault(x => x.Name == Name));
+        if (nodeIndex == -1)
         {
-            if (options.CreateDefaultBone)
+            nodeIndex = flver.Nodes.FindIndex(x => x.Flags.HasFlag(FLVER.Node.NodeFlags.Disabled));
+            if (nodeIndex == -1) nodeIndex = flver.Nodes.Count;
+            int lastRootNodeIndex = flver.Nodes.FindLastIndex(x =>
+                x is { ParentIndex: -1, NextSiblingIndex: -1 } && !x.Flags.HasFlag(FLVER.Node.NodeFlags.Disabled));
+            flver.Nodes.Insert(nodeIndex, new FLVER.Node
             {
-                flver.Bones.Add(new FLVER.Bone { Name = Name });
-                defaultBoneIndex = flver.Bones.Count - 1;
-            }
-            else
-            {
-                defaultBoneIndex = 0;
-            }
+                Name = Name,
+                Flags = FLVER.Node.NodeFlags.Mesh,
+                PreviousSiblingIndex = (short)lastRootNodeIndex
+            });
+            if (lastRootNodeIndex != -1)
+                flver.Nodes[lastRootNodeIndex].NextSiblingIndex = (short)nodeIndex;
         }
-        newMesh.DefaultBoneIndex = defaultBoneIndex;
+        newMesh.NodeIndex = nodeIndex;
         bool foundWeights = false;
         foreach (FbxVertexData vertexData in Data.VertexData)
         {
@@ -82,7 +86,9 @@ public class FbxMeshDataViewModel
             {
                 Position = vertexData.Position with { Z = vertexData.Position.Z },
                 Normal = vertexData.Normal with { Z = vertexData.Normal.Z },
-                Bitangent = vertexData.Bitangent with { Z = vertexData.Bitangent.Z },
+                //bitangent is usually not an actual bitangent
+                //Bitangent = vertexData.Bitangent with { Z = vertexData.Bitangent.Z * zSign },
+                Bitangent = new Vector4(-1.0f),
                 Tangents = vertexData.Tangents.Select(x => x with { Z = x.Z }).ToList(),
                 UVs = vertexData.UVs.Select(x => new Vector3(x.X, 1 - x.Y, 0.0f)).ToList(),
                 // Fbx uses RGBA, SF uses ARGB
@@ -95,7 +101,7 @@ public class FbxMeshDataViewModel
             for (int j = 0; j < Math.Min(orderedWeightData.Count, 4); j++)
             {
                 (string boneName, float boneWeight) = orderedWeightData[j];
-                int boneIndex = flver.Bones.IndexOf(flver.Bones.FirstOrDefault(x => x.Name == boneName));
+                int boneIndex = flver.Nodes.IndexOf(flver.Nodes.FirstOrDefault(x => x.Name == boneName));
                 if (boneIndex == -1)
                 {
                     boneIndex = 0;
@@ -143,11 +149,14 @@ public class FbxMeshDataViewModel
         flver.Materials.Add(newMaterial);
         flver.GXLists.Add(gxList);
         flver.Meshes.Add(newMesh);
+        // TODO: We need to implement FbxImporter's Write method and call it whenever we save a FLVER file...
+        flver.AddNodesToSkeletons();
+        flver.SetNodeFlags();
     }
 
     private static void AdjustBoneIndexBufferSize(FLVER2 flver, List<FLVER2.BufferLayout> bufferLayouts)
     {
-        if (flver.Bones.Count <= byte.MaxValue) return;
+        if (flver.Nodes.FindLastIndex(x => !x.Flags.HasFlag(FLVER.Node.NodeFlags.Disabled)) <= byte.MaxValue) return;
         foreach (FLVER2.BufferLayout bufferLayout in bufferLayouts)
         {
             foreach (FLVER.LayoutMember layoutMember in bufferLayout.Where(x =>

@@ -9,12 +9,14 @@ namespace FLVER_Editor.Actions;
 
 public class DuplicateDummyAction : TransformAction
 {
+    private readonly FLVER2 flver;
     private readonly int rowIndex;
     private readonly FLVER.Dummy dummy;
     private Action? windowRefresh;
 
-    public DuplicateDummyAction(int rowIndex, Action refresh)
+    public DuplicateDummyAction(FLVER2 flver, int rowIndex, Action refresh)
     {
+        this.flver = flver;
         this.rowIndex = rowIndex;
 
         dummy = new()
@@ -37,13 +39,13 @@ public class DuplicateDummyAction : TransformAction
 
     public override void Execute()
     {
-        MainWindow.Flver.Dummies.Add(dummy);
+        flver.Dummies.Add(dummy);
         windowRefresh?.Invoke();
     }
 
     public override void Undo()
     {
-        MainWindow.Flver.Dummies.Remove(dummy);
+        flver.Dummies.Remove(dummy);
         windowRefresh?.Invoke();
     }
 }

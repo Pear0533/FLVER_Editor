@@ -9,20 +9,22 @@ namespace FLVER_Editor.Actions;
 
 public class MeshTableCellValueChangedAction : TransformAction
 {
+    private readonly FLVER2 flver;
     private readonly int newBoneWeight;
     private readonly int row;
     private readonly Action<int> refresher;
     private readonly int oldDisplayedIndex;
     private readonly int newdisplayedIndex;
-    private byte oldDynamic;
+    private bool oldUseBoneWeights;
     private bool removeBoneIndice;
 
     private record OldValues(FLVER.VertexBoneWeights Weights, FLVER.VertexBoneIndices Indices);
     private Dictionary<FLVER.Vertex, OldValues> OldBoneData = new();
 
 
-    public MeshTableCellValueChangedAction(int newBoneWeight, int row, int oldDisplayedIndex, int newdisplayedIndex, Action<int> refresher)
+    public MeshTableCellValueChangedAction(FLVER2 flver, int newBoneWeight, int row, int oldDisplayedIndex, int newdisplayedIndex, Action<int> refresher)
     {
+        this.flver = flver;
         this.newBoneWeight = newBoneWeight;
         this.row = row;
         this.refresher = refresher;
@@ -32,7 +34,7 @@ public class MeshTableCellValueChangedAction : TransformAction
 
     public override void Execute()
     {
-        foreach (FLVER.Vertex v in MainWindow.Flver.Meshes[row].Vertices)
+        foreach (FLVER.Vertex v in flver.Meshes[row].Vertices)
         {
             OldBoneData.Add(v, new(v.BoneWeights, v.BoneIndices));
 
@@ -48,21 +50,21 @@ public class MeshTableCellValueChangedAction : TransformAction
             v.BoneWeights[0] = 1;
         }
 
-        if (!MainWindow.Flver.Meshes[row].BoneIndices.Contains(newBoneWeight))
+        if (!flver.Meshes[row].BoneIndices.Contains(newBoneWeight))
         {
-            MainWindow.Flver.Meshes[row].BoneIndices.Add(newBoneWeight);
+            flver.Meshes[row].BoneIndices.Add(newBoneWeight);
             removeBoneIndice = true;
         }
 
-        oldDynamic = MainWindow.Flver.Meshes[row].Dynamic;
-        MainWindow.Flver.Meshes[row].Dynamic = 1;
+        oldUseBoneWeights = flver.Meshes[row].UseBoneWeights;
+        flver.Meshes[row].UseBoneWeights = true;
 
         refresher.Invoke(newdisplayedIndex);
     }
 
     public override void Undo()
     {
-        foreach (FLVER.Vertex v in MainWindow.Flver.Meshes[row].Vertices)
+        foreach (FLVER.Vertex v in flver.Meshes[row].Vertices)
         {
             var data = OldBoneData[v];
 
@@ -72,10 +74,10 @@ public class MeshTableCellValueChangedAction : TransformAction
 
         if (!removeBoneIndice)
         {
-            MainWindow.Flver.Meshes[row].BoneIndices.Remove(newBoneWeight);
+            flver.Meshes[row].BoneIndices.Remove(newBoneWeight);
         }
 
-        MainWindow.Flver.Meshes[row].Dynamic = oldDynamic;
+        flver.Meshes[row].UseBoneWeights = oldUseBoneWeights;
 
         refresher.Invoke(oldDisplayedIndex);
     }

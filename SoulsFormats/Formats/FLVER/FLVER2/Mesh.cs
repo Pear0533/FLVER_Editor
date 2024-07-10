@@ -13,9 +13,14 @@ namespace SoulsFormats
         public class Mesh : IFlverMesh
         {
             /// <summary>
-            /// When 1, mesh is in bind pose; when 0, it isn't. Most likely has further implications.
+            /// Determines how the mesh is skinned. If it is <see langword="true"/> the mesh is assumed to be in bind pose and is skinned using the <see cref="FLVER.Vertex.BoneIndices"/> and <see cref="FLVER.Vertex.BoneWeights"/> of the vertices.
+            /// If it is <see langword="false"/> each <see cref="FLVER.Vertex"/> specifies a single node to bind to using its <see cref="FLVER.Vertex.NormalW"/>.
+            /// The mesh is assumed to not be in bind pose and the transform of the bound node is applied to each vertex.
             /// </summary>
-            public byte Dynamic { get; set; }
+            public bool UseBoneWeights { get; set; }
+            
+            /// <inheritdoc cref="IFlverMesh.Dynamic"/>
+            public byte Dynamic => (byte)(UseBoneWeights ? 1 : 0);
 
             /// <summary>
             /// Index of the material used by all triangles in this mesh.
@@ -23,9 +28,9 @@ namespace SoulsFormats
             public int MaterialIndex { get; set; }
 
             /// <summary>
-            /// Apparently does nothing. Usually points to a dummy bone named after the model, possibly just for labelling.
+            /// Index of the node representing this mesh in the <see cref="FLVER2.Nodes"/> list.
             /// </summary>
-            public int DefaultBoneIndex { get; set; }
+            public int NodeIndex { get; set; }
 
             /// <summary>
             /// Indexes of bones in the bone collection which may be used by vertices in this mesh.
@@ -60,7 +65,7 @@ namespace SoulsFormats
             /// </summary>
             public Mesh()
             {
-                DefaultBoneIndex = -1;
+                NodeIndex = -1;
                 BoneIndices = new List<int>();
                 FaceSets = new List<FaceSet>();
                 VertexBuffers = new List<VertexBuffer>();
@@ -69,7 +74,7 @@ namespace SoulsFormats
 
             internal Mesh(BinaryReaderEx br, FLVERHeader header)
             {
-                Dynamic = br.AssertByte(0, 1);
+                UseBoneWeights = br.ReadBoolean();
                 br.AssertByte(0);
                 br.AssertByte(0);
                 br.AssertByte(0);
@@ -77,7 +82,7 @@ namespace SoulsFormats
                 MaterialIndex = br.ReadInt32();
                 br.AssertInt32(0);
                 br.AssertInt32(0);
-                DefaultBoneIndex = br.ReadInt32();
+                NodeIndex = br.ReadInt32();
                 int boneCount = br.ReadInt32();
                 int boundingBoxOffset = br.ReadInt32();
                 int boneOffset = br.ReadInt32();
@@ -85,7 +90,7 @@ namespace SoulsFormats
                 int faceSetOffset = br.ReadInt32();
                 int vertexBufferCount = br.AssertInt32(1, 2, 3);
                 int vertexBufferOffset = br.ReadInt32();
-
+                
                 if (boundingBoxOffset != 0)
                 {
                     br.StepIn(boundingBoxOffset);
@@ -157,10 +162,10 @@ namespace SoulsFormats
 
             internal void ReadVertices(BinaryReaderEx br, int dataOffset, List<BufferLayout> layouts, FLVERHeader header)
             {
-                var layoutMembers = layouts.SelectMany(l => l);
-                int uvCap = layoutMembers.Where(m => m.Semantic == FLVER.LayoutSemantic.UV).Count();
-                int tanCap = layoutMembers.Where(m => m.Semantic == FLVER.LayoutSemantic.Tangent).Count();
-                int colorCap = layoutMembers.Where(m => m.Semantic == FLVER.LayoutSemantic.VertexColor).Count();
+                var layoutMembers = layouts.SelectMany(l => l).ToArray();
+                int uvCap = layoutMembers.Count(m => m.Semantic == FLVER.LayoutSemantic.UV);
+                int tanCap = layoutMembers.Count(m => m.Semantic == FLVER.LayoutSemantic.Tangent);
+                int colorCap = layoutMembers.Count(m => m.Semantic == FLVER.LayoutSemantic.VertexColor);
 
                 int vertexCount = VertexBuffers[0].VertexCount;
                 Vertices = new List<FLVER.Vertex>(vertexCount);
@@ -181,7 +186,7 @@ namespace SoulsFormats
                 bw.WriteInt32(MaterialIndex);
                 bw.WriteInt32(0);
                 bw.WriteInt32(0);
-                bw.WriteInt32(DefaultBoneIndex);
+                bw.WriteInt32(NodeIndex);
                 bw.WriteInt32(BoneIndices.Count);
                 bw.ReserveInt32($"MeshBoundingBox{index}");
                 bw.ReserveInt32($"MeshBoneIndices{index}");
@@ -239,7 +244,7 @@ namespace SoulsFormats
                         int vi1 = indices[i];
                         int vi2 = indices[i + 1];
                         int vi3 = indices[i + 2];
-                        vertices.Add(new FLVER.Vertex[] { Vertices[vi1], Vertices[vi2], Vertices[vi3] });
+                        vertices.Add(new[] { Vertices[vi1], Vertices[vi2], Vertices[vi3] });
                     }
                     return vertices;
                 }

@@ -9,6 +9,7 @@ namespace FLVER_Editor.Actions;
 
 public class TexturesTableCellUpdateAction : TransformAction
 {
+    private readonly FLVER2 flver;
     private readonly int selectedMaterialIndex;
     private readonly int row;
     private readonly int col;
@@ -16,8 +17,9 @@ public class TexturesTableCellUpdateAction : TransformAction
     private readonly Action refresher;
     private string textureTableOldValue;
 
-    public TexturesTableCellUpdateAction(int selectedMaterialIndex, int row, int col, string textureTableValue,Action refresher)
+    public TexturesTableCellUpdateAction(FLVER2 flver, int selectedMaterialIndex, int row, int col, string textureTableValue, Action refresher)
     {
+        this.flver = flver;
         this.selectedMaterialIndex = selectedMaterialIndex;
         this.row = row;
         this.col = col;
@@ -30,12 +32,12 @@ public class TexturesTableCellUpdateAction : TransformAction
         switch (col)
         {
             case 0:
-                textureTableOldValue = MainWindow.Flver.Materials[selectedMaterialIndex].Textures[row].Type;
-                MainWindow.Flver.Materials[selectedMaterialIndex].Textures[row].Type = textureTableValue;
+                textureTableOldValue = flver.Materials[selectedMaterialIndex].Textures[row].Type;
+                flver.Materials[selectedMaterialIndex].Textures[row].Type = textureTableValue;
                 break;
             case 1:
-                textureTableOldValue = MainWindow.Flver.Materials[selectedMaterialIndex].Textures[row].Path;
-                MainWindow.Flver.Materials[selectedMaterialIndex].Textures[row].Path = textureTableValue;
+                textureTableOldValue = flver.Materials[selectedMaterialIndex].Textures[row].Path;
+                flver.Materials[selectedMaterialIndex].Textures[row].Path = textureTableValue;
                 break;
         }
 
@@ -47,10 +49,10 @@ public class TexturesTableCellUpdateAction : TransformAction
         switch (col)
         {
             case 0:
-                MainWindow.Flver.Materials[selectedMaterialIndex].Textures[row].Type = textureTableOldValue;
+                flver.Materials[selectedMaterialIndex].Textures[row].Type = textureTableOldValue;
                 break;
             case 1:
-                MainWindow.Flver.Materials[selectedMaterialIndex].Textures[row].Path = textureTableOldValue;
+                flver.Materials[selectedMaterialIndex].Textures[row].Path = textureTableOldValue;
                 break;
         }
     

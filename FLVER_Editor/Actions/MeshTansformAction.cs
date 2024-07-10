@@ -13,6 +13,7 @@ namespace FLVER_Editor.Actions;
 public class MeshTansformAction : TransformAction
 {
     private readonly Action<float, bool> refresher;
+    private readonly FLVER2 flver;
     private readonly IEnumerable<int> selectedMeshes;
     private readonly IEnumerable<int> selectedDummies;
     private readonly float offset;
@@ -23,8 +24,9 @@ public class MeshTansformAction : TransformAction
     private readonly bool uniform;
     private readonly bool vectorMode;
 
-    public MeshTansformAction(IEnumerable<int> selectedMeshes, IEnumerable<int> selectedDummies, float offset, IReadOnlyList<float> totals, int nbi, float oldValue, float newValue, bool uniform, bool vectorMode, Action<float, bool> refresher)
+    public MeshTansformAction(FLVER2 flver, IEnumerable<int> selectedMeshes, IEnumerable<int> selectedDummies, float offset, IReadOnlyList<float> totals, int nbi, float oldValue, float newValue, bool uniform, bool vectorMode, Action<float, bool> refresher)
     {
+        this.flver = flver;
         this.selectedMeshes = selectedMeshes;
         this.selectedDummies = selectedDummies;
         this.offset = offset;
@@ -63,14 +65,14 @@ public class MeshTansformAction : TransformAction
     {
         foreach (var meshIndex in selectedMeshes)
         {
-            var mesh = MainWindow.Flver.Meshes[meshIndex];
+            var mesh = flver.Meshes[meshIndex];
 
             foreach (FLVER.Vertex v in mesh.Vertices)
                 TransformThing(v, offset, totals, nbi, uniform, vectorMode);
         }
 
         foreach (int i in selectedDummies)
-            TransformThing(MainWindow.Flver.Dummies[i], offset, totals, nbi, uniform, vectorMode);
+            TransformThing(flver.Dummies[i], offset, totals, nbi, uniform, vectorMode);
 
         refresher?.Invoke(newValue, uniform);
     }
@@ -79,14 +81,14 @@ public class MeshTansformAction : TransformAction
     {
         foreach (var meshIndex in selectedMeshes)
         {
-            var mesh = MainWindow.Flver.Meshes[meshIndex];
+            var mesh = flver.Meshes[meshIndex];
 
             foreach (FLVER.Vertex v in mesh.Vertices)
                 TransformThing(v, -offset, totals, nbi, uniform, vectorMode);
         }
 
         foreach (int i in selectedDummies)
-            TransformThing(MainWindow.Flver.Dummies[i], -offset, totals, nbi, uniform, vectorMode);
+            TransformThing(flver.Dummies[i], -offset, totals, nbi, uniform, vectorMode);
 
         refresher?.Invoke(oldValue, uniform);
     }

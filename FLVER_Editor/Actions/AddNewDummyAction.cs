@@ -11,28 +11,27 @@ namespace FLVER_Editor.Actions;
 public class AddNewDummyAction : TransformAction
 {
     private readonly Action refresher;
+    private readonly FLVER.Dummy newDummy;
 
-    public AddNewDummyAction(Action refresher)
+    public AddNewDummyAction(Vector3 position, Action refresher)
     {
         this.refresher = refresher;
+        newDummy = new()
+        {
+            Position = position,
+            ReferenceID = -1
+        };
     }
 
     public override void Execute()
     {
-        FLVER.Dummy newDummy = new()
-        {
-            Position = MainWindow.Flver.Dummies.Count > 0 ? MainWindow.Flver.Dummies[MainWindow.Flver.Dummies.Count - 1].Position : new Vector3(0, 0, 0),
-            ReferenceID = -1
-        };
-
         MainWindow.Flver.Dummies.Add(newDummy);
-
         refresher.Invoke();
     }
 
     public override void Undo()
     {
-        MainWindow.Flver.Dummies.RemoveAt(MainWindow.Flver.Dummies.Count - 1);
+        MainWindow.Flver.Dummies.Remove(newDummy);
         refresher.Invoke();
     }
 }

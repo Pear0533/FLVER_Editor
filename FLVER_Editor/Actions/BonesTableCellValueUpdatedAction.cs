@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SoulsFormats;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -7,16 +8,18 @@ using System.Threading.Tasks;
 
 namespace FLVER_Editor.Actions;
 
-public class BonesTableCellValueUpdatedAction : TransformAction
+public class BodesTableCellValueUpdatedAction : TransformAction
 {
+    private readonly FLVER2 flver;
     private readonly string bonesTableValue;
     private readonly int row;
     private readonly int col;
     private readonly Action refresher;
     private string oldValue = string.Empty;
 
-    public BonesTableCellValueUpdatedAction(string bonesTableValue, int row, int col, Action refresher)
+    public BodesTableCellValueUpdatedAction(FLVER2 flver, string bonesTableValue, int row, int col, Action refresher)
     {
+        this.flver = flver;
         this.bonesTableValue = bonesTableValue;
         this.row = row;
         this.col = col;
@@ -27,16 +30,16 @@ public class BonesTableCellValueUpdatedAction : TransformAction
         switch (col)
         {
             case 1:
-                oldValue = MainWindow.Flver.Bones[row].Name;
-                MainWindow.Flver.Bones[row].Name = bonesTableValue;
+                oldValue = flver.Nodes[row].Name;
+                flver.Nodes[row].Name = bonesTableValue;
                 break;
             case 2:
-                oldValue = MainWindow.Flver.Bones[row].ParentIndex.ToString();
-                MainWindow.Flver.Bones[row].ParentIndex = short.Parse(bonesTableValue);
+                oldValue = flver.Nodes[row].ParentIndex.ToString();
+                flver.Nodes[row].ParentIndex = short.Parse(bonesTableValue);
                 break;
             case 3:
-                oldValue = MainWindow.Flver.Bones[row].ChildIndex.ToString();
-                MainWindow.Flver.Bones[row].ChildIndex = short.Parse(bonesTableValue);
+                oldValue = flver.Nodes[row].FirstChildIndex.ToString();
+                flver.Nodes[row].FirstChildIndex = short.Parse(bonesTableValue);
                 break;
             case 4:
             case 5:
@@ -51,24 +54,24 @@ public class BonesTableCellValueUpdatedAction : TransformAction
                 switch (col)
                 {
                     case 4:
-                        oldValue = MainWindow.Flver.Bones[row].Translation.toCSV();
-                        MainWindow.Flver.Bones[row].Translation = col == 4 ? vector : MainWindow.Flver.Bones[row].Translation;
+                        oldValue = flver.Nodes[row].Translation.toCSV();
+                        flver.Nodes[row].Translation = col == 4 ? vector : flver.Nodes[row].Translation;
                         break;
                     case 5:
-                        oldValue = MainWindow.Flver.Bones[row].Scale.toCSV();
-                        MainWindow.Flver.Bones[row].Scale = col == 5 ? vector : MainWindow.Flver.Bones[row].Scale;
+                        oldValue = flver.Nodes[row].Scale.toCSV();
+                        flver.Nodes[row].Scale = col == 5 ? vector : flver.Nodes[row].Scale;
                         break;
                     case 6:
-                        oldValue = MainWindow.Flver.Bones[row].Rotation.toCSV();
-                        MainWindow.Flver.Bones[row].Rotation = col == 6 ? vector : MainWindow.Flver.Bones[row].Rotation;
+                        oldValue = flver.Nodes[row].Rotation.toCSV();
+                        flver.Nodes[row].Rotation = col == 6 ? vector : flver.Nodes[row].Rotation;
                         break;
                     case 7:
-                        oldValue = MainWindow.Flver.Bones[row].BoundingBoxMin.toCSV();
-                        MainWindow.Flver.Bones[row].BoundingBoxMin = col == 7 ? vector : MainWindow.Flver.Bones[row].BoundingBoxMin;
+                        oldValue = flver.Nodes[row].BoundingBoxMin.toCSV();
+                        flver.Nodes[row].BoundingBoxMin = col == 7 ? vector : flver.Nodes[row].BoundingBoxMin;
                         break;
                     case 8:
-                        oldValue = MainWindow.Flver.Bones[row].BoundingBoxMax.toCSV();
-                        MainWindow.Flver.Bones[row].BoundingBoxMax = col == 8 ? vector : MainWindow.Flver.Bones[row].BoundingBoxMax;
+                        oldValue = flver.Nodes[row].BoundingBoxMax.toCSV();
+                        flver.Nodes[row].BoundingBoxMax = col == 8 ? vector : flver.Nodes[row].BoundingBoxMax;
                         break;
                 }
                 break;
@@ -82,13 +85,13 @@ public class BonesTableCellValueUpdatedAction : TransformAction
         switch (col)
         {
             case 1:
-                MainWindow.Flver.Bones[row].Name = oldValue;
+                flver.Nodes[row].Name = oldValue;
                 break;
             case 2:
-                MainWindow.Flver.Bones[row].ParentIndex = short.Parse(oldValue);
+                flver.Nodes[row].ParentIndex = short.Parse(oldValue);
                 break;
             case 3:
-                MainWindow.Flver.Bones[row].ChildIndex = short.Parse(oldValue);
+                flver.Nodes[row].FirstChildIndex = short.Parse(oldValue);
                 break;
             case 4:
             case 5:
@@ -103,19 +106,19 @@ public class BonesTableCellValueUpdatedAction : TransformAction
                 switch (col)
                 {
                     case 4:
-                        MainWindow.Flver.Bones[row].Translation = col == 4 ? vector : MainWindow.Flver.Bones[row].Translation;
+                        flver.Nodes[row].Translation = col == 4 ? vector : flver.Nodes[row].Translation;
                         break;
                     case 5:
-                        MainWindow.Flver.Bones[row].Scale = col == 5 ? vector : MainWindow.Flver.Bones[row].Scale;
+                        flver.Nodes[row].Scale = col == 5 ? vector : flver.Nodes[row].Scale;
                         break;
                     case 6:
-                        MainWindow.Flver.Bones[row].Rotation = col == 6 ? vector : MainWindow.Flver.Bones[row].Rotation;
+                        flver.Nodes[row].Rotation = col == 6 ? vector : flver.Nodes[row].Rotation;
                         break;
                     case 7:
-                        MainWindow.Flver.Bones[row].BoundingBoxMin = col == 7 ? vector : MainWindow.Flver.Bones[row].BoundingBoxMin;
+                        flver.Nodes[row].BoundingBoxMin = col == 7 ? vector : flver.Nodes[row].BoundingBoxMin;
                         break;
                     case 8:
-                        MainWindow.Flver.Bones[row].BoundingBoxMax = col == 8 ? vector : MainWindow.Flver.Bones[row].BoundingBoxMax;
+                        flver.Nodes[row].BoundingBoxMax = col == 8 ? vector : flver.Nodes[row].BoundingBoxMax;
                         break;
                 }
                 break;

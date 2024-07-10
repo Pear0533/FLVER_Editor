@@ -11,13 +11,14 @@ public class MaterialsTableOkAction : TransformAction
 {
     private readonly Dictionary<int, FLVER2.Material> replacedMaterials = new();
     private readonly Dictionary<int, FLVER2.Material> deletedMaterials = new();
-
+    private readonly FLVER2 flver;
     private readonly DataGridView datagrid;
     private readonly FLVER2.Material? newMaterial;
     private readonly Action<bool>? refresher;
 
-    public MaterialsTableOkAction(DataGridView datagrid, FLVER2.Material? newMaterial, Action<bool>? refresher = null)
+    public MaterialsTableOkAction(FLVER2 flver, DataGridView datagrid, FLVER2.Material? newMaterial, Action<bool>? refresher = null)
     {
+        this.flver = flver;
         this.datagrid = datagrid;
         this.newMaterial = newMaterial;
         this.refresher = refresher;
@@ -41,20 +42,20 @@ public class MaterialsTableOkAction : TransformAction
                 break;
             }
 
-            string previousMaterialName = MainWindow.Flver.Materials[row.Index].Name;
+            string previousMaterialName = flver.Materials[row.Index].Name;
 
-            replacedMaterials.Add(row.Index, MainWindow.Flver.Materials[row.Index]);
-            MainWindow.Flver.Materials[row.Index] = newMaterial;
-            MainWindow.Flver.Materials[row.Index].Name = previousMaterialName;
+            replacedMaterials.Add(row.Index, flver.Materials[row.Index]);
+            flver.Materials[row.Index] = newMaterial;
+            flver.Materials[row.Index].Name = previousMaterialName;
         }
 
-        for (int i = MainWindow.Flver.Materials.Count - 1; i >= 0; --i)
+        for (int i = flver.Materials.Count - 1; i >= 0; --i)
         {
-            if (!(bool)datagrid.Rows[i].Cells[MainWindow.MaterialDeleteCbIndex].Value || MainWindow.Flver.Materials.Count <= 1) continue;
-            deletedMaterials.Add(i, MainWindow.Flver.Materials[i]);
-            MainWindow.Flver.Materials.RemoveAt(i);
+            if (!(bool)datagrid.Rows[i].Cells[MainWindow.MaterialDeleteCbIndex].Value || flver.Materials.Count <= 1) continue;
+            deletedMaterials.Add(i, flver.Materials[i]);
+            flver.Materials.RemoveAt(i);
 
-            foreach (FLVER2.Mesh mesh in MainWindow.Flver.Meshes.Where(mesh => mesh.MaterialIndex >= i))
+            foreach (FLVER2.Mesh mesh in flver.Meshes.Where(mesh => mesh.MaterialIndex >= i))
                 mesh.MaterialIndex--;
         }
 
@@ -65,15 +66,15 @@ public class MaterialsTableOkAction : TransformAction
     {
         foreach (var row in deletedMaterials)
         {
-            MainWindow.Flver.Materials.Insert(row.Key, row.Value);
+            flver.Materials.Insert(row.Key, row.Value);
 
-            foreach (FLVER2.Mesh mesh in MainWindow.Flver.Meshes.Where(mesh => mesh.MaterialIndex >= row.Key))
+            foreach (FLVER2.Mesh mesh in flver.Meshes.Where(mesh => mesh.MaterialIndex >= row.Key))
                 mesh.MaterialIndex++;
         }
 
         foreach (var row in replacedMaterials)
         {
-            MainWindow.Flver.Materials[row.Key] = row.Value;
+            flver.Materials[row.Key] = row.Value;
         }
 
 

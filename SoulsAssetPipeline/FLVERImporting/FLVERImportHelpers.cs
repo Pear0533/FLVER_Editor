@@ -34,7 +34,7 @@ namespace SoulsAssetPipeline.FLVERImporting
             mesh.BoundingBox.Max = new NVector3(maxX, maxY, maxZ);
         }
 
-        public static void UpdateBoundingBox(this FLVER.Bone b, List<FLVER.Bone> bones, NVector3 vertexPos)
+        public static void UpdateBoundingBox(this FLVER.Node b, List<FLVER.Node> bones, NVector3 vertexPos)
         {
             var boneAbsoluteMatrix = b.GetAbsoluteNMatrix(bones);
             
@@ -55,7 +55,7 @@ namespace SoulsAssetPipeline.FLVERImporting
             //ErrorTODO: when this fails, else {}
         }
 
-        public static NMatrix GetNMatrix(this FLVER.Bone b)
+        public static NMatrix GetNMatrix(this FLVER.Node b)
         {
             return NMatrix.CreateScale(b.Scale) *
                 NMatrix.CreateRotationX(b.Rotation.X) *
@@ -64,7 +64,7 @@ namespace SoulsAssetPipeline.FLVERImporting
                 NMatrix.CreateTranslation(b.Translation);
         }
 
-        public static FLVER.Bone GetParent(this FLVER.Bone b, List<FLVER.Bone> bones)
+        public static FLVER.Node GetParent(this FLVER.Node b, List<FLVER.Node> bones)
         {
             if (b.ParentIndex >= 0 && b.ParentIndex < bones.Count)
                 return bones[b.ParentIndex];
@@ -72,7 +72,7 @@ namespace SoulsAssetPipeline.FLVERImporting
                 return null;
         }
 
-        public static NMatrix GetAbsoluteNMatrix(this FLVER.Bone b, List<FLVER.Bone> bones)
+        public static NMatrix GetAbsoluteNMatrix(this FLVER.Node b, List<FLVER.Node> bones)
         {
             NMatrix result = NMatrix.Identity;
             var parentBone = b;
@@ -204,7 +204,7 @@ namespace SoulsAssetPipeline.FLVERImporting
 
         public class FLVERMetaskeleton
         {
-            public List<FLVER.Bone> Bones = new List<FLVER.Bone>();
+            public List<FLVER.Node> Bones = new List<FLVER.Node>();
             public List<FLVER.Dummy> DummyPoly = new List<FLVER.Dummy>();
         }
 
@@ -272,7 +272,7 @@ namespace SoulsAssetPipeline.FLVERImporting
 
                     int thisBoneIndex = bonesAssimp.Count - 1;
 
-                    var flverBone = new FLVER.Bone();
+                    var flverBone = new FLVER.Node();
 
                     if (parentBoneNode != null)
                         flverBone.ParentIndex = parentBoneIndex;
@@ -299,7 +299,7 @@ namespace SoulsAssetPipeline.FLVERImporting
 
                     if (childBoneIndices.Count > 0)
                     {
-                        flverBone.ChildIndex = (short)childBoneIndices[0];
+                        flverBone.FirstChildIndex = (short)childBoneIndices[0];
 
                         for (int i = 0; i < childBoneIndices.Count; i++)
                         {

@@ -10,29 +10,31 @@ namespace FLVER_Editor.Actions;
 
 public class MergeFlversAction : TransformAction
 {
+    private readonly FLVER2 flver;
     private readonly FLVER2 newFlver;
     private readonly Action refresher;
     private readonly int materialOffset;
     private readonly int layoutOffset;
     private readonly int meshOffset;
 
-    public MergeFlversAction(FLVER2 newFlver, Action refresher)
+    public MergeFlversAction(FLVER2 currentFlver, FLVER2 newFlver, Action refresher)
     {
-        materialOffset = MainWindow.Flver.Materials.Count;
-        meshOffset = MainWindow.Flver.Meshes.Count;
-        layoutOffset = MainWindow.Flver.BufferLayouts.Count;
+        materialOffset = currentFlver.Materials.Count;
+        meshOffset = currentFlver.Meshes.Count;
+        layoutOffset = currentFlver.BufferLayouts.Count;
+        this.flver = currentFlver;
         this.newFlver = newFlver;
         this.refresher = refresher;
     }
     public override void Execute()
     {
         Dictionary<int, int> newFlverToCurrentFlver = new();
-        for (int i = 0; i < newFlver.Bones.Count; ++i)
+        for (int i = 0; i < newFlver.Nodes.Count; ++i)
         {
-            FLVER.Bone attachBone = newFlver.Bones[i];
-            for (int j = 0; j < MainWindow.Flver.Bones.Count; ++j)
+            FLVER.Node attachBone = newFlver.Nodes[i];
+            for (int j = 0; j < flver.Nodes.Count; ++j)
             {
-                if (attachBone.Name != MainWindow.Flver.Bones[j].Name) continue;
+                if (attachBone.Name != flver.Nodes[j].Name) continue;
                 newFlverToCurrentFlver.Add(i, j);
                 break;
             }
@@ -50,17 +52,17 @@ public class MergeFlversAction : TransformAction
                 }
             }
         }
-        MainWindow.Flver.BufferLayouts = MainWindow.Flver.BufferLayouts.Concat(newFlver.BufferLayouts).ToList();
-        MainWindow.Flver.Meshes = MainWindow.Flver.Meshes.Concat(newFlver.Meshes).ToList();
-        MainWindow.Flver.Materials = MainWindow.Flver.Materials.Concat(newFlver.Materials).ToList();
+        flver.BufferLayouts = flver.BufferLayouts.Concat(newFlver.BufferLayouts).ToList();
+        flver.Meshes = flver.Meshes.Concat(newFlver.Meshes).ToList();
+        flver.Materials = flver.Materials.Concat(newFlver.Materials).ToList();
         refresher.Invoke();
     }
 
     public override void Undo()
     {
-        MainWindow.Flver.BufferLayouts.RemoveRange(layoutOffset, MainWindow.Flver.BufferLayouts.Count - layoutOffset);
-        MainWindow.Flver.Meshes.RemoveRange(meshOffset, MainWindow.Flver.Meshes.Count - meshOffset);
-        MainWindow.Flver.Materials.RemoveRange(materialOffset, MainWindow.Flver.Materials.Count - materialOffset);
+        flver.BufferLayouts.RemoveRange(layoutOffset, flver.BufferLayouts.Count - layoutOffset);
+        flver.Meshes.RemoveRange(meshOffset, flver.Meshes.Count - meshOffset);
+        flver.Materials.RemoveRange(materialOffset, flver.Materials.Count - materialOffset);
         refresher.Invoke();
     }
 }

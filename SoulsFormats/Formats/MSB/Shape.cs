@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
+using SoulsFormats;
 
 namespace SoulsFormats
 {
@@ -12,7 +14,7 @@ namespace SoulsFormats
             Circle = 1,
             Sphere = 2,
             Cylinder = 3,
-            Rect = 4,
+            Rectangle = 4,
             Box = 5,
             Composite = 6,
         }
@@ -20,6 +22,15 @@ namespace SoulsFormats
         /// <summary>
         /// The shape of a map region.
         /// </summary>
+        [
+            XmlInclude(typeof(Composite)),
+            XmlInclude(typeof(Shape.Rectangle)),
+            XmlInclude(typeof(Shape.Box)),
+            XmlInclude(typeof(Shape.Cylinder)),
+            XmlInclude(typeof(Shape.Circle)),
+            XmlInclude(typeof(Shape.Point)),
+            XmlInclude(typeof(Shape.Sphere)),
+        ]
         public abstract class Shape
         {
             internal abstract ShapeType Type { get; }
@@ -44,7 +55,7 @@ namespace SoulsFormats
                     case ShapeType.Circle: return new Circle();
                     case ShapeType.Sphere: return new Sphere();
                     case ShapeType.Cylinder: return new Cylinder();
-                    case ShapeType.Rect: return new Rect();
+                    case ShapeType.Rectangle: return new Rectangle();
                     case ShapeType.Box: return new Box();
                     case ShapeType.Composite: return new Composite();
 
@@ -216,9 +227,9 @@ namespace SoulsFormats
             /// <summary>
             /// A flat rectangle.
             /// </summary>
-            public class Rect : Shape
+            public class Rectangle : Shape
             {
-                internal override ShapeType Type => ShapeType.Rect;
+                internal override ShapeType Type => ShapeType.Rectangle;
                 internal override bool HasShapeData => true;
 
                 /// <summary>
@@ -234,12 +245,12 @@ namespace SoulsFormats
                 /// <summary>
                 /// Creates a Rect with default dimensions.
                 /// </summary>
-                public Rect() : this(1, 1) { }
+                public Rectangle() : this(1, 1) { }
 
                 /// <summary>
                 /// Creates a Rect with the given dimensions.
                 /// </summary>
-                public Rect(float width, float depth)
+                public Rectangle(float width, float depth)
                 {
                     Width = width;
                     Depth = depth;
@@ -250,7 +261,7 @@ namespace SoulsFormats
                 /// </summary>
                 public override Shape DeepCopy()
                 {
-                    return new Rect(Width, Depth);
+                    return new Rectangle(Width, Depth);
                 }
 
                 internal override void ReadShapeData(BinaryReaderEx br)
@@ -338,7 +349,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Other regions referenced by this shape.
                 /// </summary>
-                public Child[] Children { get; private set; }
+                public Child[] Children { get; set; }
 
                 /// <summary>
                 /// Creates a Composite with 8 empty references.
@@ -394,6 +405,7 @@ namespace SoulsFormats
                     /// <summary>
                     /// The name of the child region.
                     /// </summary>
+                    [MSBReference(ReferenceType = typeof(IMsbRegion))]
                     public string RegionName { get; set; }
                     private int RegionIndex;
 

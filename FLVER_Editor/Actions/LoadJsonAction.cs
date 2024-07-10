@@ -10,13 +10,15 @@ namespace FLVER_Editor.Actions
 {
     public class LoadJsonAction : TransformAction
     {
+        private readonly FLVER2 flver;
         private readonly int type;
         private readonly string jsonText;
         private readonly Action refresher;
-        private object oldValue;
+        private object oldValue = null!;
 
-        public LoadJsonAction(int type, string jsonText, Action refresher)
+        public LoadJsonAction(FLVER2 flver, int type, string jsonText, Action refresher)
         {
+            this.flver = flver;
             this.type = type;
             this.jsonText = jsonText;
             this.refresher = refresher;
@@ -27,12 +29,12 @@ namespace FLVER_Editor.Actions
             switch (type)
             {
                 case 0:
-                    oldValue = MainWindow.Flver.Bones;
-                    MainWindow.Flver.Bones = JsonConvert.DeserializeObject<List<FLVER.Bone>>(jsonText);
+                    oldValue = flver.Nodes;
+                    flver.Nodes = JsonConvert.DeserializeObject<List<FLVER.Node>>(jsonText);
                     break;
                 case 1:
-                    oldValue = MainWindow.Flver.Materials;
-                    MainWindow.Flver.Materials = JsonConvert.DeserializeObject<List<FLVER2.Material>>(jsonText);
+                    oldValue = flver.Materials;
+                    flver.Materials = JsonConvert.DeserializeObject<List<FLVER2.Material>>(jsonText);
                     break;
             }
 
@@ -44,10 +46,10 @@ namespace FLVER_Editor.Actions
             switch (type)
             {
                 case 0:
-                    MainWindow.Flver.Bones = (List<FLVER.Bone>) oldValue;
+                    flver.Nodes = (List<FLVER.Node>) oldValue;
                     break;
                 case 1:
-                    MainWindow.Flver.Materials = (List<FLVER2.Material>) oldValue;
+                    flver.Materials = (List<FLVER2.Material>) oldValue;
                     break;
             }
 

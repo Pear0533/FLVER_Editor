@@ -11,14 +11,16 @@ namespace FLVER_Editor.Actions;
 public class UpdateTextureAction : TransformAction
 {
     private Action<string> windowRefresh;
+    private readonly BND4 flverBnd;
     private readonly string textureFilePath;
 
     private TPF.Texture? newTexture;
     private TPF.Texture? oldTexture;
     private int textureIndex;
 
-    public UpdateTextureAction(string textureFilePath, Action<string> refresher)
+    public UpdateTextureAction(BND4 flverBnd, string textureFilePath, Action<string> refresher)
     {
+        this.flverBnd = flverBnd;
         this.textureFilePath = textureFilePath;
         windowRefresh = refresher;
     }
@@ -26,7 +28,7 @@ public class UpdateTextureAction : TransformAction
     public override void Execute()
     {
         if (Tpf == null) Tpf = new TPF();
-        BinderFile? flverBndTpfEntry = MainWindow.FlverBnd.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
+        BinderFile? flverBndTpfEntry = flverBnd.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
 
         if (flverBndTpfEntry is not null)
         {
@@ -51,7 +53,7 @@ public class UpdateTextureAction : TransformAction
             }
             else Tpf.Textures.Add(newTexture);
 
-            MainWindow.FlverBnd.Files[MainWindow.FlverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Tpf.Write();
+            flverBnd.Files[flverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Tpf.Write();
         }
 
         windowRefresh?.Invoke(textureFilePath);

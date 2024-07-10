@@ -234,7 +234,11 @@ namespace SoulsFormats
             if (!Validate(out Exception ex))
                 throw ex;
 
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            string dirName = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(dirName))
+            {
+                Directory.CreateDirectory(dirName);
+            }
             using (FileStream stream = File.Create(path))
             {
                 BinaryWriterEx bw = new BinaryWriterEx(false, stream);

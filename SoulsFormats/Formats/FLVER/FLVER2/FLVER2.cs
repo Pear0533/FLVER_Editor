@@ -33,10 +33,10 @@ namespace SoulsFormats
         public List<GXList> GXLists { get; set; }
 
         /// <summary>
-        /// Bones used by this model, may or may not be the full skeleton.
+        /// List of <see cref="FLVER.Node"/> objects.
         /// </summary>
-        public List<FLVER.Bone> Bones { get; set; }
-        IReadOnlyList<FLVER.Bone> IFlver.Bones => Bones;
+        public List<FLVER.Node> Nodes { get; set; }
+        IReadOnlyList<FLVER.Node> IFlver.Nodes => Nodes;
 
         /// <summary>
         /// Individual chunks of the model.
@@ -50,9 +50,9 @@ namespace SoulsFormats
         public List<BufferLayout> BufferLayouts { get; set; }
 
         /// <summary>
-        /// Unknown; only present in Sekiro.
+        /// Skeleton definitions
         /// </summary>
-        public SekiroUnkStruct SekiroUnk { get; set; }
+        public SkeletonSet Skeletons { get; set; }
 
         /// <summary>
         /// Creates a FLVER with a default header and empty lists.
@@ -63,7 +63,7 @@ namespace SoulsFormats
             Dummies = new List<FLVER.Dummy>();
             Materials = new List<Material>();
             GXLists = new List<GXList>();
-            Bones = new List<FLVER.Bone>();
+            Nodes = new List<FLVER.Node>();
             Meshes = new List<Mesh>();
             BufferLayouts = new List<BufferLayout>();
         }
@@ -96,9 +96,8 @@ namespace SoulsFormats
             br.BigEndian = Header.BigEndian;
 
             // Gundam Unicorn: 0x20005, 0x2000E
-            // ACV: 20009
+            // ACVD: 
             // DS1: 2000B (PS3 o0700/1), 2000C, 2000D
-            // ACVD: 2000F
             // DS2 NT: 2000F, 20010
             // DS2: 20010, 20009 (armor 9320)
             // SFS: 20010
@@ -125,7 +124,7 @@ namespace SoulsFormats
             int vertexIndicesSize = br.AssertByte(0, 8, 16, 32);
             Header.Unicode = br.ReadBoolean();
             Header.Unk4A = br.ReadBoolean();
-            Header.Unk4B = br.ReadBoolean();
+            br.AssertByte(0);
 
             Header.Unk4C = br.ReadInt32();
 
@@ -143,7 +142,7 @@ namespace SoulsFormats
             Header.Unk68 = br.AssertInt32(0, 1, 2, 3, 4);
             br.AssertInt32(0);
             br.AssertInt32(0);
-            Header.Unk74 = br.ReadInt32();
+            Header.Unk74 = br.AssertInt32(0, 0x10);
             br.AssertInt32(0);
             br.AssertInt32(0);
 
@@ -157,9 +156,9 @@ namespace SoulsFormats
             for (int i = 0; i < materialCount; i++)
                 Materials.Add(new Material(br, Header, GXLists, gxListIndices));
 
-            Bones = new List<FLVER.Bone>(boneCount);
+            Nodes = new List<FLVER.Node>(boneCount);
             for (int i = 0; i < boneCount; i++)
-                Bones.Add(new FLVER.Bone(br, Header.Unicode));
+                Nodes.Add(new FLVER.Node(br, Header.Unicode));
 
             Meshes = new List<Mesh>(meshCount);
             for (int i = 0; i < meshCount; i++)
@@ -182,7 +181,7 @@ namespace SoulsFormats
                 textures.Add(new Texture(br, Header));
 
             if (Header.Version >= 0x2001A)
-                SekiroUnk = new SekiroUnkStruct(br);
+                Skeletons = new SkeletonSet(br);
 
             Dictionary<int, Texture> textureDict = SFUtil.Dictionize(textures);
             foreach (Material material in Materials)
@@ -220,7 +219,7 @@ namespace SoulsFormats
             bw.ReserveInt32("DataSize");
             bw.WriteInt32(Dummies.Count);
             bw.WriteInt32(Materials.Count);
-            bw.WriteInt32(Bones.Count);
+            bw.WriteInt32(Nodes.Count);
             bw.WriteInt32(Meshes.Count);
             bw.WriteInt32(Meshes.Sum(m => m.VertexBuffers.Count));
             bw.WriteVector3(Header.BoundingBoxMin);
@@ -255,7 +254,7 @@ namespace SoulsFormats
             bw.WriteByte(vertexIndicesSize);
             bw.WriteBoolean(Header.Unicode);
             bw.WriteBoolean(Header.Unk4A);
-            bw.WriteBoolean(Header.Unk4B);
+            bw.WriteByte(0);
 
             bw.WriteInt32(Header.Unk4C);
 
@@ -273,7 +272,7 @@ namespace SoulsFormats
             bw.WriteInt32(Header.Unk68);
             bw.WriteInt32(0);
             bw.WriteInt32(0);
-            bw.WriteInt32(0);
+            bw.WriteInt32(Header.Unk74);
             bw.WriteInt32(0);
             bw.WriteInt32(0);
 
@@ -283,8 +282,8 @@ namespace SoulsFormats
             for (int i = 0; i < Materials.Count; i++)
                 Materials[i].Write(bw, i);
 
-            for (int i = 0; i < Bones.Count; i++)
-                Bones[i].Write(bw, i);
+            for (int i = 0; i < Nodes.Count; i++)
+                Nodes[i].Write(bw, i);
 
             for (int i = 0; i < Meshes.Count; i++)
                 Meshes[i].Write(bw, i);
@@ -322,7 +321,7 @@ namespace SoulsFormats
             }
 
             if (Header.Version >= 0x2001A)
-                SekiroUnk.Write(bw);
+                Skeletons.Write(bw);
 
             bw.Pad(0x10);
             for (int i = 0; i < BufferLayouts.Count; i++)
@@ -382,8 +381,8 @@ namespace SoulsFormats
             }
 
             bw.Pad(0x10);
-            for (int i = 0; i < Bones.Count; i++)
-                Bones[i].WriteStrings(bw, Header.Unicode, i);
+            for (int i = 0; i < Nodes.Count; i++)
+                Nodes[i].WriteStrings(bw, Header.Unicode, i);
 
             int alignment = Header.Version <= 0x2000E ? 0x20 : 0x10;
             bw.Pad(alignment);
@@ -466,11 +465,6 @@ namespace SoulsFormats
             public bool Unk4A { get; set; }
 
             /// <summary>
-            /// Unknown.
-            /// </summary>
-            public bool Unk4B { get; set; }
-
-            /// <summary>
             /// Unknown; I believe this is the primitive restart constant, but I'm not certain.
             /// </summary>
             public int Unk4C { get; set; }
@@ -491,7 +485,7 @@ namespace SoulsFormats
             public int Unk68 { get; set; }
 
             /// <summary>
-            /// Unknown.
+            /// Unknown
             /// </summary>
             public int Unk74 { get; set; }
 
