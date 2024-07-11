@@ -719,7 +719,9 @@ public partial class MainWindow : Form
             List<FLVER2.Texture> texList = currMaterial.Textures;
             if (texList.Count <= 0) continue;
             // TODO: WIP (Pear)
-            string texturePath = texList.Find(i => i.Type.Contains("Albedo"))?.Path ?? "";
+            // TODO: What we really need to do is merge any detailblend textures together into one texture and display it... (Pear)
+            string texturePath = texList.Find(i => i.Type.Contains("Albedo")
+                && i.Path.Contains(GetModelIDFromName(FlverFilePath).ToString()))?.Path ?? "";
             VertexTexMap vertexTexMap = new()
             {
                 textureName = Path.GetFileNameWithoutExtension(texturePath),
@@ -2438,32 +2440,6 @@ public partial class MainWindow : Form
 
     public static void ApplyMATBINTextures(int materialIndex)
     {
-        // TODO: Remove this (Pear)
-        MatBinBndPath = "D:\\SteamLibrary\\steamapps\\common\\ELDEN RING\\Game\\material\\allmaterial.matbinbnd.dcx";
-        if (File.Exists(MatBinBndPath))
-        {
-            MatBinBnd = BND4.Read(MatBinBndPath);
-
-            foreach (BinderFile matBinFile in MatBinBnd.Files)
-            {
-                string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
-                string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
-                if (rawMaterialFileName != rawMatBinFileName) continue;
-                MATBIN matBin = new();
-                matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
-                if (matBin.Samplers.Any(sampler => sampler.Path != ""))
-                {
-                    Flver.Materials[materialIndex].Textures.Clear();
-                    foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
-                        Flver.Materials[materialIndex].Textures.Add(newTexture);
-                }
-                break;
-            }
-        }
-    }
-
-    private void ApplyMATBINTexturesButtonClicked(object sender, EventArgs e)
-    {
         if (MatBinBndPath == null)
         {
             try
@@ -2475,22 +2451,49 @@ public partial class MainWindow : Form
             catch
             {
                 MatBinBndPath = null;
-                OpenFileDialog dialog = new() { Filter = @"MATBIN BND (*.matbinbnd.dcx)|*.matbinbnd.dcx" };
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    MatBinBndPath = dialog.FileName;
-                    UserConfigJson["MatBinBndPath"] = MatBinBndPath;
-                    WriteUserConfig();
-                }
-                else
-                {
-                    return;
-                }
+                return;
             }
         }
         if (MatBinBnd == null) MatBinBnd = BND4.Read(MatBinBndPath);
+        foreach (BinderFile matBinFile in MatBinBnd.Files)
+        {
+            string rawMaterialFileName = Path.GetFileNameWithoutExtension(Flver.Materials[materialIndex].MTD)?.ToLower();
+            string rawMatBinFileName = Path.GetFileNameWithoutExtension(matBinFile.Name)?.ToLower();
+            if (rawMaterialFileName != rawMatBinFileName) continue;
+            MATBIN matBin = new();
+            matBin.Read(new BinaryReaderEx(false, matBinFile.Bytes));
+            if (matBin.Samplers.Any(sampler => sampler.Path != ""))
+            {
+                // TODO: We should avoid explicitly defining the paths for detailblend textures, otherwise they might not load correctly in-game... (Pear)
+                // TODO: When we inject new textures or replace existing ones, we might want to consider whether they're internal by TPF or external... (Pear)
+                Flver.Materials[materialIndex].Textures.Clear();
+                foreach (FLVER2.Texture newTexture in matBin.Samplers.Select(sampler => new FLVER2.Texture { Type = sampler.Type, Path = sampler.Path }))
+                    Flver.Materials[materialIndex].Textures.Add(newTexture);
+            }
+            break;
+        }
+    }
+
+    private void ApplyMATBINTexturesButtonClicked(object sender, EventArgs e)
+    {
+        if (MatBinBndPath == null)
+        {
+            OpenFileDialog dialog = new() { Filter = @"MATBIN BND (*.matbinbnd.dcx)|*.matbinbnd.dcx" };
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                MatBinBndPath = dialog.FileName;
+                UserConfigJson["MatBinBndPath"] = MatBinBndPath;
+                WriteUserConfig();
+            }
+            else
+            {
+                return;
+            }
+        }
         ApplyMATBINTextures(SelectedMaterialIndex);
         UpdateTexturesTable();
+        Viewer.RefreshTextures();
+        UpdateMesh();
     }
 
     private void DummyThicknessSelectorSelectedIndexChanged(object sender, EventArgs e)
