@@ -1730,7 +1730,26 @@ public partial class MainWindow : Form
     {
         //UpdateUndoState();
 
-        DeleteSelectedMeshAction action = new(Flver, meshTable, dummiesTable, deleteFacesetsCheckbox.Checked, () =>
+        var meshesToDelete = new List<FLVER2.Mesh>();
+        var dummiesToDelete = new List<FLVER.Dummy>();
+
+        for (int i = 0; i < meshTable.Rows.Count; i++)
+        {
+            if ((bool)meshTable.Rows[i].Cells[3].Value)
+            {
+                meshesToDelete.Add(Flver.Meshes[i]);
+            }
+        }
+
+        for (int i = 0; i < dummiesTable.Rows.Count; i++)
+        {
+            if ((bool)dummiesTable.Rows[i].Cells[4].Value)
+            {
+                dummiesToDelete.Add(Flver.Dummies[i]);
+            }
+        }
+
+        DeleteSelectedMeshAction action = new(Flver, meshesToDelete, dummiesToDelete, deleteFacesetsCheckbox.Checked, () =>
         {
             meshModifiersContainer.Enabled = MeshIsSelected = DummyIsSelected = false;
             SafeDeselectAllSelectedThings();
