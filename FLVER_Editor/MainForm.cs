@@ -410,6 +410,7 @@ public partial class MainWindow : Form
         Mono3D.mainForm = this;
         Instance = this;
         if (!OpenFLVERFile()) Environment.Exit(Environment.ExitCode);
+        ClearUndoRedoStates();
     }
 
     private static void InitializeRequiredLibraries()
@@ -593,6 +594,19 @@ public partial class MainWindow : Form
         return hasImported;
     }
 
+    public static void SafeUpdateUI()
+    {
+
+        if (MainWindow.Instance.InvokeRequired)
+        {
+            MainWindow.Instance!.Invoke(() => MainWindow.Instance.UpdateUI());
+        }
+        else
+        {
+            MainWindow.Instance.UpdateUI();
+        }
+    }
+
     public static void UpdateMesh()
     {
         if (DisplayMaleBody) Flver.Meshes.Add(MaleBodyFlver.Meshes[0]);
@@ -705,7 +719,7 @@ public partial class MainWindow : Form
             List<FLVER2.Texture> texList = currMaterial.Textures;
             if (texList.Count <= 0) continue;
             // TODO: WIP (Pear)
-            string texturePath = texList.Find(i => i.Type.Contains("Albedo")).Path ?? "";
+            string texturePath = texList.Find(i => i.Type.Contains("Albedo"))?.Path ?? "";
             VertexTexMap vertexTexMap = new()
             {
                 textureName = Path.GetFileNameWithoutExtension(texturePath),
@@ -818,6 +832,18 @@ public partial class MainWindow : Form
     private static void ClearViewerMaterialHighlight()
     {
         SelectedMaterialMeshIndices.Clear();
+    }
+
+    private void SafeDeselectAllSelectedThings()
+    {
+        if (this.InvokeRequired)
+        {
+            Invoke(() => DeselectAllSelectedThings());
+        }
+        else
+        {
+            DeselectAllSelectedThings();
+        }
     }
 
     private void DeselectAllSelectedThings()
@@ -1105,7 +1131,7 @@ public partial class MainWindow : Form
         saveToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
         MatBinBndPath = null;
         DeselectAllSelectedThings();
-        UpdateUI();
+        SafeUpdateUI();
         ClearViewerMaterialHighlight();
         ClearUndoRedoStates();
         if (!PopulateMaterials(Flver))
@@ -1124,6 +1150,18 @@ public partial class MainWindow : Form
     private void OpenButtonClicked(object sender, EventArgs e)
     {
         OpenFLVERFile();
+    }
+
+    public static void SafeUpdateTexturesTable()
+    {
+        if (MainWindow.Instance!.InvokeRequired)
+        {
+            MainWindow.Instance!.Invoke(() => UpdateTexturesTable());
+        }
+        else
+        {
+            UpdateTexturesTable();
+        }
     }
 
     public static void UpdateTexturesTable()
@@ -1275,10 +1313,19 @@ public partial class MainWindow : Form
         var filename = dialog.FileName;
         var oldfilename = Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path;
 
-        UpdateTextureAction action = new(FlverBnd, filename, (filename) =>
+        UpdateTextureAction action = new(FlverBnd, filename, Path.GetFileNameWithoutExtension(oldfilename), (filename) =>
         {
-            Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path = $"{Path.GetFileNameWithoutExtension(dialog.FileName)}.tif";
-            UpdateTexturesTable();
+            if (Path.GetFileNameWithoutExtension(filename) == "")
+            {
+                Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path = $"";
+
+            }
+            else
+            {
+                Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path = $"{Path.GetFileNameWithoutExtension(filename)}.tif";
+            }
+
+            SafeUpdateTexturesTable();
             UpdateMesh();
             Viewer.RefreshTextures();
         });
@@ -1424,7 +1471,7 @@ public partial class MainWindow : Form
             return;
         }
 
-        ApplyMeshSimpleSkinAction action = new(boneIndex, unweightedVerts);
+        ApplyMeshSimpleSkinAction action = new(boneIndex, unweightedVerts.ToList());
         ActionManager.Apply(action);
 
         ShowInformationDialog("Successfully applied mesh simple skin!");
@@ -1445,15 +1492,14 @@ public partial class MainWindow : Form
             case 4:
                 var mesh = Flver.Meshes[rowIndex];
                 // needs major optimization
-                var newMesh = mesh.Copy();
-                Flver.Meshes.Insert(rowIndex, newMesh);
-                Flver.Materials.Add(Flver.Materials[mesh.MaterialIndex].Copy());
+                DuplicateMeshAction action = new(Flver, mesh, rowIndex, () =>
+                {
+                    SafeDeselectAllSelectedThings();
+                    SafeUpdateUI();
+                    UpdateMesh();
+                });
+                ActionManager.Apply(action);
 
-                newMesh.MaterialIndex = Flver.Materials.Count - 1;
-
-                DeselectAllSelectedThings();
-                UpdateUI();
-                UpdateMesh();
                 break;
             case 5:
                 HiddenMeshIndices = UpdateIndicesList(meshTable, HiddenMeshIndices, columnIndex, rowIndex, ref MeshIsHidden);
@@ -1479,8 +1525,8 @@ public partial class MainWindow : Form
             case 5:
                 DuplicateDummyAction action = new(Flver, rowIndex, () =>
                 {
-                    DeselectAllSelectedThings();
-                    UpdateUI();
+                    SafeDeselectAllSelectedThings();
+                    SafeUpdateUI();
                     UpdateMesh();
                 });
                 ActionManager.Apply(action);
@@ -1565,26 +1611,35 @@ public partial class MainWindow : Form
 
         float[] totals = CalculateMeshTotals();
 
-        MeshTansformAction action = new(Flver, SelectedMeshIndices, SelectedDummyIndices, offset, totals, nbi, PrevNumVal, newNumVal, uniformScaleCheckbox.Checked, vectorModeCheckbox.Checked, (inputValue, prevNum, uniform) =>
+        MeshTansformAction action = new(Flver, SelectedMeshIndices.ToList(), SelectedDummyIndices.ToList(), offset, totals, nbi, PrevNumVal, newNumVal, uniformScaleCheckbox.Checked, vectorModeCheckbox.Checked, (inputValue, prevNum, uniform) =>
         {
-            IsSettingDefaultInfo = true;
-
-            numBox.Invoke(() =>
+            var action = () =>
             {
+                IsSettingDefaultInfo = true;
+
                 numBox.Value = inputValue;
-            });
 
-            if (uniform && nbi is 3 or 4 or 5)
+                if (uniform && nbi is 3 or 4 or 5)
+                {
+                    scaleXNumBox.Value = inputValue;
+                    scaleYNumBox.Value = inputValue;
+                    scaleZNumBox.Value = inputValue;
+                }
+
+                IsSettingDefaultInfo = false;
+
+                UpdateMesh();
+                PrevNumVal = prevNum;
+            };
+
+            if (InvokeRequired)
             {
-                scaleXNumBox.Invoke(() => scaleXNumBox.Value = inputValue);
-                scaleYNumBox.Invoke(() => scaleYNumBox.Value = inputValue);
-                scaleZNumBox.Invoke(() => scaleZNumBox.Value = inputValue);
+                Invoke(() => action.Invoke());
             }
-
-            IsSettingDefaultInfo = false;
-
-            UpdateMesh();
-            PrevNumVal = prevNum;
+            else
+            {
+                action.Invoke();
+            }
         });
 
         ActionManager.Apply(action);
@@ -1601,7 +1656,6 @@ public partial class MainWindow : Form
     private void MaterialsTableOkButtonClicked(object sender, MouseEventArgs e)
     {
         //UpdateUndoState();
-        bool displayMissingPresetDialog = false;
         object selectedMaterial = MaterialPresets.Values.ToArray().ElementAtOrDefault(materialPresetsSelector.SelectedIndex);
         FLVER2.Material? newMaterial = JsonConvert.DeserializeObject<FLVER2.Material>(JsonConvert.SerializeObject(selectedMaterial));
 
@@ -1610,7 +1664,7 @@ public partial class MainWindow : Form
             if (displayPresetError) ShowErrorDialog("The specified preset does not exist.");
 
             ClearViewerMaterialHighlight();
-            UpdateUI();
+            SafeUpdateUI();
             UpdateMesh();
             Viewer.RefreshTextures();
         });
@@ -1677,8 +1731,8 @@ public partial class MainWindow : Form
         DeleteSelectedMeshAction action = new(Flver, meshTable, dummiesTable, deleteFacesetsCheckbox.Checked, () =>
         {
             meshModifiersContainer.Enabled = MeshIsSelected = DummyIsSelected = false;
-            DeselectAllSelectedThings();
-            UpdateUI();
+            SafeDeselectAllSelectedThings();
+            SafeUpdateUI();
             UpdateMesh();
         });
         ActionManager.Apply(action);
@@ -1762,7 +1816,7 @@ public partial class MainWindow : Form
             {
                 BodesTableCellValueUpdatedAction action = new(Flver, bonesTableValue, e.RowIndex, e.ColumnIndex, () =>
                 {
-                    UpdateUI();
+                    SafeUpdateUI();
                     UpdateMesh();
                     bonesTable.FirstDisplayedScrollingRowIndex = index;
                 });
@@ -1818,7 +1872,7 @@ public partial class MainWindow : Form
             }
         }
         catch { }
-        UpdateUI();
+        SafeUpdateUI();
         UpdateMesh();
         Viewer.RefreshTextures();
         materialsTable.FirstDisplayedScrollingRowIndex = index;
@@ -1837,7 +1891,14 @@ public partial class MainWindow : Form
             {
                 UpdateMesh();
                 Viewer.RefreshTextures();
-                texturesTable.FirstDisplayedScrollingRowIndex = index;
+                if (texturesTable.InvokeRequired)
+                {
+                    texturesTable.Invoke(() => texturesTable.FirstDisplayedScrollingRowIndex = index);
+                }
+                else
+                {
+                    texturesTable.FirstDisplayedScrollingRowIndex = index;
+                }
             });
             ActionManager.Apply(action);
         }
@@ -1930,9 +1991,17 @@ public partial class MainWindow : Form
                 int newBoneWeight = int.Parse(boneWeightValue);
                 MeshTableCellValueChangedAction action = new(Flver, newBoneWeight, e.RowIndex, meshTable.FirstDisplayedScrollingRowIndex, index, (targetIndex) =>
                 {
-                    UpdateUI();
+                    SafeUpdateUI();
                     UpdateMesh();
-                    meshTable.FirstDisplayedScrollingRowIndex = targetIndex;
+
+                    if (meshTable.InvokeRequired)
+                    {
+                        meshTable.Invoke(() => meshTable.FirstDisplayedScrollingRowIndex = index);
+                    }
+                    else
+                    {
+                        meshTable.FirstDisplayedScrollingRowIndex = index;
+                    }
                 });
                 ActionManager.Apply(action);
             }
@@ -1942,7 +2011,7 @@ public partial class MainWindow : Form
 
     private void ReverseFaceSets()
     {
-        ReverseFaceSetsAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].FaceSets), () => UpdateMesh());
+        ReverseFaceSetsAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].FaceSets).ToList(), () => UpdateMesh());
         ActionManager.Apply(action);
     }
 
@@ -1955,12 +2024,12 @@ public partial class MainWindow : Form
     private void ReverseNormalsCheckboxChanged(object sender, EventArgs e)
     {
         if (IsSettingDefaultInfo) return;
-        ReverseNormalsAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices), () =>
+        ReverseNormalsAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices).ToList(), () =>
         {
-            ShowInformationDialog("Mesh normals have been reversed!");
             UpdateMesh();
         });
         ActionManager.Apply(action);
+        ShowInformationDialog("Mesh normals have been reversed!");
     }
 
     private void ToggleBackFacesCheckboxChanged(object sender, EventArgs e)
@@ -2063,7 +2132,7 @@ public partial class MainWindow : Form
         LoadDummyProfile action = new(newDummies, Flver.Dummies, () =>
         {
             DeselectAllSelectedThings();
-            UpdateUI();
+            SafeUpdateUI();
             UpdateMesh();
         });
         ActionManager.Apply(action);
@@ -2097,7 +2166,7 @@ public partial class MainWindow : Form
         {
             Flver = Program.Flver;
             DeselectAllSelectedThings();
-            UpdateUI();
+            SafeUpdateUI();
             UpdateMesh();
             Viewer.RefreshTextures();
         };
@@ -2130,8 +2199,8 @@ public partial class MainWindow : Form
 
             MergeFlversAction action = new(Flver, newFlver, () =>
             {
-                DeselectAllSelectedThings();
-                UpdateUI();
+                SafeDeselectAllSelectedThings();
+                SafeUpdateUI();
                 UpdateMesh();
                 Viewer.RefreshTextures();
             });
@@ -2178,8 +2247,8 @@ public partial class MainWindow : Form
         Vector3 position = MainWindow.Flver.Dummies.Count > 0 ? MainWindow.Flver.Dummies[MainWindow.Flver.Dummies.Count - 1].Position : new Vector3(0, 0, 0);
         AddNewDummyAction action = new(position, () =>
         {
-            DeselectAllSelectedThings();
-            UpdateUI();
+            SafeDeselectAllSelectedThings();
+            SafeUpdateUI();
             UpdateMesh();
         });
         ActionManager.Apply(action);
@@ -2197,7 +2266,7 @@ public partial class MainWindow : Form
                 short parsed = short.Parse(dummiesTableValue);
                 DummyTableDataChangedAction action = new(Flver, parsed, e.RowIndex, e.ColumnIndex, () =>
                 {
-                    UpdateUI();
+                    SafeUpdateUI();
                     UpdateMesh();
                     dummiesTable.FirstDisplayedScrollingRowIndex = index;
                 });
@@ -2218,9 +2287,9 @@ public partial class MainWindow : Form
             string jsonText = File.ReadAllText(dialog.FileName);
             LoadJsonAction action = new(Flver, type, jsonText, () =>
             {
-                DeselectAllSelectedThings();
+                SafeDeselectAllSelectedThings();
                 ClearViewerMaterialHighlight();
-                UpdateUI();
+                SafeUpdateUI();
                 UpdateMesh();
             });
             ActionManager.Apply(action);
@@ -2454,8 +2523,8 @@ public partial class MainWindow : Form
     private void MirrorMesh(int nbi)
     {
         float[] totals = CalculateMeshTotals();
-        var targetMeshes = SelectedMeshIndices.Select(i => Flver.Meshes[i]);
-        var targetDummies = SelectedDummyIndices.Select(i => Flver.Dummies[i]);
+        var targetMeshes = SelectedMeshIndices.Select(i => Flver.Meshes[i]).ToList();
+        var targetDummies = SelectedDummyIndices.Select(i => Flver.Dummies[i]).ToList();
         MirrorMeshAction action = new(targetMeshes, targetDummies, nbi, totals, useWorldOriginCheckbox.Checked, vectorModeCheckbox.Checked, () =>
         {
             UpdateMesh();
@@ -2809,7 +2878,7 @@ public partial class MainWindow : Form
 
     private void SolveAllMeshLODs()
     {
-        SolveAllMeshLODsAction action = new(SelectedMeshIndices.Select(i => Flver.Meshes[i]));
+        SolveAllMeshLODsAction action = new(SelectedMeshIndices.Select(i => Flver.Meshes[i]).ToList());
         ActionManager.Apply(action);
 
         ShowInformationDialog("Created missing LODs from existing mesh data!");
@@ -2875,7 +2944,7 @@ public partial class MainWindow : Form
 
     private void FlipYZAxisCheckboxChanged(object sender, EventArgs e)
     {
-        FlipYZAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices), SelectedDummyIndices.Select(i => Flver.Dummies[i]), () =>
+        FlipYZAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices), SelectedDummyIndices.Select(i => Flver.Dummies[i]).ToList(), () =>
         {
             UpdateMesh();
         });
@@ -2888,7 +2957,7 @@ public partial class MainWindow : Form
     {
         float[] totals = CalculateMeshTotals();
 
-        CenterMeshToWorldAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices), SelectedMeshIndices.Select(i => Flver.Dummies[i]), nbi, totals, () =>
+        CenterMeshToWorldAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices).ToList(), SelectedMeshIndices.Select(i => Flver.Dummies[i]).ToList(), nbi, totals, () =>
         {
             UpdateMesh();
         });
@@ -2913,7 +2982,7 @@ public partial class MainWindow : Form
 
     private void ResetAllMesh()
     {
-        ResetAllMeshesAction action = new();
+        ResetAllMeshesAction action = new(Flver);
         ActionManager.Apply(action);
         ShowInformationDialog("Successfully reset all mesh!");
     }

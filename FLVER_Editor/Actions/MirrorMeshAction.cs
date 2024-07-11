@@ -18,7 +18,7 @@ namespace FLVER_Editor.Actions
         private readonly Action refresher;
         private readonly float[] totals;
 
-        public MirrorMeshAction(IEnumerable<FLVER2.Mesh> targetMeshes, IEnumerable<FLVER.Dummy> targetDummies, int nbi, float[] totals, bool useWorldOrigin, bool vertexMode, Action refresher)
+        public MirrorMeshAction(List<FLVER2.Mesh> targetMeshes, List<FLVER.Dummy> targetDummies, int nbi, float[] totals, bool useWorldOrigin, bool vertexMode, Action refresher)
         {
             this.targetMeshes = targetMeshes;
             this.targetDummies = targetDummies;
@@ -58,7 +58,7 @@ namespace FLVER_Editor.Actions
                 else d.Position = MirrorThing(d.Position, nbi, totals);
             }
 
-            ReverseFaceSetsAction action = new(targetMeshes.SelectMany(x => x.FaceSets), () => { });
+            ReverseFaceSetsAction action = new(targetMeshes.SelectMany(x => x.FaceSets).ToList(), () => { });
             action.Execute();
         }
 

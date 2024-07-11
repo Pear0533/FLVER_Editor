@@ -24,7 +24,7 @@ public class MeshTansformAction : TransformAction
     private readonly bool uniform;
     private readonly bool vectorMode;
 
-    public MeshTansformAction(FLVER2 flver, IEnumerable<int> selectedMeshes, IEnumerable<int> selectedDummies, float offset, IReadOnlyList<float> totals, int nbi, float oldValue, float newValue, bool uniform, bool vectorMode, Action<decimal, float, bool> refresher)
+    public MeshTansformAction(FLVER2 flver, List<int> selectedMeshes, List<int> selectedDummies, float offset, IReadOnlyList<float> totals, int nbi, float oldValue, float newValue, bool uniform, bool vectorMode, Action<decimal, float, bool> refresher)
     {
         this.flver = flver;
         this.selectedMeshes = selectedMeshes;

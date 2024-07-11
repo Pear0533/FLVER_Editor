@@ -32,7 +32,9 @@ public class DeleteVertexAboveAction : TransformAction
                 VertexDeleteHelper.DeleteMeshVertexFaceSet(mesh, i, facesetBackup);
 
                 oldVertexPositions.Add(i, mesh.Vertices[i].Position);
-                mesh.Vertices[i].Position = new System.Numerics.Vector3(0, 0, 0);
+                mesh.Vertices[i].Position.Z = 0;
+                mesh.Vertices[i].Position.Y = 0;
+                mesh.Vertices[i].Position.X = 0;
             }
         }
         
