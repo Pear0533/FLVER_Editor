@@ -37,11 +37,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     private void PopulateMeshSelector()
     {
         foreach (KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> mesh in Meshes)
-        {
             meshSelector.Items.Add(mesh.Key.Name);
-            meshSelector.Items.Add(mesh.Key.Name);
-        }
-
         meshSelector.SelectedIndex = 0;
     }
 
@@ -50,8 +46,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         foreach (string material in MTDs)
             mtdSelector.Items.Add(material);
         var default_mtd_index =
-
-        mtdSelector.SelectedIndex = DefaultMTDIndex;
+            mtdSelector.SelectedIndex = DefaultMTDIndex;
     }
 
     private KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> GetSelectedMesh()
@@ -138,7 +133,6 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             ModifyMesh(i => i.Value.MTD = mtdSelector.SelectedItem.ToString() ?? "");
             AssertBoneWeightsMessageVisibility();
         };
-
         weightingModeSelector.SelectedIndexChanged += (_, _) =>
         {
             if (weightingModeSelector.SelectedItem == null) return;
@@ -178,28 +172,22 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         else mtdSelector.Enabled = true;
     }
 
-    private void boneWeightsMessage_Click(object sender, EventArgs e)
-    {
-
-    }
+    private void boneWeightsMessage_Click(object sender, EventArgs e) { }
 
     private void affectAllMeshesCheckbox_CheckedChanged(object sender, EventArgs e)
     {
         if (sender is CheckBox box)
         {
             meshSelector.Enabled = !box.Checked;
-
             if (!box.Checked)
             {
                 ApplyCurrentMeshOptions();
                 return;
             }
-
             if (Meshes.Select(x => x.Value.MTD).Distinct().Count() != 1)
             {
                 mtdSelector.SelectedIndex = -1;
             }
-
             if (Meshes.Select(x => x.Value.Weighting.Name).Distinct().Count() != 1)
             {
                 weightingModeSelector.SelectedIndex = -1;
@@ -207,8 +195,5 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         }
     }
 
-    private void label1_Click(object sender, EventArgs e)
-    {
-
-    }
+    private void label1_Click(object sender, EventArgs e) { }
 }
