@@ -10,19 +10,19 @@ namespace FLVER_Editor.Actions;
 public class DeleteSelectedMeshAction : TransformAction
 {
     private readonly FLVER2 flver;
-    private readonly DataGridView meshTable;
-    private readonly DataGridView dummiesTable;
+    private readonly List<FLVER2.Mesh> meshList;
+    private readonly List<FLVER.Dummy> dummyList;
     private readonly bool deleteFacesets;
     private readonly Action? refresher;
     private Dictionary<FLVER2.FaceSet, List<int>> facesetOldIndices = new();
     private Dictionary<int, FLVER2.Mesh> deletedMeshes = new();
     private Dictionary<int, FLVER.Dummy> deletedDummies = new();
 
-    public DeleteSelectedMeshAction(FLVER2 flver, DataGridView meshTable, DataGridView dummiesTable, bool deleteFacesets, Action? refresher)
+    public DeleteSelectedMeshAction(FLVER2 flver, List<FLVER2.Mesh> meshList, List<FLVER.Dummy> dummyList, bool deleteFacesets, Action? refresher)
     {
         this.flver = flver;
-        this.meshTable = meshTable;
-        this.dummiesTable = dummiesTable;
+        this.meshList = meshList;
+        this.dummyList = dummyList;
         this.deleteFacesets = deleteFacesets;
         this.refresher = refresher;
     }
@@ -33,15 +33,23 @@ public class DeleteSelectedMeshAction : TransformAction
         this.deletedMeshes.Clear();
         this.deletedDummies.Clear();
 
-        for (int i = flver.Meshes.Count - 1; i >= 0; --i)
+        foreach (var mesh in meshList)
         {
-            if (!(bool)meshTable.Rows[i].Cells[3].Value) continue;
-            if (deleteFacesets)
+            var meshIndex = flver.Meshes.IndexOf(mesh);
+            deletedMeshes.Add(meshIndex, mesh);
+        }
+
+        if (deleteFacesets)
+        {
+            foreach (var mesh in meshList)
             {
-                foreach (FLVER2.FaceSet fs in flver.Meshes[i].FaceSets)
+                var meshIndex = flver.Meshes.IndexOf(mesh);
+
+
+                foreach (FLVER2.FaceSet fs in mesh.FaceSets)
                 {
                     var facesetIndices = new List<int>();
-                    
+
                     for (int j = 0; j < fs.Indices.Count; ++j)
                     {
                         facesetIndices.Add(fs.Indices[j]);
@@ -50,23 +58,30 @@ public class DeleteSelectedMeshAction : TransformAction
 
                     facesetOldIndices.Add(fs, facesetIndices);
                 }
-            }
-            else
-            {
-                deletedMeshes.Add(i, flver.Meshes[i]);
-                flver.Meshes.RemoveAt(i);
-            }
 
-            refresher?.Invoke();
+            }
         }
-
-        for (int i = flver.Dummies.Count - 1; i >= 0; --i)
+        else
         {
-            if (!(bool)dummiesTable.Rows[i].Cells[4].Value) continue;
-
-            deletedDummies.Add(i, flver.Dummies[i]);
-            flver.Dummies.RemoveAt(i);
+            foreach (var mesh in meshList)
+            {
+                flver.Meshes.Remove(mesh);
+            }
         }
+
+        foreach (FLVER.Dummy dummy in dummyList)
+        {
+            var dummyIndex = flver.Dummies.IndexOf(dummy);
+            deletedDummies.Add(dummyIndex, dummy);
+        }
+
+        foreach (FLVER.Dummy dummy in dummyList)
+        {
+            flver.Dummies.Remove(dummy);
+        }
+
+        refresher?.Invoke();
+
     }
 
     public override void Undo()
@@ -86,7 +101,7 @@ public class DeleteSelectedMeshAction : TransformAction
         }
         else
         {
-            foreach (var fs in deletedMeshes)
+            foreach (var fs in deletedMeshes.OrderBy(x => x.Key))
             {
                 flver.Meshes.Insert(fs.Key, fs.Value);
             }
