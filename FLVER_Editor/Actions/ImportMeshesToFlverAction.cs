@@ -48,6 +48,9 @@ public class ImportMeshesToFlverAction : TransformAction
 
     public override void Execute()
     {
+        oldNodes.Clear();
+        oldBaseBones.Clear();
+        oldNodes.Clear();
         flver.Skeletons ??= new();
 
         SaveNodeFlags(flver);
@@ -77,21 +80,27 @@ public class ImportMeshesToFlverAction : TransformAction
         if (baseSkeletonLength < 0) baseSkeletonLength = 0;
         if (allSkeletonsLength < 0) allSkeletonsLength = 0;
 
-        flver.Skeletons = oldSkeleton;
 
         flver.BufferLayouts.RemoveRange(bufferLayoutCount, bufferLayoutsLength);
         flver.Materials.RemoveRange(materialsCount, materialsLength);
         flver.GXLists.RemoveRange(gxListsCount, gxListsLength);
         flver.Meshes.RemoveRange(meshesCount, meshesLength);
         flver.Nodes.RemoveRange(nodesCount, nodeLength);
-        flver.Skeletons.BaseSkeleton.RemoveRange(baseSkeletonCount, baseSkeletonLength);
-        flver.Skeletons.AllSkeletons.RemoveRange(allSkeletonsCount, allSkeletonsLength);
 
-        UndoNodesToSkeleton(flver, flver.Skeletons.BaseSkeleton, oldBaseBones);
-        UndoNodesToSkeleton(flver, flver.Skeletons.BaseSkeleton, oldAllBones);
-        
+
+        flver.Skeletons = oldSkeleton;
+
+        if (flver.Skeletons is not null)
+        {
+            flver.Skeletons.BaseSkeleton.RemoveRange(baseSkeletonCount, baseSkeletonLength);
+            flver.Skeletons.AllSkeletons.RemoveRange(allSkeletonsCount, allSkeletonsLength);
+
+            UndoNodesToSkeleton(flver, flver.Skeletons.BaseSkeleton, oldBaseBones);
+            UndoNodesToSkeleton(flver, flver.Skeletons.BaseSkeleton, oldAllBones);
+        }
+
         UndoNodeFlags(flver);
-        
+
         refresher.Invoke();
     }
 
@@ -122,7 +131,7 @@ public class ImportMeshesToFlverAction : TransformAction
 
         for (int i = 0; i < backup.Count; i++)
         {
-            var node = skeleton[i];
+            var node = backup[i];
 
             skeleton.Add(new FLVER2.SkeletonSet.Bone(node.NodeIndex)
             {
