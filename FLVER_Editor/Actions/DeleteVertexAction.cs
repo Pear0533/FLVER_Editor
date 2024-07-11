@@ -6,9 +6,10 @@ namespace FLVER_Editor.Actions;
 
 public class DeleteVertexAction : TransformAction
 {
-    public DeleteVertexAction(FLVER2.Mesh mesh, Action refresher)
+    public DeleteVertexAction(FLVER2.Mesh mesh, int index, Action refresher)
     {
         this.mesh = mesh;
+        this.index = index;
         this.refresher = refresher;
     }
 
@@ -21,6 +22,8 @@ public class DeleteVertexAction : TransformAction
 
     public override void Execute()
     {
+        facesetBackup.Clear();
+        oldVertexPosition = mesh.Vertices[index].Position;
         VertexDeleteHelper.DeleteMeshVertexFaceSet(mesh, index, facesetBackup);
         mesh.Vertices[index].Position = new System.Numerics.Vector3(0, 0, 0);
         refresher.Invoke();

@@ -27,6 +27,8 @@ public class ApplyMeshSimpleSkinAction : TransformAction
 
     public override void Execute()
     {
+        oldUnweightedVerts.Clear();
+
         foreach (FLVER.Vertex v in unweightedVerts)
         {
             v.BoneIndices[0] = boneIndex;

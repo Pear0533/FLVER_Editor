@@ -219,9 +219,8 @@ namespace FLVER_Editor
         {
             FLVER2.Mesh mesh = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
             int index = targetVertexInfo.VertexIndex;
-            DeleteVertexAction action = new DeleteVertexAction(mesh, () => MainWindow.UpdateMesh());
+            DeleteVertexAction action = new DeleteVertexAction(mesh, index, () => MainWindow.UpdateMesh());
             ActionManager.Apply(action);
-            MainWindow.UpdateMesh();
         }
 
         private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
@@ -892,12 +891,12 @@ namespace FLVER_Editor
              if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D5)) { Program.RotationOrder = RotationOrder.ZXY; Program.updateVertices(); }
              if (state.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.D6)) { Program.RotationOrder = RotationOrder.ZYX; Program.updateVertices(); }*/
 
-            if ((state.IsKeyDown(Keys.LeftControl) || state.IsKeyDown(Keys.RightControl)) && state.IsKeyDown(Keys.Z))
+            if ((state.IsKeyDown(Keys.LeftControl) || state.IsKeyDown(Keys.RightControl)) && state.IsKeyDown(Keys.Z) && !prevState.IsKeyDown(Keys.Z))
             {
                 MainWindow.Instance?.Undo();
             }
 
-            if ((state.IsKeyDown(Keys.LeftControl) || state.IsKeyDown(Keys.RightControl)) && state.IsKeyDown(Keys.Y))
+            if ((state.IsKeyDown(Keys.LeftControl) || state.IsKeyDown(Keys.RightControl)) && state.IsKeyDown(Keys.Y) && !prevState.IsKeyDown(Keys.Y))
             {
                 MainWindow.Instance?.Redo();
             }

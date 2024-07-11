@@ -28,9 +28,7 @@ public static class VertexDeleteHelper
                     backup.Add(i + 2, faceSet.Indices[i + 2]);
                     faceSet.Indices[i + 2] = index;
                 }
-
             }
-
         }
     }
 

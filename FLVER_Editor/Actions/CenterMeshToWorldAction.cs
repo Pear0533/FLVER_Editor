@@ -15,7 +15,7 @@ namespace FLVER_Editor.Actions
         private readonly float[] totals;
         private readonly Action refresher;
 
-        public CenterMeshToWorldAction(IEnumerable<FLVER.Vertex> targetVertices, IEnumerable<FLVER.Dummy> targetDummies, int nbi, float[] totals, Action refresher)
+        public CenterMeshToWorldAction(List<FLVER.Vertex> targetVertices, List<FLVER.Dummy> targetDummies, int nbi, float[] totals, Action refresher)
         {
             this.targetVertices = targetVertices;
             this.targetDummies = targetDummies;

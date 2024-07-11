@@ -12,7 +12,7 @@ namespace FLVER_Editor.Actions
         private readonly IEnumerable<FLVER2.Mesh> targetMeshes;
         private Dictionary<FLVER2.Mesh, List<FLVER2.FaceSet>> faces = new();
 
-        public SolveAllMeshLODsAction(IEnumerable<FLVER2.Mesh> targetMeshes)
+        public SolveAllMeshLODsAction(List<FLVER2.Mesh> targetMeshes)
         {
             this.targetMeshes = targetMeshes;
         }

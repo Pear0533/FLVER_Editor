@@ -14,10 +14,16 @@ namespace FLVER_Editor.Actions
         private record MeshData(BoundingRange? BoundingBox, int NodeIndex, bool UseBoneWeights, List<FLVER2.FaceSet> FaceSets, List<FLVER.Vertex> Vertices);
 
         private Dictionary<FLVER2.Mesh, MeshData> oldMeshData = new();
+        private readonly FLVER2 flver;
+
+        public ResetAllMeshesAction(FLVER2 flver)
+        {
+            this.flver = flver;
+        }
 
         public override void Execute()
         {
-            foreach (FLVER2.Mesh m in MainWindow.Flver.Meshes)
+            foreach (FLVER2.Mesh m in flver.Meshes)
             {
                 var oldVertices = new List<FLVER.Vertex>(m.Vertices);
 

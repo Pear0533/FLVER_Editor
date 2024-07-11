@@ -8,7 +8,7 @@ public class ReverseNormalsAction : TransformAction
     private readonly IEnumerable<FLVER.Vertex> vertexes;
     private readonly Action refresher;
 
-    public ReverseNormalsAction(IEnumerable<FLVER.Vertex> vertexes, Action refresher)
+    public ReverseNormalsAction(List<FLVER.Vertex> vertexes, Action refresher)
     {
         this.vertexes = vertexes;
         this.refresher = refresher;
@@ -28,8 +28,6 @@ public class ReverseNormalsAction : TransformAction
             for (int j = 0; j < v.Tangents.Count; ++j)
                 v.Tangents[j] = new Vector4(-v.Tangents[j].X, -v.Tangents[j].Y, -v.Tangents[j].Z, v.Tangents[j].W);
         }
-
-        refresher.Invoke();
     }
 
     public override void Undo()

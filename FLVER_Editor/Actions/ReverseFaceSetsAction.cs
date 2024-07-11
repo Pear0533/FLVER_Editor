@@ -12,7 +12,7 @@ public class ReverseFaceSetsAction : TransformAction
     private readonly IEnumerable<FLVER2.FaceSet> facesets;
     private readonly Action refresher;
 
-    public ReverseFaceSetsAction(IEnumerable<FLVER2.FaceSet> facesets, Action refresher)
+    public ReverseFaceSetsAction(List<FLVER2.FaceSet> facesets, Action refresher)
     {
         this.facesets = facesets;
         this.refresher = refresher;

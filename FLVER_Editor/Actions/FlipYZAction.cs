@@ -14,7 +14,7 @@ namespace FLVER_Editor.Actions
         private readonly IEnumerable<FLVER.Dummy> targetDummies;
         private readonly Action refresher;
 
-        public FlipYZAction(IEnumerable<FLVER.Vertex> targetVertices, IEnumerable<FLVER.Dummy> targetDummies, Action refresher)
+        public FlipYZAction(IEnumerable<FLVER.Vertex> targetVertices, List<FLVER.Dummy> targetDummies, Action refresher)
         {
             this.targetVertices = targetVertices;
             this.targetDummies = targetDummies;
