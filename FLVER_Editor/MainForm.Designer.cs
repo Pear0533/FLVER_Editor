@@ -183,6 +183,7 @@
             searchBoxStr = new Label();
             meshTabDataTableSelector = new ComboBox();
             displayToolTip = new ToolTip(components);
+            massKlausGeneralSupportToolStripMenuItem = new ToolStripMenuItem();
             ribbon.SuspendLayout();
             multiSelectMenu.SuspendLayout();
             meshTabPage.SuspendLayout();
@@ -481,14 +482,14 @@
             // importGhost
             // 
             importGhost.Name = "importGhost";
-            importGhost.Size = new Size(180, 22);
+            importGhost.Size = new Size(151, 22);
             importGhost.Text = "Import Ghost";
             importGhost.Click += importGhost_Click;
             // 
             // removeGhost
             // 
             removeGhost.Name = "removeGhost";
-            removeGhost.Size = new Size(180, 22);
+            removeGhost.Size = new Size(151, 22);
             removeGhost.Text = "Remove Ghost";
             removeGhost.Click += removeGhost_Click;
             // 
@@ -516,14 +517,14 @@
             // patreonToolStripMenuItem
             // 
             patreonToolStripMenuItem.Name = "patreonToolStripMenuItem";
-            patreonToolStripMenuItem.Size = new Size(115, 22);
+            patreonToolStripMenuItem.Size = new Size(180, 22);
             patreonToolStripMenuItem.Text = "Patreon";
             patreonToolStripMenuItem.Click += PatreonToolStripMenuItem_Click;
             // 
             // payPalToolStripMenuItem
             // 
             payPalToolStripMenuItem.Name = "payPalToolStripMenuItem";
-            payPalToolStripMenuItem.Size = new Size(115, 22);
+            payPalToolStripMenuItem.Size = new Size(180, 22);
             payPalToolStripMenuItem.Text = "PayPal";
             payPalToolStripMenuItem.Click += PayPalToolStripMenuItem_Click;
             // 
@@ -538,7 +539,7 @@
             // 
             videoTutorialsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { theBasicsRainerToolStripMenuItem, crashCourseScrubMilkToolStripMenuItem });
             videoTutorialsToolStripMenuItem.Name = "videoTutorialsToolStripMenuItem";
-            videoTutorialsToolStripMenuItem.Size = new Size(152, 22);
+            videoTutorialsToolStripMenuItem.Size = new Size(180, 22);
             videoTutorialsToolStripMenuItem.Text = "Video Tutorials";
             // 
             // theBasicsRainerToolStripMenuItem
@@ -557,9 +558,9 @@
             // 
             // specialThanksToolStripMenuItem
             // 
-            specialThanksToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { the12thAvengerToolStripMenuItem, natsuDragneelGeneralSupportToolStripMenuItem, rayanProgramIconArtworkToolStripMenuItem, forsakenSilverFLVEREditor10ToolStripMenuItem });
+            specialThanksToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { the12thAvengerToolStripMenuItem, natsuDragneelGeneralSupportToolStripMenuItem, rayanProgramIconArtworkToolStripMenuItem, forsakenSilverFLVEREditor10ToolStripMenuItem, massKlausGeneralSupportToolStripMenuItem });
             specialThanksToolStripMenuItem.Name = "specialThanksToolStripMenuItem";
-            specialThanksToolStripMenuItem.Size = new Size(152, 22);
+            specialThanksToolStripMenuItem.Size = new Size(180, 22);
             specialThanksToolStripMenuItem.Text = "Special Thanks";
             // 
             // the12thAvengerToolStripMenuItem
@@ -949,7 +950,7 @@
             dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 158);
+            dummiesTable.Size = new Size(573, 157);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1350,6 +1351,7 @@
             rotZNumBox.Location = new Point(190, 63);
             rotZNumBox.Margin = new Padding(4, 3, 4, 3);
             rotZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            rotZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotZNumBox.Name = "rotZNumBox";
             rotZNumBox.Size = new Size(85, 24);
             rotZNumBox.TabIndex = 13;
@@ -1367,6 +1369,7 @@
             scaleZNumBox.Location = new Point(190, 33);
             scaleZNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            scaleZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleZNumBox.Name = "scaleZNumBox";
             scaleZNumBox.Size = new Size(85, 24);
             scaleZNumBox.TabIndex = 13;
@@ -1384,6 +1387,7 @@
             rotYNumBox.Location = new Point(97, 63);
             rotYNumBox.Margin = new Padding(4, 3, 4, 3);
             rotYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            rotYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotYNumBox.Name = "rotYNumBox";
             rotYNumBox.Size = new Size(85, 24);
             rotYNumBox.TabIndex = 12;
@@ -1401,6 +1405,7 @@
             transZNumBox.Location = new Point(190, 3);
             transZNumBox.Margin = new Padding(4, 3, 4, 3);
             transZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            transZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transZNumBox.Name = "transZNumBox";
             transZNumBox.Size = new Size(85, 24);
             transZNumBox.TabIndex = 13;
@@ -1418,6 +1423,7 @@
             rotXNumBox.Location = new Point(4, 63);
             rotXNumBox.Margin = new Padding(4, 3, 4, 3);
             rotXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            rotXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotXNumBox.Name = "rotXNumBox";
             rotXNumBox.Size = new Size(85, 24);
             rotXNumBox.TabIndex = 11;
@@ -1435,6 +1441,7 @@
             scaleYNumBox.Location = new Point(97, 33);
             scaleYNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            scaleYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleYNumBox.Name = "scaleYNumBox";
             scaleYNumBox.Size = new Size(85, 24);
             scaleYNumBox.TabIndex = 12;
@@ -1452,6 +1459,7 @@
             scaleXNumBox.Location = new Point(4, 33);
             scaleXNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            scaleXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleXNumBox.Name = "scaleXNumBox";
             scaleXNumBox.Size = new Size(85, 24);
             scaleXNumBox.TabIndex = 11;
@@ -1469,6 +1477,7 @@
             transXNumBox.Location = new Point(4, 3);
             transXNumBox.Margin = new Padding(4, 3, 4, 3);
             transXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            transXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transXNumBox.Name = "transXNumBox";
             transXNumBox.Size = new Size(85, 24);
             transXNumBox.TabIndex = 11;
@@ -1486,6 +1495,7 @@
             transYNumBox.Location = new Point(97, 3);
             transYNumBox.Margin = new Padding(4, 3, 4, 3);
             transYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            transYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transYNumBox.Name = "transYNumBox";
             transYNumBox.Size = new Size(85, 24);
             transYNumBox.TabIndex = 12;
@@ -1812,7 +1822,7 @@
             texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
             texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(598, 455);
+            texturesTable.Size = new Size(597, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -2014,6 +2024,12 @@
             meshTabDataTableSelector.Size = new Size(144, 23);
             meshTabDataTableSelector.TabIndex = 1;
             meshTabDataTableSelector.SelectedIndexChanged += MeshTabDataTableSelector_SelectedIndexChanged;
+            // 
+            // massKlausGeneralSupportToolStripMenuItem
+            // 
+            massKlausGeneralSupportToolStripMenuItem.Name = "massKlausGeneralSupportToolStripMenuItem";
+            massKlausGeneralSupportToolStripMenuItem.Size = new Size(248, 22);
+            massKlausGeneralSupportToolStripMenuItem.Text = "MassKlaus - General Support";
             // 
             // MainWindow
             // 
@@ -2259,5 +2275,6 @@
         private DataGridView texturesTable;
         private ToolStripMenuItem undoToolStripMenuItem;
         private ToolStripMenuItem redoToolStripMenuItem;
+        private ToolStripMenuItem massKlausGeneralSupportToolStripMenuItem;
     }
 }

@@ -128,7 +128,7 @@
             // 
             boneWeightsMessage.AutoSize = true;
             boneWeightsMessage.ForeColor = Color.Red;
-            boneWeightsMessage.Location = new Point(18, 345);
+            boneWeightsMessage.Location = new Point(6, 332);
             boneWeightsMessage.Name = "boneWeightsMessage";
             boneWeightsMessage.Size = new Size(21, 15);
             boneWeightsMessage.TabIndex = 2;
