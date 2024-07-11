@@ -38,8 +38,6 @@
             exportJSONToolStripMenuItem = new ToolStripMenuItem();
             bonesToolStripMenuItem1 = new ToolStripMenuItem();
             materialsToolStripMenuItem1 = new ToolStripMenuItem();
-            importGhost = new ToolStripMenuItem();
-            removeGhost = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
             undoToolStripMenuItem = new ToolStripMenuItem();
             redoToolStripMenuItem = new ToolStripMenuItem();
@@ -49,6 +47,9 @@
             autoSaveIntervalSelector = new ToolStripTextBox();
             dummyThicknessToolStripMenuItem = new ToolStripMenuItem();
             dummyThicknessSelector = new ToolStripComboBox();
+            ghostToolStripMenuItem = new ToolStripMenuItem();
+            importGhost = new ToolStripMenuItem();
+            removeGhost = new ToolStripMenuItem();
             toggleDummyIDsVisibilityToolStripMenuItem = new ToolStripMenuItem();
             toggleDuplicateMaterialsOnMeshImportToolStripMenuItem = new ToolStripMenuItem();
             supportPearToolStripMenuItem = new ToolStripMenuItem();
@@ -145,6 +146,16 @@
             materialsPagePanelsContainer = new SplitContainer();
             label9 = new Label();
             materialsTable = new DataGridView();
+            dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
+            Column19 = new DataGridViewTextBoxColumn();
+            Column5 = new DataGridViewTextBoxColumn();
+            dataGridViewTextBoxColumn4 = new DataGridViewTextBoxColumn();
+            Column6 = new DataGridViewButtonColumn();
+            Column20 = new DataGridViewButtonColumn();
+            Column16 = new DataGridViewButtonColumn();
+            Column7 = new DataGridViewCheckBoxColumn();
+            Column8 = new DataGridViewCheckBoxColumn();
             applyPresetToAllMaterialsButton = new Button();
             materialPresetsSelector = new EasyCompletionComboBox();
             label10 = new Label();
@@ -172,16 +183,6 @@
             searchBoxStr = new Label();
             meshTabDataTableSelector = new ComboBox();
             displayToolTip = new ToolTip(components);
-            dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
-            dataGridViewTextBoxColumn2 = new DataGridViewTextBoxColumn();
-            Column19 = new DataGridViewTextBoxColumn();
-            Column5 = new DataGridViewTextBoxColumn();
-            dataGridViewTextBoxColumn4 = new DataGridViewTextBoxColumn();
-            Column6 = new DataGridViewButtonColumn();
-            Column20 = new DataGridViewButtonColumn();
-            Column16 = new DataGridViewButtonColumn();
-            Column7 = new DataGridViewCheckBoxColumn();
-            Column8 = new DataGridViewCheckBoxColumn();
             ribbon.SuspendLayout();
             multiSelectMenu.SuspendLayout();
             meshTabPage.SuspendLayout();
@@ -271,21 +272,21 @@
             // importCtrlIToolStripMenuItem
             // 
             importCtrlIToolStripMenuItem.Name = "importCtrlIToolStripMenuItem";
-            importCtrlIToolStripMenuItem.Size = new Size(180, 22);
+            importCtrlIToolStripMenuItem.Size = new Size(157, 22);
             importCtrlIToolStripMenuItem.Text = "Import (Ctrl+I)";
             importCtrlIToolStripMenuItem.Click += ImportCtrlIToolStripMenuItem_Click;
             // 
             // exportToolStripMenuItem2
             // 
             exportToolStripMenuItem2.Name = "exportToolStripMenuItem2";
-            exportToolStripMenuItem2.Size = new Size(180, 22);
+            exportToolStripMenuItem2.Size = new Size(157, 22);
             exportToolStripMenuItem2.Text = "Export (Ctrl+E)";
             exportToolStripMenuItem2.Click += ExportToolStripMenuItemClicked;
             // 
             // mergeToolStripMenuItem2
             // 
             mergeToolStripMenuItem2.Name = "mergeToolStripMenuItem2";
-            mergeToolStripMenuItem2.Size = new Size(180, 22);
+            mergeToolStripMenuItem2.Size = new Size(157, 22);
             mergeToolStripMenuItem2.Text = "Merge (Ctrl+M)";
             mergeToolStripMenuItem2.Click += MergeToolStripMenuItemClicked;
             // 
@@ -401,20 +402,6 @@
             materialsToolStripMenuItem1.Text = "Materials";
             materialsToolStripMenuItem1.Click += ExportMaterialsJSONButtonClicked;
             // 
-            // importGhost
-            // 
-            importGhost.Name = "importGhost";
-            importGhost.Size = new Size(190, 22);
-            importGhost.Text = "Import Ghost";
-            importGhost.Click += importGhost_Click;
-            // 
-            // removeGhost
-            // 
-            removeGhost.Name = "removeGhost";
-            removeGhost.Size = new Size(190, 22);
-            removeGhost.Text = "Remove Ghost";
-            removeGhost.Click += removeGhost_Click;
-            // 
             // editToolStripMenuItem
             // 
             editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { undoToolStripMenuItem, redoToolStripMenuItem });
@@ -440,7 +427,7 @@
             // 
             // preferencesToolStripMenuItem
             // 
-            preferencesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toggleTextureRefreshToolStripMenuItem, toggleAutoSaveToolStripMenuItem, dummyThicknessToolStripMenuItem, toggleDummyIDsVisibilityToolStripMenuItem, toggleDuplicateMaterialsOnMeshImportToolStripMenuItem });
+            preferencesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toggleTextureRefreshToolStripMenuItem, toggleAutoSaveToolStripMenuItem, dummyThicknessToolStripMenuItem, ghostToolStripMenuItem, toggleDummyIDsVisibilityToolStripMenuItem, toggleDuplicateMaterialsOnMeshImportToolStripMenuItem });
             preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
             preferencesToolStripMenuItem.Size = new Size(80, 22);
             preferencesToolStripMenuItem.Text = "Preferences";
@@ -483,6 +470,27 @@
             dummyThicknessSelector.Name = "dummyThicknessSelector";
             dummyThicknessSelector.Size = new Size(121, 23);
             dummyThicknessSelector.SelectedIndexChanged += DummyThicknessSelectorSelectedIndexChanged;
+            // 
+            // ghostToolStripMenuItem
+            // 
+            ghostToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { importGhost, removeGhost });
+            ghostToolStripMenuItem.Name = "ghostToolStripMenuItem";
+            ghostToolStripMenuItem.Size = new Size(303, 22);
+            ghostToolStripMenuItem.Text = "Ghost";
+            // 
+            // importGhost
+            // 
+            importGhost.Name = "importGhost";
+            importGhost.Size = new Size(180, 22);
+            importGhost.Text = "Import Ghost";
+            importGhost.Click += importGhost_Click;
+            // 
+            // removeGhost
+            // 
+            removeGhost.Name = "removeGhost";
+            removeGhost.Size = new Size(180, 22);
+            removeGhost.Text = "Remove Ghost";
+            removeGhost.Click += removeGhost_Click;
             // 
             // toggleDummyIDsVisibilityToolStripMenuItem
             // 
@@ -941,7 +949,7 @@
             dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 161);
+            dummiesTable.Size = new Size(573, 158);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1662,6 +1670,85 @@
             materialsTable.CellContentClick += MaterialsTableButtonClicked;
             materialsTable.CellValueChanged += MaterialsTableCellValueChanged;
             // 
+            // dataGridViewTextBoxColumn1
+            // 
+            dataGridViewTextBoxColumn1.Frozen = true;
+            dataGridViewTextBoxColumn1.HeaderText = "Index";
+            dataGridViewTextBoxColumn1.MinimumWidth = 8;
+            dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            dataGridViewTextBoxColumn1.ReadOnly = true;
+            dataGridViewTextBoxColumn1.Width = 61;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            dataGridViewTextBoxColumn2.Frozen = true;
+            dataGridViewTextBoxColumn2.HeaderText = "Name";
+            dataGridViewTextBoxColumn2.MinimumWidth = 8;
+            dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            dataGridViewTextBoxColumn2.Width = 64;
+            // 
+            // Column19
+            // 
+            Column19.HeaderText = "Model Mask";
+            Column19.Name = "Column19";
+            Column19.Width = 89;
+            // 
+            // Column5
+            // 
+            Column5.HeaderText = "MTD Path";
+            Column5.MinimumWidth = 8;
+            Column5.Name = "Column5";
+            Column5.Width = 78;
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            dataGridViewTextBoxColumn4.HeaderText = "Internal Index";
+            dataGridViewTextBoxColumn4.MinimumWidth = 8;
+            dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            dataGridViewTextBoxColumn4.Width = 96;
+            // 
+            // Column6
+            // 
+            Column6.HeaderText = "Edit Textures";
+            Column6.MinimumWidth = 8;
+            Column6.Name = "Column6";
+            Column6.Resizable = DataGridViewTriState.True;
+            Column6.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column6.Text = "";
+            Column6.Width = 90;
+            // 
+            // Column20
+            // 
+            Column20.HeaderText = "Viewer Highlight";
+            Column20.Name = "Column20";
+            Column20.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column20.Width = 110;
+            // 
+            // Column16
+            // 
+            Column16.HeaderText = "Add Preset";
+            Column16.MinimumWidth = 8;
+            Column16.Name = "Column16";
+            Column16.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column16.Width = 82;
+            // 
+            // Column7
+            // 
+            Column7.HeaderText = "Apply Preset";
+            Column7.MinimumWidth = 8;
+            Column7.Name = "Column7";
+            Column7.Resizable = DataGridViewTriState.True;
+            Column7.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column7.Width = 90;
+            // 
+            // Column8
+            // 
+            Column8.HeaderText = "Delete";
+            Column8.MinimumWidth = 8;
+            Column8.Name = "Column8";
+            Column8.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column8.Width = 65;
+            // 
             // applyPresetToAllMaterialsButton
             // 
             applyPresetToAllMaterialsButton.Location = new Point(304, 27);
@@ -1725,7 +1812,7 @@
             texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
             texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(601, 455);
+            texturesTable.Size = new Size(598, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -1927,85 +2014,6 @@
             meshTabDataTableSelector.Size = new Size(144, 23);
             meshTabDataTableSelector.TabIndex = 1;
             meshTabDataTableSelector.SelectedIndexChanged += MeshTabDataTableSelector_SelectedIndexChanged;
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            dataGridViewTextBoxColumn1.Frozen = true;
-            dataGridViewTextBoxColumn1.HeaderText = "Index";
-            dataGridViewTextBoxColumn1.MinimumWidth = 8;
-            dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            dataGridViewTextBoxColumn1.ReadOnly = true;
-            dataGridViewTextBoxColumn1.Width = 61;
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            dataGridViewTextBoxColumn2.Frozen = true;
-            dataGridViewTextBoxColumn2.HeaderText = "Name";
-            dataGridViewTextBoxColumn2.MinimumWidth = 8;
-            dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            dataGridViewTextBoxColumn2.Width = 64;
-            // 
-            // Column19
-            // 
-            Column19.HeaderText = "Model Mask";
-            Column19.Name = "Column19";
-            Column19.Width = 97;
-            // 
-            // Column5
-            // 
-            Column5.HeaderText = "MTD Path";
-            Column5.MinimumWidth = 8;
-            Column5.Name = "Column5";
-            Column5.Width = 84;
-            // 
-            // dataGridViewTextBoxColumn4
-            // 
-            dataGridViewTextBoxColumn4.HeaderText = "Internal Index";
-            dataGridViewTextBoxColumn4.MinimumWidth = 8;
-            dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
-            dataGridViewTextBoxColumn4.Width = 104;
-            // 
-            // Column6
-            // 
-            Column6.HeaderText = "Edit Textures";
-            Column6.MinimumWidth = 8;
-            Column6.Name = "Column6";
-            Column6.Resizable = DataGridViewTriState.True;
-            Column6.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column6.Text = "";
-            Column6.Width = 98;
-            // 
-            // Column20
-            // 
-            Column20.HeaderText = "Viewer Highlight";
-            Column20.Name = "Column20";
-            Column20.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column20.Width = 110;
-            // 
-            // Column16
-            // 
-            Column16.HeaderText = "Add Preset";
-            Column16.MinimumWidth = 8;
-            Column16.Name = "Column16";
-            Column16.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column16.Width = 82;
-            // 
-            // Column7
-            // 
-            Column7.HeaderText = "Apply Preset";
-            Column7.MinimumWidth = 8;
-            Column7.Name = "Column7";
-            Column7.Resizable = DataGridViewTriState.True;
-            Column7.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column7.Width = 90;
-            // 
-            // Column8
-            // 
-            Column8.HeaderText = "Delete";
-            Column8.MinimumWidth = 8;
-            Column8.Name = "Column8";
-            Column8.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column8.Width = 65;
             // 
             // MainWindow
             // 
@@ -2247,8 +2255,9 @@
         private DataGridViewButtonColumn Column16;
         private DataGridViewCheckBoxColumn Column7;
         private DataGridViewCheckBoxColumn Column8;
-        private static DataGridView texturesTable;
-        private static ToolStripMenuItem undoToolStripMenuItem;
-        private static ToolStripMenuItem redoToolStripMenuItem;
+        private ToolStripMenuItem ghostToolStripMenuItem;
+        private DataGridView texturesTable;
+        private ToolStripMenuItem undoToolStripMenuItem;
+        private ToolStripMenuItem redoToolStripMenuItem;
     }
 }

@@ -12,7 +12,7 @@ namespace FLVER_Editor.Actions
     {
         private record BoundingRange(Vector3 Max, Vector3 Min);
 
-        private BoundingRange HeaderRange = new (Vector3.Zero, Vector3.Zero);
+        private BoundingRange HeaderRange = new(Vector3.Zero, Vector3.Zero);
         private Dictionary<FLVER2.Mesh, BoundingRange?> oldBoxes = new();
         private readonly FLVER2 flver;
         private readonly Action refresher;
@@ -32,7 +32,7 @@ namespace FLVER_Editor.Actions
 
             flver.Header.BoundingBoxMin = maxVector;
             flver.Header.BoundingBoxMax = minVector;
-            foreach (FLVER2.Mesh mesh in from mesh in flver.Meshes from vertex in mesh.Vertices select mesh)
+            foreach (var mesh in flver.Meshes)
             {
                 oldBoxes.Add(mesh, mesh.BoundingBox is null ? null : new BoundingRange(mesh.BoundingBox.Max, mesh.BoundingBox.Min));
                 mesh.BoundingBox ??= new FLVER2.Mesh.BoundingBoxes();

@@ -151,8 +151,8 @@ public class SolveAllBBsAction : TransformAction
 
     public override void Undo()
     {
-        MainWindow.Flver.Header.BoundingBoxMin = FlverHeader?.Min ?? throw new Exception("Undo run without execute first");
-        MainWindow.Flver.Header.BoundingBoxMax = FlverHeader?.Max ?? throw new Exception("Undo run without execute first");
+        flver.Header.BoundingBoxMin = FlverHeader?.Min ?? throw new Exception("Undo run without execute first");
+        flver.Header.BoundingBoxMax = FlverHeader?.Max ?? throw new Exception("Undo run without execute first");
 
         foreach (var item in oldNodeBoxes)
         {
