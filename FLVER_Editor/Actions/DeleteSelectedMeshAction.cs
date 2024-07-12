@@ -107,7 +107,7 @@ public class DeleteSelectedMeshAction : TransformAction
             }
         }
 
-        foreach (var fs in deletedDummies)
+        foreach (var fs in deletedDummies.OrderBy(x => x.Key))
         {
             flver.Dummies.Insert(fs.Key, fs.Value);
         }
