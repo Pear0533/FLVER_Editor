@@ -1660,8 +1660,20 @@ public partial class MainWindow : Form
         //UpdateUndoState();
         object selectedMaterial = MaterialPresets.Values.ToArray().ElementAtOrDefault(materialPresetsSelector.SelectedIndex);
         FLVER2.Material? newMaterial = JsonConvert.DeserializeObject<FLVER2.Material>(JsonConvert.SerializeObject(selectedMaterial));
+        var materialsToDelete = new List<FLVER2.Material>();
+        var materialsToReplace = new List<FLVER2.Material>();
 
-        MaterialsTableOkAction action = new(Flver, materialsTable, newMaterial, (displayPresetError) =>
+        foreach (DataGridViewRow row in materialsTable.Rows)
+        {
+            if ((bool)row.Cells[MaterialDeleteCbIndex].Value)
+                materialsToDelete.Add(Flver.Materials[row.Index]);
+
+            if ((bool)row.Cells[MaterialApplyPresetCbIndex].Value)
+                materialsToReplace.Add(Flver.Materials[row.Index]);
+
+        }
+
+        MaterialsTableOkAction action = new(Flver, materialsToReplace, materialsToDelete, newMaterial, (displayPresetError) =>
         {
             if (displayPresetError) ShowErrorDialog("The specified preset does not exist.");
 
