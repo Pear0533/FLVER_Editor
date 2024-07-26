@@ -52,13 +52,21 @@ public class MaterialsTableOkAction : TransformAction
 
         foreach (FLVER2.Material material in materialsToDelete)
         {
+            if (flver.Materials.Count - deletedMaterials.Count == 1)
+            {
+                break;
+            }
+
             var materialIndex = flver.Materials.IndexOf(material);
             deletedMaterials.Add(materialIndex, material);
         }
 
         foreach (var material in materialsToDelete)
         {
-            if (flver.Materials.Count <= 1) break;
+            if (flver.Materials.Count <= 1)
+            {
+                break;
+            }
 
             var materialIndex = flver.Materials.IndexOf(material);
             flver.Materials.Remove(material);
