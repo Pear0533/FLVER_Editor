@@ -54,7 +54,7 @@ public class ImportMeshesToFlverAction : TransformAction
         flver.Skeletons ??= new();
 
         SaveNodeFlags(flver);
-        SaveNodesToSkeleton(flver, flver.Skeletons.BaseSkeleton, oldAllBones);
+        SaveNodesToSkeleton(flver, flver.Skeletons.AllSkeletons, oldAllBones);
         SaveNodesToSkeleton(flver, flver.Skeletons.BaseSkeleton, oldBaseBones);
 
         meshes.ToList().ForEach(i => i.Key.ToFlverMesh(flver, i.Value));
@@ -88,15 +88,19 @@ public class ImportMeshesToFlverAction : TransformAction
         flver.Nodes.RemoveRange(nodesCount, nodeLength);
 
 
+        foreach ( var mesh in meshes)
+        {
+            var item = mesh.Key;
+            FlipFaceSet(item);
+        }
+
         flver.Skeletons = oldSkeleton;
+
 
         if (flver.Skeletons is not null)
         {
-            flver.Skeletons.BaseSkeleton.RemoveRange(baseSkeletonCount, baseSkeletonLength);
-            flver.Skeletons.AllSkeletons.RemoveRange(allSkeletonsCount, allSkeletonsLength);
-
             UndoNodesToSkeleton(flver, flver.Skeletons.BaseSkeleton, oldBaseBones);
-            UndoNodesToSkeleton(flver, flver.Skeletons.BaseSkeleton, oldAllBones);
+            UndoNodesToSkeleton(flver, flver.Skeletons.AllSkeletons, oldAllBones);
         }
 
         UndoNodeFlags(flver);
@@ -104,12 +108,18 @@ public class ImportMeshesToFlverAction : TransformAction
         refresher.Invoke();
     }
 
+    private void FlipFaceSet(FbxMeshDataViewModel model)
+    {
+        for (int i = 0; i < model.Data.VertexIndices.Count; i += 3)
+        {
+            (model.Data.VertexIndices[i + 1], model.Data.VertexIndices[i + 2]) =
+                (model.Data.VertexIndices[i + 2], model.Data.VertexIndices[i + 1]);
+        }
+    }
 
     private void SaveNodesToSkeleton(FLVER2 flver, List<FLVER2.SkeletonSet.Bone> skeleton, List<FLVER2.SkeletonSet.Bone> backup)
     {
         backup.Clear();
-
-        if (skeleton.Count == 0 || skeleton.Count == flver.Nodes.Count) return;
 
         for (int i = 0; i < skeleton.Count; i++)
         {
