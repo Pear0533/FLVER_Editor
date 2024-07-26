@@ -45,8 +45,9 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     {
         foreach (string material in MTDs)
             mtdSelector.Items.Add(material);
+        // TODO: Extend this to work for other games aside from just ER... (Pear)
         var default_mtd_index =
-            mtdSelector.SelectedIndex = DefaultMTDIndex;
+            mtdSelector.SelectedIndex = MTDs.FindIndex(i => i == "c[amsn]_e.matxml");
     }
 
     private KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> GetSelectedMesh()
