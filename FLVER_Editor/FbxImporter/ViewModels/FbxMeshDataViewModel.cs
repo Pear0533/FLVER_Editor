@@ -219,18 +219,24 @@ public class FbxMeshDataViewModel
         List<int> indices = new();
         foreach (FLVER2.BufferLayout referenceBufferLayout in bufferLayouts)
         {
+            var foundReference = false;
             for (int i = 0; i < flver.BufferLayouts.Count; i++)
             {
                 FLVER2.BufferLayout bufferLayout = flver.BufferLayouts[i];
                 if (bufferLayout.SequenceEqual(referenceBufferLayout, new LayoutMemberComparer()))
                 {
+                    foundReference = true;
                     indices.Add(i);
                     break;
                 }
                 if (i != flver.BufferLayouts.Count - 1) continue;
-                indices.Add(i + 1);
+                
+            }
+
+            if (!foundReference)
+            {
+                indices.Add(flver.BufferLayouts.Count);
                 flver.BufferLayouts.Add(referenceBufferLayout);
-                break;
             }
         }
         return indices;
