@@ -9,26 +9,28 @@ namespace FLVER_Editor.Actions;
 
 public class LoadDummyProfile : TransformAction
 {
+    private readonly FLVER2 flver;
     private readonly List<FLVER.Dummy> newDummies;
     private readonly Action refresher;
     private readonly List<FLVER.Dummy> oldDummies;
 
-    public LoadDummyProfile(List<FLVER.Dummy> newDummies, List<FLVER.Dummy> oldDummies, Action refresher)
+    public LoadDummyProfile(FLVER2 flver, List<FLVER.Dummy> newDummies, List<FLVER.Dummy> oldDummies, Action refresher)
     {
+        this.flver = flver;
         this.newDummies = newDummies;
-        this.newDummies = oldDummies;
+        this.oldDummies = oldDummies;
         this.refresher = refresher;
     }
 
     public override void Execute()
     {
-        MainWindow.Flver.Dummies = newDummies;
+        flver.Dummies = newDummies;
         refresher.Invoke();
     }
 
     public override void Undo()
     {
-        MainWindow.Flver.Dummies = oldDummies;
+        flver.Dummies = oldDummies;
         refresher.Invoke();
     }
 }

@@ -60,6 +60,12 @@ public class MergeFlversAction : TransformAction
 
     public override void Undo()
     {
+        foreach (FLVER2.Mesh m in newFlver.Meshes)
+        {
+            m.MaterialIndex -= materialOffset;
+            foreach (FLVER2.VertexBuffer vb in m.VertexBuffers)
+                vb.LayoutIndex -= layoutOffset;
+        }
         flver.BufferLayouts.RemoveRange(layoutOffset, flver.BufferLayouts.Count - layoutOffset);
         flver.Meshes.RemoveRange(meshOffset, flver.Meshes.Count - meshOffset);
         flver.Materials.RemoveRange(materialOffset, flver.Materials.Count - materialOffset);
