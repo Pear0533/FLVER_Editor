@@ -1132,7 +1132,7 @@ public partial class MainWindow : Form
         CurrentFlverBytes = Flver.Write();
         saveToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
         MatBinBndPath = null;
-        DeselectAllSelectedThings();
+        SafeDeselectAllSelectedThings();
         SafeUpdateUI();
         ClearViewerMaterialHighlight();
         ClearUndoRedoStates();
@@ -2068,8 +2068,14 @@ public partial class MainWindow : Form
     private void ToggleBackFacesCheckboxChanged(object sender, EventArgs e)
     {
         if (IsSettingDefaultInfo) return;
-        foreach (FLVER2.FaceSet fs in SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].FaceSets))
-            fs.CullBackfaces = !fs.CullBackfaces;
+        var facesets = SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].FaceSets).ToList();
+
+        ToggleBackFacesAction action = new(Flver, facesets, () =>
+        {
+            UpdateMesh();
+        });
+        ActionManager.Apply(action);
+
         ShowInformationDialog("Mesh backfaces have been toggled!");
     }
 
@@ -2160,11 +2166,12 @@ public partial class MainWindow : Form
     {
         if (dummyPresetsSelector.SelectedIndex < 0) return;
         string dummyJson = JsonConvert.SerializeObject(DummyPresets.Values.ToArray()[dummyPresetsSelector.SelectedIndex]);
-        var newDummies = JsonConvert.DeserializeObject<List<FLVER.Dummy>>(dummyJson);
+        var newDummies = JsonConvert.DeserializeObject<List<FLVER.Dummy>>(dummyJson) ?? new List<FLVER.Dummy>();
+        var oldDummies = new List<FLVER.Dummy>(Flver.Dummies);
 
-        LoadDummyProfile action = new(newDummies, Flver.Dummies, () =>
+        LoadDummyProfile action = new(Flver, newDummies, oldDummies, () =>
         {
-            DeselectAllSelectedThings();
+            SafeDeselectAllSelectedThings();
             SafeUpdateUI();
             UpdateMesh();
         });
@@ -2198,7 +2205,7 @@ public partial class MainWindow : Form
         var refresh = () =>
         {
             Flver = Program.Flver;
-            DeselectAllSelectedThings();
+            SafeDeselectAllSelectedThings();
             SafeUpdateUI();
             UpdateMesh();
             Viewer.RefreshTextures();
