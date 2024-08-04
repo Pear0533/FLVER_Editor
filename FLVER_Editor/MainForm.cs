@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -723,8 +724,11 @@ public partial class MainWindow : Form
             if (texList.Count <= 0) continue;
             // TODO: WIP (Pear)
             // TODO: What we really need to do is merge any detailblend textures together into one texture and display it... (Pear)
+            if (!texList.Any(i => i.Path != "")) continue;
             string texturePath = texList.Find(i => i.Type.Contains("Albedo")
                 && i.Path.Contains(GetModelIDFromName(FlverFilePath).ToString()))?.Path ?? "";
+            if (texturePath == "")
+                texturePath = texList.Find(i => i.Type.Contains("Albedo") && i.Path.Contains("_a"))?.Path ?? "";
             VertexTexMap vertexTexMap = new()
             {
                 textureName = Path.GetFileNameWithoutExtension(texturePath),
