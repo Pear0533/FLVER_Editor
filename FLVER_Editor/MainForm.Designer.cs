@@ -64,6 +64,7 @@
             natsuDragneelGeneralSupportToolStripMenuItem = new ToolStripMenuItem();
             rayanProgramIconArtworkToolStripMenuItem = new ToolStripMenuItem();
             forsakenSilverFLVEREditor10ToolStripMenuItem = new ToolStripMenuItem();
+            massKlausGeneralSupportToolStripMenuItem = new ToolStripMenuItem();
             multiSelectMenu = new ContextMenuStrip(components);
             multiSelectMenuTextbox = new ToolStripTextBox();
             meshTabPage = new TabPage();
@@ -101,6 +102,7 @@
             label5 = new Label();
             dummyPresetsSelector = new EasyCompletionComboBox();
             meshModifiersContainer = new GroupBox();
+            worldOriginCordsDummy = new CheckBox();
             useWorldOriginCheckbox = new CheckBox();
             vectorModeCheckbox = new CheckBox();
             flipYZAxisCheckbox = new CheckBox();
@@ -183,7 +185,6 @@
             searchBoxStr = new Label();
             meshTabDataTableSelector = new ComboBox();
             displayToolTip = new ToolTip(components);
-            massKlausGeneralSupportToolStripMenuItem = new ToolStripMenuItem();
             ribbon.SuspendLayout();
             multiSelectMenu.SuspendLayout();
             meshTabPage.SuspendLayout();
@@ -517,14 +518,14 @@
             // patreonToolStripMenuItem
             // 
             patreonToolStripMenuItem.Name = "patreonToolStripMenuItem";
-            patreonToolStripMenuItem.Size = new Size(180, 22);
+            patreonToolStripMenuItem.Size = new Size(115, 22);
             patreonToolStripMenuItem.Text = "Patreon";
             patreonToolStripMenuItem.Click += PatreonToolStripMenuItem_Click;
             // 
             // payPalToolStripMenuItem
             // 
             payPalToolStripMenuItem.Name = "payPalToolStripMenuItem";
-            payPalToolStripMenuItem.Size = new Size(180, 22);
+            payPalToolStripMenuItem.Size = new Size(115, 22);
             payPalToolStripMenuItem.Text = "PayPal";
             payPalToolStripMenuItem.Click += PayPalToolStripMenuItem_Click;
             // 
@@ -539,7 +540,7 @@
             // 
             videoTutorialsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { theBasicsRainerToolStripMenuItem, crashCourseScrubMilkToolStripMenuItem });
             videoTutorialsToolStripMenuItem.Name = "videoTutorialsToolStripMenuItem";
-            videoTutorialsToolStripMenuItem.Size = new Size(180, 22);
+            videoTutorialsToolStripMenuItem.Size = new Size(152, 22);
             videoTutorialsToolStripMenuItem.Text = "Video Tutorials";
             // 
             // theBasicsRainerToolStripMenuItem
@@ -560,7 +561,7 @@
             // 
             specialThanksToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { the12thAvengerToolStripMenuItem, natsuDragneelGeneralSupportToolStripMenuItem, rayanProgramIconArtworkToolStripMenuItem, forsakenSilverFLVEREditor10ToolStripMenuItem, massKlausGeneralSupportToolStripMenuItem });
             specialThanksToolStripMenuItem.Name = "specialThanksToolStripMenuItem";
-            specialThanksToolStripMenuItem.Size = new Size(180, 22);
+            specialThanksToolStripMenuItem.Size = new Size(152, 22);
             specialThanksToolStripMenuItem.Text = "Special Thanks";
             // 
             // the12thAvengerToolStripMenuItem
@@ -586,6 +587,12 @@
             forsakenSilverFLVEREditor10ToolStripMenuItem.Name = "forsakenSilverFLVEREditor10ToolStripMenuItem";
             forsakenSilverFLVEREditor10ToolStripMenuItem.Size = new Size(248, 22);
             forsakenSilverFLVEREditor10ToolStripMenuItem.Text = "ForsakenSilver - FLVER Editor 1.0";
+            // 
+            // massKlausGeneralSupportToolStripMenuItem
+            // 
+            massKlausGeneralSupportToolStripMenuItem.Name = "massKlausGeneralSupportToolStripMenuItem";
+            massKlausGeneralSupportToolStripMenuItem.Size = new Size(248, 22);
+            massKlausGeneralSupportToolStripMenuItem.Text = "MassKlaus - General Support";
             // 
             // multiSelectMenu
             // 
@@ -950,7 +957,7 @@
             dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 157);
+            dummiesTable.Size = new Size(573, 154);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1039,6 +1046,7 @@
             // 
             // meshModifiersContainer
             // 
+            meshModifiersContainer.Controls.Add(worldOriginCordsDummy);
             meshModifiersContainer.Controls.Add(useWorldOriginCheckbox);
             meshModifiersContainer.Controls.Add(vectorModeCheckbox);
             meshModifiersContainer.Controls.Add(flipYZAxisCheckbox);
@@ -1077,6 +1085,17 @@
             meshModifiersContainer.TabIndex = 12;
             meshModifiersContainer.TabStop = false;
             meshModifiersContainer.Text = "Modifiers";
+            // 
+            // worldOriginCordsDummy
+            // 
+            worldOriginCordsDummy.AutoSize = true;
+            worldOriginCordsDummy.Location = new Point(386, 33);
+            worldOriginCordsDummy.Name = "worldOriginCordsDummy";
+            worldOriginCordsDummy.Size = new Size(145, 34);
+            worldOriginCordsDummy.TabIndex = 72;
+            worldOriginCordsDummy.Text = "Show Dummy Relative\r\nTo World Origin";
+            worldOriginCordsDummy.UseVisualStyleBackColor = true;
+            worldOriginCordsDummy.CheckedChanged += checkBox1_CheckedChanged;
             // 
             // useWorldOriginCheckbox
             // 
@@ -1822,7 +1841,7 @@
             texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
             texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(597, 455);
+            texturesTable.Size = new Size(594, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -2024,12 +2043,6 @@
             meshTabDataTableSelector.Size = new Size(144, 23);
             meshTabDataTableSelector.TabIndex = 1;
             meshTabDataTableSelector.SelectedIndexChanged += MeshTabDataTableSelector_SelectedIndexChanged;
-            // 
-            // massKlausGeneralSupportToolStripMenuItem
-            // 
-            massKlausGeneralSupportToolStripMenuItem.Name = "massKlausGeneralSupportToolStripMenuItem";
-            massKlausGeneralSupportToolStripMenuItem.Size = new Size(248, 22);
-            massKlausGeneralSupportToolStripMenuItem.Text = "MassKlaus - General Support";
             // 
             // MainWindow
             // 
@@ -2276,5 +2289,6 @@
         private ToolStripMenuItem undoToolStripMenuItem;
         private ToolStripMenuItem redoToolStripMenuItem;
         private ToolStripMenuItem massKlausGeneralSupportToolStripMenuItem;
+        private CheckBox worldOriginCordsDummy;
     }
 }
