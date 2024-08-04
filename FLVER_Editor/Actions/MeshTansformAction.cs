@@ -12,7 +12,7 @@ namespace FLVER_Editor.Actions;
 
 public class MeshTansformAction : TransformAction
 {
-    private readonly Action<decimal, float, bool> refresher;
+    private readonly Action<decimal, float, bool, IEnumerable<int>, IEnumerable<int>> refresher;
     private readonly FLVER2 flver;
     private readonly IEnumerable<int> selectedMeshes;
     private readonly IEnumerable<int> selectedDummies;
@@ -24,7 +24,7 @@ public class MeshTansformAction : TransformAction
     private readonly bool uniform;
     private readonly bool vectorMode;
 
-    public MeshTansformAction(FLVER2 flver, List<int> selectedMeshes, List<int> selectedDummies, float offset, IReadOnlyList<float> totals, int nbi, float oldValue, float newValue, bool uniform, bool vectorMode, Action<decimal, float, bool> refresher)
+    public MeshTansformAction(FLVER2 flver, List<int> selectedMeshes, List<int> selectedDummies, float offset, IReadOnlyList<float> totals, int nbi, float oldValue, float newValue, bool uniform, bool vectorMode, Action<decimal, float, bool, IEnumerable<int>, IEnumerable<int>> refresher)
     {
         this.flver = flver;
         this.selectedMeshes = selectedMeshes;
@@ -74,7 +74,7 @@ public class MeshTansformAction : TransformAction
         foreach (int i in selectedDummies)
             TransformThing(flver.Dummies[i], offset, totals, nbi, uniform, vectorMode);
 
-        refresher?.Invoke(ExtractInputValue(newValue), newValue, uniform);
+        refresher?.Invoke(ExtractInputValue(newValue), newValue, uniform, selectedMeshes, selectedDummies);
     }
 
     public override void Undo()
@@ -90,7 +90,7 @@ public class MeshTansformAction : TransformAction
         foreach (int i in selectedDummies)
             TransformThing(flver.Dummies[i], -offset, totals, nbi, uniform, vectorMode);
 
-        refresher?.Invoke(ExtractInputValue(oldValue), oldValue, uniform);
+        refresher?.Invoke(ExtractInputValue(oldValue), oldValue, uniform, selectedMeshes, selectedDummies);
     }
 
     private static decimal ToRadians(decimal degrees) { return degrees * (decimal)(Math.PI / 180); }

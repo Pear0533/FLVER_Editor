@@ -384,6 +384,9 @@ public partial class MainWindow : Form
     /// </summary>
     public static bool IsFemaleBodyModelImported;
 
+
+    public bool ShowWorldOriginCordsDummy => worldOriginCordsDummy.Checked && SelectedMeshIndices.Count == 0 && SelectedDummyIndices.Count == 1;
+
     public static FLVER2? GhostModel;
 
     public static MainWindow? Instance { get; private set; }
@@ -1384,6 +1387,14 @@ public partial class MainWindow : Form
             meshModifiersContainer.Enabled = hasIndices;
             if (hasIndices)
             {
+                if (ShowWorldOriginCordsDummy)
+                {
+                    var dummy = Flver.Dummies[SelectedDummyIndices[0]];
+                    transXNumBox.Value = (decimal)dummy.Position.X * 55;
+                    transYNumBox.Value = (decimal)dummy.Position.Y * 55;
+                    transZNumBox.Value = (decimal)dummy.Position.Z * 55;
+                }
+
                 EnableDisableExtraModifierOptions();
                 scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = 100;
                 rotXNumBox.Value = rotYNumBox.Value = rotZNumBox.Value = 0;
@@ -1493,7 +1504,9 @@ public partial class MainWindow : Form
                 break;
             case 3:
                 SelectedMeshIndices = UpdateIndicesList(meshTable, SelectedMeshIndices, columnIndex, rowIndex, ref MeshIsSelected);
+                CheckDummyCordinateView();
                 UpdateSelectedMeshes();
+
                 break;
             case 4:
                 var mesh = Flver.Meshes[rowIndex];
@@ -1514,6 +1527,23 @@ public partial class MainWindow : Form
         }
     }
 
+    private void CheckDummyCordinateView()
+    {
+        if (worldOriginCordsDummy.Checked)
+        {
+            worldOriginCordsDummy.Checked = ShowWorldOriginCordsDummy;
+        }
+
+        if (SelectedMeshIndices.Count != 0 || SelectedDummyIndices.Count > 1)
+        {
+            worldOriginCordsDummy.Visible = false;
+        }
+        else
+        {
+            worldOriginCordsDummy.Visible = true;
+        }
+    }
+
     private void MeshTable_CellContentClick(object sender, DataGridViewCellEventArgs e)
     {
         MeshTableCheckboxSelected(e.RowIndex, e.ColumnIndex);
@@ -1526,6 +1556,7 @@ public partial class MainWindow : Form
         {
             case 4:
                 SelectedDummyIndices = UpdateIndicesList(dummiesTable, SelectedDummyIndices, columnIndex, rowIndex, ref DummyIsSelected);
+                CheckDummyCordinateView();
                 UpdateSelectedDummies();
                 break;
             case 5:
@@ -1617,10 +1648,15 @@ public partial class MainWindow : Form
 
         float[] totals = CalculateMeshTotals();
 
-        MeshTansformAction action = new(Flver, SelectedMeshIndices.ToList(), SelectedDummyIndices.ToList(), offset, totals, nbi, PrevNumVal, newNumVal, uniformScaleCheckbox.Checked, vectorModeCheckbox.Checked, (inputValue, prevNum, uniform) =>
+        MeshTansformAction action = new(Flver, SelectedMeshIndices.ToList(), SelectedDummyIndices.ToList(), offset, totals, nbi, PrevNumVal, newNumVal, uniformScaleCheckbox.Checked, vectorModeCheckbox.Checked, (inputValue, prevNum, uniform, meshes, dummies) =>
         {
             var action = () =>
             {
+                SelectedDummyIndices = new(dummies);
+                SelectedMeshIndices = new(meshes);
+
+                SafeUpdateUI();
+
                 IsSettingDefaultInfo = true;
 
                 numBox.Value = inputValue;
@@ -3175,5 +3211,10 @@ public partial class MainWindow : Form
     private void importToolStripMenuItem_Click(object sender, EventArgs e)
     {
 
+    }
+
+    private void checkBox1_CheckedChanged(object sender, EventArgs e)
+    {
+        UpdateSelectedDummies();
     }
 }
