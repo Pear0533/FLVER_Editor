@@ -1525,7 +1525,7 @@ public partial class MainWindow : Form
 
     private void CheckDummyCordinateView()
     {
-        if(worldOriginCordsDummy.Checked)
+        if (worldOriginCordsDummy.Checked)
         {
             worldOriginCordsDummy.Checked = ShowWorldOriginCordsDummy;
         }
@@ -1644,10 +1644,15 @@ public partial class MainWindow : Form
 
         float[] totals = CalculateMeshTotals();
 
-        MeshTansformAction action = new(Flver, SelectedMeshIndices.ToList(), SelectedDummyIndices.ToList(), offset, totals, nbi, PrevNumVal, newNumVal, uniformScaleCheckbox.Checked, vectorModeCheckbox.Checked, (inputValue, prevNum, uniform) =>
+        MeshTansformAction action = new(Flver, SelectedMeshIndices.ToList(), SelectedDummyIndices.ToList(), offset, totals, nbi, PrevNumVal, newNumVal, uniformScaleCheckbox.Checked, vectorModeCheckbox.Checked, (inputValue, prevNum, uniform, meshes, dummies) =>
         {
             var action = () =>
             {
+                SelectedDummyIndices = new(dummies);
+                SelectedMeshIndices = new(meshes);
+
+                SafeUpdateUI();
+
                 IsSettingDefaultInfo = true;
 
                 numBox.Value = inputValue;
