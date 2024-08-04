@@ -87,12 +87,13 @@ public class ImportMeshesToFlverAction : TransformAction
         flver.Meshes.RemoveRange(meshesCount, meshesLength);
         flver.Nodes.RemoveRange(nodesCount, nodeLength);
 
-
+        /*
         foreach ( var mesh in meshes)
         {
             var item = mesh.Key;
             FlipFaceSet(item);
         }
+        */
 
         flver.Skeletons = oldSkeleton;
 
