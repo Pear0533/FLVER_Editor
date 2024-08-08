@@ -101,6 +101,7 @@ namespace FLVER_Editor
             cm.Items.Add("Check Vertex", null, delegate { DisplayVerticesInfo(); });
             cm.Items.Add("Edit Vertex", null, delegate { EditVerticesInfo(); });
             cm.Items.Add("Delete Selected Vertex's Faceset", null, delegate { DeleteVertex(); });
+            cm.Items.Add("Delete All connected Vertices' Facesets", null, delegate { DeleteConnectedVertices(); });
             cm.Items.Add("Delete Vertices Above", null, delegate { DeleteVertexAbove(); });
             cm.Items.Add("Delete Vertices Below", null, delegate { DeleteVertexBelow(); });
             f.ContextMenuStrip = cm;
@@ -220,6 +221,14 @@ namespace FLVER_Editor
             FLVER2.Mesh mesh = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
             int index = targetVertexInfo.VertexIndex;
             DeleteVertexAction action = new DeleteVertexAction(mesh, index, () => MainWindow.UpdateMesh());
+            ActionManager.Apply(action);
+        }
+
+        private void DeleteConnectedVertices()
+        {
+            FLVER2.Mesh mesh = MainWindow.Flver.Meshes[targetVertexInfo.MeshIndex];
+            int index = targetVertexInfo.VertexIndex;
+            DeleteConnectedVerticesAction action = new DeleteConnectedVerticesAction(mesh, index, () => MainWindow.UpdateMesh());
             ActionManager.Apply(action);
         }
 
