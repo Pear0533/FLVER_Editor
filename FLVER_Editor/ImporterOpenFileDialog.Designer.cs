@@ -42,6 +42,7 @@
             meshSelector = new ListBox();
             affectAllMeshesCheckbox = new CheckBox();
             contextMenuStrip1 = new ContextMenuStrip(components);
+            importSkeletonButton = new Button();
             importOptionsGroupBox.SuspendLayout();
             groupBox1.SuspendLayout();
             mtdSelectorGroupBox.SuspendLayout();
@@ -52,9 +53,10 @@
             // importOptionsGroupBox
             // 
             importOptionsGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            importOptionsGroupBox.Controls.Add(importSkeletonButton);
+            importOptionsGroupBox.Controls.Add(autoAssignMtdCheckbox);
             importOptionsGroupBox.Controls.Add(groupBox1);
             importOptionsGroupBox.Controls.Add(boneWeightsMessage);
-            importOptionsGroupBox.Controls.Add(autoAssignMtdCheckbox);
             importOptionsGroupBox.Controls.Add(meshSelectorGroupBox);
             importOptionsGroupBox.Location = new Point(9, 6);
             importOptionsGroupBox.Name = "importOptionsGroupBox";
@@ -181,6 +183,15 @@
             // 
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.Size = new Size(61, 4);
+            // 
+            // importSkeletonButton
+            // 
+            importSkeletonButton.Location = new Point(279, 285);
+            importSkeletonButton.Name = "importSkeletonButton";
+            importSkeletonButton.Size = new Size(150, 23);
+            importSkeletonButton.TabIndex = 6;
+            importSkeletonButton.Text = "Import Skeleton Data";
+            importSkeletonButton.UseVisualStyleBackColor = true;
             // 
             // ImporterOpenFileDialog
             // 

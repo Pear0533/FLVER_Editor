@@ -3,6 +3,8 @@ using System.Text.RegularExpressions;
 using FileDialogExtenders;
 using FLVER_Editor.FbxImporter.ViewModels;
 using static FLVER_Editor.Program;
+using FLVER_Editor.Actions;
+using FLVER_Editor;
 
 namespace FLVER_Editor;
 
@@ -19,6 +21,8 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
 
     [DllImport("user32.dll")]
     static extern IntPtr ReleaseWindowDC(IntPtr hWnd);
+
+    private Button importSkeletonButton;
 
     public ImporterOpenFileDialog()
     {
@@ -63,6 +67,8 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         mtdSelector.Enabled = enabled;
         weightingModeSelector.Enabled = enabled;
         autoAssignMtdCheckbox.Enabled = enabled;
+        importSkeletonButton.Enabled = enabled;
+
         if (clearMeshes) Meshes.Clear();
         meshSelector.Items.Clear();
         mtdSelector.Items.Clear();
@@ -140,6 +146,33 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             ModifyMesh(i => i.Value.Weighting = WeightingMode.Convert(weightingModeSelector.SelectedItem.ToString()!));
             AssertBoneWeightsMessageVisibility();
         };
+
+        importSkeletonButton.Click += ImportSkeletonButton_Click;
+    }
+
+    private void ImportSkeletonButton_Click(object sender, EventArgs e)
+    {
+        if (Program.Flver == null)
+        {
+            MessageBox.Show("No FLVER loaded. Please load a FLVER file first.", "Import Skeleton", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        var importedBoneData = Importer.GetCollectedSkeletonBoneData();
+        if (importedBoneData.Count == 0)
+        {
+            MessageBox.Show("No skeleton data available to import.", "Import Skeleton", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        var action = new ImportSkeletonDataAction(Program.Flver, () =>
+        {
+            MainWindow.SafeUpdateUI();
+            MainWindow.UpdateMesh();
+        });
+        ActionManager.Apply(action);
+
+        MessageBox.Show("Skeleton data imported successfully.", "Import Skeleton", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     protected override void OnPaint(PaintEventArgs pe)

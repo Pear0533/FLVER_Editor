@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net7.0-windows</TargetFramework>
@@ -10,22 +9,18 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
-
   <ItemGroup>
     <Content Include="icon.ico" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="AssimpNet" Version="5.0.0-beta1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Pfim" Version="0.11.2" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\SoulsAssetPipeline\SoulsAssetPipeline.csproj" />
     <ProjectReference Include="..\SoulsFormats\SoulsFormats.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="AssimpNet">
       <HintPath>AssimpNet.dll</HintPath>
@@ -82,7 +77,6 @@
       <HintPath>TeximpNet.dll</HintPath>
     </Reference>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="Content\Segoe UI.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -235,5 +229,4 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>
