@@ -957,7 +957,7 @@
             dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 154);
+            dummiesTable.Size = new Size(573, 151);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1089,11 +1089,11 @@
             // worldOriginCordsDummy
             // 
             worldOriginCordsDummy.AutoSize = true;
-            worldOriginCordsDummy.Location = new Point(386, 33);
+            worldOriginCordsDummy.Location = new Point(382, 42);
             worldOriginCordsDummy.Name = "worldOriginCordsDummy";
-            worldOriginCordsDummy.Size = new Size(145, 34);
+            worldOriginCordsDummy.Size = new Size(152, 19);
             worldOriginCordsDummy.TabIndex = 72;
-            worldOriginCordsDummy.Text = "Show Dummy Relative\r\nTo World Origin";
+            worldOriginCordsDummy.Text = "Relative to World Origin";
             worldOriginCordsDummy.UseVisualStyleBackColor = true;
             worldOriginCordsDummy.CheckedChanged += checkBox1_CheckedChanged;
             // 
@@ -1841,7 +1841,7 @@
             texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
             texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(594, 455);
+            texturesTable.Size = new Size(591, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;

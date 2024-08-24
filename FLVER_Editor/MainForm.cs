@@ -1378,6 +1378,7 @@ public partial class MainWindow : Form
 
     private void UpdateSelectedDummies()
     {
+        CheckDummyCordinateView();
         if (IsSettingDefaultInfo) return;
         if (DummyIsSelected)
         {
@@ -1406,6 +1407,7 @@ public partial class MainWindow : Form
 
     private void UpdateSelectedMeshes()
     {
+        CheckDummyCordinateView();
         if (IsSettingDefaultInfo) return;
         if (MeshIsSelected)
         {
@@ -1504,7 +1506,6 @@ public partial class MainWindow : Form
                 break;
             case 3:
                 SelectedMeshIndices = UpdateIndicesList(meshTable, SelectedMeshIndices, columnIndex, rowIndex, ref MeshIsSelected);
-                CheckDummyCordinateView();
                 UpdateSelectedMeshes();
 
                 break;
@@ -1529,19 +1530,7 @@ public partial class MainWindow : Form
 
     private void CheckDummyCordinateView()
     {
-        if (worldOriginCordsDummy.Checked)
-        {
-            worldOriginCordsDummy.Checked = ShowWorldOriginCordsDummy;
-        }
-
-        if (SelectedMeshIndices.Count != 0 || SelectedDummyIndices.Count > 1)
-        {
-            worldOriginCordsDummy.Visible = false;
-        }
-        else
-        {
-            worldOriginCordsDummy.Visible = true;
-        }
+        worldOriginCordsDummy.Visible = SelectedMeshIndices.Count == 0 && SelectedDummyIndices.Count == 1;
     }
 
     private void MeshTable_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -1556,7 +1545,6 @@ public partial class MainWindow : Form
         {
             case 4:
                 SelectedDummyIndices = UpdateIndicesList(dummiesTable, SelectedDummyIndices, columnIndex, rowIndex, ref DummyIsSelected);
-                CheckDummyCordinateView();
                 UpdateSelectedDummies();
                 break;
             case 5:
