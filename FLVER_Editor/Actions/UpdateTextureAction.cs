@@ -32,7 +32,7 @@ public class UpdateTextureAction : TransformAction
         oldTexture = null;
         replacedTexture = null;
 
-        if (Tpf == null) Tpf = new TPF();
+        Tpf ??= new TPF();
         BinderFile? flverBndTpfEntry = flverBnd.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
 
         if (flverBndTpfEntry is not null)

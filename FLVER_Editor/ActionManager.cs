@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FLVER_Editor;
 
@@ -13,11 +14,19 @@ public static class ActionManager
 
     public static void Apply(TransformAction action)
     {
-        action.Execute();
-        UndoStack.Push(action);
-        RedoStack.Clear();
+        try
+        {
+            action.Execute();
+            UndoStack.Push(action);
+            RedoStack.Clear();
 
-        MainWindow.Instance?.UpdateUndoState();
+            MainWindow.Instance?.UpdateUndoState();
+        }
+        catch (Exception e)
+        {
+            e.LogError();
+            throw;
+        }
     }
 
     public static void Undo()
@@ -27,11 +36,20 @@ public static class ActionManager
             return;
         }
 
-        TransformAction action = UndoStack.Pop();
-        action.Undo();
-        RedoStack.Push(action);
+        try
+        {
+            TransformAction action = UndoStack.Pop();
+            action.Undo();
+            RedoStack.Push(action);
 
-        MainWindow.Instance?.UpdateRedoState();
+            MainWindow.Instance?.UpdateRedoState();
+        }
+        catch (Exception e)
+        {
+            e.LogError();
+            throw;
+        }
+
     }
 
     public static void Redo()
@@ -40,12 +58,19 @@ public static class ActionManager
         {
             return;
         }
+        try
+        {
+            TransformAction action = RedoStack.Pop();
+            action.Execute();
+            UndoStack.Push(action);
 
-        TransformAction action = RedoStack.Pop();
-        action.Execute();
-        UndoStack.Push(action);
-
-        MainWindow.Instance?.UpdateUndoState();
+            MainWindow.Instance?.UpdateUndoState();
+        }
+        catch (Exception e)
+        {
+            e.LogError();
+            throw;
+        }
     }
 
     public static void Clear()
