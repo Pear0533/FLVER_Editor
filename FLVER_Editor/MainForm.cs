@@ -1127,6 +1127,13 @@ public partial class MainWindow : Form
         if (IsFLVERPath(FlverFilePath))
         {
             Flver = FLVER2.Read(FlverFilePath);
+            string tpfFilePath = Path.GetFileNameWithoutExtension(RemoveIndexSuffix(FlverFilePath)) + ".tpf";
+
+            if (File.Exists(tpfFilePath))
+            {
+                Tpf = TPF.Read(tpfFilePath);
+            }
+
             Program.Flver = Flver;
         }
         else
@@ -1322,7 +1329,7 @@ public partial class MainWindow : Form
         var filename = dialog.FileName;
         var oldfilename = Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path;
 
-        UpdateTextureAction action = new(FlverBnd, filename, Path.GetFileNameWithoutExtension(oldfilename), (filename) =>
+        UpdateTextureAction action = new(FlverBnd, FlverFilePath, filename, Path.GetFileNameWithoutExtension(oldfilename), (filename) =>
         {
             if (Path.GetFileNameWithoutExtension(filename) == "")
             {
