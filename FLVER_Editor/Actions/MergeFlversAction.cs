@@ -1,31 +1,30 @@
 ﻿using SoulsFormats;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FLVER_Editor.Actions;
 
 public class MergeFlversAction : TransformAction
 {
+    private readonly string _flverFilePath;
+    private readonly string _newFlverFilePath;
     private readonly FLVER2 flver;
+    private readonly int layoutOffset;
+    private readonly int materialOffset;
+    private readonly int meshOffset;
     private readonly FLVER2 newFlver;
     private readonly Action refresher;
-    private readonly int materialOffset;
-    private readonly int layoutOffset;
-    private readonly int meshOffset;
 
-    public MergeFlversAction(FLVER2 currentFlver, FLVER2 newFlver, Action refresher)
+    public MergeFlversAction(FLVER2 currentFlver, FLVER2 newFlver, string flverFilePath, string newFlverFilePath, Action refresher)
     {
         materialOffset = currentFlver.Materials.Count;
         meshOffset = currentFlver.Meshes.Count;
         layoutOffset = currentFlver.BufferLayouts.Count;
-        this.flver = currentFlver;
+        flver = currentFlver;
+        _flverFilePath = flverFilePath;
+        _newFlverFilePath = newFlverFilePath;
         this.newFlver = newFlver;
         this.refresher = refresher;
     }
+
     public override void Execute()
     {
         Dictionary<int, int> newFlverToCurrentFlver = new();
@@ -52,9 +51,32 @@ public class MergeFlversAction : TransformAction
                 }
             }
         }
+        foreach (FLVER2.Material material in newFlver.Materials)
+            material.GXIndex += flver.GXLists.Count;
         flver.BufferLayouts = flver.BufferLayouts.Concat(newFlver.BufferLayouts).ToList();
         flver.Meshes = flver.Meshes.Concat(newFlver.Meshes).ToList();
         flver.Materials = flver.Materials.Concat(newFlver.Materials).ToList();
+        flver.GXLists = flver.GXLists.Concat(newFlver.GXLists).ToList();
+
+        // TODO: WIP
+        TPF newFlverTpf = new();
+        if (_newFlverFilePath.EndsWith(".dcx"))
+        {
+            BND4? newFlverBnd = BND4.Read(_newFlverFilePath);
+            BinderFile? newFlverTpfEntry = newFlverBnd.Files.Find(i => i.Name.EndsWith(".tpf"));
+            if (newFlverTpfEntry != null) newFlverTpf = TPF.Read(newFlverTpfEntry.Bytes);
+        }
+        else if (_newFlverFilePath.EndsWith(".flver"))
+        {
+            newFlverTpf = TPF.Read(_newFlverFilePath.Replace(".flver", ".tpf"));
+        }
+        if (Program.Tpf == null)
+            Program.Tpf = TPF.Read(_flverFilePath.Replace(".flver", ".tpf"));
+        foreach (TPF.Texture tex in newFlverTpf)
+        {
+            if (Program.Tpf.Textures.All(i => i.Name != tex.Name))
+                MainWindow.InjectTextureIntoTPF(tex);
+        }
         refresher.Invoke();
     }
 
