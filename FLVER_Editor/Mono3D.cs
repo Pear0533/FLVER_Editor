@@ -296,6 +296,7 @@ namespace FLVER_Editor
             {
                 try
                 {
+                    textureMap.Remove(t.Name);
                     textureMap.Add(t.Name, GetTextureFromBitmap(ReadDdsStreamToBitmap(new MemoryStream(t.Bytes)), GraphicsDevice));
                 }
                 catch { }
@@ -358,7 +359,6 @@ namespace FLVER_Editor
             MainWindow.UpdateTexturesTable();
             MainWindow.UpdateMesh();
 
-            /*
             string rawFilePath = FilePath;
             rawFilePath = RemoveIndexSuffix(rawFilePath);
             rawFilePath = rawFilePath[..rawFilePath.IndexOf('.', StringComparison.Ordinal)];
@@ -369,7 +369,6 @@ namespace FLVER_Editor
                 Program.Tpf = TPF.Read(tpfFilePath);
                 ReadTPFTextureEntries(Program.Tpf);
             }
-            */
         }
 
         /// <summary>
@@ -694,10 +693,13 @@ namespace FLVER_Editor
             {
                 renderMode = RenderMode.Line;
             }
+            // TODO: Decouple rendering meshes and dummies in the viewer... (Pear)
+            /*
             if (state.IsKeyDown(Keys.F2))
             {
                 renderMode = RenderMode.Triangle;
             }
+            */
             if (state.IsKeyDown(Keys.F3))
             {
                 renderMode = RenderMode.Both;

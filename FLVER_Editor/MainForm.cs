@@ -723,6 +723,8 @@ public partial class MainWindow : Form
                     ?? "";
                 if (texturePath == "")
                     texturePath = texList.Find(i => i.Type.Contains("Albedo") && i.Path.Contains("_a"))?.Path ?? "";
+                if (texturePath == "")
+                    texturePath = texList.ElementAtOrDefault(0)?.Path ?? "";
             }
             VertexTexMap vertexTexMap = new()
             {
@@ -2947,7 +2949,7 @@ public partial class MainWindow : Form
     private void CenterMeshToWorld(int nbi)
     {
         float[] totals = CalculateMeshTotals();
-        CenterMeshToWorldAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices).ToList(), SelectedMeshIndices.Select(i => Flver.Dummies[i]).ToList(),
+        CenterMeshToWorldAction action = new(SelectedMeshIndices.SelectMany(i => Flver.Meshes[i].Vertices).ToList(), SelectedDummyIndices.Select(i => Flver.Dummies[i]).ToList(),
             nbi, totals, () => { UpdateMesh(); });
         ActionManager.Apply(action);
     }
