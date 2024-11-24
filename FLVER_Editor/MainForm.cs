@@ -56,7 +56,7 @@ public partial class MainWindow : Form
     /// <summary>
     ///     The current version of the program.
     /// </summary>
-    private const string Version = "2.4";
+    private const string Version = "2.5";
 
     /// <summary>
     ///     The patreon support link for Pear.
@@ -131,7 +131,7 @@ public partial class MainWindow : Form
     /// <summary>
     ///     The path to the first loaded FLVER2 file in Arguments.
     /// </summary>
-    private static string FlverFilePath;
+    public static string FlverFilePath;
 
     /// <summary>
     ///     The path to the loaded MatBins' BND4 if applicable.
@@ -1272,45 +1272,6 @@ public partial class MainWindow : Form
         ToggleCheckboxesInDataTable(materialsTable, MaterialDeleteCbIndex);
     }
 
-    private static void InjectTextureIntoTPF(string textureFilePath)
-    {
-        if (Tpf == null) Tpf = new TPF();
-        BinderFile? flverBndTpfEntry = FlverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
-        if (flverBndTpfEntry is null) return;
-        byte[] ddsBytes = File.ReadAllBytes(textureFilePath);
-        DDS dds = new(ddsBytes);
-        byte formatByte = 107;
-        try
-        {
-            formatByte = (byte)Enum.Parse(typeof(TextureFormats), dds.header10.dxgiFormat.ToString());
-        }
-        catch { }
-        TPF.Texture texture = new(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, File.ReadAllBytes(textureFilePath));
-        int existingTextureIndex = Tpf.Textures.FindIndex(i => i.Name == texture.Name);
-        if (existingTextureIndex != -1)
-        {
-            Tpf.Textures.RemoveAt(existingTextureIndex);
-            Tpf.Textures.Insert(existingTextureIndex, texture);
-        }
-        else Tpf.Textures.Add(texture);
-        FlverBnd.Files[FlverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Tpf.Write();
-    }
-
-    public static void InjectTextureIntoTPF(TPF.Texture texture)
-    {
-        if (Tpf == null) Tpf = new TPF();
-        BinderFile? flverBndTpfEntry = FlverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
-        int existingTextureIndex = Tpf.Textures.FindIndex(i => i.Name == texture.Name);
-        if (existingTextureIndex != -1)
-        {
-            Tpf.Textures.RemoveAt(existingTextureIndex);
-            Tpf.Textures.Insert(existingTextureIndex, texture);
-        }
-        else Tpf.Textures.Add(texture);
-        if (flverBndTpfEntry == null) Tpf.Write(FlverFilePath.Replace(".flver", ".tpf"));
-        else FlverBnd.Files[FlverBnd.Files.IndexOf(flverBndTpfEntry)].Bytes = Tpf.Write();
-    }
-
     private void TexturesTableButtonClicked(object sender, DataGridViewCellEventArgs e)
     {
         if (e.RowIndex < 0 || e.ColumnIndex != 2) return;
@@ -1319,7 +1280,7 @@ public partial class MainWindow : Form
         //UpdateUndoState();
         string filename = dialog.FileName;
         string? oldfilename = Flver.Materials[SelectedMaterialIndex].Textures[e.RowIndex].Path;
-        UpdateTextureAction action = new(FlverBnd, FlverFilePath, filename, Path.GetFileNameWithoutExtension(oldfilename), filename =>
+        UpdateTextureAction action = new(FlverBnd, FlverFilePath, filename, Path.GetFileNameWithoutExtension(oldfilename), null, filename =>
         {
             if (Path.GetFileNameWithoutExtension(filename) == "")
             {

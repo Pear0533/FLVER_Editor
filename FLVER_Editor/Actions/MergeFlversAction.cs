@@ -75,7 +75,10 @@ public class MergeFlversAction : TransformAction
         foreach (TPF.Texture tex in newFlverTpf)
         {
             if (Program.Tpf.Textures.All(i => i.Name != tex.Name))
-                MainWindow.InjectTextureIntoTPF(tex);
+            {
+                UpdateTextureAction action = new(MainWindow.FlverBnd, MainWindow.FlverFilePath, "", tex.Name, tex, _ => { });
+                ActionManager.Apply(action);
+            }
         }
         refresher.Invoke();
     }

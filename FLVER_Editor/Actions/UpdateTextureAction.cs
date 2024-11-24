@@ -20,12 +20,13 @@ public class UpdateTextureAction : TransformAction
     private TPF.Texture? replacedTexture;
     private int textureIndex;
 
-    public UpdateTextureAction(BND4? flverBnd, string flverFilePath, string textureFilePath, string oldfilename, Action<string> refresher)
+    public UpdateTextureAction(BND4? flverBnd, string flverFilePath, string textureFilePath, string oldfilename, TPF.Texture? newTexture, Action<string> refresher)
     {
         this.flverBnd = flverBnd;
         this.flverFilePath = flverFilePath;
         this.textureFilePath = textureFilePath;
         this.oldfilename = oldfilename;
+        this.newTexture = newTexture;
         windowRefresh = refresher;
     }
 
@@ -37,16 +38,19 @@ public class UpdateTextureAction : TransformAction
         Tpf ??= new TPF();
         BinderFile? flverBndTpfEntry = flverBnd?.Files.FirstOrDefault(i => i.Name.EndsWith(".tpf"));
 
-        byte[] ddsBytes = File.ReadAllBytes(textureFilePath);
-        DDS dds = new(ddsBytes);
-        byte formatByte = 107;
-        try
+        if (textureFilePath != "")
         {
-            formatByte = (byte)Enum.Parse(typeof(TextureFormats), dds.header10.dxgiFormat.ToString());
+            byte[] ddsBytes = File.ReadAllBytes(textureFilePath);
+            DDS dds = new(ddsBytes);
+            byte formatByte = 107;
+            try
+            {
+                formatByte = (byte)Enum.Parse(typeof(TextureFormats), dds.header10.dxgiFormat.ToString());
+            }
+            catch { }
+            newTexture = new(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, File.ReadAllBytes(textureFilePath));
         }
-        catch { }
 
-        newTexture = new(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, File.ReadAllBytes(textureFilePath));
         textureIndex = Tpf.Textures.FindIndex(i => i.Name == newTexture.Name);
 
         var oldTextureIndex = Tpf.Textures.FindIndex(i => i.Name == oldfilename);
