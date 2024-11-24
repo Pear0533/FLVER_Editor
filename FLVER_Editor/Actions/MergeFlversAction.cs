@@ -58,7 +58,7 @@ public class MergeFlversAction : TransformAction
         flver.Materials = flver.Materials.Concat(newFlver.Materials).ToList();
         flver.GXLists = flver.GXLists.Concat(newFlver.GXLists).ToList();
 
-        // TODO: WIP
+        // TODO: WIP (Pear)
         TPF newFlverTpf = new();
         if (_newFlverFilePath.EndsWith(".dcx"))
         {

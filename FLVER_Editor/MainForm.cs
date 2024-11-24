@@ -711,18 +711,19 @@ public partial class MainWindow : Form
                 Vertices.Add(Flver.Meshes[i].Vertices[j]);
                 VerticesInfo.Add(new VertexInfo { MeshIndex = i, VertexIndex = j });
             }
+            string texturePath = "";
             FLVER2.Material currMaterial = Flver.Materials.ElementAtOrDefault(Flver.Meshes[i].MaterialIndex);
-            if (currMaterial == null) continue;
-            List<FLVER2.Texture> texList = currMaterial.Textures;
-            if (texList.Count <= 0) continue;
-            // TODO: WIP (Pear)
-            // TODO: What we really need to do is merge any detailblend textures together into one texture and display it... (Pear)
-            if (!texList.Any(i => i.Path != "")) continue;
-            string texturePath = texList.Find(i => i.Type.Contains("Albedo")
-                    && i.Path.Contains(GetModelIDFromName(FlverFilePath).ToString()))?.Path
-                ?? "";
-            if (texturePath == "")
-                texturePath = texList.Find(i => i.Type.Contains("Albedo") && i.Path.Contains("_a"))?.Path ?? "";
+            if (currMaterial != null)
+            {
+                List<FLVER2.Texture> texList = currMaterial.Textures;
+                // TODO: WIP (Pear)
+                // TODO: What we really need to do is merge any detailblend textures together into one texture and display it... (Pear)
+                texturePath = texList.Find(i => i.Type.Contains("Albedo")
+                        && i.Path.Contains(GetModelIDFromName(FlverFilePath).ToString()))?.Path
+                    ?? "";
+                if (texturePath == "")
+                    texturePath = texList.Find(i => i.Type.Contains("Albedo") && i.Path.Contains("_a"))?.Path ?? "";
+            }
             VertexTexMap vertexTexMap = new()
             {
                 textureName = Path.GetFileNameWithoutExtension(texturePath),
