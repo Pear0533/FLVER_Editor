@@ -81,12 +81,6 @@
             meshPagePanelsContainer = new SplitContainer();
             meshPageTablesContainer = new SplitContainer();
             meshTable = new DataGridView();
-            Column1 = new DataGridViewTextBoxColumn();
-            Column2 = new DataGridViewTextBoxColumn();
-            Column3 = new DataGridViewButtonColumn();
-            Column4 = new DataGridViewCheckBoxColumn();
-            Column22 = new DataGridViewButtonColumn();
-            Column21 = new DataGridViewCheckBoxColumn();
             label4 = new Label();
             label13 = new Label();
             addDummyButton = new Button();
@@ -185,6 +179,12 @@
             searchBoxStr = new Label();
             meshTabDataTableSelector = new ComboBox();
             displayToolTip = new ToolTip(components);
+            Column1 = new DataGridViewTextBoxColumn();
+            Column2 = new DataGridViewTextBoxColumn();
+            Column3 = new DataGridViewButtonColumn();
+            Column4 = new DataGridViewCheckBoxColumn();
+            Column22 = new DataGridViewButtonColumn();
+            Column21 = new DataGridViewCheckBoxColumn();
             ribbon.SuspendLayout();
             multiSelectMenu.SuspendLayout();
             meshTabPage.SuspendLayout();
@@ -843,54 +843,6 @@
             meshTable.CellContentDoubleClick += MeshTable_CellContentDoubleClick;
             meshTable.CellValueChanged += MeshTableCellValueChanged;
             // 
-            // Column1
-            // 
-            Column1.Frozen = true;
-            Column1.HeaderText = "Index";
-            Column1.MinimumWidth = 8;
-            Column1.Name = "Column1";
-            Column1.ReadOnly = true;
-            Column1.Width = 61;
-            // 
-            // Column2
-            // 
-            Column2.Frozen = true;
-            Column2.HeaderText = "Mesh Name";
-            Column2.MinimumWidth = 8;
-            Column2.Name = "Column2";
-            Column2.ReadOnly = true;
-            Column2.Width = 96;
-            // 
-            // Column3
-            // 
-            Column3.HeaderText = "Simple Skin";
-            Column3.MinimumWidth = 8;
-            Column3.Name = "Column3";
-            Column3.Resizable = DataGridViewTriState.True;
-            Column3.SortMode = DataGridViewColumnSortMode.Automatic;
-            Column3.Width = 93;
-            // 
-            // Column4
-            // 
-            Column4.HeaderText = "Select";
-            Column4.MinimumWidth = 8;
-            Column4.Name = "Column4";
-            Column4.Width = 44;
-            // 
-            // Column22
-            // 
-            Column22.HeaderText = "Duplicate";
-            Column22.Name = "Column22";
-            Column22.Resizable = DataGridViewTriState.True;
-            Column22.Width = 63;
-            // 
-            // Column21
-            // 
-            Column21.HeaderText = "Hide";
-            Column21.Name = "Column21";
-            Column21.Resizable = DataGridViewTriState.True;
-            Column21.Width = 38;
-            // 
             // label4
             // 
             label4.AutoSize = true;
@@ -957,7 +909,7 @@
             dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 151);
+            dummiesTable.Size = new Size(573, 149);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1370,7 +1322,6 @@
             rotZNumBox.Location = new Point(190, 63);
             rotZNumBox.Margin = new Padding(4, 3, 4, 3);
             rotZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            rotZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotZNumBox.Name = "rotZNumBox";
             rotZNumBox.Size = new Size(85, 24);
             rotZNumBox.TabIndex = 13;
@@ -1388,7 +1339,6 @@
             scaleZNumBox.Location = new Point(190, 33);
             scaleZNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            scaleZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleZNumBox.Name = "scaleZNumBox";
             scaleZNumBox.Size = new Size(85, 24);
             scaleZNumBox.TabIndex = 13;
@@ -1406,7 +1356,6 @@
             rotYNumBox.Location = new Point(97, 63);
             rotYNumBox.Margin = new Padding(4, 3, 4, 3);
             rotYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            rotYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotYNumBox.Name = "rotYNumBox";
             rotYNumBox.Size = new Size(85, 24);
             rotYNumBox.TabIndex = 12;
@@ -1424,7 +1373,6 @@
             transZNumBox.Location = new Point(190, 3);
             transZNumBox.Margin = new Padding(4, 3, 4, 3);
             transZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            transZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transZNumBox.Name = "transZNumBox";
             transZNumBox.Size = new Size(85, 24);
             transZNumBox.TabIndex = 13;
@@ -1442,7 +1390,6 @@
             rotXNumBox.Location = new Point(4, 63);
             rotXNumBox.Margin = new Padding(4, 3, 4, 3);
             rotXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            rotXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotXNumBox.Name = "rotXNumBox";
             rotXNumBox.Size = new Size(85, 24);
             rotXNumBox.TabIndex = 11;
@@ -1460,7 +1407,6 @@
             scaleYNumBox.Location = new Point(97, 33);
             scaleYNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            scaleYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleYNumBox.Name = "scaleYNumBox";
             scaleYNumBox.Size = new Size(85, 24);
             scaleYNumBox.TabIndex = 12;
@@ -1478,7 +1424,6 @@
             scaleXNumBox.Location = new Point(4, 33);
             scaleXNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            scaleXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleXNumBox.Name = "scaleXNumBox";
             scaleXNumBox.Size = new Size(85, 24);
             scaleXNumBox.TabIndex = 11;
@@ -1496,7 +1441,6 @@
             transXNumBox.Location = new Point(4, 3);
             transXNumBox.Margin = new Padding(4, 3, 4, 3);
             transXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            transXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transXNumBox.Name = "transXNumBox";
             transXNumBox.Size = new Size(85, 24);
             transXNumBox.TabIndex = 11;
@@ -1514,7 +1458,6 @@
             transYNumBox.Location = new Point(97, 3);
             transYNumBox.Margin = new Padding(4, 3, 4, 3);
             transYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            transYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transYNumBox.Name = "transYNumBox";
             transYNumBox.Size = new Size(85, 24);
             transYNumBox.TabIndex = 12;
@@ -1841,7 +1784,7 @@
             texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
             texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(591, 455);
+            texturesTable.Size = new Size(589, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -2043,6 +1986,52 @@
             meshTabDataTableSelector.Size = new Size(144, 23);
             meshTabDataTableSelector.TabIndex = 1;
             meshTabDataTableSelector.SelectedIndexChanged += MeshTabDataTableSelector_SelectedIndexChanged;
+            // 
+            // Column1
+            // 
+            Column1.Frozen = true;
+            Column1.HeaderText = "Index";
+            Column1.MinimumWidth = 8;
+            Column1.Name = "Column1";
+            Column1.ReadOnly = true;
+            Column1.Width = 61;
+            // 
+            // Column2
+            // 
+            Column2.HeaderText = "Material Name";
+            Column2.MinimumWidth = 8;
+            Column2.Name = "Column2";
+            Column2.Width = 110;
+            // 
+            // Column3
+            // 
+            Column3.HeaderText = "Simple Skin";
+            Column3.MinimumWidth = 8;
+            Column3.Name = "Column3";
+            Column3.Resizable = DataGridViewTriState.True;
+            Column3.SortMode = DataGridViewColumnSortMode.Automatic;
+            Column3.Width = 93;
+            // 
+            // Column4
+            // 
+            Column4.HeaderText = "Select";
+            Column4.MinimumWidth = 8;
+            Column4.Name = "Column4";
+            Column4.Width = 44;
+            // 
+            // Column22
+            // 
+            Column22.HeaderText = "Duplicate";
+            Column22.Name = "Column22";
+            Column22.Resizable = DataGridViewTriState.True;
+            Column22.Width = 63;
+            // 
+            // Column21
+            // 
+            Column21.HeaderText = "Hide";
+            Column21.Name = "Column21";
+            Column21.Resizable = DataGridViewTriState.True;
+            Column21.Width = 38;
             // 
             // MainWindow
             // 
@@ -2266,12 +2255,6 @@
         private ToolStripMenuItem forsakenSilverFLVEREditor10ToolStripMenuItem;
         private ToolStripMenuItem importCtrlIToolStripMenuItem;
         private CheckBox useWorldOriginCheckbox;
-        private DataGridViewTextBoxColumn Column1;
-        private DataGridViewTextBoxColumn Column2;
-        private DataGridViewButtonColumn Column3;
-        private DataGridViewCheckBoxColumn Column4;
-        private DataGridViewButtonColumn Column22;
-        private DataGridViewCheckBoxColumn Column21;
         private ToolStripMenuItem importGhost;
         private ToolStripMenuItem removeGhost;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
@@ -2290,5 +2273,11 @@
         private ToolStripMenuItem redoToolStripMenuItem;
         private ToolStripMenuItem massKlausGeneralSupportToolStripMenuItem;
         private CheckBox worldOriginCordsDummy;
+        private DataGridViewTextBoxColumn Column1;
+        private DataGridViewTextBoxColumn Column2;
+        private DataGridViewButtonColumn Column3;
+        private DataGridViewCheckBoxColumn Column4;
+        private DataGridViewButtonColumn Column22;
+        private DataGridViewCheckBoxColumn Column21;
     }
 }

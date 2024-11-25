@@ -1958,29 +1958,39 @@ public partial class MainWindow : Form
 
     private void MeshTableCellValueChanged(object sender, DataGridViewCellEventArgs e)
     {
-        if (IsSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex) || e.ColumnIndex != 2) return;
-        int index = meshTable.FirstDisplayedScrollingRowIndex;
+        if (IsSettingDefaultInfo || !IsTextBoxCell(sender, e.ColumnIndex, e.RowIndex)) return;
+        int index = e.ColumnIndex;
         try
         {
-            //UpdateUndoState();
-            string? boneWeightValue = meshTable[2, e.RowIndex].Value?.ToString();
-            if (boneWeightValue != null)
+            switch (index)
             {
-                int newBoneWeight = int.Parse(boneWeightValue);
-                MeshTableCellValueChangedAction action = new(Flver, newBoneWeight, e.RowIndex, meshTable.FirstDisplayedScrollingRowIndex, index, targetIndex =>
-                {
-                    SafeUpdateUI();
-                    UpdateMesh();
-                    if (meshTable.InvokeRequired)
+                case 1:
+                    string? newMaterialName = meshTable[1, e.RowIndex].Value?.ToString();
+                    string oldMaterialName = "";
+                    FLVER2.Mesh? mesh = Flver.Meshes.ElementAtOrDefault(e.RowIndex);
+                    if (mesh != null)
                     {
-                        meshTable.Invoke(() => meshTable.FirstDisplayedScrollingRowIndex = index);
+                        FLVER2.Material? material = Flver.Materials.ElementAtOrDefault(mesh.MaterialIndex);
+                        if (material != null) oldMaterialName = material.Name;
                     }
-                    else
+                    if (newMaterialName != null)
                     {
-                        meshTable.FirstDisplayedScrollingRowIndex = index;
+                        MeshTableCellValueChangedAction action = new(Flver, oldMaterialName, newMaterialName, e.RowIndex, () =>
+                        {
+                            SafeUpdateUI();
+                            UpdateMesh();
+                            if (meshTable.InvokeRequired)
+                            {
+                                meshTable.Invoke(() => meshTable.FirstDisplayedScrollingRowIndex = index);
+                            }
+                            else
+                            {
+                                meshTable.FirstDisplayedScrollingRowIndex = index;
+                            }
+                        });
+                        ActionManager.Apply(action);
                     }
-                });
-                ActionManager.Apply(action);
+                    break;
             }
         }
         catch { }
