@@ -66,6 +66,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         if (clearMeshes) Meshes.Clear();
         meshSelector.Items.Clear();
         mtdSelector.Items.Clear();
+        weightingModeSelector.Items.Clear();
         meshSelector.ResetText();
         mtdSelector.ResetText();
     }

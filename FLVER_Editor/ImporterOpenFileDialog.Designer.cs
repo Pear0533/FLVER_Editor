@@ -138,7 +138,7 @@
             // autoAssignMtdCheckbox
             // 
             autoAssignMtdCheckbox.AutoSize = true;
-            autoAssignMtdCheckbox.Location = new Point(279, 310);
+            autoAssignMtdCheckbox.Location = new Point(279, 210);
             autoAssignMtdCheckbox.Name = "autoAssignMtdCheckbox";
             autoAssignMtdCheckbox.Size = new Size(216, 19);
             autoAssignMtdCheckbox.TabIndex = 5;

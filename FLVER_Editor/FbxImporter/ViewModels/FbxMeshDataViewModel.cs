@@ -137,7 +137,7 @@ public class FbxMeshDataViewModel
         {
             faceSets.Add(new FLVER2.FaceSet
             {
-                Indices = Data.VertexIndices,
+                Indices = Data.VertexIndices.ToList(),
                 CullBackfaces = false,
                 Flags = faceSetFlag,
                 TriangleStrip = false
