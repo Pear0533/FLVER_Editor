@@ -1,98 +1,97 @@
-﻿using SoulsFormats;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FLVER_Editor.FbxImporter.ViewModels;
+using SoulsFormats;
 
 namespace FLVER_Editor.Actions;
 
 public class MaterialsTableOkAction : TransformAction
 {
-    private readonly Dictionary<int, FLVER2.Material> replacedMaterials = new();
     private readonly Dictionary<int, FLVER2.Material> deletedMaterials = new();
     private readonly FLVER2 flver;
-    private readonly List<FLVER2.Material> materialsToReplace;
     private readonly List<FLVER2.Material> materialsToDelete;
+    private readonly List<FLVER2.Material> materialsToReplace;
     private readonly FLVER2.Material? newMaterial;
+    private readonly string newMaterialMTD;
     private readonly Action<bool>? refresher;
+    private readonly Dictionary<int, FLVER2.Material> replacedMaterials = new();
 
-    public MaterialsTableOkAction(FLVER2 flver, List<FLVER2.Material> materialsToReplace, List<FLVER2.Material> materialsToDelete, FLVER2.Material? newMaterial, Action<bool>? refresher = null)
+    public MaterialsTableOkAction(FLVER2 flver, List<FLVER2.Material> materialsToReplace, List<FLVER2.Material> materialsToDelete, FLVER2.Material? newMaterial,
+        string newMaterialMTD, Action<bool>? refresher = null)
     {
         this.flver = flver;
         this.materialsToReplace = materialsToReplace;
         this.materialsToDelete = materialsToDelete;
         this.newMaterial = newMaterial;
+        this.newMaterialMTD = newMaterialMTD;
         this.refresher = refresher;
-
     }
 
     public override void Execute()
     {
         deletedMaterials.Clear();
         replacedMaterials.Clear();
-
-        var displayMissingPresetDialog = false;
-
-        foreach (var material in materialsToReplace)
+        bool displayMissingPresetDialog = false;
+        foreach (FLVER2.Material material in materialsToReplace)
         {
-            if (newMaterial == null)
+            int materialIndex = flver.Materials.IndexOf(material);
+            if (Program.MTDs.Contains(newMaterialMTD))
             {
-                displayMissingPresetDialog = true;
-                break;
+                flver.Materials[materialIndex].MTD = newMaterialMTD;
+                // TODO: Move this to the method that fixes buffer layouts...
+                flver.Materials[materialIndex].Textures = new List<FLVER2.Texture>(Program.MaterialInfoBank.MaterialDefs[newMaterialMTD].TextureChannels
+                    .Values.Select(x => new FLVER2.Texture { Type = x }));
             }
-
-            var materialIndex = flver.Materials.IndexOf(material);
-            string previousMaterialName = flver.Materials[materialIndex].Name;
-
-            replacedMaterials.Add(materialIndex, flver.Materials[materialIndex]);
-            flver.Materials[materialIndex] = newMaterial;
-            flver.Materials[materialIndex].Name = previousMaterialName;
+            else
+            {
+                if (newMaterial == null)
+                {
+                    displayMissingPresetDialog = true;
+                    break;
+                }
+                string previousMaterialName = flver.Materials[materialIndex].Name;
+                replacedMaterials.Add(materialIndex, flver.Materials[materialIndex]);
+                flver.Materials[materialIndex] = newMaterial;
+                flver.Materials[materialIndex].Name = previousMaterialName;
+            }
         }
-
         foreach (FLVER2.Material material in materialsToDelete)
         {
             if (flver.Materials.Count - deletedMaterials.Count == 1)
             {
                 break;
             }
-
-            var materialIndex = flver.Materials.IndexOf(material);
+            int materialIndex = flver.Materials.IndexOf(material);
             deletedMaterials.Add(materialIndex, material);
         }
-
-        foreach (var material in materialsToDelete)
+        foreach (FLVER2.Material material in materialsToDelete)
         {
             if (flver.Materials.Count <= 1)
             {
                 break;
             }
-
-            var materialIndex = flver.Materials.IndexOf(material);
+            int materialIndex = flver.Materials.IndexOf(material);
             flver.Materials.Remove(material);
-
-                foreach (FLVER2.Mesh mesh in flver.Meshes.Where(mesh => mesh.MaterialIndex >= materialIndex))
+            foreach (FLVER2.Mesh mesh in flver.Meshes.Where(mesh => mesh.MaterialIndex >= materialIndex))
                 mesh.MaterialIndex--;
         }
-
+        FbxMeshDataViewModel.FixBufferLayouts();
         refresher?.Invoke(displayMissingPresetDialog);
     }
 
     public override void Undo()
     {
-        foreach (var row in deletedMaterials.OrderBy(x => x.Key))
+        foreach (KeyValuePair<int, FLVER2.Material> row in deletedMaterials.OrderBy(x => x.Key))
         {
             flver.Materials.Insert(row.Key, row.Value);
-
             foreach (FLVER2.Mesh mesh in flver.Meshes.Where(mesh => mesh.MaterialIndex >= row.Key))
                 mesh.MaterialIndex++;
         }
-
-        foreach (var row in replacedMaterials.OrderBy(x => x.Key))
+        foreach (KeyValuePair<int, FLVER2.Material> row in replacedMaterials.OrderBy(x => x.Key))
         {
             flver.Materials[row.Key] = row.Value;
         }
 
+        // TODO: Double check
+        FbxMeshDataViewModel.FixBufferLayouts();
         refresher?.Invoke(false);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using FbxDataExtractor;
 using FbxImporter.Util;
+using FLVER_Editor.FlverFixer.Util;
 using SoulsAssetPipeline.FLVERImporting;
 using SoulsFormats;
 using static FLVER_Editor.Program;
@@ -92,7 +93,7 @@ public class FbxMeshDataViewModel
                 Tangents = vertexData.Tangents.Select(x => x with { Z = x.Z }).ToList(),
                 UVs = vertexData.UVs.Select(x => new Vector3(x.X, 1 - x.Y, 0.0f)).ToList(),
                 // Fbx uses RGBA, SF uses ARGB
-                Colors = vertexData.Colors.Select(x => new FLVER.VertexColor(x.W, x.X, x.Y, x.Z)).ToList(),
+                Colors = vertexData.Colors.Select(x => new FLVER.VertexColor(x.W, x.X, x.Y, x.Z)).ToList()
             };
             FLVER.VertexBoneIndices boneIndices = new();
             FLVER.VertexBoneWeights boneWeights = new();
@@ -219,7 +220,7 @@ public class FbxMeshDataViewModel
         List<int> indices = new();
         foreach (FLVER2.BufferLayout referenceBufferLayout in bufferLayouts)
         {
-            var foundReference = false;
+            bool foundReference = false;
             for (int i = 0; i < flver.BufferLayouts.Count; i++)
             {
                 FLVER2.BufferLayout bufferLayout = flver.BufferLayouts[i];
@@ -230,9 +231,7 @@ public class FbxMeshDataViewModel
                     break;
                 }
                 if (i != flver.BufferLayouts.Count - 1) continue;
-                
             }
-
             if (!foundReference)
             {
                 indices.Add(flver.BufferLayouts.Count);
@@ -240,6 +239,47 @@ public class FbxMeshDataViewModel
             }
         }
         return indices;
+    }
+
+    private void FlipFaceSet()
+    {
+        for (int i = 0; i < Data.VertexIndices.Count; i += 3)
+        {
+            (Data.VertexIndices[i + 1], Data.VertexIndices[i + 2]) =
+                (Data.VertexIndices[i + 2], Data.VertexIndices[i + 1]);
+        }
+    }
+
+    // TODO: Add method summary...
+
+    public static void FixBufferLayouts()
+    {
+        Flver.BufferLayouts = new List<FLVER2.BufferLayout>();
+        Flver.GXLists = new List<FLVER2.GXList>();
+        List<FLVER2.Material> distinctMaterials = Flver.Materials.DistinctBy(x => Path.GetFileName(x.MTD).ToLower()).ToList();
+        foreach (FLVER2.Material distinctMat in distinctMaterials)
+        {
+            FLVER2.GXList gxList = new();
+            gxList.AddRange(MaterialInfoBank
+                .GetDefaultGXItemsForMTD(Path.GetFileName(distinctMat.MTD).ToLower()));
+            if (Flver.IsNewGxList(gxList)) Flver.GXLists.Add(gxList);
+            foreach (FLVER2.Material? mat in Flver.Materials.Where(x => Path.GetFileName(x.MTD).ToLower().EndsWith(Path.GetFileName(distinctMat.MTD).ToLower())))
+                mat.GXIndex = Flver.GXLists.Count - 1;
+        }
+        foreach (FLVER2.Mesh? mesh in Flver.Meshes)
+        {
+            FLVER2MaterialInfoBank.MaterialDef? matDef = MaterialInfoBank.MaterialDefs.Values
+                .FirstOrDefault(x => x.MTD.Equals(
+                    $"{Path.GetFileName(Flver.Materials[mesh.MaterialIndex].MTD).ToLower()}"));
+            if (matDef == null) MainWindow.ShowInformationDialog(Path.GetFileName(Flver.Materials[mesh.MaterialIndex].MTD) + " could not be found in the material info bank.");
+            List<FLVER2.BufferLayout> bufferLayouts = matDef.AcceptableVertexBufferDeclarations[0].Buffers;
+            mesh.Vertices = mesh.Vertices.Select(x => x.Pad(bufferLayouts)).ToList();
+            List<int> layoutIndices = Flver.GetLayoutIndices(bufferLayouts);
+            mesh.VertexBuffers = layoutIndices.Select(x => new FLVER2.VertexBuffer(x)).ToList();
+            string name = Path.GetFileName(MainWindow.FlverFilePath);
+            if (!Path.GetFileName(MainWindow.FlverFilePath).StartsWith("o", StringComparison.OrdinalIgnoreCase))
+                mesh.UseBoneWeights = !Path.GetFileName(name).StartsWith("m", StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     private class LayoutMemberComparer : IEqualityComparer<FLVER.LayoutMember>
@@ -256,15 +296,6 @@ public class FbxMeshDataViewModel
         public int GetHashCode(FLVER.LayoutMember obj)
         {
             return HashCode.Combine(obj.Unk00, (int)obj.Type, (int)obj.Semantic, obj.Index, obj.Size);
-        }
-    }
-
-    private void FlipFaceSet()
-    {
-        for (int i = 0; i < Data.VertexIndices.Count; i += 3)
-        {
-            (Data.VertexIndices[i + 1], Data.VertexIndices[i + 2]) =
-                (Data.VertexIndices[i + 2], Data.VertexIndices[i + 1]);
         }
     }
 }

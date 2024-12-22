@@ -875,7 +875,7 @@ public partial class MainWindow : Form
         Viewer.RefreshTextures();
     }
 
-    private static bool LoadPresets(ComboBox selector, ref Dictionary<string, object> dict, string filePath)
+    private bool LoadPresets(ComboBox selector, ref Dictionary<string, object> dict, string filePath)
     {
         selector.Items.Clear();
         bool hasRead = true;
@@ -883,6 +883,8 @@ public partial class MainWindow : Form
         {
             dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(File.ReadAllText(filePath));
             selector.Items.AddRange(dict.Keys.ToArray());
+            if (selector == materialPresetsSelector && selector.Items.Count > 0)
+                selector.Items.Insert(0, "+ Custom Presets:");
         }
         catch
         {
@@ -896,6 +898,14 @@ public partial class MainWindow : Form
     {
         bool hasRead = LoadPresets(materialPresetsSelector, ref MaterialPresets, MaterialPresetsFilePath);
         materialsTable.Columns[MaterialAddPresetCbIndex].Visible = hasRead;
+        if (materialPresetsSelector.Items.Count > 0)
+        {
+            const string divider = "--------------------------------------------------";
+            materialPresetsSelector.Items.Add(divider);
+        }
+        materialPresetsSelector.Items.Add("+ Native MTDs:");
+        foreach (string mtd in Program.MTDs)
+            materialPresetsSelector.Items.Add(mtd);
     }
 
     private void LoadDummyPresets()
@@ -1620,8 +1630,10 @@ public partial class MainWindow : Form
     private void MaterialsTableOkButtonClicked(object sender, MouseEventArgs e)
     {
         //UpdateUndoState();
-        object selectedMaterial = MaterialPresets.Values.ToArray().ElementAtOrDefault(materialPresetsSelector.SelectedIndex);
-        FLVER2.Material? newMaterial = JsonConvert.DeserializeObject<FLVER2.Material>(JsonConvert.SerializeObject(selectedMaterial));
+        object selectedMaterial = null;
+        if (MaterialPresets != null) selectedMaterial = MaterialPresets.Values.ToArray().ElementAtOrDefault(materialPresetsSelector.SelectedIndex - 1);
+        FLVER2.Material? newMaterial = null;
+        if (selectedMaterial != null) newMaterial = JsonConvert.DeserializeObject<FLVER2.Material>(JsonConvert.SerializeObject(selectedMaterial));
         List<FLVER2.Material> materialsToDelete = new();
         List<FLVER2.Material> materialsToReplace = new();
         foreach (DataGridViewRow row in materialsTable.Rows)
@@ -1631,9 +1643,10 @@ public partial class MainWindow : Form
             if ((bool)row.Cells[MaterialApplyPresetCbIndex].Value)
                 materialsToReplace.Add(Flver.Materials[row.Index]);
         }
-        MaterialsTableOkAction action = new(Flver, materialsToReplace, materialsToDelete, newMaterial, displayPresetError =>
+        string newMaterialMTD = materialPresetsSelector.SelectedItem.ToString() ?? "";
+        MaterialsTableOkAction action = new(Flver, materialsToReplace, materialsToDelete, newMaterial, newMaterialMTD, displayPresetError =>
         {
-            if (displayPresetError) ShowErrorDialog("The specified preset does not exist.");
+            // if (displayPresetError) ShowErrorDialog("The specified preset does not exist.");
             ClearViewerMaterialHighlight();
             SafeUpdateUI();
             UpdateMesh();
@@ -1727,7 +1740,7 @@ public partial class MainWindow : Form
         if (e.KeyCode == Keys.Enter) e.SuppressKeyPress = true;
     }
 
-    private static void SaveFLVERFile(string filePath)
+    public static void SaveFLVERFile(string filePath)
     {
         if (IsFLVERPath(filePath))
         {
@@ -1738,7 +1751,9 @@ public partial class MainWindow : Form
         {
             BackupFLVERFile();
             Flver.Write(filePath);
-            FlverBnd.Files[CurrentFlverFileBinderIndex].Bytes = File.ReadAllBytes(filePath);
+            // TODO: Cleanup
+            int index = FlverBnd.Files.FindIndex(i => i.Name.EndsWith(".flver"));
+            FlverBnd.Files[index].Bytes = File.ReadAllBytes(filePath);
             FlverBnd.Write(filePath, FlverCompressionType);
         }
     }
@@ -1747,7 +1762,7 @@ public partial class MainWindow : Form
     {
         string bndFilter = FlverFilePath.EndsWith(".dcx") ? "|BND File (*.dcx)|*.dcx" : "";
         SaveFileDialog dialog = new()
-            { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", "")) };
+        { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", "")) };
         if (dialog.ShowDialog() != DialogResult.OK) return;
         string modelFilePath = dialog.FileName;
         if (FlverFilePath.EndsWith(".dcx"))
@@ -2155,15 +2170,15 @@ public partial class MainWindow : Form
         switch (prompt)
         {
             case true:
-            {
-                if (!Importer.ImportFbxWithDialogAsync(Flver, refresh)) return;
-                break;
-            }
+                {
+                    if (!Importer.ImportFbxWithDialogAsync(Flver, refresh)) return;
+                    break;
+                }
             default:
-            {
-                if (!Importer.ImportFbxAsync(Flver, filePath, refresh)) return;
-                break;
-            }
+                {
+                    if (!Importer.ImportFbxAsync(Flver, filePath, refresh)) return;
+                    break;
+                }
         }
     }
 
@@ -2644,13 +2659,15 @@ public partial class MainWindow : Form
         }
     }
 
-    private static bool PromptDeletePreset(object sender, ref Dictionary<string, object> presets)
+    private bool PromptDeletePreset(object sender, ref Dictionary<string, object> presets)
     {
         ComboBox box = (ComboBox)sender;
         if (box.SelectedItem == null) return false;
+        string presetName = box.SelectedItem.ToString() ?? "";
+        if (box == materialPresetsSelector && !presets.Keys.Contains(presetName)) return false;
         DialogResult result = ShowQuestionDialog("Are you sure you want to delete this preset?");
         if (result != DialogResult.Yes) return false;
-        presets.Remove(box.SelectedItem.ToString()!);
+        presets.Remove(presetName);
         box.SelectedItem = null;
         return true;
     }
@@ -3042,9 +3059,8 @@ public partial class MainWindow : Form
     public static TPF GetChrTPF(string chrid)
     {
         // TODO: Add support for older games... (Pear)
-        string version = GetFlverVersion(Flver);
         string chrFolderPath = Directory.GetParent(FlverFilePath)?.FullName ?? "";
-        string chrTexBndPath = version switch
+        string chrTexBndPath = FlverVersion switch
         {
             "DS3" or "Sekiro" or "AC6" => $@"{chrFolderPath}\c{chrid}.texbnd.dcx",
             "ER" => $@"{chrFolderPath}\c{chrid}_h.texbnd.dcx",

@@ -23,8 +23,10 @@ internal static partial class Program
         ATI3 = 103
     }
     public static List<string> MTDs;
-    public static int DefaultMTDIndex = 0;
+    public static int DefaultMTDIndex;
+    public static DCX.Type Compression;
     public static FLVER2MaterialInfoBank MaterialInfoBank;
+    public static string FlverVersion;
 
     /*************** Basic Tools section *****************/
 
@@ -33,9 +35,9 @@ internal static partial class Program
         return Regex.Replace(Regex.Replace(filePath, @"_\d\.", "."), @"_\d_", "_");
     }
 
-    public static string GetFlverVersion(FLVER2 flver)
+    public static void SetFlverVersion(FLVER2 flver)
     {
-        return flver.Header.Version switch
+        FlverVersion = flver.Header.Version switch
         {
             131084 => "DS1",
             131088 => "DS2",
@@ -43,12 +45,12 @@ internal static partial class Program
             131098 when flver.Materials.Any(x => x.MTD.Contains(".matxml")) => "ER",
             131098 => MainWindow.ShowSelectorDialog("Choose target game:", "Target Game",
                     new object[] { "Elden Ring", "Sekiro" }) switch
-            {
-                "Elden Ring" => "ER",
-                "Sekiro" => "SDT",
-                null => null,
-                _ => throw new ArgumentOutOfRangeException()
-            },
+                {
+                    "Elden Ring" => "ER",
+                    "Sekiro" => "SDT",
+                    null => null,
+                    _ => throw new ArgumentOutOfRangeException()
+                },
             131099 => "AC6",
             _ => throw new InvalidDataException("Invalid Flver Version")
         };
@@ -57,8 +59,8 @@ internal static partial class Program
     public static bool PopulateMaterials(FLVER2 flver)
     {
         string basePath = Path.Join(AppDomain.CurrentDomain.BaseDirectory, "SapResources", "FLVER2MaterialInfoBank");
-        string version = GetFlverVersion(flver);
-        string bankFileName = $"Bank{version}.xml";
+        SetFlverVersion(flver);
+        string bankFileName = $"Bank{FlverVersion}.xml";
         string xmlPath = Path.Join(basePath, bankFileName);
         try
         {
@@ -66,18 +68,15 @@ internal static partial class Program
         }
         catch
         {
-            MainWindow.ShowErrorDialog($"Warning: {version} material bank could not be found.");
+            MainWindow.ShowErrorDialog($"Warning: {FlverVersion} material bank could not be found.");
             return false;
         }
         MTDs = new List<string>(MaterialInfoBank.MaterialDefs.Keys.Where(x => !string.IsNullOrEmpty(x)).OrderBy(x => x));
-
-        var defaultMtdIndex = MTDs.FindIndex(x => x.Contains("c[amsn]_e.mtd", StringComparison.OrdinalIgnoreCase));
-
+        int defaultMtdIndex = MTDs.FindIndex(x => x.Contains("c[amsn]_e.mtd", StringComparison.OrdinalIgnoreCase));
         if (defaultMtdIndex >= 0)
         {
             DefaultMTDIndex = defaultMtdIndex;
         }
-
         return true;
     }
 
@@ -85,7 +84,7 @@ internal static partial class Program
     {
         string[] nameParts = name.Split('|').Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
         string trimmedName = nameParts.Length > 1 ? nameParts[0] : name;
-        List<FLVER2.Texture> textures = new List<FLVER2.Texture>();
+        List<FLVER2.Texture> textures = new();
         if (MTDs.Count > 0)
         {
             textures = new List<FLVER2.Texture>(MaterialInfoBank.MaterialDefs[mtd].TextureChannels.Values.Select(x => new FLVER2.Texture { Type = x }));
