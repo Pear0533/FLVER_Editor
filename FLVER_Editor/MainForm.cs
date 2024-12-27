@@ -409,7 +409,7 @@ public partial class MainWindow : Form
         ClearUndoRedoStates();
     }
 
-    public bool ShowWorldOriginCordsDummy => worldOriginCordsDummy.Checked && SelectedMeshIndices.Count == 0 && SelectedDummyIndices.Count == 1;
+    public bool ShowWorldOriginCoords => relativeToWorldOriginCheckbox.Checked && (SelectedMeshIndices.Count >= 1 || SelectedDummyIndices.Count >= 1);
 
     public static MainWindow? Instance { get; private set; }
 
@@ -1349,12 +1349,14 @@ public partial class MainWindow : Form
             meshModifiersContainer.Enabled = hasIndices;
             if (hasIndices)
             {
-                if (ShowWorldOriginCordsDummy)
+                // TODO: Function
+                // TODO: Calculate the selected dummies centroid...
+                if (ShowWorldOriginCoords)
                 {
                     FLVER.Dummy? dummy = Flver.Dummies[SelectedDummyIndices[0]];
-                    transXNumBox.Value = (decimal)dummy.Position.X * 55;
-                    transYNumBox.Value = (decimal)dummy.Position.Y * 55;
-                    transZNumBox.Value = (decimal)dummy.Position.Z * 55;
+                    transXNumBox.Value += (decimal)dummy.Position.X * 55;
+                    transYNumBox.Value += (decimal)dummy.Position.Y * 55;
+                    transZNumBox.Value += (decimal)dummy.Position.Z * 55;
                 }
                 EnableDisableExtraModifierOptions();
                 scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = 100;
@@ -1377,6 +1379,13 @@ public partial class MainWindow : Form
             meshModifiersContainer.Enabled = hasIndices;
             if (hasIndices)
             {
+                if (ShowWorldOriginCoords)
+                {
+                    float[] totals = CalculateMeshTotals();
+                    transXNumBox.Value = (decimal)totals[0] * 55;
+                    transYNumBox.Value = (decimal)totals[1] * 55;
+                    transZNumBox.Value = (decimal)totals[2] * 55;
+                }
                 EnableDisableExtraModifierOptions();
                 scaleXNumBox.Value = scaleYNumBox.Value = scaleZNumBox.Value = 100;
                 rotXNumBox.Value = rotYNumBox.Value = rotZNumBox.Value = 0;
@@ -1486,7 +1495,8 @@ public partial class MainWindow : Form
 
     private void CheckDummyCordinateView()
     {
-        worldOriginCordsDummy.Visible = SelectedMeshIndices.Count == 0 && SelectedDummyIndices.Count == 1;
+        // TODO: Function
+        relativeToWorldOriginCheckbox.Visible = SelectedMeshIndices.Count >= 1 || SelectedDummyIndices.Count >= 1;
     }
 
     private void MeshTable_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -3100,5 +3110,6 @@ public partial class MainWindow : Form
     private void checkBox1_CheckedChanged(object sender, EventArgs e)
     {
         UpdateSelectedDummies();
+        UpdateSelectedMeshes();
     }
 }

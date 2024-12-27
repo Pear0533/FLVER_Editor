@@ -102,7 +102,7 @@
             label5 = new Label();
             dummyPresetsSelector = new EasyCompletionComboBox();
             meshModifiersContainer = new GroupBox();
-            worldOriginCordsDummy = new CheckBox();
+            relativeToWorldOriginCheckbox = new CheckBox();
             useWorldOriginCheckbox = new CheckBox();
             vectorModeCheckbox = new CheckBox();
             flipYZAxisCheckbox = new CheckBox();
@@ -955,7 +955,7 @@
             dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 148);
+            dummiesTable.Size = new Size(573, 146);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1044,7 +1044,7 @@
             // 
             // meshModifiersContainer
             // 
-            meshModifiersContainer.Controls.Add(worldOriginCordsDummy);
+            meshModifiersContainer.Controls.Add(relativeToWorldOriginCheckbox);
             meshModifiersContainer.Controls.Add(useWorldOriginCheckbox);
             meshModifiersContainer.Controls.Add(vectorModeCheckbox);
             meshModifiersContainer.Controls.Add(flipYZAxisCheckbox);
@@ -1084,16 +1084,16 @@
             meshModifiersContainer.TabStop = false;
             meshModifiersContainer.Text = "Modifiers";
             // 
-            // worldOriginCordsDummy
+            // relativeToWorldOriginCheckbox
             // 
-            worldOriginCordsDummy.AutoSize = true;
-            worldOriginCordsDummy.Location = new Point(382, 42);
-            worldOriginCordsDummy.Name = "worldOriginCordsDummy";
-            worldOriginCordsDummy.Size = new Size(152, 19);
-            worldOriginCordsDummy.TabIndex = 72;
-            worldOriginCordsDummy.Text = "Relative to World Origin";
-            worldOriginCordsDummy.UseVisualStyleBackColor = true;
-            worldOriginCordsDummy.CheckedChanged += checkBox1_CheckedChanged;
+            relativeToWorldOriginCheckbox.AutoSize = true;
+            relativeToWorldOriginCheckbox.Location = new Point(382, 42);
+            relativeToWorldOriginCheckbox.Name = "relativeToWorldOriginCheckbox";
+            relativeToWorldOriginCheckbox.Size = new Size(152, 19);
+            relativeToWorldOriginCheckbox.TabIndex = 72;
+            relativeToWorldOriginCheckbox.Text = "Relative to World Origin";
+            relativeToWorldOriginCheckbox.UseVisualStyleBackColor = true;
+            relativeToWorldOriginCheckbox.CheckedChanged += checkBox1_CheckedChanged;
             // 
             // useWorldOriginCheckbox
             // 
@@ -1839,7 +1839,7 @@
             texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
             texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(588, 455);
+            texturesTable.Size = new Size(586, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -2281,7 +2281,7 @@
         private ToolStripMenuItem undoToolStripMenuItem;
         private ToolStripMenuItem redoToolStripMenuItem;
         private ToolStripMenuItem massKlausGeneralSupportToolStripMenuItem;
-        private CheckBox worldOriginCordsDummy;
+        private CheckBox relativeToWorldOriginCheckbox;
         private DataGridViewTextBoxColumn Column1;
         private DataGridViewTextBoxColumn Column2;
         private DataGridViewButtonColumn Column3;
