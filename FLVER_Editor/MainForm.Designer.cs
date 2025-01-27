@@ -7,12 +7,12 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
-            DataGridViewCellStyle dataGridViewCellStyle5 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle6 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle7 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
+            DataGridViewCellStyle dataGridViewCellStyle8 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle9 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle10 = new DataGridViewCellStyle();
             ribbon = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             openToolStripMenuItem = new ToolStripMenuItem();
@@ -102,6 +102,13 @@
             label5 = new Label();
             dummyPresetsSelector = new EasyCompletionComboBox();
             meshModifiersContainer = new GroupBox();
+            meshUVsContainer = new GroupBox();
+            label17 = new Label();
+            uvChannelSelector = new EasyCompletionComboBox();
+            uvModifiersContainer = new GroupBox();
+            uvsMirrorXButton = new Button();
+            uvsMirrorYButton = new Button();
+            uvsPanel = new UVsPanel(uvChannelSelector);
             relativeToWorldOriginCheckbox = new CheckBox();
             useWorldOriginCheckbox = new CheckBox();
             vectorModeCheckbox = new CheckBox();
@@ -200,6 +207,8 @@
             ((System.ComponentModel.ISupportInitialize)meshTable).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dummiesTable).BeginInit();
             meshModifiersContainer.SuspendLayout();
+            meshUVsContainer.SuspendLayout();
+            uvModifiersContainer.SuspendLayout();
             meshModifiersNumBoxesContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)rotZNumBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)scaleZNumBox).BeginInit();
@@ -835,8 +844,8 @@
             meshTable.Name = "meshTable";
             meshTable.RowHeadersVisible = false;
             meshTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            meshTable.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            meshTable.RowsDefaultCellStyle = dataGridViewCellStyle6;
             meshTable.Size = new Size(574, 184);
             meshTable.TabIndex = 11;
             meshTable.CellContentClick += MeshTable_CellContentClick;
@@ -953,9 +962,9 @@
             dummiesTable.Name = "dummiesTable";
             dummiesTable.RowHeadersVisible = false;
             dummiesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            dummiesTable.Size = new Size(573, 146);
+            dataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle7;
+            dummiesTable.Size = new Size(573, 134);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1044,6 +1053,7 @@
             // 
             // meshModifiersContainer
             // 
+            meshModifiersContainer.Controls.Add(meshUVsContainer);
             meshModifiersContainer.Controls.Add(relativeToWorldOriginCheckbox);
             meshModifiersContainer.Controls.Add(useWorldOriginCheckbox);
             meshModifiersContainer.Controls.Add(vectorModeCheckbox);
@@ -1083,6 +1093,79 @@
             meshModifiersContainer.TabIndex = 12;
             meshModifiersContainer.TabStop = false;
             meshModifiersContainer.Text = "Modifiers";
+            // 
+            // meshUVsContainer
+            // 
+            meshUVsContainer.Controls.Add(label17);
+            meshUVsContainer.Controls.Add(uvChannelSelector);
+            meshUVsContainer.Controls.Add(uvModifiersContainer);
+            meshUVsContainer.Controls.Add(uvsPanel);
+            meshUVsContainer.Location = new Point(169, 161);
+            meshUVsContainer.Name = "meshUVsContainer";
+            meshUVsContainer.Size = new Size(416, 280);
+            meshUVsContainer.TabIndex = 77;
+            meshUVsContainer.TabStop = false;
+            meshUVsContainer.Text = "Mesh UVs";
+            // 
+            // label17
+            // 
+            label17.AutoSize = true;
+            label17.Location = new Point(263, 16);
+            label17.Name = "label17";
+            label17.Size = new Size(72, 15);
+            label17.TabIndex = 81;
+            label17.Text = "UV Channel:";
+            // 
+            // uvChannelSelector
+            // 
+            uvChannelSelector.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            uvChannelSelector.FormattingEnabled = true;
+            uvChannelSelector.Location = new Point(265, 37);
+            uvChannelSelector.Margin = new Padding(4, 3, 4, 3);
+            uvChannelSelector.Name = "uvChannelSelector";
+            uvChannelSelector.Size = new Size(145, 23);
+            uvChannelSelector.TabIndex = 80;
+            // 
+            // uvModifiersContainer
+            // 
+            uvModifiersContainer.Controls.Add(uvsMirrorXButton);
+            uvModifiersContainer.Controls.Add(uvsMirrorYButton);
+            uvModifiersContainer.Location = new Point(262, 66);
+            uvModifiersContainer.Name = "uvModifiersContainer";
+            uvModifiersContainer.Size = new Size(148, 55);
+            uvModifiersContainer.TabIndex = 79;
+            uvModifiersContainer.TabStop = false;
+            uvModifiersContainer.Text = "UV Modifiers";
+            // 
+            // uvsMirrorXButton
+            // 
+            uvsMirrorXButton.Location = new Point(7, 22);
+            uvsMirrorXButton.Margin = new Padding(4, 3, 4, 3);
+            uvsMirrorXButton.Name = "uvsMirrorXButton";
+            uvsMirrorXButton.Size = new Size(65, 25);
+            uvsMirrorXButton.TabIndex = 75;
+            uvsMirrorXButton.Text = "Mirror X";
+            uvsMirrorXButton.UseVisualStyleBackColor = true;
+            uvsMirrorXButton.MouseClick += UVsMirrorButton_MouseClick;
+            // 
+            // uvsMirrorYButton
+            // 
+            uvsMirrorYButton.Location = new Point(75, 22);
+            uvsMirrorYButton.Margin = new Padding(4, 3, 4, 3);
+            uvsMirrorYButton.Name = "uvsMirrorYButton";
+            uvsMirrorYButton.Size = new Size(65, 25);
+            uvsMirrorYButton.TabIndex = 76;
+            uvsMirrorYButton.Text = "Mirror Y";
+            uvsMirrorYButton.UseVisualStyleBackColor = true;
+            uvsMirrorYButton.MouseClick += UVsMirrorButton_MouseClick;
+            // 
+            // uvsPanel
+            // 
+            uvsPanel.Location = new Point(6, 17);
+            uvsPanel.Name = "uvsPanel";
+            uvsPanel.Size = new Size(255, 255);
+            uvsPanel.TabIndex = 78;
+            uvsPanel.Zoom = 1F;
             // 
             // relativeToWorldOriginCheckbox
             // 
@@ -1368,7 +1451,6 @@
             rotZNumBox.Location = new Point(190, 63);
             rotZNumBox.Margin = new Padding(4, 3, 4, 3);
             rotZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            rotZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotZNumBox.Name = "rotZNumBox";
             rotZNumBox.Size = new Size(85, 24);
             rotZNumBox.TabIndex = 13;
@@ -1386,7 +1468,6 @@
             scaleZNumBox.Location = new Point(190, 33);
             scaleZNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            scaleZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleZNumBox.Name = "scaleZNumBox";
             scaleZNumBox.Size = new Size(85, 24);
             scaleZNumBox.TabIndex = 13;
@@ -1404,7 +1485,6 @@
             rotYNumBox.Location = new Point(97, 63);
             rotYNumBox.Margin = new Padding(4, 3, 4, 3);
             rotYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            rotYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotYNumBox.Name = "rotYNumBox";
             rotYNumBox.Size = new Size(85, 24);
             rotYNumBox.TabIndex = 12;
@@ -1422,7 +1502,6 @@
             transZNumBox.Location = new Point(190, 3);
             transZNumBox.Margin = new Padding(4, 3, 4, 3);
             transZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            transZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transZNumBox.Name = "transZNumBox";
             transZNumBox.Size = new Size(85, 24);
             transZNumBox.TabIndex = 13;
@@ -1440,7 +1519,6 @@
             rotXNumBox.Location = new Point(4, 63);
             rotXNumBox.Margin = new Padding(4, 3, 4, 3);
             rotXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            rotXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotXNumBox.Name = "rotXNumBox";
             rotXNumBox.Size = new Size(85, 24);
             rotXNumBox.TabIndex = 11;
@@ -1458,7 +1536,6 @@
             scaleYNumBox.Location = new Point(97, 33);
             scaleYNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            scaleYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleYNumBox.Name = "scaleYNumBox";
             scaleYNumBox.Size = new Size(85, 24);
             scaleYNumBox.TabIndex = 12;
@@ -1476,7 +1553,6 @@
             scaleXNumBox.Location = new Point(4, 33);
             scaleXNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            scaleXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleXNumBox.Name = "scaleXNumBox";
             scaleXNumBox.Size = new Size(85, 24);
             scaleXNumBox.TabIndex = 11;
@@ -1494,7 +1570,6 @@
             transXNumBox.Location = new Point(4, 3);
             transXNumBox.Margin = new Padding(4, 3, 4, 3);
             transXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            transXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transXNumBox.Name = "transXNumBox";
             transXNumBox.Size = new Size(85, 24);
             transXNumBox.TabIndex = 11;
@@ -1512,7 +1587,6 @@
             transYNumBox.Location = new Point(97, 3);
             transYNumBox.Margin = new Padding(4, 3, 4, 3);
             transYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
-            transYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transYNumBox.Name = "transYNumBox";
             transYNumBox.Size = new Size(85, 24);
             transYNumBox.TabIndex = 12;
@@ -1690,8 +1764,8 @@
             materialsTable.Name = "materialsTable";
             materialsTable.RowHeadersVisible = false;
             materialsTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle8.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            materialsTable.RowsDefaultCellStyle = dataGridViewCellStyle8;
             materialsTable.Size = new Size(546, 455);
             materialsTable.TabIndex = 6;
             materialsTable.CellContentClick += MaterialsTableButtonClicked;
@@ -1837,9 +1911,9 @@
             texturesTable.Name = "texturesTable";
             texturesTable.RowHeadersVisible = false;
             texturesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            texturesTable.Size = new Size(586, 455);
+            dataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle9;
+            texturesTable.Size = new Size(574, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -1892,8 +1966,8 @@
             bonesTable.Name = "bonesTable";
             bonesTable.RowHeadersVisible = false;
             bonesTable.RowHeadersWidth = 62;
-            dataGridViewCellStyle5.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle10.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            bonesTable.RowsDefaultCellStyle = dataGridViewCellStyle10;
             bonesTable.Size = new Size(1192, 533);
             bonesTable.TabIndex = 0;
             bonesTable.CellValueChanged += BonesTableCellValueChanged;
@@ -2088,6 +2162,9 @@
             ((System.ComponentModel.ISupportInitialize)dummiesTable).EndInit();
             meshModifiersContainer.ResumeLayout(false);
             meshModifiersContainer.PerformLayout();
+            meshUVsContainer.ResumeLayout(false);
+            meshUVsContainer.PerformLayout();
+            uvModifiersContainer.ResumeLayout(false);
             meshModifiersNumBoxesContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)rotZNumBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)scaleZNumBox).EndInit();
@@ -2288,5 +2365,12 @@
         private DataGridViewCheckBoxColumn Column4;
         private DataGridViewButtonColumn Column22;
         private DataGridViewCheckBoxColumn Column21;
+        private GroupBox meshUVsContainer;
+        private Button uvsMirrorXButton;
+        private Button uvsMirrorYButton;
+        private UVsPanel uvsPanel;
+        private GroupBox uvModifiersContainer;
+        private Label label17;
+        private EasyCompletionComboBox uvChannelSelector;
     }
 }

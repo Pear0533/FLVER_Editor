@@ -7,6 +7,7 @@ using FLVER_Editor.Actions;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SharpDX.Direct2D1;
 using SoulsFormats;
 using static FLVER_Editor.Program;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
@@ -695,15 +696,18 @@ public partial class MainWindow : Form
                         new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[1].Position), faceSetColor),
                         new VertexPositionColor(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), faceSetColor)
                     });
+                Vector2 uv1 = new Vector2D(UVsPanel.AdjustUV(new System.Numerics.Vector2(vertexArr[0].UVs[0].X, vertexArr[0].UVs[0].Y))).ToXnaVector2();
+                Vector2 uv2 = new Vector2D(UVsPanel.AdjustUV(new System.Numerics.Vector2(vertexArr[1].UVs[0].X, vertexArr[1].UVs[0].Y))).ToXnaVector2();
+                Vector2 uv3 = new Vector2D(UVsPanel.AdjustUV(new System.Numerics.Vector2(vertexArr[2].UVs[0].X, vertexArr[2].UVs[0].Y))).ToXnaVector2();
                 faceSetPosColorTexList.AddRange(
                     new[]
                     {
                         new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[0].Position), faceSetColor,
-                            new Vector2(vertexArr[0].UVs[0].X, vertexArr[0].UVs[0].Y)),
+                            uv1),
                         new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[1].Position), faceSetColor,
-                            new Vector2(vertexArr[1].UVs[0].X, vertexArr[1].UVs[0].Y)),
+                            uv2),
                         new VertexPositionColorTexture(Util3D.NumericsVector3ToXnaVector3XZY(vertexArr[2].Position), faceSetColor,
-                            new Vector2(vertexArr[2].UVs[0].X, vertexArr[2].UVs[0].Y))
+                            uv3)
                     });
             }
             for (int j = 0; j < Flver.Meshes[i].Vertices.Count; ++j)
@@ -1125,7 +1129,15 @@ public partial class MainWindow : Form
         FilePath = FlverFilePath;
         if (IsFLVERPath(FlverFilePath))
         {
-            Flver = FLVER2.Read(FlverFilePath);
+            if (FLVER0.Is(FlverFilePath))
+            {
+                FLVER0? flver0 = FLVER0.Read(FlverFilePath);
+                Flver = FLVERConverter.Convert(flver0);
+            }
+            else
+            {
+                Flver = FLVER2.Read(FlverFilePath);
+            }
             string tpfFilePath = Path.GetFileNameWithoutExtension(RemoveIndexSuffix(FlverFilePath)) + ".tpf";
             if (File.Exists(tpfFilePath))
             {
@@ -1392,6 +1404,27 @@ public partial class MainWindow : Form
             }
             IsSettingDefaultInfo = false;
         }
+
+        // TODO: Function
+        List<FLVER2.Mesh> meshes = SelectedMeshIndices.Select(i => Flver.Meshes[i]).ToList();
+        List<FLVER.Vertex> vertices = new();
+        int maxUVCount = 0;
+        foreach (FLVER.Vertex v in meshes.SelectMany(m => m.Vertices))
+        {
+            for (int i = 0; i < v.UVs.Count; i++)
+                vertices.Add(v);
+            maxUVCount = Math.Max(maxUVCount, v.UVs.Count);
+        }
+        int previousSelectedIndex = uvChannelSelector.SelectedIndex == -1
+            ? 0 : uvChannelSelector.SelectedIndex;
+        uvChannelSelector.Items.Clear();
+        for (int i = 0; i < maxUVCount; i++)
+            uvChannelSelector.Items.Add($"UV{i}");
+        if (uvChannelSelector.Items.Count > 0)
+            uvChannelSelector.SelectedIndex = previousSelectedIndex;
+        uvsPanel.Vertices = vertices;
+        uvsPanel.Invalidate();
+
         UpdateMesh();
     }
 
@@ -1754,8 +1787,11 @@ public partial class MainWindow : Form
     {
         if (IsFLVERPath(filePath))
         {
-            BackupFLVERFile();
-            Flver.Write(filePath);
+            // BackupFLVERFile();
+            // Flver.Write(filePath);
+            FLVER0 flver0 = FLVERConverter.ConvertToFLVER0(Flver);
+            string fixedFilePath = $"{Path.GetDirectoryName(filePath)}\\{Path.GetFileNameWithoutExtension(filePath) + "_1" + Path.GetExtension(filePath)}";
+            flver0.Write(fixedFilePath);
         }
         else if (filePath.EndsWith(".dcx"))
         {
@@ -3110,6 +3146,24 @@ public partial class MainWindow : Form
     private void checkBox1_CheckedChanged(object sender, EventArgs e)
     {
         UpdateSelectedDummies();
+        UpdateSelectedMeshes();
+    }
+
+    // TODO: WIP
+
+    private void UVsMirrorButton_MouseClick(object sender, MouseEventArgs e)
+    {
+        bool mirrorOnX = ((Button)sender).Name == "uvsMirrorXButton";
+        List<FLVER2.Mesh> meshes = SelectedMeshIndices.Select(i => Flver.Meshes[i]).ToList();
+        int index = uvChannelSelector.SelectedIndex;
+        foreach (FLVER.Vertex vertex in meshes.SelectMany(m => m.Vertices))
+        {
+            Vector3 v = vertex.UVs[index];
+            Vector3 flippedVector = mirrorOnX
+                ? v with { X = -v.X }
+                : v with { Y = -v.Y };
+            vertex.UVs[index] = flippedVector;
+        }
         UpdateSelectedMeshes();
     }
 }

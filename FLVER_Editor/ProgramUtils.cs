@@ -52,6 +52,8 @@ internal static partial class Program
                     _ => throw new ArgumentOutOfRangeException()
                 },
             131099 => "AC6",
+            // TODO: Create a dedicated material bank for Demon's Souls...
+            131072 => "ER",
             _ => throw new InvalidDataException("Invalid Flver Version")
         };
     }
