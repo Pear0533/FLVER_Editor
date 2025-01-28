@@ -78,6 +78,7 @@ public partial class MainWindow : Form
     ///     The currently loaded FLVER2 model.
     /// </summary>
     public static FLVER2 Flver;
+    public static FLVERType FlverType;
 
     /// <summary>
     ///     A list of undos for FLVER2 edits.
@@ -122,7 +123,7 @@ public partial class MainWindow : Form
     /// <summary>
     ///     The current BND4 the loaded FLVER2 model file is in if applicable.
     /// </summary>
-    public static BND4 FlverBnd;
+    public static IBNDWrapper FlverBnd;
 
     /// <summary>
     ///     The current BND4 the loaded MatBins are in if applicable.
@@ -1057,21 +1058,20 @@ public partial class MainWindow : Form
     public FLVER2 ReadFLVERFromDCXPath(string filePath, bool setMainFlverCompressionType, bool setBinderIndex, bool wantsTpf)
     {
         List<BinderFile> flverFiles = new();
-        BND4 newFlverBnd = null;
-        try
+        IBNDWrapper newFlverBnd = null;
+
+        if (SoulsFile<BND4>.IsRead(filePath, out BND4 bnd4))
         {
-            newFlverBnd = SoulsFile<BND4>.Read(filePath);
+            newFlverBnd = new BND4Wrapper(bnd4);
             FlverBnd = newFlverBnd;
         }
-        catch
+
+        if (SoulsFile<BND3>.IsRead(filePath, out BND3 bnd3))
         {
-            try
-            {
-                newFlverBnd = SoulsFile<BND4>.Read(DCX.Decompress(filePath));
-                FlverBnd = newFlverBnd;
-            }
-            catch { }
+            newFlverBnd = new BND3Wrapper(bnd3);
+            FlverBnd = newFlverBnd;
         }
+
         if (newFlverBnd != null)
         {
             if (setMainFlverCompressionType) FlverCompressionType = FlverBnd.Compression;
@@ -1094,7 +1094,16 @@ public partial class MainWindow : Form
                 }
                 binderIndex++;
             }
-            if (flverFiles.Count == 1) return FLVER2.Read(flverFiles[0].Bytes);
+            if (flverFiles.Count == 1)
+            {
+                if (FLVER0.Is(flverFiles[0].Bytes))
+                {
+                    return FLVERConverter.Convert(FLVER0.Read(flverFiles[0].Bytes));
+                }
+
+                return FLVER2.Read(flverFiles[0].Bytes);
+            }
+
             if (flverFiles.Count > 1)
             {
                 int selectedFlverIndex = ShowSelectorDialog("Pick a FLVER", flverFiles);
@@ -1102,6 +1111,12 @@ public partial class MainWindow : Form
                 int binderWiseSelectedFlverIndex = FlverBnd.Files.FindIndex(i =>
                     i.Name.IndexOf(flverFiles[selectedFlverIndex].Name, StringComparison.OrdinalIgnoreCase) != -1);
                 CurrentFlverFileBinderIndex = binderWiseSelectedFlverIndex;
+
+                if (FLVER0.Is(flverFiles[selectedFlverIndex].Bytes))
+                {
+                    return FLVERConverter.Convert(FLVER0.Read(flverFiles[selectedFlverIndex].Bytes));
+                }
+
                 return FLVER2.Read(flverFiles[selectedFlverIndex].Bytes);
             }
         }
@@ -1133,10 +1148,12 @@ public partial class MainWindow : Form
             {
                 FLVER0? flver0 = FLVER0.Read(FlverFilePath);
                 Flver = FLVERConverter.Convert(flver0);
+                FlverType = FLVERType.FLVER0;
             }
             else
             {
                 Flver = FLVER2.Read(FlverFilePath);
+                FlverType = FLVERType.FLVER2;
             }
             string tpfFilePath = Path.GetFileNameWithoutExtension(RemoveIndexSuffix(FlverFilePath)) + ".tpf";
             if (File.Exists(tpfFilePath))
@@ -1787,19 +1804,36 @@ public partial class MainWindow : Form
     {
         if (IsFLVERPath(filePath))
         {
-            // BackupFLVERFile();
-            // Flver.Write(filePath);
-            FLVER0 flver0 = FLVERConverter.ConvertToFLVER0(Flver);
-            string fixedFilePath = $"{Path.GetDirectoryName(filePath)}\\{Path.GetFileNameWithoutExtension(filePath) + "_1" + Path.GetExtension(filePath)}";
-            flver0.Write(fixedFilePath);
+            BackupFLVERFile();
+
+            switch (FlverType)
+            {
+                case FLVERType.FLVER2:
+                    Flver.Write(filePath);
+                    break;
+
+                case FLVERType.FLVER0:
+                    FLVERConverter.ConvertToFLVER0(Flver).Write(filePath);
+                    break;
+
+                default:
+                    throw new Exception("Impossible flver state reached");
+            }
+
         }
         else if (filePath.EndsWith(".dcx"))
         {
             BackupFLVERFile();
-            Flver.Write(filePath);
             // TODO: Cleanup
             int index = FlverBnd.Files.FindIndex(i => i.Name.EndsWith(".flver"));
-            FlverBnd.Files[index].Bytes = File.ReadAllBytes(filePath);
+
+            FlverBnd.Files[index].Bytes = FlverType switch
+            {
+                FLVERType.FLVER0 => FLVERConverter.ConvertToFLVER0(Flver).Write(),
+                FLVERType.FLVER2 => Flver.Write(),
+                _ => throw new Exception("Impossible flver state reached")
+            };
+
             FlverBnd.Write(filePath, FlverCompressionType);
         }
     }
