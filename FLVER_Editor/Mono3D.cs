@@ -766,11 +766,19 @@ namespace FLVER_Editor
             }
             if (state.IsKeyDown(Keys.NumPad8))
             {
-                offset.Z += 3 * delta;
+                Vector3 right = Vector3.Cross(Vector3.UnitZ, camera); // Right vector
+                right.Normalize();
+                Vector3 up = Vector3.Cross(right, camera); // Forward vector
+                up.Normalize();
+                offset -= 3 * delta * up;
             }
             if (state.IsKeyDown(Keys.NumPad2))
             {
-                offset.Z -= 3 * delta;
+                Vector3 right = Vector3.Cross(Vector3.UnitZ, camera); // Right vector
+                right.Normalize();
+                Vector3 up = Vector3.Cross(right, camera); // Forward vector
+                up.Normalize();
+                offset += 3 * delta * up;
             }
             if (state.IsKeyDown(Keys.NumPad4))
             {
