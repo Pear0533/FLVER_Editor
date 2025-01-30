@@ -1063,7 +1063,6 @@ public partial class MainWindow : Form
                     try
                     {
                         Tpf = TPF.Read(file.Bytes);
-                        Console.WriteLine(Tpf);
                     }
                     catch { }
                 }
@@ -1387,8 +1386,6 @@ public partial class MainWindow : Form
                 {
                     float[] totals = CalculateMeshTotals();
                     transXNumBox.Value = (decimal)totals[0] * 55;
-                    System.Console.WriteLine(transYNumBox.Minimum);
-                    System.Console.WriteLine(transYNumBox.Maximum);
                     transYNumBox.Value = (decimal)totals[1] * 55;
                     transZNumBox.Value = (decimal)totals[2] * 55;
                 }
