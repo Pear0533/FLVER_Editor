@@ -51,7 +51,7 @@ public class UpdateTextureAction : TransformAction
             newTexture = new(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, File.ReadAllBytes(textureFilePath));
         }
 
-        textureIndex = Tpf.Textures.FindIndex(i => i.Name == newTexture.Name);
+        textureIndex = Tpf.Textures.FindIndex(i => i.Name == newTexture?.Name);
 
         var oldTextureIndex = Tpf.Textures.FindIndex(i => i.Name == oldfilename);
 

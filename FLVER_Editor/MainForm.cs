@@ -81,31 +81,6 @@ public partial class MainWindow : Form
     public static FLVERType FlverType;
 
     /// <summary>
-    ///     A list of undos for FLVER2 edits.
-    /// </summary>
-    public static List<FLVER2> UndoFlverList = new();
-
-    /// <summary>
-    ///     A list of redos for FLVER2 edits.
-    /// </summary>
-    public static List<FLVER2> RedoFlverList = new();
-
-    /// <summary>
-    ///     The current FLVER2 undo list index, used to see what to undo.
-    /// </summary>
-    public static int CurrentUndoFlverListIndex = -1;
-
-    /// <summary>
-    ///     The current FLVER2 redo list index, used to see what to redo.
-    /// </summary>
-    public static int CurrentRedoFlverListIndex = -1;
-
-    /// <summary>
-    ///     The limit of how far back and ahead undos and redos go.
-    /// </summary>
-    public static int UndoRedoStackLimit = 25;
-
-    /// <summary>
     ///     A default male body FLVER2 model.
     /// </summary>
     public static FLVER2 MaleBodyFlver = new();
@@ -118,7 +93,7 @@ public partial class MainWindow : Form
     /// <summary>
     ///     The byte data of the currently loaded FLVER2 model, used to see if changes were made and saving is needed.
     /// </summary>
-    private static byte[] CurrentFlverBytes;
+    private static byte[] CurrentFlverBytes = Array.Empty<byte>();
 
     /// <summary>
     ///     The current BND4 the loaded FLVER2 model file is in if applicable.
@@ -1412,6 +1387,8 @@ public partial class MainWindow : Form
                 {
                     float[] totals = CalculateMeshTotals();
                     transXNumBox.Value = (decimal)totals[0] * 55;
+                    System.Console.WriteLine(transYNumBox.Minimum);
+                    System.Console.WriteLine(transYNumBox.Maximum);
                     transYNumBox.Value = (decimal)totals[1] * 55;
                     transZNumBox.Value = (decimal)totals[2] * 55;
                 }
@@ -1925,7 +1902,6 @@ public partial class MainWindow : Form
         int index = materialsTable.FirstDisplayedScrollingRowIndex;
         try
         {
-            //UpdateUndoState();
             string materialName = Flver.Materials[e.RowIndex].Name;
             string materialsTableValue = materialsTable[e.ColumnIndex, e.RowIndex].Value?.ToString();
             if (materialsTableValue != null)
@@ -2976,7 +2952,6 @@ public partial class MainWindow : Form
     {
         if (clearAllRedoActions)
         {
-            RedoFlverList.Clear();
             redoToolStripMenuItem.Enabled = false;
         }
         undoToolStripMenuItem.Enabled = true;
@@ -2989,12 +2964,24 @@ public partial class MainWindow : Form
 
     public void Undo()
     {
+        if (this.InvokeRequired)
+        {
+            this.Invoke(Undo);
+            return;
+        }
+
         ActionManager.Undo();
         undoToolStripMenuItem.Enabled = ActionManager.UndoStack.Count != 0;
     }
 
     public void Redo()
     {
+        if (this.InvokeRequired)
+        {
+            this.Invoke(Redo);
+            return;
+        }
+
         ActionManager.Redo();
         redoToolStripMenuItem.Enabled = ActionManager.RedoStack.Count != 0;
     }
