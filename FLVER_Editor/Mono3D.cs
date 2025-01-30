@@ -674,16 +674,19 @@ namespace FLVER_Editor
             {
                 float panSpeed = 0.02f;
 
-                float mdx = mState.X - prevMState.X;
-                float mdy = mState.Y - prevMState.Y;
+                // Calculate the change in mouse position
+                float mouseDeltaX = mState.X - prevMState.X;
+                float mouseDeltaY = mState.Y - prevMState.Y;
 
-                Vector3 right = Vector3.Cross(Vector3.Up, (offset - camera));
+                // Get Right and Forward directions for the camera
+                Vector3 right = Vector3.Cross(Vector3.UnitZ, camera); // Right vector
                 right.Normalize();
+                Vector3 up = Vector3.Cross(right, camera); // Forward vector
+                up.Normalize();
 
-                Vector3 up = Vector3.Up;
-
-                offset += right * (-mdx * panSpeed);
-                offset += up * (mdy * panSpeed);
+                // Move the target position
+                offset -= right * (mouseDeltaX * panSpeed);    // Move left/right
+                offset -= up * (mouseDeltaY * panSpeed);   // Move forward/backward
             }
 
             if (state.IsKeyDown(Keys.F1))
