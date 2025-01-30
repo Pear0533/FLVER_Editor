@@ -46,19 +46,19 @@ namespace FLVER_Editor
         private static readonly int snapDist = 15;
         private static int mainFormLeft;
         private static int mainFormRight;
+        private static bool flipped;
 
-        private readonly float centerX = 0;
-        private readonly float centerY = 0;
-        private readonly float centerZ = 0;
+        private readonly Vector3 center = Vector3.Zero;
         private readonly ContextMenuStrip cm = new ContextMenuStrip();
         private readonly GraphicsDeviceManager graphics;
         public static Dictionary<string, Texture2D> textureMap = new Dictionary<string, Texture2D>();
         private Rectangle bgRenderArea;
         private Texture2D bgTexture;
 
-        private float cameraX;
-        private float cameraY = 4;
-        private float cameraZ = 2;
+        private float radius = 4.4721359550f;
+        private float pitch = 0;
+        private float yaw = 0;
+
         private BasicEffect effect;
         public VertexPositionColor[] faceSets = new VertexPositionColor[0];
         public bool flatShading;
@@ -68,9 +68,8 @@ namespace FLVER_Editor
         public float lightY = 1;
         public float lightZ = 1;
 
-        private float offsetX;
-        private float offsetY;
-        private float offsetZ;
+        private Vector3 offset = Vector3.Zero;
+        private Vector3 camera = Vector3.Zero;
         private MouseState prevMState;
         private KeyboardState prevState;
         public RenderMode renderMode = RenderMode.Both;
@@ -287,6 +286,11 @@ namespace FLVER_Editor
             floorVerts[5].Position = floorVerts[2].Position;
             effect = new BasicEffect(graphics.GraphicsDevice);
             effect.VertexColorEnabled = true;
+            camera = new Vector3(
+                (float)(Math.Cos(yaw) * Math.Cos(pitch)),
+                (float)(Math.Sin(yaw) * Math.Cos(pitch)),
+                (float)Math.Sin(pitch)
+            ) * radius;
             base.Initialize();
         }
 
@@ -649,48 +653,39 @@ namespace FLVER_Editor
                 Application.Exit();
             var delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+
+
             //Marine_Yes00.mp3
             if (mState.LeftButton == ButtonState.Pressed && !state.IsKeyDown(Keys.LeftAlt) && IsActive)
             {
-                float mdx = mState.X - prevMState.X;
-                float mdy = mState.Y - prevMState.Y;
-                {
-                    var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                    System.Numerics.Vector3 p2 = Program.RotatePoint(p, 0, 0, -mdx * 0.01f);
-                    cameraX = p2.X;
-                    cameraY = p2.Y;
-                    cameraZ = p2.Z;
-                }
-                {
-                    var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                    float nX = cameraY;
-                    float nY = -cameraX;
-                    System.Numerics.Vector3 p2 = Program.RotateLine(p, new System.Numerics.Vector3(0, 0, 0),
-                        new System.Numerics.Vector3(nX, nY, 0), mdy * 0.01f);
-                    cameraX = p2.X;
-                    cameraY = p2.Y;
-                    cameraZ = p2.Z;
-                }
+                // Sensitivity factor for mouse movement
+                float mouseSensitivity = 0.01f;
+
+                // Calculate the change in mouse position
+                float mouseDeltaX = mState.X - prevMState.X;
+                float mouseDeltaY = mState.Y - prevMState.Y;
+
+                yaw -= mouseDeltaX * mouseSensitivity;
+                pitch += mouseDeltaY * mouseSensitivity;
+                pitch = MathHelper.Clamp(pitch, -MathHelper.PiOver2 + 0.01f, MathHelper.PiOver2 - 0.01f);
             }
+
             if ((mState.MiddleButton == ButtonState.Pressed || state.IsKeyDown(Keys.LeftAlt) && mState.LeftButton == ButtonState.Pressed) && IsActive)
             {
+                float panSpeed = 0.02f;
+
                 float mdx = mState.X - prevMState.X;
                 float mdy = mState.Y - prevMState.Y;
 
-                // offsetZ += mdy * 3 * delta;
-                var upV = new Vector3D(0, 0, 1);
-                var forwardV = new Vector3D(cameraX, cameraY, cameraZ);
-                Vector3D rightV = Vector3D.CrossProduct(upV, forwardV).Normalize();
-                Vector3D camUpV = Vector3D.CrossProduct(forwardV, rightV).Normalize();
-                var offsetV = new Vector3D(offsetX, offsetY, offsetZ);
-                offsetV = offsetV - new Vector3D(rightV.X * mdx * 0.01f, rightV.Y * mdx * 0.01f, rightV.Z * mdx * 0.01f);
-                offsetV = offsetV + new Vector3D(camUpV.X * mdy * 0.01f, camUpV.Y * mdy * 0.01f, camUpV.Z * mdy * 0.01f);
-                offsetX = offsetV.X;
-                offsetY = offsetV.Y;
-                offsetZ = offsetV.Z;
-                //offsetX -= mdx* 1 * delta * rightV.X;
-                //offsetY -= mdx * 1 * delta * rightV.Y;
+                Vector3 right = Vector3.Cross(Vector3.Up, (offset - camera));
+                right.Normalize();
+
+                Vector3 up = Vector3.Up;
+
+                offset += right * (-mdx * panSpeed);
+                offset += up * (mdy * panSpeed);
             }
+
             if (state.IsKeyDown(Keys.F1))
             {
                 renderMode = RenderMode.Line;
@@ -733,139 +728,99 @@ namespace FLVER_Editor
             if (mState.ScrollWheelValue - prevMState.ScrollWheelValue > 0)
             {
                 //mouseY -= (50 * delta);
-                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                cameraX = p.X - 0.5f * (p.X / p.Length());
-                cameraY = p.Y - 0.5f * (p.Y / p.Length());
-                cameraZ = p.Z - 0.5f * (p.Z / p.Length());
+                ScrollCamera(-1, 0.05f);
             }
             if (mState.ScrollWheelValue - prevMState.ScrollWheelValue < 0)
             {
-                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                cameraX = p.X + 0.5f * (p.X / p.Length());
-                cameraY = p.Y + 0.5f * (p.Y / p.Length());
-                cameraZ = p.Z + 0.5f * (p.Z / p.Length());
+                ScrollCamera(1, 0.05f);
             }
             if (state.IsKeyDown(Keys.Right))
             {
-                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                System.Numerics.Vector3 p2 = Program.RotatePoint(p, 0, 0, 5 * delta);
-                cameraX = p2.X;
-                cameraY = p2.Y;
-                cameraZ = p2.Z;
+                yaw += 5f * delta;
             }
             if (state.IsKeyDown(Keys.Left))
             {
-                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                System.Numerics.Vector3 p2 = Program.RotatePoint(p, 0, 0, -5 * delta);
-                cameraX = p2.X;
-                cameraY = p2.Y;
-                cameraZ = p2.Z;
+                yaw -= 5f * delta;
             }
             if (state.IsKeyDown(Keys.Up))
             {
-                //mouseY -= (50 * delta);
-                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                System.Numerics.Vector3 p2 = Program.RotateLine(p, new System.Numerics.Vector3(0, 0, 0),
-                    new System.Numerics.Vector3(cameraY, -cameraX, 0), 3 * delta);
-                cameraX = p2.X;
-                cameraY = p2.Y;
-                cameraZ = p2.Z;
+                pitch += 5 * delta;
+                pitch = MathHelper.Clamp(pitch, -MathHelper.PiOver2 + 0.01f, MathHelper.PiOver2 - 0.01f);
             }
             if (state.IsKeyDown(Keys.Down))
             {
-                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                System.Numerics.Vector3 p2 = Program.RotateLine(p, new System.Numerics.Vector3(0, 0, 0),
-                    new System.Numerics.Vector3(cameraY, -cameraX, 0), -3 * delta);
-                cameraX = p2.X;
-                cameraY = p2.Y;
-                cameraZ = p2.Z;
+                pitch -= 5 * delta;
+                pitch = MathHelper.Clamp(pitch, -MathHelper.PiOver2 + 0.01f, MathHelper.PiOver2 - 0.01f);
             }
             if (state.IsKeyDown(Keys.OemComma))
             {
                 //mouseY -= (50 * delta);
-                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                cameraX = p.X - 3 * delta * (p.X / p.Length());
-                cameraY = p.Y - 3 * delta * (p.Y / p.Length());
-                cameraZ = p.Z - 3 * delta * (p.Z / p.Length());
+                ScrollCamera(-1, delta);
             }
             if (state.IsKeyDown(Keys.OemPeriod))
             {
-                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-                cameraX = p.X + 3 * delta * (p.X / p.Length());
-                cameraY = p.Y + 3 * delta * (p.Y / p.Length());
-                cameraZ = p.Z + 3 * delta * (p.Z / p.Length());
+                ScrollCamera(+1, delta);
             }
             if (state.IsKeyDown(Keys.NumPad8))
             {
-                offsetZ += 3 * delta;
+                offset.Z += 3 * delta;
             }
             if (state.IsKeyDown(Keys.NumPad2))
             {
-                offsetZ -= 3 * delta;
-                ;
+                offset.Z -= 3 * delta;
             }
             if (state.IsKeyDown(Keys.NumPad4))
             {
                 var upV = new Vector3D(0, 0, 1);
-                var forwardV = new Vector3D(cameraX, cameraY, cameraZ);
+                var forwardV = new Vector3D(camera.X, camera.Y, camera.Z);
                 Vector3D rightV = Vector3D.CrossProduct(upV, forwardV).Normalize();
-                offsetX -= 3 * delta * rightV.X;
-                offsetY -= 3 * delta * rightV.Y;
+                offset.X -= 3 * delta * rightV.X;
+                offset.Y -= 3 * delta * rightV.Y;
                 //offsetZ -= 3 * delta; ;
             }
             if (state.IsKeyDown(Keys.NumPad6))
             {
                 var upV = new Vector3D(0, 0, 1);
-                var forwardV = new Vector3D(cameraX, cameraY, cameraZ);
+                var forwardV = new Vector3D(camera.X, camera.Y, camera.Z);
                 Vector3D rightV = Vector3D.CrossProduct(upV, forwardV).Normalize();
-                offsetX += 3 * delta * rightV.X;
-                offsetY += 3 * delta * rightV.Y;
+                offset.X += 3 * delta * rightV.X;
+                offset.Y += 3 * delta * rightV.Y;
                 //offsetZ -= 3 * delta; ;
             }
             if (state.IsKeyDown(Keys.NumPad5))
             {
-                Vector3D forwardV = new Vector3D(cameraX, cameraY, cameraZ).Normalize();
-                offsetX -= 3 * delta * forwardV.X;
-                offsetY -= 3 * delta * forwardV.Y;
-                offsetZ -= 3 * delta * forwardV.Z;
+                var forwardV = new Vector3D(camera.X, camera.Y, camera.Z).Normalize();
+                offset.X -= 3 * delta * forwardV.X;
+                offset.Y -= 3 * delta * forwardV.Y;
+                offset.Z -= 3 * delta * forwardV.Z;
                 //offsetZ -= 3 * delta; ;
             }
             if (state.IsKeyDown(Keys.NumPad0))
             {
-                Vector3D forwardV = new Vector3D(cameraX, cameraY, cameraZ).Normalize();
-                offsetX += 3 * delta * forwardV.X;
-                offsetY += 3 * delta * forwardV.Y;
-                offsetZ += 3 * delta * forwardV.Z;
+                var forwardV = new Vector3D(camera.X, camera.Y, camera.Z).Normalize();
+                offset.X += 3 * delta * forwardV.X;
+                offset.Y += 3 * delta * forwardV.Y;
+                offset.Z += 3 * delta * forwardV.Z;
                 //offsetZ -= 3 * delta; ;
             }
             // use X Y Z to lock onto the different axis X Y Z 
 
             if (state.IsKeyDown(Keys.D1))
             {
-                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-
-                cameraX = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? p.Length() : -p.Length();
-                cameraY = 0;
-                cameraZ = 0;
+                yaw = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? MathHelper.Pi : 0;
+                pitch = 0;
             }
 
             if (state.IsKeyDown(Keys.D2))
             {
-                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-
-                cameraX = 0;
-                cameraY = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? p.Length() : -p.Length();
-                cameraZ = 0;
+                yaw = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? -MathHelper.PiOver2 : MathHelper.PiOver2;
+                pitch = 0;
             }
 
             if (state.IsKeyDown(Keys.D3))
             {
-                var p = new System.Numerics.Vector3(cameraX, cameraY, cameraZ);
-
-                cameraX = 0;
-                cameraY = 0.01f;
-                cameraZ = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? -p.Length() : p.Length();
-
+                yaw = 0;
+                pitch = state.IsKeyDown(Keys.LeftShift) || state.IsKeyDown(Keys.RightShift) ? -MathHelper.PiOver2 + 0.01f : MathHelper.PiOver2 - 0.01f;
             }
 
 
@@ -882,17 +837,17 @@ namespace FLVER_Editor
                     // get the position of the first yellow vertex
                     // average the position of all yellow vertices
                     var center = new Vector3(selectedVertices.Average(v => v.Position.X), selectedVertices.Average(v => v.Position.Y), selectedVertices.Average(v => v.Position.Z));
-                    offsetX = center.X;
-                    offsetY = center.Y;
-                    offsetZ = center.Z;
+                    offset.X = center.X;
+                    offset.Y = center.Y;
+                    offset.Z = center.Z;
                 }
                 else
                 {
                     // get the position of the all vertex
                     // average the position of all vertices
-                    offsetX = 0;
-                    offsetY = 0;
-                    offsetZ = 0;
+                    offset.X = 0;
+                    offset.Y = 0;
+                    offset.Z = 0;
                 }
             }
 
@@ -923,8 +878,20 @@ namespace FLVER_Editor
             // NOTE: Add your update logic here
             prevState = state;
             prevMState = mState;
-            // TODO: FIX DUMMY DISPLAY (metty)
+
+            camera = new Vector3(
+                (float)(Math.Cos(yaw) * Math.Cos(pitch)),  // X movement (left/right)
+                (float)(Math.Sin(yaw) * Math.Cos(pitch)),  // Y movement (forward/back)
+                (float)Math.Sin(pitch)                     // Z movement (up/down)
+            ) * radius;
+
+
             base.Update(gameTime);
+        }
+
+        private void ScrollCamera(int direction, float delta)
+        {
+            radius *= (float)Math.Exp(direction * 5f * delta);
         }
 
         /// <summary>
@@ -1047,9 +1014,10 @@ namespace FLVER_Editor
             // The assignment of effect.View and effect.Projection
             // are nearly identical to the code in the Model drawing code.
             // var cameraPosition = new Vector3(0 + mouseX, 40 + mouseY, 20);
-            var cameraPosition = new Vector3(cameraX + offsetX, cameraY + offsetY, cameraZ + offsetZ);
-            var cameraLookAtVector = new Vector3(centerX + offsetX, centerY + offsetY, centerZ + offsetZ);
+            var cameraPosition = offset + camera;
+            var cameraLookAtVector = center + offset;
             Vector3 cameraUpVector = Vector3.UnitZ;
+
             var depthBufferState = new DepthStencilState();
             depthBufferState.DepthBufferEnable = true;
             depthBufferState.DepthBufferFunction = CompareFunction.LessEqual;
@@ -1060,7 +1028,7 @@ namespace FLVER_Editor
             float aspectRatio =
                 graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
             float fieldOfView = MathHelper.PiOver4;
-            var nearClipPlane = 0.1f;
+            var nearClipPlane = 0.01f;
             float farClipPlane = 200;
             var projection = Matrix.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
             effect.Projection = projection;
@@ -1090,6 +1058,7 @@ namespace FLVER_Editor
             lines[4] = new VertexPositionColor(new Vector3(0, 0, 0), Color.Yellow);
             lines[5] = new VertexPositionColor(new Vector3(0, 0, 1000), Color.Yellow);
             effect.TextureEnabled = false;
+
             foreach (EffectPass pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
@@ -1101,7 +1070,9 @@ namespace FLVER_Editor
             DrawScreenText(xAxisLabel, lines[0].Position, viewMatrix, projection);
             DrawScreenText(zAxisLabel, lines[2].Position, viewMatrix, projection);
             DrawScreenText(yAxisLabel, lines[5].Position, viewMatrix, projection);
+
             if (!MainWindow.AreDummyIdsVisible) return;
+
             foreach (FLVER.Dummy dummy in MainWindow.Flver.Dummies)
             {
                 var pos = new System.Numerics.Vector3(dummy.Position.X, dummy.Position.Y, dummy.Position.Z);
