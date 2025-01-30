@@ -363,6 +363,12 @@ public partial class MainWindow : Form
     public MainWindow()
     {
         InitializeComponent();
+        transXNumBox.Minimum = decimal.MinValue;
+        transYNumBox.Minimum = decimal.MinValue;
+        transZNumBox.Minimum = decimal.MinValue;
+        rotXNumBox.Minimum = decimal.MinValue;
+        rotYNumBox.Minimum = decimal.MinValue;
+        rotZNumBox.Minimum = decimal.MinValue;
         InitializeRequiredLibraries();
         SetVersionString();
         ReadUserConfig();
@@ -1641,6 +1647,7 @@ public partial class MainWindow : Form
                     UpdateMesh();
                     PrevNumVal = prevNum;
                 };
+
                 if (InvokeRequired)
                 {
                     Invoke(() => action.Invoke());
