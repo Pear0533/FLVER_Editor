@@ -30,6 +30,20 @@ internal static partial class Program
 
     /*************** Basic Tools section *****************/
 
+    private static string MatchCase(string mainString, string referenceSubstr, string targetSubstr)
+    {
+        int index = mainString.IndexOf(referenceSubstr, StringComparison.OrdinalIgnoreCase);
+        if (index < 0) return targetSubstr;
+        string match = mainString.Substring(index, referenceSubstr.Length);
+        return match.All(char.IsUpper) ? targetSubstr.ToUpper() : targetSubstr.ToLower();
+    }
+
+    public static string ChangePartPrefix(this string sourceStr, string oldPartPrefix, string newPartPrefix)
+    {
+        newPartPrefix = MatchCase(sourceStr, oldPartPrefix, newPartPrefix);
+        return sourceStr.Replace(oldPartPrefix, newPartPrefix, StringComparison.OrdinalIgnoreCase);
+    }
+
     public static string RemoveIndexSuffix(string filePath)
     {
         return Regex.Replace(Regex.Replace(filePath, @"_\d\.", "."), @"_\d_", "_");

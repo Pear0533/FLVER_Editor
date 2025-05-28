@@ -270,7 +270,7 @@ public class FbxMeshDataViewModel
         {
             FLVER2MaterialInfoBank.MaterialDef? matDef = MaterialInfoBank.MaterialDefs.Values
                 .FirstOrDefault(x => x.MTD.Equals(
-                    $"{Path.GetFileName(Flver.Materials[mesh.MaterialIndex].MTD).ToLower()}"));
+                    $"{Path.GetFileName(Flver.Materials.ElementAtOrDefault(mesh.MaterialIndex)?.MTD ?? "").ToLower()}"));
             if (matDef == null) MainWindow.ShowInformationDialog(Path.GetFileName(Flver.Materials[mesh.MaterialIndex].MTD) + " could not be found in the material info bank.");
             List<FLVER2.BufferLayout> bufferLayouts = matDef.AcceptableVertexBufferDeclarations[0].Buffers;
             mesh.Vertices = mesh.Vertices.Select(x => x.Pad(bufferLayouts)).ToList();

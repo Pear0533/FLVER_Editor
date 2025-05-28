@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -7,7 +8,6 @@ using FLVER_Editor.Actions;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SharpDX.Direct2D1;
 using SoulsFormats;
 using static FLVER_Editor.Program;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
@@ -78,7 +78,8 @@ public partial class MainWindow : Form
     ///     The currently loaded FLVER2 model.
     /// </summary>
     public static FLVER2 Flver;
-    public static FLVERType FlverType;
+    // TODO: Assume FLVER2 by default since that's the most common format users work with...
+    public static FLVERType FlverType = FLVERType.FLVER2;
 
     /// <summary>
     ///     A default male body FLVER2 model.
@@ -609,14 +610,14 @@ public partial class MainWindow : Form
             {
                 if (HiddenMeshIndices.IndexOf(i) != -1) continue;
                 Microsoft.Xna.Framework.Color colorLine = Microsoft.Xna.Framework.Color.Black;
-                if (MeshIsSelected && SelectedMeshIndices.IndexOf(i) != -1)
-                {
-                    colorLine.R = colorLine.G = 255;
-                }
-                else if (SelectedMaterialMeshIndices.IndexOf(i) != -1)
+                if (SelectedMaterialMeshIndices.IndexOf(i) != -1)
                 {
                     colorLine.G = 0;
                     colorLine.R = colorLine.B = 255;
+                }
+                else if (MeshIsSelected && SelectedMeshIndices.IndexOf(i) != -1)
+                {
+                    colorLine.R = colorLine.G = 255;
                 }
                 colorLine.A = 125;
                 vertexPosColorList.AddRange(new[]
@@ -1040,19 +1041,16 @@ public partial class MainWindow : Form
     {
         List<BinderFile> flverFiles = new();
         IBNDWrapper newFlverBnd = null;
-
         if (SoulsFile<BND4>.IsRead(filePath, out BND4 bnd4))
         {
             newFlverBnd = new BND4Wrapper(bnd4);
             FlverBnd = newFlverBnd;
         }
-
         if (SoulsFile<BND3>.IsRead(filePath, out BND3 bnd3))
         {
             newFlverBnd = new BND3Wrapper(bnd3);
             FlverBnd = newFlverBnd;
         }
-
         if (newFlverBnd != null)
         {
             if (setMainFlverCompressionType) FlverCompressionType = FlverBnd.Compression;
@@ -1080,10 +1078,8 @@ public partial class MainWindow : Form
                 {
                     return FLVERConverter.Convert(FLVER0.Read(flverFiles[0].Bytes));
                 }
-
                 return FLVER2.Read(flverFiles[0].Bytes);
             }
-
             if (flverFiles.Count > 1)
             {
                 int selectedFlverIndex = ShowSelectorDialog("Pick a FLVER", flverFiles);
@@ -1091,12 +1087,10 @@ public partial class MainWindow : Form
                 int binderWiseSelectedFlverIndex = FlverBnd.Files.FindIndex(i =>
                     i.Name.IndexOf(flverFiles[selectedFlverIndex].Name, StringComparison.OrdinalIgnoreCase) != -1);
                 CurrentFlverFileBinderIndex = binderWiseSelectedFlverIndex;
-
                 if (FLVER0.Is(flverFiles[selectedFlverIndex].Bytes))
                 {
                     return FLVERConverter.Convert(FLVER0.Read(flverFiles[selectedFlverIndex].Bytes));
                 }
-
                 return FLVER2.Read(flverFiles[selectedFlverIndex].Bytes);
             }
         }
@@ -1151,6 +1145,7 @@ public partial class MainWindow : Form
         }
         CurrentFlverBytes = Flver.Write();
         saveToolStripMenuItem.Enabled = saveAsToolStripMenuItem.Enabled = true;
+        partFileFromSelectedToolStripMenuItem.Enabled = true;
         MatBinBndPath = null;
         SafeDeselectAllSelectedThings();
         SafeUpdateUI();
@@ -1421,7 +1416,6 @@ public partial class MainWindow : Form
             uvChannelSelector.SelectedIndex = previousSelectedIndex;
         uvsPanel.Vertices = vertices;
         uvsPanel.Invalidate();
-
         UpdateMesh();
     }
 
@@ -1470,7 +1464,7 @@ public partial class MainWindow : Form
         selectorForm.Controls.Add(cancelButton);
         selectorForm.Controls.Add(okButton);
         foreach (T item in selectorList)
-            boneSelectionBox.Nodes.Add(new TreeNode(Path.GetFileName(((dynamic)item).Name)));
+            boneSelectionBox.Nodes.Add(new TreeNode(item?.GetType() == typeof(string) ? item : Path.GetFileName(((dynamic)item).Name)));
         return selectorForm.ShowDialog() == DialogResult.OK ? boneSelectionBox.SelectedNode.Index : -1;
     }
 
@@ -1647,7 +1641,6 @@ public partial class MainWindow : Form
                     UpdateMesh();
                     PrevNumVal = prevNum;
                 };
-
                 if (InvokeRequired)
                 {
                     Invoke(() => action.Invoke());
@@ -1684,7 +1677,7 @@ public partial class MainWindow : Form
             if ((bool)row.Cells[MaterialApplyPresetCbIndex].Value)
                 materialsToReplace.Add(Flver.Materials[row.Index]);
         }
-        string newMaterialMTD = materialPresetsSelector.SelectedItem.ToString() ?? "";
+        string newMaterialMTD = materialPresetsSelector.SelectedItem?.ToString() ?? "";
         MaterialsTableOkAction action = new(Flver, materialsToReplace, materialsToDelete, newMaterial, newMaterialMTD, displayPresetError =>
         {
             // if (displayPresetError) ShowErrorDialog("The specified preset does not exist.");
@@ -1781,49 +1774,125 @@ public partial class MainWindow : Form
         if (e.KeyCode == Keys.Enter) e.SuppressKeyPress = true;
     }
 
-    public static void SaveFLVERFile(string filePath)
+    public static void SaveFLVERFile(string filePath, bool fromSelectedOnly = false, bool hasClothPhysics = false)
     {
         if (IsFLVERPath(filePath))
         {
             BackupFLVERFile();
-
             switch (FlverType)
             {
                 case FLVERType.FLVER2:
                     Flver.Write(filePath);
                     break;
-
                 case FLVERType.FLVER0:
                     FLVERConverter.ConvertToFLVER0(Flver).Write(filePath);
                     break;
-
                 default:
                     throw new Exception("Impossible flver state reached");
             }
-
         }
         else if (filePath.EndsWith(".dcx"))
         {
             BackupFLVERFile();
             // TODO: Cleanup
             int index = FlverBnd.Files.FindIndex(i => i.Name.EndsWith(".flver"));
-
-            FlverBnd.Files[index].Bytes = FlverType switch
+            int tpfIndex = FlverBnd.Files.FindIndex(i => i.Name.EndsWith(".tpf"));
+            int clm2Index = FlverBnd.Files.FindIndex(i => i.Name.EndsWith(".clm2"));
+            int hkxIndex = FlverBnd.Files.FindIndex(i => i.Name.EndsWith(".hkx"));
+            if (FlverType == FLVERType.FLVER0)
             {
-                FLVERType.FLVER0 => FLVERConverter.ConvertToFLVER0(Flver).Write(),
-                FLVERType.FLVER2 => Flver.Write(),
-                _ => throw new Exception("Impossible flver state reached")
-            };
-
+                FlverBnd.Files[index].Bytes = FLVERConverter.ConvertToFLVER0(Flver).Write();
+            }
+            else if (FlverType == FLVERType.FLVER2)
+            {
+                // TODO: WIP (Pear)
+                if (fromSelectedOnly)
+                {
+                    if (!hasClothPhysics)
+                    {
+                        for (int i = Flver.Meshes.Count - 1; i >= 0; i--)
+                        {
+                            if (!SelectedMeshIndices.Contains(i))
+                                Flver.Meshes.RemoveAt(i);
+                        }
+                        HashSet<int> usedMaterialIndices = new(
+                            Flver.Meshes.Select(mesh => mesh.MaterialIndex)
+                        );
+                        Dictionary<int, int> oldToNewMatIndex = new();
+                        List<FLVER2.Material> newMaterials = new();
+                        int newIndex = 0;
+                        for (int oldIndex = 0; oldIndex < Flver.Materials.Count; oldIndex++)
+                        {
+                            if (!usedMaterialIndices.Contains(oldIndex)) continue;
+                            oldToNewMatIndex[oldIndex] = newIndex++;
+                            newMaterials.Add(Flver.Materials[oldIndex]);
+                        }
+                        foreach (FLVER2.Mesh? mesh in Flver.Meshes)
+                        {
+                            mesh.MaterialIndex = oldToNewMatIndex[mesh.MaterialIndex];
+                        }
+                        Flver.Materials = newMaterials;
+                        for (int i = Tpf.Textures.Count - 1; i >= 0; i--)
+                        {
+                            TPF.Texture tpfTexture = Tpf.Textures[i];
+                            bool shouldRemove = true;
+                            foreach (FLVER2.Material material in Flver.Materials)
+                            {
+                                foreach (FLVER2.Texture flverTexture in material.Textures)
+                                {
+                                    string name = Path.GetFileNameWithoutExtension(flverTexture.Path);
+                                    if (tpfTexture.Name != name) continue;
+                                    shouldRemove = false;
+                                    break;
+                                }
+                                if (!shouldRemove) break;
+                            }
+                            if (shouldRemove) Tpf.Textures.RemoveAt(i);
+                        }
+                        for (int i = FlverBnd.Files.Count - 1; i >= 0; i--)
+                        {
+                            if (i == clm2Index) FlverBnd.Files.RemoveAt(clm2Index);
+                            else if (i == hkxIndex) FlverBnd.Files.RemoveAt(hkxIndex);
+                        }
+                    }
+                    else
+                    {
+                        for (int i = Flver.Meshes.Count - 1; i >= 0; i--)
+                        {
+                            if (SelectedMeshIndices.Contains(i)) continue;
+                            FLVER2.Mesh mesh = Flver.Meshes[i];
+                            foreach (FLVER2.FaceSet fs in mesh.FaceSets)
+                            {
+                                for (int j = 0; j < fs.Indices.Count; ++j)
+                                    fs.Indices[j] = 1;
+                            }
+                        }
+                    }
+                }
+                FlverBnd.Files[index].Bytes = Flver.Write();
+                FlverBnd.Files[tpfIndex].Bytes = Tpf.Write();
+            }
+            else
+            {
+                throw new Exception("Impossible flver state reached");
+            }
             FlverBnd.Write(filePath, FlverCompressionType);
         }
     }
 
-    private void SaveFLVERAs()
+    private void SaveFLVERAs(bool fromSelectedOnly = false, string newPartPrefix = "", bool hasClothPhysics = false)
     {
         string bndFilter = FlverFilePath.EndsWith(".dcx") ? "|BND File (*.dcx)|*.dcx" : "";
+        bool hasNewPartPrefix = !string.IsNullOrEmpty(newPartPrefix);
+        string fileName = fromSelectedOnly ? Path.GetFileName(FlverFilePath) : Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", ""));
+        string oldPartPrefix = string.Join("", fileName.Take(2));
+        if (hasNewPartPrefix) fileName = fileName.ChangePartPrefix(oldPartPrefix, newPartPrefix);
         SaveFileDialog dialog = new()
-        { Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}", FileName = Path.GetFileNameWithoutExtension(FlverFilePath.Replace(".dcx", "")) };
+        {
+            Filter = $@"FLVER File (*.flver, *.flv)|*.flver;*.flv{bndFilter}",
+            FileName = fileName,
+            FilterIndex = fromSelectedOnly ? 2 : 1
+        };
         if (dialog.ShowDialog() != DialogResult.OK) return;
         string modelFilePath = dialog.FileName;
         if (FlverFilePath.EndsWith(".dcx"))
@@ -1836,16 +1905,21 @@ public partial class MainWindow : Form
                 {
                     foreach (BinderFile file in FlverBnd.Files)
                     {
-                        if (!Path.GetFileName(file.Name).Contains(ogModelPartID.ToString())) continue;
                         if (file.Name == null) continue;
-                        string newInternalPath = file.Name.Replace(ogModelPartID.ToString(), newPartID.ToString());
-                        file.Name = newInternalPath;
+                        string name = file.Name;
+                        string ogId = ogModelPartID.ToString();
+                        string newId = newPartID.ToString();
+                        if (Path.GetFileName(name).Contains(ogId))
+                            name = name.Replace(ogId, newId);
+                        if (hasNewPartPrefix)
+                            name = name.ChangePartPrefix(oldPartPrefix, newPartPrefix);
+                        file.Name = name;
                     }
                 }
             }
         }
-        SaveFLVERFile(modelFilePath);
-        Arguments.Add(modelFilePath);
+        SaveFLVERFile(modelFilePath, fromSelectedOnly, hasClothPhysics);
+        Arguments.Add(fromSelectedOnly ? FlverFilePath : modelFilePath);
         OpenFLVERFile();
     }
 
@@ -2230,15 +2304,15 @@ public partial class MainWindow : Form
         switch (prompt)
         {
             case true:
-                {
-                    if (!Importer.ImportFbxWithDialogAsync(Flver, refresh)) return;
-                    break;
-                }
+            {
+                if (!Importer.ImportFbxWithDialogAsync(Flver, refresh)) return;
+                break;
+            }
             default:
-                {
-                    if (!Importer.ImportFbxAsync(Flver, filePath, refresh)) return;
-                    break;
-                }
+            {
+                if (!Importer.ImportFbxAsync(Flver, filePath, refresh)) return;
+                break;
+            }
         }
     }
 
@@ -2968,24 +3042,22 @@ public partial class MainWindow : Form
 
     public void Undo()
     {
-        if (this.InvokeRequired)
+        if (InvokeRequired)
         {
-            this.Invoke(Undo);
+            Invoke(Undo);
             return;
         }
-
         ActionManager.Undo();
         undoToolStripMenuItem.Enabled = ActionManager.UndoStack.Count != 0;
     }
 
     public void Redo()
     {
-        if (this.InvokeRequired)
+        if (InvokeRequired)
         {
-            this.Invoke(Redo);
+            Invoke(Redo);
             return;
         }
-
         ActionManager.Redo();
         redoToolStripMenuItem.Enabled = ActionManager.RedoStack.Count != 0;
     }
@@ -3190,5 +3262,20 @@ public partial class MainWindow : Form
             vertex.UVs[index] = flippedVector;
         }
         UpdateSelectedMeshes();
+    }
+
+    private void PartFileFromSelectedToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+        List<string> prefixes = new()
+        {
+            "LG",
+            "BD",
+            "HD",
+            "AM"
+        };
+        int index = ShowSelectorDialog("Choose Prefix", prefixes);
+        DialogResult result = ShowQuestionDialog("Do you want your part file to have cloth physics?");
+        bool hasClothPhysics = result == DialogResult.Yes;
+        SaveFLVERAs(true, prefixes[index], hasClothPhysics);
     }
 }

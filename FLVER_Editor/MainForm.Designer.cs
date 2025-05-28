@@ -18,6 +18,7 @@
             openToolStripMenuItem = new ToolStripMenuItem();
             saveToolStripMenuItem = new ToolStripMenuItem();
             saveAsToolStripMenuItem = new ToolStripMenuItem();
+            partFileFromSelectedToolStripMenuItem = new ToolStripMenuItem();
             modelToolStripMenuItem = new ToolStripMenuItem();
             importCtrlIToolStripMenuItem = new ToolStripMenuItem();
             exportToolStripMenuItem2 = new ToolStripMenuItem();
@@ -108,7 +109,6 @@
             uvModifiersContainer = new GroupBox();
             uvsMirrorXButton = new Button();
             uvsMirrorYButton = new Button();
-            uvsPanel = new UVsPanel(uvChannelSelector);
             relativeToWorldOriginCheckbox = new CheckBox();
             useWorldOriginCheckbox = new CheckBox();
             vectorModeCheckbox = new CheckBox();
@@ -192,6 +192,7 @@
             searchBoxStr = new Label();
             meshTabDataTableSelector = new ComboBox();
             displayToolTip = new ToolTip(components);
+            uvsPanel = new UVsPanel(uvChannelSelector);
             ribbon.SuspendLayout();
             multiSelectMenu.SuspendLayout();
             meshTabPage.SuspendLayout();
@@ -245,7 +246,7 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, modelToolStripMenuItem, presetsFileToolStripMenuItem, loadJSONToolStripMenuItem, exportJSONToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem, partFileFromSelectedToolStripMenuItem, modelToolStripMenuItem, presetsFileToolStripMenuItem, loadJSONToolStripMenuItem, exportJSONToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 22);
             fileToolStripMenuItem.Text = "File";
@@ -253,7 +254,7 @@
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(190, 22);
+            openToolStripMenuItem.Size = new Size(194, 22);
             openToolStripMenuItem.Text = "Open (Ctrl+O)";
             openToolStripMenuItem.Click += OpenButtonClicked;
             // 
@@ -261,7 +262,7 @@
             // 
             saveToolStripMenuItem.Enabled = false;
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(190, 22);
+            saveToolStripMenuItem.Size = new Size(194, 22);
             saveToolStripMenuItem.Text = "Save (Ctrl+S)";
             saveToolStripMenuItem.Click += SaveButtonClicked;
             // 
@@ -269,15 +270,23 @@
             // 
             saveAsToolStripMenuItem.Enabled = false;
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(190, 22);
+            saveAsToolStripMenuItem.Size = new Size(194, 22);
             saveAsToolStripMenuItem.Text = "Save As (Ctrl+Shift+S)";
             saveAsToolStripMenuItem.Click += SaveAsButtonClicked;
+            // 
+            // partFileFromSelectedToolStripMenuItem
+            // 
+            partFileFromSelectedToolStripMenuItem.Enabled = false;
+            partFileFromSelectedToolStripMenuItem.Name = "partFileFromSelectedToolStripMenuItem";
+            partFileFromSelectedToolStripMenuItem.Size = new Size(194, 22);
+            partFileFromSelectedToolStripMenuItem.Text = "Part File From Selected";
+            partFileFromSelectedToolStripMenuItem.Click += PartFileFromSelectedToolStripMenuItem_Click;
             // 
             // modelToolStripMenuItem
             // 
             modelToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { importCtrlIToolStripMenuItem, exportToolStripMenuItem2, mergeToolStripMenuItem2 });
             modelToolStripMenuItem.Name = "modelToolStripMenuItem";
-            modelToolStripMenuItem.Size = new Size(190, 22);
+            modelToolStripMenuItem.Size = new Size(194, 22);
             modelToolStripMenuItem.Text = "Model";
             // 
             // importCtrlIToolStripMenuItem
@@ -305,7 +314,7 @@
             // 
             presetsFileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { browseToolStripMenuItem, exportToolStripMenuItem1, mergeToolStripMenuItem1 });
             presetsFileToolStripMenuItem.Name = "presetsFileToolStripMenuItem";
-            presetsFileToolStripMenuItem.Size = new Size(190, 22);
+            presetsFileToolStripMenuItem.Size = new Size(194, 22);
             presetsFileToolStripMenuItem.Text = "Presets File";
             // 
             // browseToolStripMenuItem
@@ -375,7 +384,7 @@
             // 
             loadJSONToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { bonesToolStripMenuItem, materialsToolStripMenuItem });
             loadJSONToolStripMenuItem.Name = "loadJSONToolStripMenuItem";
-            loadJSONToolStripMenuItem.Size = new Size(190, 22);
+            loadJSONToolStripMenuItem.Size = new Size(194, 22);
             loadJSONToolStripMenuItem.Text = "Load JSON";
             // 
             // bonesToolStripMenuItem
@@ -396,7 +405,7 @@
             // 
             exportJSONToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { bonesToolStripMenuItem1, materialsToolStripMenuItem1 });
             exportJSONToolStripMenuItem.Name = "exportJSONToolStripMenuItem";
-            exportJSONToolStripMenuItem.Size = new Size(190, 22);
+            exportJSONToolStripMenuItem.Size = new Size(194, 22);
             exportJSONToolStripMenuItem.Text = "Export JSON";
             // 
             // bonesToolStripMenuItem1
@@ -964,7 +973,7 @@
             dummiesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle7.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dummiesTable.RowsDefaultCellStyle = dataGridViewCellStyle7;
-            dummiesTable.Size = new Size(573, 134);
+            dummiesTable.Size = new Size(573, 128);
             dummiesTable.TabIndex = 12;
             dummiesTable.CellContentClick += DummiesTable_CellContentClick;
             dummiesTable.CellContentDoubleClick += DummiesTable_CellContentDoubleClick;
@@ -1451,6 +1460,7 @@
             rotZNumBox.Location = new Point(190, 63);
             rotZNumBox.Margin = new Padding(4, 3, 4, 3);
             rotZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            rotZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotZNumBox.Name = "rotZNumBox";
             rotZNumBox.Size = new Size(85, 24);
             rotZNumBox.TabIndex = 13;
@@ -1468,6 +1478,7 @@
             scaleZNumBox.Location = new Point(190, 33);
             scaleZNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            scaleZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleZNumBox.Name = "scaleZNumBox";
             scaleZNumBox.Size = new Size(85, 24);
             scaleZNumBox.TabIndex = 13;
@@ -1485,6 +1496,7 @@
             rotYNumBox.Location = new Point(97, 63);
             rotYNumBox.Margin = new Padding(4, 3, 4, 3);
             rotYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            rotYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotYNumBox.Name = "rotYNumBox";
             rotYNumBox.Size = new Size(85, 24);
             rotYNumBox.TabIndex = 12;
@@ -1502,6 +1514,7 @@
             transZNumBox.Location = new Point(190, 3);
             transZNumBox.Margin = new Padding(4, 3, 4, 3);
             transZNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            transZNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transZNumBox.Name = "transZNumBox";
             transZNumBox.Size = new Size(85, 24);
             transZNumBox.TabIndex = 13;
@@ -1519,6 +1532,7 @@
             rotXNumBox.Location = new Point(4, 63);
             rotXNumBox.Margin = new Padding(4, 3, 4, 3);
             rotXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            rotXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             rotXNumBox.Name = "rotXNumBox";
             rotXNumBox.Size = new Size(85, 24);
             rotXNumBox.TabIndex = 11;
@@ -1536,6 +1550,7 @@
             scaleYNumBox.Location = new Point(97, 33);
             scaleYNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            scaleYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleYNumBox.Name = "scaleYNumBox";
             scaleYNumBox.Size = new Size(85, 24);
             scaleYNumBox.TabIndex = 12;
@@ -1553,6 +1568,7 @@
             scaleXNumBox.Location = new Point(4, 33);
             scaleXNumBox.Margin = new Padding(4, 3, 4, 3);
             scaleXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            scaleXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             scaleXNumBox.Name = "scaleXNumBox";
             scaleXNumBox.Size = new Size(85, 24);
             scaleXNumBox.TabIndex = 11;
@@ -1570,6 +1586,7 @@
             transXNumBox.Location = new Point(4, 3);
             transXNumBox.Margin = new Padding(4, 3, 4, 3);
             transXNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            transXNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transXNumBox.Name = "transXNumBox";
             transXNumBox.Size = new Size(85, 24);
             transXNumBox.TabIndex = 11;
@@ -1587,6 +1604,7 @@
             transYNumBox.Location = new Point(97, 3);
             transYNumBox.Margin = new Padding(4, 3, 4, 3);
             transYNumBox.Maximum = new decimal(new int[] { -1, -1, -1, 0 });
+            transYNumBox.Minimum = new decimal(new int[] { -1, -1, -1, int.MinValue });
             transYNumBox.Name = "transYNumBox";
             transYNumBox.Size = new Size(85, 24);
             transYNumBox.TabIndex = 12;
@@ -1913,7 +1931,7 @@
             texturesTable.RowHeadersWidth = 62;
             dataGridViewCellStyle9.Alignment = DataGridViewContentAlignment.MiddleCenter;
             texturesTable.RowsDefaultCellStyle = dataGridViewCellStyle9;
-            texturesTable.Size = new Size(574, 455);
+            texturesTable.Size = new Size(568, 455);
             texturesTable.TabIndex = 7;
             texturesTable.CellContentClick += TexturesTableButtonClicked;
             texturesTable.CellValueChanged += TexturesTableCellValueChanged;
@@ -2066,7 +2084,7 @@
             copyrightStr.Name = "copyrightStr";
             copyrightStr.Size = new Size(174, 15);
             copyrightStr.TabIndex = 1;
-            copyrightStr.Text = "© Pear, 2024 All rights reserved.";
+            copyrightStr.Text = "© Pear, 2025 All rights reserved.";
             // 
             // versionStr
             // 
@@ -2132,7 +2150,7 @@
             KeyPreview = true;
             MainMenuStrip = ribbon;
             Margin = new Padding(4, 3, 4, 3);
-            MinimumSize = new Size(1222, 629);
+            MinimumSize = new Size(0, 629);
             Name = "MainWindow";
             Text = "FLVER Editor";
             TransparencyKey = Color.Maroon;
@@ -2372,5 +2390,6 @@
         private GroupBox uvModifiersContainer;
         private Label label17;
         private EasyCompletionComboBox uvChannelSelector;
+        private ToolStripMenuItem partFileFromSelectedToolStripMenuItem;
     }
 }
