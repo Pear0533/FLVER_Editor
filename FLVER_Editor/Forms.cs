@@ -14,7 +14,7 @@ namespace FLVER_Editor
         /// <param name="str">The message to show in the dialog</param>
         public static void ShowInformationDialog(string str)
         {
-            MessageBox.Show(str, @"Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            System.Windows.Forms.MessageBox.Show(str, @"Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace FLVER_Editor
         /// <param name="str">The message to show in the dialog</param>
         public static void ShowErrorDialog(string str)
         {
-            MessageBox.Show(str, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            System.Windows.Forms.MessageBox.Show(str, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace FLVER_Editor
         /// <returns>True or false depending on whether or not the user pressed yes or no</returns>
         public static DialogResult ShowQuestionDialog(string str)
         {
-            return MessageBox.Show(str, @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            return System.Windows.Forms.MessageBox.Show(str, @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
         }
 
         /// <summary>

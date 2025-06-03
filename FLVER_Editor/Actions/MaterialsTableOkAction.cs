@@ -1,4 +1,4 @@
-﻿using FLVER_Editor.FbxImporter.ViewModels;
+﻿// using FLVER_Editor.FbxImporter.ViewModels;
 using SoulsFormats;
 
 namespace FLVER_Editor.Actions;
@@ -73,7 +73,7 @@ public class MaterialsTableOkAction : TransformAction
             foreach (FLVER2.Mesh mesh in flver.Meshes.Where(mesh => mesh.MaterialIndex >= materialIndex))
                 mesh.MaterialIndex--;
         }
-        FbxMeshDataViewModel.FixBufferLayouts();
+        // FbxMeshDataViewModel.FixBufferLayouts();
         refresher?.Invoke(displayMissingPresetDialog);
     }
 
@@ -91,7 +91,7 @@ public class MaterialsTableOkAction : TransformAction
         }
 
         // TODO: Double check
-        FbxMeshDataViewModel.FixBufferLayouts();
+        // FbxMeshDataViewModel.FixBufferLayouts();
         refresher?.Invoke(false);
     }
 }

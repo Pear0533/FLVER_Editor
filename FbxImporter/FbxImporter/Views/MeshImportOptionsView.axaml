@@ -1,0 +1,50 @@
+﻿<rxui:ReactiveWindow xmlns="https://github.com/avaloniaui"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:rxui="http://reactiveui.net"
+                     xmlns:vm="clr-namespace:FbxImporter.ViewModels"
+                     mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="300"
+                     x:TypeArguments="vm:MeshImportOptionsViewModel" 
+                     x:Class="FbxImporter.Views.MeshImportOptionsView"
+                     WindowStartupLocation="CenterOwner"
+                     Title="Mesh Import Options"
+                     Height="460"
+                     Width="350"
+                     CanResize="False">
+    <Design.DataContext>
+        <vm:MeshImportOptionsViewModel/>
+    </Design.DataContext>
+    
+    <Border>
+        <Grid RowDefinitions="40, 200, 40, 120, 40" Margin="5">
+            <TextBox Name="FilterTextBox" Text="{Binding Filter}" Grid.Row="0" Margin="5"/>
+            <ListBox Name="MaterialListBox" Items="{Binding FilteredMaterials}" SelectedItems="{Binding FilteredMaterialSelection}" 
+                     VirtualizationMode="Simple" SelectionMode="Single" AutoScrollToSelectedItem="False" 
+                     VerticalAlignment="Stretch" Grid.Row="1" Margin="5"/>
+            <TextBox Text="{Binding SelectedMaterial}" IsReadOnly="True" CaretBrush="Transparent" Grid.Row="2" Margin="5"/>
+            <Grid RowDefinitions="30, 30, 30" ColumnDefinitions="*, *" Grid.Row="3" Margin="5">
+                <TextBlock Text="Mirror" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"/>
+                <CheckBox IsChecked="{Binding MirrorZ}" ToolTip.Tip="Inverts the Z-scale of the model." Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right"/>
+                <TextBlock Text="Flip Faces" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0"/>
+                <CheckBox IsChecked="{Binding FlipFaces}" ToolTip.Tip="Flips the faces of the model." Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right"/>
+                <TextBlock Text="Weighting Mode" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0"/>
+                <ComboBox Items="{Binding WeightingModes}" SelectedItem="{Binding Weighting}" Grid.Row="2" Grid.Column="1">
+                    <ComboBox.DataTemplates>
+                        <DataTemplate DataType="vm:WeightingMode">
+                            <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding Description}"/>
+                        </DataTemplate>
+                    </ComboBox.DataTemplates>
+                </ComboBox>
+            </Grid>
+            <Grid ColumnDefinitions="*, *" Grid.Row="4">
+                <Button Content="Cancel" Command="{Binding CancelCommand}" ToolTip.Tip="Shortcut: Esc" Margin="0, 0, 2, 0" Grid.Column="0" />
+                <Button Content="Ok" Command="{Binding ConfirmCommand}" ToolTip.Tip="Shortcut: Enter" Margin="2, 0, 0, 0" Grid.Column="1" />
+            </Grid>
+        </Grid>
+    </Border>
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Escape" Command="{Binding CancelCommand}" />
+        <KeyBinding Gesture="Enter" Command="{Binding ConfirmCommand}" />
+    </Window.KeyBindings>
+</rxui:ReactiveWindow>

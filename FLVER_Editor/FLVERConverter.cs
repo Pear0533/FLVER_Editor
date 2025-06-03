@@ -107,6 +107,7 @@ public class FLVERConverter
     {
         FLVER0 flver0 = new()
         {
+            /*
             Header = new FLVER0Header()
             {
                 BigEndian = flver2.Header.BigEndian,
@@ -117,6 +118,7 @@ public class FLVERConverter
                 Version = 21,
                 VertexIndexSize = 16
             },
+            */
             Dummies = new List<FLVER.Dummy>(),
             Materials = new List<FLVER0.Material>(),
             Nodes = new List<FLVER.Node>(),

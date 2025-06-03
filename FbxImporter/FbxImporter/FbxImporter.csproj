@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
+        <TrimMode>copyused</TrimMode>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>false</SelfContained>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <Configurations>Debug;Release;Publish</Configurations>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Publish|AnyCPU'">
+        <Optimize>True</Optimize>
+    </PropertyGroup>
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
+        <None Remove=".gitignore" />
+    </ItemGroup>
+    <PropertyGroup>
+        <AvaloniaNameGeneratorBehavior>OnlyProperties</AvaloniaNameGeneratorBehavior>
+    </PropertyGroup>
+    <ItemGroup>
+        <!--This helps with theme dll-s trimming.
+        If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
+        https://github.com/AvaloniaUI/Avalonia/issues/5593 -->
+        <TrimmableAssembly Include="Avalonia.Themes.Fluent" />
+        <TrimmableAssembly Include="Avalonia.Themes.Default" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="0.10.22" />
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.22" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.22" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.22" />
+        <PackageReference Include="MessageBox.Avalonia" Version="2.0.0" />
+        <PackageReference Include="ReactiveHistory" Version="0.10.7" />
+        <PackageReference Include="ReactiveProperty" Version="8.1.0" />
+        <PackageReference Include="ReactiveUI.Fody" Version="18.0.7" />
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0-preview.4.22229.4" />
+        <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
+    </ItemGroup>
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Themes\DarkTheme.axaml" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\SoulsAssetPipeline\SoulsAssetPipeline.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <CopyMaterialBanks Include="$(ProjectDir)\SapResources\FLVER2MaterialInfoBank\*.*" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="FbxDataExtractor">
+        <HintPath>..\..\FLVER_Editor\FbxDataExtractor.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+    <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+        <Copy SourceFiles="@(CopyMaterialBanks)" DestinationFolder="$(OutDir)\SapResources\FLVER2MaterialInfoBank" />
+    </Target>
+</Project>

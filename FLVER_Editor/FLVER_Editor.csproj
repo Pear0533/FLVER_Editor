@@ -22,8 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SoulsAssetPipeline\SoulsAssetPipeline.csproj" />
-    <ProjectReference Include="..\SoulsFormats\SoulsFormats.csproj" />
+    <ProjectReference Include="..\FbxImporter\FbxImporter\FbxImporter.csproj" />
+    <ProjectReference Include="..\FbxImporter\SoulsAssetPipeline\SoulsAssetPipeline.csproj" />
+    <ProjectReference Include="..\FbxImporter\SoulsFormatsNEXT\SoulsFormats\SoulsFormats.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -229,6 +230,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SapResources\FLVER2MaterialInfoBank\BankER.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="SapResources\FLVER2MaterialInfoBank\BankNR.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="SapResources\FLVER2MaterialInfoBank\BankSDT.xml">

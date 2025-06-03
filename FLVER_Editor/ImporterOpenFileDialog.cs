@@ -1,7 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using FbxImporter.ViewModels;
 using FileDialogExtenders;
-using FLVER_Editor.FbxImporter.ViewModels;
+// using FLVER_Editor.FbxImporter.ViewModels;
 using static FLVER_Editor.Program;
 
 namespace FLVER_Editor;
@@ -27,6 +28,11 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         ResetImportOptionsControls(false);
     }
 
+    protected override void OnPaint(PaintEventArgs pe)
+    {
+        base.OnPaint(pe);
+    }
+
     private void PopulateWeightingModeSelector()
     {
         foreach (WeightingMode weightingMode in WeightingMode.Values)
@@ -45,14 +51,13 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     {
         foreach (string material in MTDs)
             mtdSelector.Items.Add(material);
-        // TODO: Extend this to work for other games aside from just ER... (Pear)
-        var default_mtd_index =
-            mtdSelector.SelectedIndex = MTDs.FindIndex(i => i == "c[amsn]_e.matxml");
+        int index = MTDs.IndexOf(GetSelectedMesh().Value.MTD);
+        mtdSelector.SelectedIndex = index == -1 ? 0 : index;
     }
 
     private KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> GetSelectedMesh()
     {
-        return Meshes.FirstOrDefault(i => i.Key.Name == meshSelector.SelectedItem.ToString());
+        return Meshes.ToList().ElementAtOrDefault(meshSelector.SelectedIndex);
     }
 
     private void ResetImportOptionsControls(bool enabled, bool clearMeshes = true)
@@ -80,7 +85,7 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     private void AssertBoneWeightsMessageVisibility()
     {
         WeightingMode mode = WeightingMode.Convert(weightingModeSelector.SelectedItem?.ToString());
-        bool doesSupportBoneWeights = FbxMeshDataViewModel.DoesSupportBoneWeights(mtdSelector.SelectedItem?.ToString(), mode);
+        bool doesSupportBoneWeights = FbxMeshDataViewModel.DoesSupportBoneWeights(mtdSelector.SelectedItem?.ToString(), mode, GetSelectedMesh());
         bool meshHasBoneWeights = GetSelectedMesh().Key.Data.VertexData.All(i => i.BoneWeights.Any(x => x != 0));
         switch (mode == WeightingMode.Static)
         {
@@ -102,7 +107,8 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
     {
         KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> selectedMesh = GetSelectedMesh();
         mtdSelector.SelectedItem = selectedMesh.Value.MTD;
-        weightingModeSelector.SelectedItem = selectedMesh.Value.Weighting;
+        weightingModeSelector.SelectedItem = selectedMesh.Value.Weighting.Name;
+        flipFacesCheckbox.Checked = selectedMesh.Value.FlipFaces;
     }
 
     private void AssignEventHandlers()
@@ -125,9 +131,6 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
         meshSelector.SelectedIndexChanged += (_, _) =>
         {
             ApplyCurrentMeshOptions();
-            KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> selectedMesh = GetSelectedMesh();
-            mtdSelector.SelectedItem = selectedMesh.Value.MTD;
-            weightingModeSelector.SelectedItem = selectedMesh.Value.Weighting;
         };
         mtdSelector.SelectedIndexChanged += (_, _) =>
         {
@@ -141,21 +144,12 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             ModifyMesh(i => i.Value.Weighting = WeightingMode.Convert(weightingModeSelector.SelectedItem.ToString()!));
             AssertBoneWeightsMessageVisibility();
         };
-    }
-
-    protected override void OnPaint(PaintEventArgs pe)
-    {
-        base.OnPaint(pe);
-    }
-
-    private static string ExtractAndValidateMaterialName(string meshName)
-    {
-        Regex regex = new(@"-| ([^-|]+)\.(mtd|matxml)$");
-        Match match = regex.Match(meshName);
-        if (!match.Success) return "";
-        string name = match.Groups[1].Value.Trim();
-        string extension = match.Groups[2].Value;
-        return extension is "mtd" or "matxml" ? $"{name}.{extension}" : "";
+        flipFacesCheckbox.CheckedChanged += (_, _) =>
+        {
+            if (meshSelector.SelectedItem == null) return;
+            ModifyMesh(i => i.Value.FlipFaces = flipFacesCheckbox.Checked);
+            AssertBoneWeightsMessageVisibility();
+        };
     }
 
     // TODO: Make this a property so that it can affect individual meshes
@@ -166,10 +160,10 @@ public partial class ImporterOpenFileDialog : FileDialogControlBase
             mtdSelector.Enabled = false;
             foreach (KeyValuePair<FbxMeshDataViewModel, MeshImportOptions> mesh in Meshes)
             {
-                string mtdValue = ExtractAndValidateMaterialName(mesh.Key.Name.ToLower());
-                int mtdIndex = MTDs.IndexOf(mtdValue);
-                if (mtdIndex != -1) mesh.Value.MTD = mtdValue;
+                int mtdIndex = MTDs.IndexOf(mesh.Key.MTD ?? "");
+                if (mtdIndex != -1) mesh.Value.MTD = mesh.Key.MTD ?? "";
             }
+            ApplyCurrentMeshOptions();
         }
         else mtdSelector.Enabled = true;
     }

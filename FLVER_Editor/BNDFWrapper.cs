@@ -9,9 +9,9 @@ public interface IBNDWrapper
     public Binder.Format Format { get; }
     public string Version { get; }
     public List<BinderFile> Files { get; }
-    public DCX.Type Compression { get; }
+    public DCX.CompressionInfo Compression { get; }
 
-    public void Write(string path, DCX.Type compression);
+    public void Write(string path, DCX.CompressionInfo compression);
 
 }
 
@@ -30,9 +30,9 @@ public class BND4Wrapper : IBNDWrapper
     public string Version => BND4.Version;
 
     public List<BinderFile> Files => BND4.Files;
-    public DCX.Type Compression => BND4.Compression;
+    public DCX.CompressionInfo Compression => BND4.Compression;
 
-    public void Write(string path, DCX.Type compression)
+    public void Write(string path, DCX.CompressionInfo compression)
     {
         BND4.Write(path, compression);
     }
@@ -53,9 +53,9 @@ public class BND3Wrapper : IBNDWrapper
     public string Version => BND3.Version;
 
     public List<BinderFile> Files => BND3.Files;
-    public DCX.Type Compression => BND3.Compression;
+    public DCX.CompressionInfo Compression => BND3.Compression;
 
-    public void Write(string path, DCX.Type compression)
+    public void Write(string path, DCX.CompressionInfo compression)
     {
         BND3.Write(path, compression);
     }

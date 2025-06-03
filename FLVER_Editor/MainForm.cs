@@ -119,7 +119,7 @@ public partial class MainWindow : Form
     /// <summary>
     ///     The compression type of the archive the loaded FLVER2 is in if applicable.
     /// </summary>
-    private static DCX.Type FlverCompressionType;
+    private static DCX.CompressionInfo FlverCompressionType;
 
     /// <summary>
     ///     The BinderFile index of the current FLVER2 file if it is inside of a Binder.
@@ -414,8 +414,8 @@ public partial class MainWindow : Form
     {
         if (MaterialInfoBank == null)
             return;
-        IsMaleBodyModelImported = Importer.ImportFbxAsync(MaleBodyFlver, $"{ModelResourcePath}\\malebody.fbx", () => { });
-        IsFemaleBodyModelImported = Importer.ImportFbxAsync(FemaleBodyFlver, $"{ModelResourcePath}\\femalebody.fbx", () => { });
+        // IsMaleBodyModelImported = Importer.ImportFbxAsync(MaleBodyFlver, $"{ModelResourcePath}\\malebody.fbx", () => { });
+        // IsFemaleBodyModelImported = Importer.ImportFbxAsync(FemaleBodyFlver, $"{ModelResourcePath}\\femalebody.fbx", () => { });
     }
 
     private void SetVersionString()
@@ -891,8 +891,11 @@ public partial class MainWindow : Form
             materialPresetsSelector.Items.Add(divider);
         }
         materialPresetsSelector.Items.Add("+ Native MTDs:");
-        foreach (string mtd in Program.MTDs)
-            materialPresetsSelector.Items.Add(mtd);
+        if (Program.MTDs != null)
+        {
+            foreach (string mtd in Program.MTDs)
+                materialPresetsSelector.Items.Add(mtd);
+        }
     }
 
     private void LoadDummyPresets()
@@ -2040,17 +2043,17 @@ public partial class MainWindow : Form
 
     public static void ShowInformationDialog(string str)
     {
-        MessageBox.Show(str, @"Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        System.Windows.Forms.MessageBox.Show(str, @"Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
     public static void ShowErrorDialog(string str)
     {
-        MessageBox.Show(str, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        System.Windows.Forms.MessageBox.Show(str, @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 
     public static DialogResult ShowQuestionDialog(string str)
     {
-        return MessageBox.Show(str, @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        return System.Windows.Forms.MessageBox.Show(str, @"Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
     }
 
     public static string ShowSelectorDialog(string text, string caption, object[] selectorItems)
@@ -2310,7 +2313,7 @@ public partial class MainWindow : Form
             }
             default:
             {
-                if (!Importer.ImportFbxAsync(Flver, filePath, refresh)) return;
+                // if (!Importer.ImportFbxAsync(Flver, filePath, refresh)) return;
                 break;
             }
         }
@@ -2350,7 +2353,7 @@ public partial class MainWindow : Form
     {
         byte[] newFlverBytes = Flver.Write();
         if (newFlverBytes.SequenceEqual(CurrentFlverBytes)) return true;
-        DialogResult result = MessageBox.Show(@"Do you want to save changes to the FLVER before quitting?", @"Warning", MessageBoxButtons.YesNoCancel,
+        DialogResult result = System.Windows.Forms.MessageBox.Show(@"Do you want to save changes to the FLVER before quitting?", @"Warning", MessageBoxButtons.YesNoCancel,
             MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1, (MessageBoxOptions)0x40000);
         switch (result)
         {

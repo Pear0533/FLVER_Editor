@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FbxImporter": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

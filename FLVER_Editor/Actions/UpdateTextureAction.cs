@@ -48,7 +48,7 @@ public class UpdateTextureAction : TransformAction
                 formatByte = (byte)Enum.Parse(typeof(TextureFormats), dds.header10.dxgiFormat.ToString());
             }
             catch { }
-            newTexture = new(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, File.ReadAllBytes(textureFilePath));
+            newTexture = new(Path.GetFileNameWithoutExtension(textureFilePath), formatByte, 0x00, File.ReadAllBytes(textureFilePath), TPF.TPFPlatform.PC);
         }
 
         textureIndex = Tpf.Textures.FindIndex(i => i.Name == newTexture?.Name);

@@ -1,4 +1,5 @@
-﻿using FLVER_Editor.FbxImporter.ViewModels;
+﻿/*
+using FLVER_Editor.FbxImporter.ViewModels;
 using SoulsAssetPipeline.FLVERImporting;
 using SoulsFormats;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FbxImporter.Util;
 
 namespace FLVER_Editor.Actions;
 
@@ -25,6 +27,7 @@ public class ImportMeshesToFlverAction : TransformAction
     private readonly List<FLVER2.SkeletonSet.Bone> oldAllBones = new();
     private readonly Dictionary<FLVER.Node, FLVER.Node.NodeFlags> oldNodes = new();
     private readonly FLVER2.SkeletonSet oldSkeleton;
+    private List<FLVER2.Mesh> cMeshes = new();
 
     public ImportMeshesToFlverAction(FLVER2 flver, Dictionary<FbxMeshDataViewModel, MeshImportOptions> mesh, Action refresher)
     {
@@ -46,6 +49,61 @@ public class ImportMeshesToFlverAction : TransformAction
 
     }
 
+    public void Write(string path)
+    {
+        flver.Meshes = new List<FLVER2.Mesh>(cMeshes);
+        flver.Materials = new List<FLVER2.Material>();
+        flver.GXLists = new List<FLVER2.GXList>();
+        foreach (FLVER2.Mesh mesh in cMeshes)
+        {
+            var material = flver.Materials[mesh.MaterialIndex];
+            int materialIndex = flver.Materials.FindIndex(x => x.Name == material.Name && x.MTD == material.MTD);
+            if (materialIndex == -1)
+            {
+                materialIndex = flver.Materials.Count;
+                flver.Materials.Add(material);
+                if (flver.Header.Version >= 131098) material.Index = materialIndex;
+
+                var gxList = flver.GXLists.ElementAtOrDefault(material.GXIndex);
+                if (gxList is not null)
+                {
+                    int gxListIndex = flver.GXLists.Count;
+                    flver.GXLists.Add(gxList);
+                    material.GXIndex = gxListIndex;
+                }
+            }
+            mesh.MaterialIndex = materialIndex;
+        }
+        
+        flver.FixAllBoundingBoxes();
+        if (flver.Header.Version >= 131098)
+        {
+            flver.AddNodesToSkeletons();
+            flver.SetNodeFlags();
+        }
+
+        // Soulsformats will corrupt the file if there is an exception on write so back up the file first and write it back to disk if the write fails.
+        FLVER2? backupFlver;
+        try
+        {
+            backupFlver = FLVER2.Read(path);
+        }
+        catch
+        {
+            backupFlver = null;
+        }
+
+        try
+        {
+            flver.Write(path);
+        }
+        catch
+        {
+            backupFlver?.Write(path);
+            throw;
+        }
+    }
+
     public override void Execute()
     {
         oldNodes.Clear();
@@ -57,7 +115,9 @@ public class ImportMeshesToFlverAction : TransformAction
         SaveNodesToSkeleton(flver, flver.Skeletons.AllSkeletons, oldAllBones);
         SaveNodesToSkeleton(flver, flver.Skeletons.BaseSkeleton, oldBaseBones);
 
-        meshes.ToList().ForEach(i => i.Key.ToFlverMesh(flver, i.Value));
+        cMeshes = new List<FLVER2.Mesh>();
+        meshes.ToList().ForEach(i => cMeshes.Add(i.Key.ToFlverMesh(flver, i.Value)));
+        Write(MainWindow.FlverFilePath);
 
         refresher.Invoke();
     }
@@ -87,13 +147,11 @@ public class ImportMeshesToFlverAction : TransformAction
         flver.Meshes.RemoveRange(meshesCount, meshesLength);
         flver.Nodes.RemoveRange(nodesCount, nodeLength);
 
-        /*
         foreach ( var mesh in meshes)
         {
             var item = mesh.Key;
             FlipFaceSet(item);
         }
-        */
 
         flver.Skeletons = oldSkeleton;
 
@@ -173,3 +231,4 @@ public class ImportMeshesToFlverAction : TransformAction
     }
 
 }
+*/

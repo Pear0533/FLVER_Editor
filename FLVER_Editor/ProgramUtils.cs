@@ -68,6 +68,7 @@ internal static partial class Program
             131099 => "AC6",
             // TODO: Create a dedicated material bank for Demon's Souls...
             131072 => "ER",
+            131105 => "NR",
             _ => throw new InvalidDataException("Invalid Flver Version")
         };
     }
@@ -354,7 +355,7 @@ internal static partial class Program
             }
         }
         seikiroDonorModel.Write(openSeikiroModelDonorDialog.FileName + "n");
-        MessageBox.Show("Swap completed!", "Info");
+        System.Windows.Forms.MessageBox.Show("Swap completed!", "Info");
         //Console.WriteLine("End reading");
         //Application.Exit();
     }
@@ -397,11 +398,11 @@ internal static partial class Program
                 StreamWriter sw = new(saveDialog.FileName);
                 sw.Write(content);
                 sw.Close();
-                MessageBox.Show(endMessage, "Info");
+                System.Windows.Forms.MessageBox.Show(endMessage, "Info");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Security error.\n\nError message: {ex.Message}\n\n" + $"Details:\n\n{ex.StackTrace}");
+                System.Windows.Forms.MessageBox.Show($"Security error.\n\nError message: {ex.Message}\n\n" + $"Details:\n\n{ex.StackTrace}");
             }
         }
     }

@@ -1,0 +1,22 @@
+﻿<rxui:ReactiveUserControl xmlns="https://github.com/avaloniaui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:vm="clr-namespace:FbxImporter.ViewModels"
+                          xmlns:rxui="http://reactiveui.net"
+                          mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+                          x:Class="FbxImporter.Views.FlverView"
+                          x:TypeArguments="vm:FlverViewModel" 
+                          >
+    <Design.DataContext>
+        <vm:FlverViewModel/>
+    </Design.DataContext>
+    
+    <ListBox Background="Gray" Items="{Binding Meshes}" SelectionMode="Single" SelectedItem="{Binding SelectedMesh}">
+        <ListBox.ItemTemplate>
+            <DataTemplate DataType="vm:FlverMeshViewModel">
+                <TextBlock Text="{Binding Name}"/>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+    </ListBox>
+</rxui:ReactiveUserControl>

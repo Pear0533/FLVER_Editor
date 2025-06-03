@@ -569,9 +569,9 @@ namespace FLVER_Editor
             {
                 string text = Program.FormatOutput(JsonConvert.SerializeObject(targetVertex));
                 int textLength = text.Length / 2;
-                MessageBox.Show($"Parent mesh index: {targetVertexInfo.MeshIndex}\nVertex index: {targetVertexInfo.VertexIndex}\n{text.Substring(0, textLength)}",
+                System.Windows.Forms.MessageBox.Show($"Parent mesh index: {targetVertexInfo.MeshIndex}\nVertex index: {targetVertexInfo.VertexIndex}\n{text.Substring(0, textLength)}",
                     "Vertex Info 1:");
-                MessageBox.Show(text.Substring(textLength, text.Length - textLength), "Vertex Info 2:");
+                System.Windows.Forms.MessageBox.Show(text.Substring(textLength, text.Length - textLength), "Vertex Info 2:");
             }
         }
 
@@ -640,8 +640,8 @@ namespace FLVER_Editor
             {
                 string text = Program.FormatOutput(JsonConvert.SerializeObject(targetVertex));
                 int l = text.Length / 2;
-                MessageBox.Show(text.Substring(0, l), "Vertex info1:");
-                MessageBox.Show(text.Substring(l, text.Length - l), "Vertex info2:");
+                System.Windows.Forms.MessageBox.Show(text.Substring(0, l), "Vertex info1:");
+                System.Windows.Forms.MessageBox.Show(text.Substring(l, text.Length - l), "Vertex info2:");
             }
         }
 

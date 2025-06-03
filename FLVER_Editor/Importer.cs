@@ -1,6 +1,9 @@
-﻿using FbxDataExtractor;
-using FLVER_Editor.Actions;
-using FLVER_Editor.FbxImporter.ViewModels;
+﻿using System.Collections.ObjectModel;
+using System.Reactive.Linq;
+using FbxDataExtractor;
+using FbxImporter.ViewModels;
+using Reactive.Bindings;
+using ReactiveHistory;
 using SoulsFormats;
 using Win32Types;
 using static FLVER_Editor.Program;
@@ -11,7 +14,8 @@ public static class Importer
 {
     public static MeshImportOptions GetDefaultImportOptions()
     {
-        return new MeshImportOptions(MTDs[0], MaterialInfoBank, WeightingMode.Skin);
+        // TODO: Extend this to work for other games aside from just ER... (Pear)
+        return new MeshImportOptions(MTDs.ElementAtOrDefault(MTDs.FindIndex(i => i == "c[amsn]_e.matxml")) ?? MTDs[0], MaterialInfoBank, WeightingMode.Skin);
     }
 
     private static void ShowImportErrorDialog(string fbxPath, Exception e)
@@ -51,16 +55,16 @@ public static class Importer
         Dictionary<FbxMeshDataViewModel, MeshImportOptions> meshData = new();
         meshes.ForEach(x => meshData.Add(x, meshImport));
 
-        ImportMeshesToFlverAction action = new(flver, meshData, refresher);
-        ActionManager.Apply(action);
+        // ImportMeshesToFlverAction action = new(flver, meshData, refresher);
+        // ActionManager.Apply(action);
 
         return true;
     }
 
     private static void AddImportDialogMeshesToFlver(FLVER2 flver, Dictionary<FbxMeshDataViewModel, MeshImportOptions> meshes, Action refresher)
     {
-        ImportMeshesToFlverAction action = new(flver, meshes, refresher);
-        ActionManager.Apply(action);
+        // ImportMeshesToFlverAction action = new(flver, meshes, refresher);
+        // ActionManager.Apply(action);
     }
 
     public static bool ImportFbxWithDialogAsync(FLVER2 flver, Action refresher)
@@ -72,8 +76,19 @@ public static class Importer
             FileDlgCaption = "Open FBX File"
         };
         if (dialog.ShowDialog() != DialogResult.OK || !dialog.HasImportedModel) return false;
-        ImportMeshesToFlverAction action = new(flver, dialog.Meshes, refresher);
-        ActionManager.Apply(action);
+
+        // ImportMeshesToFlverAction action = new(flver, dialog.Meshes, refresher);
+        // ActionManager.Apply(action);
+
+        IEnumerable<FlverMeshViewModel> newMeshes = dialog.Meshes.Select(x => x.Key.ToFlverMesh(flver, x.Value with { FlipFaces = true }));
+        FlverViewModel newFlver = new(flver, MaterialInfoBank, new StackHistory())
+        {
+            Meshes = new ObservableCollection<FlverMeshViewModel>(flver.Meshes.Select(x => new FlverMeshViewModel(flver, x)).Concat(newMeshes))
+        };
+
+        Flver = newFlver.Write();
+        refresher.Invoke();
+
         MainWindow.ShowInformationDialog($"Successfully imported {Path.GetFileName(dialog.FileDlgFileName)}!");
         return true;
     }

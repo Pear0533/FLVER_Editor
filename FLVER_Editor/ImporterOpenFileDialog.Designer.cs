@@ -42,6 +42,7 @@
             meshSelector = new ListBox();
             affectAllMeshesCheckbox = new CheckBox();
             contextMenuStrip1 = new ContextMenuStrip(components);
+            flipFacesCheckbox = new CheckBox();
             importOptionsGroupBox.SuspendLayout();
             groupBox1.SuspendLayout();
             mtdSelectorGroupBox.SuspendLayout();
@@ -65,12 +66,13 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(flipFacesCheckbox);
             groupBox1.Controls.Add(label1);
             groupBox1.Controls.Add(mtdSelectorGroupBox);
             groupBox1.Controls.Add(weightingModeGroupBox);
             groupBox1.Location = new Point(273, 22);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(264, 186);
+            groupBox1.Size = new Size(264, 208);
             groupBox1.TabIndex = 4;
             groupBox1.TabStop = false;
             groupBox1.Text = "Mesh Specific";
@@ -85,7 +87,6 @@
             label1.Size = new Size(240, 26);
             label1.TabIndex = 5;
             label1.Text = "Modify the settings of the current mesh \r\nor all Meshes if \"Affect All Meshes\" is checked";
-            label1.Click += label1_Click;
             // 
             // mtdSelectorGroupBox
             // 
@@ -133,12 +134,11 @@
             boneWeightsMessage.Size = new Size(21, 15);
             boneWeightsMessage.TabIndex = 2;
             boneWeightsMessage.Text = "{0}";
-            boneWeightsMessage.Click += boneWeightsMessage_Click;
             // 
             // autoAssignMtdCheckbox
             // 
             autoAssignMtdCheckbox.AutoSize = true;
-            autoAssignMtdCheckbox.Location = new Point(279, 210);
+            autoAssignMtdCheckbox.Location = new Point(273, 236);
             autoAssignMtdCheckbox.Name = "autoAssignMtdCheckbox";
             autoAssignMtdCheckbox.Size = new Size(216, 19);
             autoAssignMtdCheckbox.TabIndex = 5;
@@ -182,6 +182,16 @@
             contextMenuStrip1.Name = "contextMenuStrip1";
             contextMenuStrip1.Size = new Size(61, 4);
             // 
+            // flipFacesCheckbox
+            // 
+            flipFacesCheckbox.AutoSize = true;
+            flipFacesCheckbox.Location = new Point(6, 182);
+            flipFacesCheckbox.Name = "flipFacesCheckbox";
+            flipFacesCheckbox.Size = new Size(77, 19);
+            flipFacesCheckbox.TabIndex = 6;
+            flipFacesCheckbox.Text = "Flip Faces";
+            flipFacesCheckbox.UseVisualStyleBackColor = true;
+            // 
             // ImporterOpenFileDialog
             // 
             Controls.Add(importOptionsGroupBox);
@@ -211,5 +221,6 @@
         private GroupBox groupBox1;
         private Label label1;
         private ContextMenuStrip contextMenuStrip1;
+        private CheckBox flipFacesCheckbox;
     }
 }
