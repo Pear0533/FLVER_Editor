@@ -60,11 +60,6 @@ public partial class MainWindow : Form
     private const string Version = "2.5";
 
     /// <summary>
-    ///     The patreon support link for Pear.
-    /// </summary>
-    private const string PatreonSupportUri = "https://www.patreon.com/theonlypear";
-
-    /// <summary>
     ///     The paypal support link for Pear.
     /// </summary>
     private const string PaypalSupportUri = "https://paypal.me/realcucumberlettuce3";
@@ -2604,8 +2599,11 @@ public partial class MainWindow : Form
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 MatBinBndPath = dialog.FileName;
+                // TODO: Force the matbinbnd path to start out as null every time, request from Max...
+                /*
                 UserConfigJson["MatBinBndPath"] = MatBinBndPath;
                 WriteUserConfig();
+                */
             }
             else
             {
@@ -2859,11 +2857,6 @@ public partial class MainWindow : Form
     private void HideAllMeshesButton_MouseClick(object sender, MouseEventArgs e)
     {
         ModifyAllThings(meshTable, 5);
-    }
-
-    private void PatreonToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-        OpenBrowser(PatreonSupportUri);
     }
 
     private void PayPalToolStripMenuItem_Click(object sender, EventArgs e)

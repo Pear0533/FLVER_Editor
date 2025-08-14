@@ -54,7 +54,6 @@
             toggleDummyIDsVisibilityToolStripMenuItem = new ToolStripMenuItem();
             toggleDuplicateMaterialsOnMeshImportToolStripMenuItem = new ToolStripMenuItem();
             supportPearToolStripMenuItem = new ToolStripMenuItem();
-            patreonToolStripMenuItem = new ToolStripMenuItem();
             payPalToolStripMenuItem = new ToolStripMenuItem();
             helpToolStripMenuItem = new ToolStripMenuItem();
             videoTutorialsToolStripMenuItem = new ToolStripMenuItem();
@@ -528,17 +527,10 @@
             // 
             // supportPearToolStripMenuItem
             // 
-            supportPearToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { patreonToolStripMenuItem, payPalToolStripMenuItem });
+            supportPearToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { payPalToolStripMenuItem });
             supportPearToolStripMenuItem.Name = "supportPearToolStripMenuItem";
             supportPearToolStripMenuItem.Size = new Size(87, 22);
             supportPearToolStripMenuItem.Text = "Support Pear";
-            // 
-            // patreonToolStripMenuItem
-            // 
-            patreonToolStripMenuItem.Name = "patreonToolStripMenuItem";
-            patreonToolStripMenuItem.Size = new Size(115, 22);
-            patreonToolStripMenuItem.Text = "Patreon";
-            patreonToolStripMenuItem.Click += PatreonToolStripMenuItem_Click;
             // 
             // payPalToolStripMenuItem
             // 
@@ -2319,7 +2311,6 @@
         private Button hideAllMeshesButton;
         private GroupBox functionsGroupBox;
         private ToolStripMenuItem supportPearToolStripMenuItem;
-        private ToolStripMenuItem patreonToolStripMenuItem;
         private ToolStripMenuItem payPalToolStripMenuItem;
         private Label label9;
         private Label label10;
